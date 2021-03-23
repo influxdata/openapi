@@ -10,6 +10,7 @@ generate:
 	sed -i -e '/REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' src/.cloud_gen.yml
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli bundle src/.cloud_gen.yml --outfile contracts/cloud.yml --type yaml
 	rm src/.cloud_gen.yml
+	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli bundle src/cloud-priv.yml --outfile contracts/cloud-priv.yml --type yaml
 
 .PHONY: build-docker
 build-docker:
