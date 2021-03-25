@@ -19,10 +19,12 @@ This repository is organized as follows:
     |   ├── _paths.yml      # all paths common to oss and cloud
     │   └── _schemas.yml    # all schemas common to oss anc cloud
     ├── oss/                # contains oss specific openapi definitions
-    ├── services/           # contains service openapi definitions
-    |   ├── [service]/      # contains service specific definitions; similar structure to 'common'
-    |   └── service.yml     # defines the service api
+    ├── svc/                # contains service openapi definitions
+    |   └── [service]/      # contains service specific definitions; similar structure to 'common'
+    ├── cloud-priv.yml      # defines the "private" cloud api (/api/v2private)
     ├── cloud.yml           # defines the cloud api
-    └── oss.yml             # defines the oss api
-
+    ├── oss.yml             # defines the oss api
+    └── svc-[service].yml   # defines an individual service api
 ```
+
+When adding a service api definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product api maintainers to copy the service-specific ("internal") paths and components into the respective api definition (cloud, cloud-priv, or oss) without modifying references.
