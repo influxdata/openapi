@@ -6,5 +6,3 @@ RUN npm install --only=production -g swagger-cli
 
 WORKDIR /openapi
 RUN mkdir -p /openapi
- 
-ENTRYPOINT ["swagger-cli"]

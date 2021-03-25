@@ -6,7 +6,8 @@ This repository is organized as follows:
 
 ```
 .
-├── contracts/              # contains the generated openapi definitions; the "source of truth"
+├── contracts/              # contains the aggregated openapi definitions; the "source of truth"
+|   └── svc/                # contains the aggregated openapi defnitions for each individual standalone service
 ├── scripts/                # contains various scripts to aid in the generation of the contracts
 └── src/                    # contains the raw openapi definitions
     ├── cloud/              # contains cloud specific openapi definitions
@@ -21,7 +22,7 @@ This repository is organized as follows:
     ├── oss/                # contains oss specific openapi definitions
     ├── svc/                # contains service openapi definitions
     |   └── [service]/      # contains service specific definitions; similar structure to 'common'
-    ├── cloud-priv.yml      # defines the "private" cloud api (/api/v2private)
+    ├── cloud-priv.yml      # defines the "private" cloud api ('/api/v2private')
     ├── cloud.yml           # defines the cloud api
     ├── oss.yml             # defines the oss api
     └── svc-[service].yml   # defines an individual service api
