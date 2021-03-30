@@ -1,6 +1,6 @@
 ## Influx API Definitions
 
-This repository contains [OpenAPI specifications](https://www.openapis.org/) for InfluxData's various services.
+This repository contains [OpenAPI specifications](https://www.openapis.org/) for InfluxData's various services. It provides a common place for shared API elements that are referenced by more specific API definitions.
 
 This repository is organized as follows:
 
@@ -29,3 +29,7 @@ This repository is organized as follows:
 ```
 
 When adding a service api definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product api maintainers to copy the service-specific ("internal") paths and components into the respective api definition (cloud, cloud-priv, or oss) without modifying references.
+
+### Notes:
+
+There are some limitations to this work. It is important at this time to ensure any definitions consumable from our UI are compatible with, and consumable by [oats](https://github.com/influxdata/oats). One of the OpenAPI v3 compatible specifications `oats` cannot currently handle is the `servers` override, so we keep them in separate swagger files. This is exemplified in `cloud-priv.yml` and it's `servers` key; the major difference between `cloud-priv.yml` and `cloud.yml`.
