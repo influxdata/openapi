@@ -1,0 +1,1189 @@
+openapi: 3.0.0
+info:
+  title: Influx API Service
+  version: 2.0.0
+servers:
+  - url: /api/v2
+paths:
+  /health:
+    servers:
+      - url: /
+    get:
+      operationId: GetHealth
+      tags:
+        - Health
+      summary: Get the health of an instance
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      responses:
+        '200':
+          description: The instance is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - status
+                properties:
+                  name:
+                    type: string
+                  message:
+                    type: string
+                  checks:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1health/get/responses/200/content/application~1json/schema'
+                  status:
+                    type: string
+                    enum:
+                      - pass
+                      - fail
+                  version:
+                    type: string
+                  commit:
+                    type: string
+        '503':
+          description: The instance is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1health/get/responses/200/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  /ready:
+    servers:
+      - url: /
+    get:
+      operationId: GetReady
+      tags:
+        - Ready
+      summary: Get the readiness of an instance at startup
+      parameters:
+        - in: header
+          name: Zap-Trace-Span
+          description: OpenTracing span context
+          example:
+            trace_id: '1'
+            span_id: '1'
+            baggage:
+              key: value
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The instance is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ready
+                  started:
+                    type: string
+                    format: date-time
+                    example: '2019-03-13T10:09:33.891196-04:00'
+                  up:
+                    type: string
+                    example: 14m45.911966424s
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - unprocessable entity
+                      - empty value
+                      - unavailable
+                      - forbidden
+                      - too many requests
+                      - unauthorized
+                      - method not allowed
+                      - request too large
+                  message:
+                    readOnly: true
+                    description: message is a human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: op describes the logical code operation during error. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: err is a stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                required:
+                  - code
+                  - message
+  /users:
+    get:
+      operationId: GetUsers
+      tags:
+        - Users
+      summary: List all users
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    post:
+      operationId: PostUsers
+      tags:
+        - Users
+      summary: Create a user
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: User to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  '/users/{userID}':
+    get:
+      operationId: GetUsersID
+      tags:
+        - Users
+      summary: Retrieve a user
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: userID
+          schema:
+            type: string
+          required: true
+          description: The user ID.
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    patch:
+      operationId: PatchUsersID
+      tags:
+        - Users
+      summary: Update a user
+      requestBody:
+        description: User update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: userID
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to update.
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    delete:
+      operationId: DeleteUsersID
+      tags:
+        - Users
+      summary: Delete a user
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: userID
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to delete.
+      responses:
+        '204':
+          description: User deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  /setup:
+    get:
+      operationId: GetSetup
+      tags:
+        - Setup
+      summary: 'Check if database has default user, org, bucket'
+      description: 'Returns `true` if no default user, organization, or bucket has been created.'
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      responses:
+        '200':
+          description: allowed true or false
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allowed:
+                    description: True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.
+                    type: boolean
+    post:
+      operationId: PostSetup
+      tags:
+        - Setup
+      summary: 'Set up initial user, org and bucket'
+      description: 'Post an onboarding request to set up initial user, org and bucket.'
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: Source to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingRequest'
+      responses:
+        '201':
+          description: 'Created default user, bucket, org'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  /setup/user:
+    post:
+      operationId: PostSetupUser
+      tags:
+        - Setup
+      summary: 'Set up a new user, org and bucket'
+      description: 'Post an onboarding request to set up a new user, org and bucket.'
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: Source to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingRequest'
+      responses:
+        '201':
+          description: 'Created default user, bucket, org'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  /authorizations:
+    get:
+      operationId: GetAuthorizations
+      tags:
+        - Authorizations
+      summary: List all authorizations
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: query
+          name: userID
+          schema:
+            type: string
+          description: Only show authorizations that belong to a user ID.
+        - in: query
+          name: user
+          schema:
+            type: string
+          description: Only show authorizations that belong to a user name.
+        - in: query
+          name: orgID
+          schema:
+            type: string
+          description: Only show authorizations that belong to an organization ID.
+        - in: query
+          name: org
+          schema:
+            type: string
+          description: Only show authorizations that belong to a organization name.
+      responses:
+        '200':
+          description: A list of authorizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorizations'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    post:
+      operationId: PostAuthorizations
+      tags:
+        - Authorizations
+      summary: Create an authorization
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: Authorization to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authorization'
+      responses:
+        '201':
+          description: Authorization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorization'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  '/authorizations/{authID}':
+    get:
+      operationId: GetAuthorizationsID
+      tags:
+        - Authorizations
+      summary: Retrieve an authorization
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: authID
+          schema:
+            type: string
+          required: true
+          description: The ID of the authorization to get.
+      responses:
+        '200':
+          description: Authorization details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorization'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    patch:
+      operationId: PatchAuthorizationsID
+      tags:
+        - Authorizations
+      summary: Update an authorization to be active or inactive
+      requestBody:
+        description: Authorization to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authorization/allOf/0'
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: authID
+          schema:
+            type: string
+          required: true
+          description: The ID of the authorization to update.
+      responses:
+        '200':
+          description: The active or inactie authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorization'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    delete:
+      operationId: DeleteAuthorizationsID
+      tags:
+        - Authorizations
+      summary: Delete an authorization
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: authID
+          schema:
+            type: string
+          required: true
+          description: The ID of the authorization to delete.
+      responses:
+        '204':
+          description: Authorization deleted
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  /variables:
+    get:
+      operationId: GetVariables
+      tags:
+        - Variables
+      summary: Get all variables
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: query
+          name: org
+          description: The organization name.
+          schema:
+            type: string
+        - in: query
+          name: orgID
+          description: The organization ID.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All variables for an organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variables'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    post:
+      operationId: PostVariables
+      summary: Create a variable
+      tags:
+        - Variables
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: Variable to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+      responses:
+        '201':
+          description: Variable created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+  '/variables/{variableID}':
+    get:
+      operationId: GetVariablesID
+      tags:
+        - Variables
+      summary: Get a variable
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: variableID
+          required: true
+          schema:
+            type: string
+          description: The variable ID.
+      responses:
+        '200':
+          description: Variable found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+        '404':
+          description: Variable not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    delete:
+      operationId: DeleteVariablesID
+      tags:
+        - Variables
+      summary: Delete a variable
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: variableID
+          required: true
+          schema:
+            type: string
+          description: The variable ID.
+      responses:
+        '204':
+          description: Variable deleted
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    patch:
+      operationId: PatchVariablesID
+      summary: Update a variable
+      tags:
+        - Variables
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: variableID
+          required: true
+          schema:
+            type: string
+          description: The variable ID.
+      requestBody:
+        description: Variable update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+      responses:
+        '200':
+          description: Variable updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+    put:
+      operationId: PutVariablesID
+      summary: Replace a variable
+      tags:
+        - Variables
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: variableID
+          required: true
+          schema:
+            type: string
+          description: The variable ID.
+      requestBody:
+        description: Variable to replace
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+      responses:
+        '200':
+          description: Variable updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1ready/get/responses/default/content/application~1json/schema'
+components:
+  parameters: null
+  schemas:
+    Authorization:
+      required:
+        - orgID
+        - permissions
+      allOf:
+        - properties:
+            status:
+              description: If inactive the token is inactive and requests using the token will be rejected.
+              default: active
+              type: string
+              enum:
+                - active
+                - inactive
+            description:
+              type: string
+              description: A description of the token.
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+              readOnly: true
+            updatedAt:
+              type: string
+              format: date-time
+              readOnly: true
+            orgID:
+              type: string
+              description: ID of org that authorization is scoped to.
+            permissions:
+              type: array
+              minItems: 1
+              description: List of permissions for an auth.  An auth must have at least one Permission.
+              items:
+                $ref: '#/components/schemas/Permission'
+            id:
+              readOnly: true
+              type: string
+            token:
+              readOnly: true
+              type: string
+              description: Passed via the Authorization Header and Token Authentication type.
+            userID:
+              readOnly: true
+              type: string
+              description: ID of user that created and owns the token.
+            user:
+              readOnly: true
+              type: string
+              description: Name of user that created and owns the token.
+            org:
+              readOnly: true
+              type: string
+              description: Name of the org token is scoped to.
+            links:
+              type: object
+              readOnly: true
+              example:
+                self: /api/v2/authorizations/1
+                user: /api/v2/users/12
+              properties:
+                self:
+                  readOnly: true
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                user:
+                  readOnly: true
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+    Authorizations:
+      type: object
+      properties:
+        links:
+          readOnly: true
+          type: object
+          properties:
+            next:
+              type: string
+              format: uri
+              readOnly: true
+              description: URI of resource.
+            self:
+              $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+            prev:
+              $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+          required:
+            - self
+        authorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Authorization'
+    Permission:
+      required:
+        - action
+        - resource
+      properties:
+        action:
+          type: string
+          enum:
+            - read
+            - write
+        resource:
+          $ref: '#/components/schemas/Resource'
+    Resource:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - authorizations
+            - buckets
+            - dashboards
+            - orgs
+            - sources
+            - tasks
+            - telegrafs
+            - users
+            - variables
+            - scrapers
+            - secrets
+            - labels
+            - views
+            - documents
+            - notificationRules
+            - notificationEndpoints
+            - checks
+            - dbrp
+        id:
+          type: string
+          nullable: true
+          description: If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type.
+        name:
+          type: string
+          nullable: true
+          description: Optional name of the resource if the resource has a name field.
+        orgID:
+          type: string
+          nullable: true
+          description: If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type.
+        org:
+          type: string
+          nullable: true
+          description: Optional name of the organization of the organization with orgID.
+    User:
+      properties:
+        id:
+          readOnly: true
+          type: string
+        oauthID:
+          type: string
+        name:
+          type: string
+        status:
+          description: If inactive the user is inactive.
+          default: active
+          type: string
+          enum:
+            - active
+            - inactive
+      required:
+        - name
+    Users:
+      type: object
+      properties:
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+              format: uri
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnboardingResponse/properties/user'
+    OnboardingRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        org:
+          type: string
+        bucket:
+          type: string
+        retentionPeriodSeconds:
+          type: integer
+        retentionPeriodHrs:
+          type: integer
+          deprecated: true
+          description: |
+            Retention period *in nanoseconds* for the new bucket. This key's name has been misleading since OSS 2.0 GA, please transition to use `retentionPeriodSeconds`
+      required:
+        - username
+        - org
+        - bucket
+    OnboardingResponse:
+      type: object
+      properties:
+        user:
+          properties:
+            id:
+              readOnly: true
+              type: string
+            oauthID:
+              type: string
+            name:
+              type: string
+            status:
+              description: If inactive the user is inactive.
+              default: active
+              type: string
+              enum:
+                - active
+                - inactive
+            links:
+              type: object
+              readOnly: true
+              example:
+                self: /api/v2/users/1
+              properties:
+                self:
+                  type: string
+                  format: uri
+          required:
+            - name
+        org:
+          properties:
+            links:
+              type: object
+              readOnly: true
+              example:
+                self: /api/v2/orgs/1
+                members: /api/v2/orgs/1/members
+                owners: /api/v2/orgs/1/owners
+                labels: /api/v2/orgs/1/labels
+                secrets: /api/v2/orgs/1/secrets
+                buckets: /api/v2/buckets?org=myorg
+                tasks: /api/v2/tasks?org=myorg
+                dashboards: /api/v2/dashboards?org=myorg
+              properties:
+                self:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                members:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                owners:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                labels:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                secrets:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                buckets:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                tasks:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                dashboards:
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+            id:
+              readOnly: true
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              readOnly: true
+            updatedAt:
+              type: string
+              format: date-time
+              readOnly: true
+            status:
+              description: If inactive the organization is inactive.
+              default: active
+              type: string
+              enum:
+                - active
+                - inactive
+          required:
+            - name
+        bucket:
+          properties:
+            links:
+              type: object
+              readOnly: true
+              example:
+                labels: /api/v2/buckets/1/labels
+                members: /api/v2/buckets/1/members
+                org: /api/v2/orgs/2
+                owners: /api/v2/buckets/1/owners
+                self: /api/v2/buckets/1
+                write: /api/v2/write?org=2&bucket=1
+              properties:
+                labels:
+                  description: URL to retrieve labels for this bucket
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                members:
+                  description: URL to retrieve members that can read this bucket
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                org:
+                  description: URL to retrieve parent organization for this bucket
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                owners:
+                  description: URL to retrieve owners that can read and write to this bucket.
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                self:
+                  description: URL for this bucket
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                write:
+                  description: URL to write line protocol for this bucket
+                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+            id:
+              readOnly: true
+              type: string
+            type:
+              readOnly: true
+              type: string
+              default: user
+              enum:
+                - user
+                - system
+            name:
+              type: string
+            description:
+              type: string
+            orgID:
+              type: string
+            rp:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              readOnly: true
+            updatedAt:
+              type: string
+              format: date-time
+              readOnly: true
+            retentionRules:
+              type: array
+              description: Rules to expire or retain data.  No rules means data never expires.
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    default: expire
+                    enum:
+                      - expire
+                  everySeconds:
+                    type: integer
+                    description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+                    example: 86400
+                    minimum: 0
+                  shardGroupDurationSeconds:
+                    type: integer
+                    format: int64
+                    description: Shard duration measured in seconds.
+                required:
+                  - type
+                  - everySeconds
+            labels:
+              $ref: '#/components/schemas/Variable/properties/labels'
+          required:
+            - name
+            - retentionRules
+        auth:
+          $ref: '#/components/schemas/Authorization'
+    Variable:
+      type: object
+      required:
+        - name
+        - orgID
+        - arguments
+      properties:
+        links:
+          type: object
+          readOnly: true
+          properties:
+            self:
+              type: string
+              format: uri
+            org:
+              type: string
+              format: uri
+            labels:
+              type: string
+              format: uri
+        id:
+          readOnly: true
+          type: string
+        orgID:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        selected:
+          type: array
+          items:
+            type: string
+        labels:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                readOnly: true
+                type: string
+              orgID:
+                readOnly: true
+                type: string
+              name:
+                type: string
+              properties:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.
+                example:
+                  color: ffb3b3
+                  description: this is a description
+        arguments:
+          type: object
+          oneOf:
+            - properties:
+                type:
+                  type: string
+                  enum:
+                    - query
+                values:
+                  type: object
+                  properties:
+                    query:
+                      type: string
+                    language:
+                      type: string
+            - properties:
+                type:
+                  type: string
+                  enum:
+                    - constant
+                values:
+                  type: array
+                  items:
+                    type: string
+            - properties:
+                type:
+                  type: string
+                  enum:
+                    - map
+                values:
+                  type: object
+                  additionalProperties:
+                    type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Variables:
+      type: object
+      example:
+        variables:
+          - id: '1221432'
+            name: ':ok:'
+            selected:
+              - hello
+            arguments:
+              type: constant
+              values:
+                - howdy
+                - hello
+                - hi
+                - yo
+                - oy
+          - id: '1221432'
+            name: ':ok:'
+            selected:
+              - c
+            arguments:
+              type: map
+              values:
+                a: fdjaklfdjkldsfjlkjdsa
+                b: dfaksjfkljekfajekdljfas
+                c: fdjksajfdkfeawfeea
+          - id: '1221432'
+            name: ':ok:'
+            selected:
+              - host
+            arguments:
+              type: query
+              query: 'from(bucket: "foo") |> showMeasurements()'
+              language: flux
+      properties:
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variable'
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

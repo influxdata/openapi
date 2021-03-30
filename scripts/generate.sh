@@ -18,3 +18,8 @@ rm src/.cloud_gen.yml
 
 # generate cloud-priv contract
 swagger-cli bundle src/cloud-priv.yml --outfile ${CONTRACTS}/cloud-priv.yml --type yaml
+
+# generate platform-specific contracts
+swagger-cli bundle src/common.yml --outfile ${CONTRACTS}/common.yml --type yaml
+swagger-cli bundle src/oss-diff.yml --outfile ${CONTRACTS}/oss-diff.yml --type yaml
+swagger-cli bundle src/cloud-diff.yml --outfile ${CONTRACTS}/cloud-diff.yml --type yaml
