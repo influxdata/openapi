@@ -14,6 +14,14 @@ generate-all: generate generate-svc
 test:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/test.sh
 
+.PHONY: test-oats
+test-oats:
+	docker run --rm -it -v ${PWD}:/src/openapi quay.io/influxdb/oats /src/openapi/scripts/test-oats.sh
+
+.PHONY: build-oats
+build-oats:
+	docker build -t quay.io/influxdb/oats -f scripts/oats.dockerfile .
+
 .PHONY: build-docker
 build-docker:
 	docker build -t quay.io/influxdb/swagger-cli -f scripts/openapi-cli.dockerfile .
