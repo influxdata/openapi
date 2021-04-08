@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Annotations service
-  version: 0.2.1
+  version: 0.2.2
 servers:
   - url: /
 paths:
@@ -164,7 +164,7 @@ paths:
       operationId: createUpdateStream
       summary: Create or update stream
       requestBody:
-        description: Stream to create/update ("describe")
+        description: Stream to create or update
         content:
           application/json:
             schema:
@@ -175,7 +175,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Stream'
+                $ref: '#/components/schemas/ReadStream'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -213,6 +213,63 @@ paths:
       summary: Delete stream
       parameters:
         - $ref: '#/components/parameters/StreamDeleteFilter'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/streams/{streamID}':
+    put:
+      tags:
+        - Streams
+      operationId: updateStream
+      summary: Update stream
+      parameters:
+        - in: path
+          name: streamID
+          description: stream to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Stream to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Stream'
+      responses:
+        '200':
+          description: Stream as updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStream'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+        - Streams
+      operationId: deleteStreamByID
+      summary: Delete stream by ID
+      parameters:
+        - in: path
+          name: streamID
+          description: stream to delete
+          required: true
+          schema:
+            type: string
       responses:
         '204':
           $ref: '#/components/responses/NoContent'
@@ -375,6 +432,8 @@ components:
     ReadStream:
       type: object
       properties:
+        id:
+          type: string
         stream:
           type: string
         description:
