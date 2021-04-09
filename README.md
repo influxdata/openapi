@@ -7,11 +7,11 @@ This repository is organized as follows:
 ```
 .
 ├── contracts/              # contains the aggregated openapi definitions; the "source of truth"
-|   └── svc/                # contains the aggregated openapi defnitions for each individual standalone service
+|   └── svc/                # contains the aggregated openapi definitions for each individual standalone service
 ├── scripts/                # contains various scripts to aid in the generation of the contracts
 └── src/                    # contains the raw openapi definitions
     ├── cloud/              # contains cloud specific openapi definitions
-    ├── common/             # contains openapi defitions common to oss and cloud
+    ├── common/             # contains openapi definitions common to oss and cloud
     |   ├── parameters/     # contains common modular parameter definitions
     |   ├── paths/          # contains modular path definitions common to oss and cloud
     |   ├── responses/      # contains common modular response definitions
