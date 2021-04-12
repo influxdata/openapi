@@ -28,7 +28,9 @@ This repository is organized as follows:
     └── svc-[service].yml   # defines an individual service api
 ```
 
-When adding a service api definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product api maintainers to copy the service-specific ("internal") paths and components into the respective api definition (cloud, cloud-priv, or oss) without modifying references.
+When adding a service API definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product API maintainers to copy the service-specific ("internal") paths and components into the respective API definition (cloud, cloud-priv, or oss) without modifying references. For more information, [look here](./src/svc/README.md). For information on what to do when the platform APIs drift, [look here](./src/README.md).
+
+When changes are complete, simply run `make generate-all` (`docker` currently required) and commit the results to get the new API contracts.
 
 ### Notes:
 
