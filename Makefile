@@ -1,5 +1,4 @@
 .PHONY: generate
-.PHONY: generate
 generate:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/generate.sh
 
