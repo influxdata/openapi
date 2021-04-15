@@ -22,7 +22,7 @@ paths:
                 $ref: '#/components/schemas/Organizations'
         '401':
           description: Unauthorized bearer token
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotAllowed'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -47,10 +47,10 @@ paths:
                 $ref: '#/components/schemas/OrganizationWithToken'
         '400':
           description: Invalid request
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequest'
         '401':
           description: Unauthorized bearer token
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotAllowed'
         '409':
           description: Organization name taken
           $ref: '#/components/responses/ServerError'
@@ -79,10 +79,10 @@ paths:
                 $ref: '#/components/schemas/Organization'
         '401':
           description: Unauthorized bearer token
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotAllowed'
         '404':
           description: Organization not found
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotFound'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -107,7 +107,7 @@ paths:
                 $ref: '#/components/schemas/Organization'
         '401':
           description: Unauthorized bearer token
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotAllowed'
         '503':
           description: Service Unavailable
           $ref: '#/components/responses/ServerError'
@@ -136,10 +136,10 @@ paths:
                 $ref: '#/components/schemas/OrgLimits'
         '401':
           description: Unauthorized bearer token
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotAllowed'
         '404':
           description: Organization not found
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotFound'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -171,13 +171,13 @@ paths:
                 $ref: '#/components/schemas/OrgLimits'
         '400':
           description: Invalid request
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequest'
         '401':
           description: Unauthorized bearer token
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotAllowed'
         '404':
           description: Organization not found
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/NotFound'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -194,13 +194,19 @@ components:
         maxBuckets:
           example: 2
           description: Number of buckets allowed
-          type: integer
-          minimum: -1
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - type: integer
+          minimum: 1
         maxRetentionDuration:
           description: Retention duration limits in nanoseconds
           example: 2592000000000000
-          type: integer
-          minimum: -1
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - type: integer
+          minimum: 1
     CheckLimits:
       description: Check limits
       type: object
@@ -208,8 +214,11 @@ components:
         maxChecks:
           description: Number of checks allowed
           example: 2
-          type: integer
-          minimum: -1
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - type: integer
+          minimum: 1
     DashboardLimits:
       description: Dashboard limits
       type: object
@@ -217,7 +226,10 @@ components:
         maxDashboards:
           description: Number of dashboards allowed
           example: 5
-          type: integer
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - type: integer
     Error:
       properties:
         code:
@@ -267,8 +279,11 @@ components:
         maxNotifications:
           description: Number of notifications allowed
           example: 2
-          type: integer
-          minimum: -1
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - type: integer
+          minimum: 1
         blockedNotificationRules:
           description: Notification rules not allowed CSV
           example: 'http,pagerduty'
@@ -392,14 +407,43 @@ components:
         maxTasks:
           description: Number of tasks allowed
           example: 5
-          type: integer
-          minimum: -1
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - type: integer
+          minimum: 1
     Unlimited:
       description: Unbounded limit
       type: integer
       enum:
         - 0
   responses:
+    NoContent:
+      description: No content
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotAllowed:
+      description: Method not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     ServerError:
       description: Server error
       content:
