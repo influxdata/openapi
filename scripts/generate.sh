@@ -18,3 +18,6 @@ rm src/.cloud_gen.yml
 
 # generate cloud-priv contract
 swagger-cli bundle src/cloud-priv.yml --outfile ${CONTRACTS}/cloud-priv.yml --type yaml
+
+# generate quartz-oem contract
+swagger-cli bundle src/quartz-oem.yml --outfile ${CONTRACTS}/quartz-oem.yml --type yaml

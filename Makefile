@@ -1,5 +1,4 @@
 .PHONY: generate
-.PHONY: generate
 generate:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/generate.sh
 
@@ -22,10 +21,30 @@ test-oats:
 build-oats:
 	docker build -t quay.io/influxdb/oats -f scripts/oats.dockerfile .
 
+.PHONY: publish-oats
+publish-oats:
+	docker push quay.io/influxdb/oats
+
+.PHONY: build-swagger
+build-swagger:
+	docker build -t quay.io/influxdb/swagger-cli -f scripts/swagger-cli.dockerfile .
+
+.PHONY: publish-swagger
+publish-swagger:
+	docker push quay.io/influxdb/swagger-cli
+
 .PHONY: build-docker
-build-docker:
-	docker build -t quay.io/influxdb/swagger-cli -f scripts/openapi-cli.dockerfile .
+build-docker: build-oats build-swagger
 
 .PHONY: publish-docker
-publish-docker:
-	docker push quay.io/influxdb/swagger-cli
+publish-docker: publish-oats publish-swagger
+
+.PHONY: publish-docker-ci
+publish-docker-ci:
+	docker build -t quay.io/influxdb/swagger-cli-ci -f scripts/ci-swagger-cli.dockerfile .
+	docker build -t quay.io/influxdb/oats-ci -f scripts/ci-oats.dockerfile .
+	docker push quay.io/influxdb/swagger-cli-ci
+	docker push quay.io/influxdb/oats-ci
+
+.PHONY: publish-docker
+publish-docker: publish-oats publish-swagger
