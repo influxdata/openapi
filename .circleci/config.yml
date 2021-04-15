@@ -20,15 +20,15 @@ jobs:
           command: sh /root/project/scripts/test.sh
   lint-yamls:
     docker:
-      - image: "cimg/python:3.9"
+      - image: "cimg/base"
     steps:
       - checkout
       - run:
-          name: install yamllint
-          command: pip install --user yamllint
+          name: trailing spaces
+          command: [ 0 -eq $(grep -rin ' $' $HOME/project/src/ | tee -a /dev/stderr | wc -l) ]
       - run:
-          name: run yamllint
-          command: yamllint -d $HOME/project/.circleci/yamllint.conf $HOME/project/src/
+          name: missing ending newlines
+          command: find $HOME/project/src/ -type f | xargs -I {} bash -c 'tail -c 1 {} | read -r _ || (echo "Missing newline at end of {}"; false)'
 workflows:
   verify:
     jobs:
