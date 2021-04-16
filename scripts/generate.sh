@@ -16,15 +16,6 @@ sed -i -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' src/.cloud
 swagger-cli bundle src/.cloud_gen.yml --outfile ${CONTRACTS}/cloud.yml --type yaml && \
 rm src/.cloud_gen.yml
 
-# generate cloud-priv contract
-swagger-cli bundle src/cloud-priv.yml --outfile ${CONTRACTS}/cloud-priv.yml --type yaml
-
-# generate quartz-oem contract
-swagger-cli bundle src/quartz-oem.yml --outfile ${CONTRACTS}/quartz-oem.yml --type yaml
-
-# generate unity contract
-swagger-cli bundle src/unity.yml --outfile ${CONTRACTS}/unity.yml --type yaml
-
 # generate common-only contract
 sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/common.yml > src/.common_gen.yml && \
 sed -i -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' src/.common_gen.yml && \
@@ -38,3 +29,14 @@ swagger-cli bundle src/cloud.yml --outfile ${CONTRACTS}/cloud-diff.yml --type ya
 
 # generate managed-functions contract
 swagger-cli bundle src/managed-functions.yml --outfile ${CONTRACTS}/managed-functions.yml --type yaml
+
+## private apis
+
+# generate cloud-priv contract
+swagger-cli bundle src/cloud-priv.yml --outfile ${CONTRACTS}/priv/cloud-priv.yml --type yaml
+
+# generate quartz-oem contract
+swagger-cli bundle src/quartz-oem.yml --outfile ${CONTRACTS}/priv/quartz-oem.yml --type yaml
+
+# generate unity contract
+swagger-cli bundle src/unity.yml --outfile ${CONTRACTS}/priv/unity.yml --type yaml
