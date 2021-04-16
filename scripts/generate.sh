@@ -22,6 +22,9 @@ swagger-cli bundle src/cloud-priv.yml --outfile ${CONTRACTS}/cloud-priv.yml --ty
 # generate quartz-oem contract
 swagger-cli bundle src/quartz-oem.yml --outfile ${CONTRACTS}/quartz-oem.yml --type yaml
 
+# generate unity contract
+swagger-cli bundle src/unity.yml --outfile ${CONTRACTS}/unity.yml --type yaml
+
 # generate common-only contract
 sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/common.yml > src/.common_gen.yml && \
 sed -i -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' src/.common_gen.yml && \
