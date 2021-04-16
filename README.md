@@ -26,8 +26,10 @@ This repository is organized as follows:
     |   └── [service]/      # contains service specific definitions; similar structure to 'common'
     ├── cloud-priv.yml      # defines the "private" cloud api ('/api/v2private')
     ├── cloud.yml           # defines the cloud api
+    ├── common.yml          # defines the shared api elements (between cloud and oss)
     ├── oss.yml             # defines the oss api
-    └── svc-[service].yml   # defines an individual service api
+    ├── svc-[service].yml   # defines an individual service api
+    └── quartz-oem.yml      # defines the oem quartz api
 ```
 
 When adding a service API definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product API maintainers to copy the service-specific ("internal") paths and components into the respective API definition (cloud, cloud-priv, or oss) without modifying references. For more information, [look here](./src/svc/README.md). For information on what to do when the platform APIs drift, [look here](./src/README.md).
