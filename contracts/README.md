@@ -3,20 +3,26 @@
 Refer to the [FAQs](../README.md#FAQs) for vocabulary definitions.
 
 ## "Public" APIs
-[`cloud-diff.yml        # defines the cloud specific api elements`](./cloud-diff.yml)
-[`cloud.yml             # defines the cloud api`](./cloud.yml)
-[`common.yml            # defines the shared api elements (between cloud and oss)`](./common.yml)
-[`managed-functions.yml # defines the managed functions api`](./managed-functions.yml)
-[`oss-diff.yml          # defines the oss specific api elements`](./oss-diff.yml)
-[`oss.yml               # defines the oss api`](./oss.yml)
-[`swaggerV1Compat.yml   # defines the V1 compatible api routes (manually maintained)`](./swaggerV1Compat.yml)
+| File | Description |
+| -- | -- |
+| [`cloud-diff.yml`](./cloud-diff.yml) | Defines the cloud specific api elements |
+| [`cloud.yml`](./cloud.yml) | Defines the cloud api |
+| [`common.yml`](./common.yml) | Defines the shared api elements (between cloud and oss) |
+| [`managed-functions.yml`](./managed-functions.yml) | Defines the managed functions api |
+| [`oss-diff.yml`](./oss-diff.yml) | Defines the oss specific api elements |
+| [`oss.yml`](./oss.yml) | Defines the oss api |
+| [`swaggerV1Compat.yml`](./swaggerV1Compat.yml) | Defines the V1 compatible api routes (manually maintained) |
 
 ## "Private" APIs
-[`cloud-priv.yml # defines the "private" cloud api ('/api/v2private')`](./priv/cloud-priv.yml)
-[`quartz-oem.yml # defines the oem quartz api`](./priv/quartz-oem.yml)
-[`unity.yml      # defines the unity api`](./priv/unity.yml)
+| File | Description |
+| -- | -- |
+| [`cloud-priv.yml`](./priv/cloud-priv.yml) | Defines the "private" cloud api ('/api/v2private') |
+| [`quartz-oem.yml`](./priv/quartz-oem.yml) | Defines the oem quartz api |
+| [`unity.yml`](./priv/unity.yml) | Defines the unity api |
 
 ## "Internal" APIs
-[`annotationd.yml # defines the annotationd api`](./svc/annotationd.yml)
-[`flowd.yml       # defines the flowd api`](./svc/flowd.yml)
-[`mapsd.yml       # defines the mapsd api`](./svc/mapsd.yml)
+| File | Description |
+| -- | -- |
+| [`annotationd.yml`](./svc/annotationd.yml) | Defines the annotationd api |
+| [`flowd.yml`](./svc/flowd.yml) | Defines the flowd api |
+| [`mapsd.yml`](./svc/mapsd.yml) | Defines the mapsd api |
