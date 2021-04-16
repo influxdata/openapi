@@ -35,3 +35,6 @@ rm src/.common_gen.yml
 # generate platform-specific contracts
 swagger-cli bundle src/oss.yml --outfile ${CONTRACTS}/oss-diff.yml --type yaml
 swagger-cli bundle src/cloud.yml --outfile ${CONTRACTS}/cloud-diff.yml --type yaml
+
+# generate managed-functions contract
+swagger-cli bundle src/managed-functions.yml --outfile ${CONTRACTS}/managed-functions.yml --type yaml
