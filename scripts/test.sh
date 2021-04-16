@@ -8,8 +8,9 @@ export CONTRACTS=$TMP_DIR
 sh $CUR_DIR/generate.sh
 sh $CUR_DIR/generate-svc.sh
 
-# copy non-automated contract
+# copy non-compiled contract and readme
 cp $(pwd)/contracts/swaggerV1Compat.yml $CONTRACTS/
+cp $(pwd)/contracts/README.md $CONTRACTS/
 
 diff $CONTRACTS $(pwd)/contracts
 if [ "$?" -ne "0" ]; then

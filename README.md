@@ -1,5 +1,7 @@
 # Influx API Definitions
 
+[Jump to API contracts.](./contracts)
+
 ## Overview
 
 This repository contains [OpenAPI specifications](https://www.openapis.org/) for InfluxData's various services. It provides a common place for shared API elements that are referenced by more specific API definitions.
