@@ -61,4 +61,13 @@ REF_COMMON_SCHEMAS
 >      $ref: "./svc/service_name/schemas/CustomThing.yml"
 ```
 
+There is discussion around having large mono-swagger files that define an entire server's endpoints. The consensus seems to be that we should offer smaller defined sections of the API instead. Rather than copy the service definitions into the more general platform definition, simply update the [`generate.sh`](../../scripts/generate.sh) script to replace the server definition with whatever prefix the service will be accessible at through the gateway and generate a contract for general consumption in the proper context: "public" (`contracts/`) or "private" (`contracts/priv`).
+
+```diff
+> # flowd
+> sed -e "s|^  - url: '/'|  - url: '/api/v2private'|" src/svc-flowd.yml > ./src/.svc.yml && \
+> swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/flowd.yml --type yaml && \
+> rm src/.svc.yml
+```
+
 When complete, running `make generate-all` will re-compile the official swagger contracts.

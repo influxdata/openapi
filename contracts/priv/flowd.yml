@@ -1,0 +1,236 @@
+openapi: 3.0.1
+info:
+  title: flowd api
+  version: 0.0.0
+servers:
+  - url: /api/v2private
+paths:
+  '/flows/orgs/{orgID}/flows':
+    get:
+      tags:
+        - FlowAPI
+      operationId: FlowAPI_ListFlows
+      parameters:
+        - name: orgID
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: pageToken
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowList'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeError'
+    post:
+      tags:
+        - FlowAPI
+      operationId: FlowAPI_CreateFlow
+      parameters:
+        - name: orgID
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowCreateRequest'
+        required: true
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeError'
+      x-codegen-request-body-name: body
+  '/flows/orgs/{orgID}/flows/{id}':
+    get:
+      tags:
+        - FlowAPI
+      operationId: FlowAPI_GetFlow
+      parameters:
+        - name: orgID
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeError'
+    delete:
+      tags:
+        - FlowAPI
+      operationId: FlowAPI_DeleteFlow
+      parameters:
+        - name: orgID
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeError'
+    patch:
+      tags:
+        - FlowAPI
+      operationId: FlowAPI_UpdateFlow
+      parameters:
+        - name: orgID
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeError'
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    ProtobufAny:
+      type: object
+      properties:
+        type_url:
+          type: string
+        value:
+          pattern: '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
+          type: string
+          format: byte
+    RuntimeError:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProtobufAny'
+    Flow:
+      type: object
+      properties:
+        orgID:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        spec:
+          type: object
+          properties: {}
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    FlowCreateRequest:
+      type: object
+      properties:
+        orgID:
+          type: string
+        name:
+          type: string
+        spec:
+          type: object
+          properties: {}
+    FlowList:
+      type: object
+      properties:
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flow'
+        nextPageToken:
+          type: string
+    FlowUpdateRequest:
+      type: object
+      properties:
+        orgID:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        spec:
+          type: object
+          properties: {}
