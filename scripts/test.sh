@@ -12,7 +12,7 @@ sh $CUR_DIR/generate-svc.sh
 cp $(pwd)/contracts/swaggerV1Compat.yml $CONTRACTS/
 cp $(pwd)/contracts/README.md $CONTRACTS/
 
-diff $CONTRACTS $(pwd)/contracts
+diff -r $CONTRACTS $(pwd)/contracts
 if [ "$?" -ne "0" ]; then
     echo "err: aggregated contract mismatch"
     exit 1
