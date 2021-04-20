@@ -61,7 +61,7 @@ REF_COMMON_SCHEMAS
 >      $ref: "./svc/service_name/schemas/CustomThing.yml"
 ```
 
-There is discussion around having large mono-swagger files that define an entire server's endpoints. The consensus seems to be that we should offer smaller defined sections of the API instead. Rather than copy the service definitions into the more general platform definition, simply update the [`generate.sh`](../../scripts/generate.sh) script to replace the server definition with whatever prefix the service will be accessible at through the gateway and generate a contract for general consumption in the proper context: "public" (`contracts/`) or "private" (`contracts/priv`).
+There is discussion around having large mono-swagger files that define an entire server's endpoints. The consensus seems to be that we should offer smaller defined sections of the API instead. Rather than copy the service definitions into the more general platform definition, simply update the [`generate.sh`](../../scripts/generate.sh) script to replace the server definition with whatever prefix the service will be accessible at through the gateway and generate a contract for general consumption in the proper context: "public" (`${CONTRACTS}/`) or "private" (`${CONTRACTS}/priv`).
 
 ```diff
 > # flowd

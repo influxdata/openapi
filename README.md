@@ -41,33 +41,36 @@ When changes are complete, simply run `make generate-all` (`docker` currently re
 
 ### FAQs
 
-"Internal" vs "External" API?
+#### "Internal" vs "External" API?
  - "Internal" API refers to a service API that is reachable directly (no gateway). A hypothetical example would be `taskd` talking directly to `queryd` without going through the gateway.
  - "External" API refers to the API that a gateway serves.
 
-"Private" vs "Public" API?
+#### "Private" vs "Public" API?
  - "Private" API refers to an API that is not published in docs, requires some alternate method of auth (superuser token), a ui/quartz specific routes, or is not committing to stability.
  - "Public" API refers to a documented API used for normal use of the platform.
 
-Versioning?
+#### Versioning?
  - Since there is currently no code that supports API versioning, this repo will remain unversioned. Each swagger definition can define it's own api version, and consumers may test API changes on a branch, but until there is support for versioned APIs in code, we won't tag this repo.
 
-Gateway?
+#### Gateway?
  - Gateway refers to the entry point into our platform (whether it be a reverse proxy or some other router).
 
-Flow of an external request?
+#### Flow of an external request?
  - [client] -> [gateway] -> [service]
    + An external `client` makes a request for `/api/v2/thing`.
    + `gateway` finds where to handle requests for `/thing` and forwards the request to that service.
    + `service` then handles that request and responds to the client.
 
-Flow of an internal request?
+#### Flow of an internal request?
  - [service] -> [service]
    + A `service` running inside the platform makes a request to another platform `service` at `/thing`.
    + `service` then handles that request and responds to the client (requesting `service`).
 
-Location?
+#### Location?
  - Logic states that the further the API spec is from the implementing code, the greater the potential drift between the two. There are several reasons the service specific ("internal") definitions are in this repo and not living next to the code they define. Primarily it comes down to standardization. By standardizing on where to locate all swagger definitions, consumers aren't left wondering where they need to look for the current API contract of a service. Another equally important reason is more technical. While it is possible to reference swagger components via URL (as opposed to local relative file), the fact that many of the services are closed source re-introduce the issue of consuming private swagger. Third slightly relates to the last reason, as it simplifies the integration of the service into the "external" API (no reference path update required).
+
+#### Other swagger definitions?
+ - The goal of this repo is to not only provide a central, trusted location for consumers of our external APIs, but also to provide a re-usable means for service maintainers to easily maintain their service API definition. As this repository is more widely adopted, it is expected that we remove duplicate definitions from our organization's codebase where appropriate, rather than continue providing an API definition in multiple locations.
 
 ### Notes:
 
