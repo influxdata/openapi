@@ -5,21 +5,6 @@ info:
 servers:
   - url: /api/v2private
 paths:
-  /account:
-    get:
-      operationId: GetAccount
-      tags:
-        - Account
-      responses:
-        '200':
-          description: the account
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Account'
-        default:
-          description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
   '/operator/account/{accountId}':
     get:
       operationId: GetAccountById
@@ -43,7 +28,7 @@ paths:
                 $ref: '#/components/schemas/Account'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
     delete:
       operationId: DeleteAccountById
       tags:
@@ -62,7 +47,7 @@ paths:
           description: Account deleted
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /me:
     get:
       operationId: GetMe
@@ -78,12 +63,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Me'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Cannot get account or organization for user
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/ServerError'
   /billing:
     get:
       operationId: GetBilling
@@ -98,7 +86,7 @@ paths:
                 $ref: '#/components/schemas/BillingInfo'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /marketplace:
     get:
       operationId: GetMarketplace
@@ -113,7 +101,7 @@ paths:
                 $ref: '#/components/schemas/Marketplace'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /billing/start_date:
     get:
       operationId: GetBillingStartDate
@@ -128,7 +116,7 @@ paths:
                 $ref: '#/components/schemas/BillingDate'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /usage/vectors:
     get:
       operationId: GetUsageVectors
@@ -143,7 +131,7 @@ paths:
                 $ref: '#/components/schemas/UsageVectors'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/usage/{vector_name}':
     get:
       operationId: GetUsagetype
@@ -188,7 +176,7 @@ paths:
                   ,,0,reads_gb,2021-01-13T22:05:00Z,120
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /settings/notifications:
     get:
       operationId: GetSettingsNotifications
@@ -203,7 +191,7 @@ paths:
                 $ref: '#/components/schemas/BillingNotifySettings'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
     put:
       operationId: PutSettingsNotifications
       tags:
@@ -224,7 +212,7 @@ paths:
                 $ref: '#/components/schemas/BillingNotifySettings'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /billing/contact:
     put:
       operationId: PutBillingContact
@@ -246,7 +234,7 @@ paths:
                 $ref: '#/components/schemas/BillingContact'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /payment/form:
     get:
       operationId: GetPaymentForm
@@ -261,7 +249,7 @@ paths:
                 $ref: '#/components/schemas/CreditCardParams'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /billing/payment_method:
     put:
       operationId: PutPaymentMethod
@@ -283,7 +271,7 @@ paths:
                 $ref: '#/components/schemas/PaymentMethod'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /billing/invoices:
     get:
       operationId: GetInvoices
@@ -298,7 +286,7 @@ paths:
                 $ref: '#/components/schemas/Invoices'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/billing/invoices/{invoiceId}':
     get:
       operationId: GetInvoicesId
@@ -322,7 +310,7 @@ paths:
                 format: binary
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/invoices/{invoiceId}':
     get:
       operationId: GetInvoicesId
@@ -346,7 +334,7 @@ paths:
                 format: binary
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites':
     get:
       operationId: GetInvites
@@ -367,9 +355,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invites'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Session user not owner or Org not found
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
     post:
       operationId: PostOrgsIdInvites
       tags:
@@ -398,9 +392,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invite'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Session user not owner or Org not found
+          $ref: '#/components/responses/ServerError'
+        '409':
+          description: Conflict with invite email
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing information
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites/{inviteId}':
     delete:
       operationId: DeleteOrgsIdInviteId
@@ -427,7 +433,7 @@ paths:
           description: Invite removed
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/operator/account/{accountId}/users/{userId}':
     delete:
       operationId: RemoveUserFromAccount
@@ -453,9 +459,15 @@ paths:
       responses:
         '204':
           description: User removed from account
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Invite/Org not found
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites/{inviteId}/resend':
     post:
       operationId: PostOrgsIdInvitesId
@@ -484,9 +496,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invite'
+        '401':
+          description: Not Authorized or Invalid Session
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Session user not owner or Invite/Org not found
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/users':
     get:
       operationId: GetUsers
@@ -507,9 +525,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Org or Users not found
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/users/{userId}':
     delete:
       operationId: DeleteOrgsIdUserId
@@ -534,9 +558,18 @@ paths:
       responses:
         '204':
           description: User removed
+        '400':
+          description: User trying to remove self
+          $ref: '#/components/responses/ServerError'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Session user not owner or User/Org not found
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/limits':
     get:
       operationId: GetOrgsIdLimits
@@ -560,7 +593,7 @@ paths:
                 $ref: '#/components/schemas/OrgLimits'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
     put:
       operationId: PutOrgsIdLimits
       tags:
@@ -583,7 +616,7 @@ paths:
                 $ref: '#/components/schemas/OrgLimits'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}':
     get:
       operationId: GetOrganizationById
@@ -607,7 +640,7 @@ paths:
                 $ref: '#/components/schemas/Organization'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /operator/accounts:
     get:
       operationId: getAccountsByName
@@ -632,7 +665,7 @@ paths:
                 $ref: '#/components/schemas/Accounts'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /operator/orgs:
     get:
       operationId: getOrganizationsById
@@ -657,7 +690,7 @@ paths:
                 $ref: '#/components/schemas/Organizations'
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /checkout:
     post:
       operationId: PostCheckout
@@ -675,7 +708,7 @@ paths:
           description: Account upgraded
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
   /cancel:
     post:
       operationId: PostCancel
@@ -686,7 +719,7 @@ paths:
           description: Account cancelled
         default:
           description: Unexpected error
-          $ref: '#/paths/~1me/get/responses/default'
+          $ref: '#/components/responses/ServerError'
 components:
   parameters:
     TraceSpan:
@@ -952,17 +985,10 @@ components:
             - member
             - owner
         expiresAt:
+          description: when the invite will expire
+          readOnly: true
           format: date-time
           type: string
-        links:
-          type: object
-          readOnly: true
-          properties:
-            self:
-              type: string
-              format: uri
-          example:
-            self: /api/v2private/invites/1
         required:
           - id
           - email
@@ -1165,6 +1191,14 @@ components:
             - free
             - cancelled
             - pay_as_you_go
+        billingProvider:
+          type: string
+          description: 'the billing provider for the account, nil if none'
+          enum:
+            - zuora
+            - aws
+            - gcm
+            - azure
         isRegionBeta:
           type: boolean
           description: whether the region associated with the account is a beta region
@@ -1174,6 +1208,7 @@ components:
         required:
           - id
           - accountType
+          - billingProvider
           - email
           - isOperator
           - isRegionBeta
@@ -1394,3 +1429,10 @@ components:
       type: integer
       enum:
         - 0
+  responses:
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
