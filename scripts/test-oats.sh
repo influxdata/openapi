@@ -2,7 +2,10 @@
 
 CONTRACTS=${CONTRACTS:-openapi/contracts}
 
-/src/node_modules/.bin/oats ${CONTRACTS}/oss.yml > /dev/null || exit 1
+for contract in $(find ${CONTRACTS} -iname *.yml | grep -v 'diff'); do
+    echo "ensuring simple oats compatibility with: ${contract}..."
+    /src/node_modules/.bin/oats "${contract}" > /dev/null || exit 1
+done
 
 ## uncomment below to test against oats' currently generated routes
 # TS=${TS:-ts}
