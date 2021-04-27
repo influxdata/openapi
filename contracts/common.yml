@@ -3019,6 +3019,11 @@ paths:
           description: Only returns buckets with a specific name.
           schema:
             type: string
+        - in: query
+          name: id
+          description: Only returns buckets with a specific ID.
+          schema:
+            type: string
       responses:
         '200':
           description: A list of buckets
@@ -3103,7 +3108,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Bucket'
+              $ref: '#/components/schemas/PatchBucketRequest'
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6580,6 +6585,42 @@ components:
       description: Rules to expire or retain data.  No rules means data never expires.
       items:
         $ref: '#/components/schemas/RetentionRule'
+    PatchBucketRequest:
+      type: object
+      description: Updates to an existing bucket resource.
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        retentionRules:
+          $ref: '#/components/schemas/PatchRetentionRules'
+    PatchRetentionRules:
+      type: array
+      description: Updates to rules to expire or retain data. No rules means no updates.
+      items:
+        $ref: '#/components/schemas/PatchRetentionRule'
+    PatchRetentionRule:
+      type: object
+      description: Updates to a rule to expire or retain data.
+      properties:
+        type:
+          type: string
+          default: expire
+          enum:
+            - expire
+        everySeconds:
+          type: integer
+          format: int64
+          description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+          example: 86400
+          minimum: 0
+        shardGroupDurationSeconds:
+          type: integer
+          format: int64
+          description: Shard duration measured in seconds.
+      required:
+        - type
     RetentionRule:
       type: object
       properties:

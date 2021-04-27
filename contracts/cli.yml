@@ -207,6 +207,237 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /buckets:
+    get:
+      operationId: GetBuckets
+      tags:
+        - Buckets
+      summary: List all buckets
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/After'
+        - in: query
+          name: org
+          description: The organization name.
+          schema:
+            type: string
+        - in: query
+          name: orgID
+          description: The organization ID.
+          schema:
+            type: string
+        - in: query
+          name: name
+          description: Only returns buckets with a specific name.
+          schema:
+            type: string
+        - in: query
+          name: id
+          description: Only returns buckets with a specific ID.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of buckets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Buckets'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: PostBuckets
+      tags:
+        - Buckets
+      summary: Create a bucket
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      requestBody:
+        description: Bucket to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBucketRequest'
+      responses:
+        '201':
+          description: Bucket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bucket'
+        '422':
+          description: Request body failed validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  '/buckets/{bucketID}':
+    get:
+      operationId: GetBucketsID
+      tags:
+        - Buckets
+      summary: Retrieve a bucket
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: bucketID
+          schema:
+            type: string
+          required: true
+          description: The bucket ID.
+      responses:
+        '200':
+          description: Bucket details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bucket'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      operationId: PatchBucketsID
+      tags:
+        - Buckets
+      summary: Update a bucket
+      requestBody:
+        description: Bucket update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchBucketRequest'
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: bucketID
+          schema:
+            type: string
+          required: true
+          description: The bucket ID.
+      responses:
+        '200':
+          description: An updated bucket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bucket'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: DeleteBucketsID
+      tags:
+        - Buckets
+      summary: Delete a bucket
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: bucketID
+          schema:
+            type: string
+          required: true
+          description: The ID of the bucket to delete.
+      responses:
+        '204':
+          description: Delete has been accepted
+        '404':
+          description: Bucket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /orgs:
+    get:
+      operationId: GetOrgs
+      tags:
+        - Organizations
+      summary: List all organizations
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Descending'
+        - in: query
+          name: org
+          schema:
+            type: string
+          description: Filter organizations to a specific organization name.
+        - in: query
+          name: orgID
+          schema:
+            type: string
+          description: Filter organizations to a specific organization ID.
+        - in: query
+          name: userID
+          schema:
+            type: string
+          description: Filter organizations to a specific user ID.
+      responses:
+        '200':
+          description: A list of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizations'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: PostOrgs
+      tags:
+        - Organizations
+      summary: Create an organization
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      requestBody:
+        description: Organization to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '201':
+          description: Organization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   parameters:
     TraceSpan:
@@ -221,6 +452,37 @@ components:
       required: false
       schema:
         type: string
+    Offset:
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    Limit:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    After:
+      in: query
+      name: after
+      required: false
+      schema:
+        type: string
+      description: |
+        The last resource ID from which to seek from (but not including). This is to be used instead of `offset`.
+    Descending:
+      in: query
+      name: descending
+      required: false
+      schema:
+        type: boolean
+        default: false
   schemas:
     Error:
       properties:
@@ -348,11 +610,31 @@ components:
               format: uri
       required:
         - name
+    Links:
+      type: object
+      properties:
+        next:
+          $ref: '#/components/schemas/Link'
+        self:
+          $ref: '#/components/schemas/Link'
+        prev:
+          $ref: '#/components/schemas/Link'
+      required:
+        - self
     Link:
       type: string
       format: uri
       readOnly: true
       description: URI of resource.
+    Organizations:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+        orgs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
     Organization:
       properties:
         links:
@@ -408,6 +690,16 @@ components:
             - inactive
       required:
         - name
+    Buckets:
+      type: object
+      properties:
+        links:
+          readOnly: true
+          $ref: '#/components/schemas/Links'
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bucket'
     Bucket:
       properties:
         links:
@@ -472,6 +764,22 @@ components:
       required:
         - name
         - retentionRules
+    PostBucketRequest:
+      properties:
+        orgID:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        rp:
+          type: string
+        retentionRules:
+          $ref: '#/components/schemas/RetentionRules'
+      required:
+        - orgID
+        - name
+        - retentionRules
     RetentionRules:
       type: array
       description: Rules to expire or retain data.  No rules means data never expires.
@@ -498,6 +806,42 @@ components:
       required:
         - type
         - everySeconds
+    PatchBucketRequest:
+      type: object
+      description: Updates to an existing bucket resource.
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        retentionRules:
+          $ref: '#/components/schemas/PatchRetentionRules'
+    PatchRetentionRules:
+      type: array
+      description: Updates to rules to expire or retain data. No rules means no updates.
+      items:
+        $ref: '#/components/schemas/PatchRetentionRule'
+    PatchRetentionRule:
+      type: object
+      description: Updates to a rule to expire or retain data.
+      properties:
+        type:
+          type: string
+          default: expire
+          enum:
+            - expire
+        everySeconds:
+          type: integer
+          format: int64
+          description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+          example: 86400
+          minimum: 0
+        shardGroupDurationSeconds:
+          type: integer
+          format: int64
+          description: Shard duration measured in seconds.
+      required:
+        - type
     Labels:
       type: array
       items:
