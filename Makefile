@@ -15,7 +15,7 @@ test:
 
 .PHONY: test-oats
 test-oats:
-	docker run --rm -it -v ${PWD}:/src/openapi quay.io/influxdb/oats /src/openapi/scripts/test-oats.sh
+	docker run --rm -it -e CONTRACTS -e TS -e GEN_TS -e DIFF_TS -v ${PWD}:/src/openapi quay.io/influxdb/oats /src/openapi/scripts/test-oats.sh
 
 .PHONY: build-oats
 build-oats:
