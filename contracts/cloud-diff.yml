@@ -816,6 +816,105 @@ paths:
                     message: Unable to delete columns from schema
               schema:
                 $ref: '#/paths/~1users/get/responses/default/content/application~1json/schema'
+  '/orgs/{orgID}/limits':
+    get:
+      tags:
+        - Limits
+      summary: Get limit for an org
+      parameters:
+        - in: path
+          name: orgID
+          description: org to get limit for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A limit
+          content:
+            application/json:
+              schema:
+                type: object
+                description: These are org limits similar to those configured in/by quartz.
+                properties:
+                  links:
+                    type: object
+                    properties:
+                      next:
+                        type: string
+                        format: uri
+                        readOnly: true
+                        description: URI of resource.
+                      self:
+                        $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                      prev:
+                        $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                    required:
+                      - self
+                  limits:
+                    $ref: '#/components/schemas/Limit'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/default/content/application~1json/schema'
+  '/orgs/{orgID}/usage':
+    get:
+      tags:
+        - Usage
+      summary: Get usage for an org
+      parameters:
+        - in: path
+          name: orgID
+          description: org to get usage for
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: start
+          description: start time
+          required: true
+          schema:
+            type: timestamp
+        - in: query
+          name: stop
+          description: stop time
+          required: false
+          schema:
+            type: timestamp
+        - in: query
+          name: raw
+          description: return raw usage data
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Usage data
+          headers:
+            Content-Encoding:
+              description: 'The Content-Encoding entity header is used to compress the media-type. When present, its value indicates which encodings were applied to the entity-body'
+              schema:
+                type: string
+                description: Specifies that the response in the body is encoded with gzip or not encoded with identity.
+                default: identity
+                enum:
+                  - gzip
+                  - identity
+          content:
+            text/csv:
+              schema:
+                type: string
+                example: |
+                  #group,false,false,true,true,false,false,true,true,true,true #datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,double,string,string,string,string #default,_result,,,,,,,,, ,result,table,_start,_stop,_time,_value,_field,_measurement,bucket_id,org_id ,,0,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,5434066,gauge,storage_usage_bucket_bytes,2f6ba0cf9a2fdcbb,cec6fc1d2176dc11 ,,1,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,9924053.966666665,gauge,storage_usage_bucket_bytes,8af67bcaf69d9daf,cec6fc1d2176dc11
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/default/content/application~1json/schema'
 components:
   parameters: null
   schemas:
@@ -948,19 +1047,7 @@ components:
       properties:
         links:
           readOnly: true
-          type: object
-          properties:
-            next:
-              type: string
-              format: uri
-              readOnly: true
-              description: URI of resource.
-            self:
-              $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-            prev:
-              $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-          required:
-            - self
+          $ref: '#/paths/~1orgs~1%7BorgID%7D~1limits/get/responses/200/content/application~1json/schema/properties/links'
         authorizations:
           type: array
           items:
