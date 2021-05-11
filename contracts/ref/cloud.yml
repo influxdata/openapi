@@ -1,6 +1,8 @@
 openapi: 3.0.0
 info:
   title: Complete InfluxDB Cloud API
+servers:
+- url: ""
 paths:
   /api/v2/:
     get:
@@ -3419,6 +3421,38 @@ paths:
       summary: Update an organization
       tags:
       - Organizations
+  /api/v2/orgs/{orgID}/limits:
+    get:
+      parameters:
+      - description: org to get limit for
+        in: path
+        name: orgID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                description: These are org limits similar to those configured in/by
+                  quartz.
+                properties:
+                  limits:
+                    $ref: '#/components/schemas/Limit'
+                  links:
+                    $ref: '#/components/schemas/Links'
+                type: object
+          description: A limit
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      summary: Get limit for an org
+      tags:
+      - Limits
   /api/v2/orgs/{orgID}/members:
     get:
       operationId: GetOrgsIDMembers
@@ -3704,6 +3738,65 @@ paths:
       tags:
       - Secrets
       - Organizations
+  /api/v2/orgs/{orgID}/usage:
+    get:
+      parameters:
+      - description: org to get usage for
+        in: path
+        name: orgID
+        required: true
+        schema:
+          type: string
+      - description: start time
+        in: query
+        name: start
+        required: true
+        schema:
+          type: timestamp
+      - description: stop time
+        in: query
+        name: stop
+        required: false
+        schema:
+          type: timestamp
+      - description: return raw usage data
+        in: query
+        name: raw
+        required: false
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          content:
+            text/csv:
+              schema:
+                example: |
+                  #group,false,false,true,true,false,false,true,true,true,true #datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,double,string,string,string,string #default,_result,,,,,,,,, ,result,table,_start,_stop,_time,_value,_field,_measurement,bucket_id,org_id ,,0,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,5434066,gauge,storage_usage_bucket_bytes,2f6ba0cf9a2fdcbb,cec6fc1d2176dc11 ,,1,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,9924053.966666665,gauge,storage_usage_bucket_bytes,8af67bcaf69d9daf,cec6fc1d2176dc11
+                type: string
+          description: Usage data
+          headers:
+            Content-Encoding:
+              description: The Content-Encoding entity header is used to compress
+                the media-type. When present, its value indicates which encodings
+                were applied to the entity-body
+              schema:
+                default: identity
+                description: Specifies that the response in the body is encoded with
+                  gzip or not encoded with identity.
+                enum:
+                - gzip
+                - identity
+                type: string
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      summary: Get usage for an org
+      tags:
+      - Usage
   /api/v2/poc-functions:
     get:
       operationId: GetFunctions
@@ -8058,8 +8151,6 @@ components:
           - "y"
           - xy
           type: string
-        legend:
-          $ref: '#/components/schemas/Legend'
         legendColorizeRows:
           type: boolean
         legendOpacity:
@@ -8450,9 +8541,9 @@ components:
     CheckDiscriminator:
       discriminator:
         mapping:
-          custom: ./CustomCheck.yml
-          deadman: ./DeadmanCheck.yml
-          threshold: ./ThresholdCheck.yml
+          custom: '#/components/schemas/CustomCheck'
+          deadman: '#/components/schemas/DeadmanCheck'
+          threshold: '#/components/schemas/ThresholdCheck'
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/DeadmanCheck'
@@ -9506,8 +9597,6 @@ components:
           type: array
         decimalPlaces:
           $ref: '#/components/schemas/DecimalPlaces'
-        legend:
-          $ref: '#/components/schemas/Legend'
         note:
           type: string
         prefix:
@@ -9523,8 +9612,6 @@ components:
         showNoteWhenEmpty:
           description: If true, will display note when empty
           type: boolean
-        staticLegend:
-          $ref: '#/components/schemas/StaticLegend'
         suffix:
           type: string
         tickPrefix:
@@ -10164,25 +10251,6 @@ components:
       required:
       - query
       type: object
-    Legend:
-      deprecated: true
-      description: Legend define encoding of data into a view's legend
-      properties:
-        orientation:
-          description: orientation is the location of the legend with respect to the
-            view graph
-          enum:
-          - top
-          - bottom
-          - left
-          - right
-          type: string
-        type:
-          description: The style of the legend.
-          enum:
-          - static
-          type: string
-      type: object
     LesserThreshold:
       allOf:
       - $ref: '#/components/schemas/ThresholdBase'
@@ -10333,8 +10401,6 @@ components:
           - "y"
           - xy
           type: string
-        legend:
-          $ref: '#/components/schemas/Legend'
         legendColorizeRows:
           type: boolean
         legendOpacity:
@@ -10882,10 +10948,10 @@ components:
     NotificationEndpointDiscrimator:
       discriminator:
         mapping:
-          http: ./HTTPNotificationEndpoint.yml
-          pagerduty: ./PagerDutyNotificationEndpoint.yml
-          slack: ./SlackNotificationEndpoint.yml
-          telegram: ./TelegramNotificationEndpoint.yml
+          http: '#/components/schemas/HTTPNotificationEndpoint'
+          pagerduty: '#/components/schemas/PagerDutyNotificationEndpoint'
+          slack: '#/components/schemas/SlackNotificationEndpoint'
+          telegram: '#/components/schemas/TelegramNotificationEndpoint'
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/SlackNotificationEndpoint'
@@ -11038,11 +11104,11 @@ components:
     NotificationRuleDiscriminator:
       discriminator:
         mapping:
-          http: ./HTTPNotificationRule.yml
-          pagerduty: ./PagerDutyNotificationRule.yml
-          slack: ./SlackNotificationRule.yml
-          smtp: ./SMTPNotificationRule.yml
-          telegram: ./TelegramNotificationRule.yml
+          http: '#/components/schemas/HTTPNotificationRule'
+          pagerduty: '#/components/schemas/PagerDutyNotificationRule'
+          slack: '#/components/schemas/SlackNotificationRule'
+          smtp: '#/components/schemas/SMTPNotificationRule'
+          telegram: '#/components/schemas/TelegramNotificationRule'
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/SlackNotificationRule'
@@ -11218,6 +11284,7 @@ components:
                           - dbrp
                           - flows
                           - annotations
+                          - functions
                           type: string
                       required:
                       - type
@@ -11899,6 +11966,7 @@ components:
           - dbrp
           - flows
           - annotations
+          - functions
           type: string
       required:
       - type
@@ -12409,8 +12477,6 @@ components:
           type: array
         decimalPlaces:
           $ref: '#/components/schemas/DecimalPlaces'
-        legend:
-          $ref: '#/components/schemas/Legend'
         note:
           type: string
         prefix:
@@ -12630,6 +12696,8 @@ components:
         heightRatio:
           format: float
           type: number
+        hide:
+          type: boolean
         opacity:
           format: float
           type: number
@@ -14420,9 +14488,9 @@ components:
     Threshold:
       discriminator:
         mapping:
-          greater: ./GreaterThreshold.yml
-          lesser: ./LesserThreshold.yml
-          range: ./RangeThreshold.yml
+          greater: '#/components/schemas/GreaterThreshold'
+          lesser: '#/components/schemas/LesserThreshold'
+          range: '#/components/schemas/RangeThreshold'
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/GreaterThreshold'
@@ -14755,8 +14823,6 @@ components:
           - "y"
           - xy
           type: string
-        legend:
-          $ref: '#/components/schemas/Legend'
         legendColorizeRows:
           type: boolean
         legendOpacity:
