@@ -30,3 +30,9 @@ Refer to the [FAQs](../README.md#FAQs) for vocabulary definitions.
 | [`flowd.yml`](./svc/flowd.yml) | Defines the flowd api |
 | [`managed-functions.yml`](./svc/managed-functions.yml) | Defines the managed-functions api |
 | [`mapsd.yml`](./svc/mapsd.yml) | Defines the mapsd api |
+
+## Convenience Definitions for Reference
+| File | Description |
+| -- | -- |
+| [`cloud.yml`](./ref/cloud.yml) | Fully defines the cloud api |
+| [`oss.yml`](./ref/oss.yml) | Fully defines the oss api |

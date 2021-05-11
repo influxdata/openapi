@@ -33,3 +33,7 @@ grep -rl 'AddResourceMemberRequestBody.yml'
 # to `contracts/oss.yml` should be the relocation of definitions.
 make generate-all && git diff contracts
 ```
+
+## Updating Convenience Definitions
+
+When bits of the whole api are split up into smaller swagger definitions for consumers, ensure the reference definitions accurately reflect the api available on the platform. Add the new swagger definition files to the appropriate places in [`reference.sh`](../scripts/reference.sh).
