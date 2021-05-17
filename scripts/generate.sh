@@ -27,9 +27,6 @@ rm src/.common_gen.yml
 swagger-cli bundle src/oss.yml --outfile ${CONTRACTS}/oss-diff.yml --type yaml
 swagger-cli bundle src/cloud.yml --outfile ${CONTRACTS}/cloud-diff.yml --type yaml
 
-# generate influx CLI contract
-swagger-cli bundle src/cli.yml --outfile ${CONTRACTS}/cli.yml --type yaml
-
 ## private apis
 
 # generate cloud-priv contract
