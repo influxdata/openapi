@@ -148,20 +148,13 @@ paths:
           name: vector_name
           required: true
           schema:
-            properties:
-              type: string
-              description: Name of the usage vector
-              enum:
-                - storage_gb
-                - writes_mb
-                - reads_gb
-                - query_count
+            $ref: '#/components/schemas/VectorName'
           description: The name of the UsageVector to query.
           example: reads_gb
         - in: query
           name: range
           schema:
-            $ref: '#/paths/~1usage~1rate_limits/get/parameters/0/schema'
+            $ref: '#/components/schemas/TimeRange'
       responses:
         '200':
           description: Usage history for account
@@ -220,14 +213,7 @@ paths:
         - in: query
           name: range
           schema:
-            properties:
-              type: string
-              description: The timerange options for usage information
-              enum:
-                - 24h
-                - 7d
-                - 30d
-              default: 24h
+            $ref: '#/components/schemas/TimeRange'
       responses:
         '200':
           description: Limit history for Account
@@ -929,6 +915,39 @@ components:
         - name
         - shortName
         - url
+    TimeRange:
+      properties:
+        type: string
+        description: The timerange options for usage information
+        enum:
+          - 24h
+          - 7d
+          - 30d
+        default: 24h
+    VectorName:
+      properties:
+        type: string
+        description: Name of the usage vector
+        enum:
+          - storage_gb
+          - writes_mb
+          - reads_gb
+          - query_count
+    Role:
+      properties:
+        type: string
+        description: Role of the User
+        enum:
+          - owner
+          - member
+    AccountType:
+      properties:
+        type: string
+        description: type of the account
+        enum:
+          - free
+          - cancelled
+          - pay_as_you_go
     BillingInfo:
       properties:
         balance:
@@ -962,13 +981,7 @@ components:
           $ref: '#/components/schemas/Marketplace'
           description: 'which marketplace, nil if none'
         type:
-          properties:
-            type: string
-            description: type of the account
-            enum:
-              - free
-              - cancelled
-              - pay_as_you_go
+          $ref: '#/components/schemas/AccountType'
         organizations:
           $ref: '#/components/schemas/Organizations'
         zuoraAccountId:
@@ -1108,7 +1121,7 @@ components:
         email:
           type: string
         role:
-          $ref: '#/components/schemas/User/properties/role'
+          $ref: '#/components/schemas/Role'
         expiresAt:
           description: when the invite will expire
           readOnly: true
@@ -1267,12 +1280,7 @@ components:
         email:
           type: string
         role:
-          properties:
-            type: string
-            description: Role of the User
-            enum:
-              - owner
-              - member
+          $ref: '#/components/schemas/Role'
         links:
           type: object
           readOnly: true
@@ -1295,7 +1303,7 @@ components:
           type: string
           description: the email associated with the user
         accountType:
-          $ref: '#/components/schemas/Account/properties/type'
+          $ref: '#/components/schemas/AccountType'
         billingProvider:
           type: string
           description: 'the billing provider for the account, nil if none'
@@ -1367,7 +1375,7 @@ components:
           type: string
           description: email associated with the account
         type:
-          $ref: '#/components/schemas/Account/properties/type'
+          $ref: '#/components/schemas/AccountType'
         balance:
           type: number
           description: 'remaining balance on the account, nil if none'
