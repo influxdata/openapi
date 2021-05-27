@@ -2,6 +2,8 @@
 
 CONTRACTS=${CONTRACTS:-contracts/ref}
 
+mkdir -p $CONTRACTS
+
 echo "Aggregating cloud swaggers"
 docker run \
   --rm \
