@@ -582,6 +582,509 @@ paths:
         default:
           description: Internal server error
           $ref: '#/components/responses/ServerError'
+  /scrapers:
+    get:
+      operationId: GetScrapers
+      tags:
+        - ScraperTargets
+      summary: Get all scraper targets
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: query
+          name: name
+          description: Specifies the name of the scraper target.
+          schema:
+            type: string
+        - in: query
+          name: id
+          description: 'List of scraper target IDs to return. If both `id` and `owner` are specified, only `id` is used.'
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: orgID
+          description: Specifies the organization ID of the scraper target.
+          schema:
+            type: string
+        - in: query
+          name: org
+          description: Specifies the organization name of the scraper target.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All scraper targets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScraperTargetResponses'
+    post:
+      operationId: PostScrapers
+      summary: Create a scraper target
+      tags:
+        - ScraperTargets
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: Scraper target to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScraperTargetRequest'
+      responses:
+        '201':
+          description: Scraper target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScraperTargetResponse'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}':
+    get:
+      operationId: GetScrapersID
+      tags:
+        - ScraperTargets
+      summary: Get a scraper target by ID
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          required: true
+          schema:
+            type: string
+          description: The scraper target ID.
+      responses:
+        '200':
+          description: Scraper target updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScraperTargetResponse'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+    delete:
+      operationId: DeleteScrapersID
+      tags:
+        - ScraperTargets
+      summary: Delete a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          required: true
+          schema:
+            type: string
+          description: The scraper target ID.
+      responses:
+        '204':
+          description: Scraper target deleted
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+    patch:
+      operationId: PatchScrapersID
+      summary: Update a scraper target
+      tags:
+        - ScraperTargets
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          required: true
+          schema:
+            type: string
+          description: The scraper target ID.
+      requestBody:
+        description: Scraper target update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScraperTargetRequest'
+      responses:
+        '200':
+          description: Scraper target updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScraperTargetResponse'
+        default:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}/labels':
+    get:
+      operationId: GetScrapersIDLabels
+      tags:
+        - ScraperTargets
+      summary: List all labels for a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      responses:
+        '200':
+          description: A list of all labels for a scraper target
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  labels:
+                    $ref: '#/components/schemas/Variable/properties/labels'
+                  links:
+                    type: object
+                    properties:
+                      next:
+                        $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+                      self:
+                        $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+                      prev:
+                        $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+                    required:
+                      - self
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+    post:
+      operationId: PostScrapersIDLabels
+      tags:
+        - ScraperTargets
+      summary: Add a label to a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      requestBody:
+        description: Label to add
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                labelID:
+                  type: string
+      responses:
+        '201':
+          description: The newly added label
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  label:
+                    type: object
+                    properties:
+                      id:
+                        readOnly: true
+                        type: string
+                      orgID:
+                        readOnly: true
+                        type: string
+                      name:
+                        type: string
+                      properties:
+                        type: object
+                        additionalProperties:
+                          type: string
+                        description: Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.
+                        example:
+                          color: ffb3b3
+                          description: this is a description
+                  links:
+                    $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1labels/get/responses/200/content/application~1json/schema/properties/links'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}/labels/{labelID}':
+    delete:
+      operationId: DeleteScrapersIDLabelsID
+      tags:
+        - ScraperTargets
+      summary: Delete a label from a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+        - in: path
+          name: labelID
+          schema:
+            type: string
+          required: true
+          description: The label ID.
+      responses:
+        '204':
+          description: Delete has been accepted
+        '404':
+          description: Scraper target not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}/members':
+    get:
+      operationId: GetScrapersIDMembers
+      tags:
+        - ScraperTargets
+      summary: List all users with member privileges for a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      responses:
+        '200':
+          description: A list of scraper target members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1members/post/responses/201/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+    post:
+      operationId: PostScrapersIDMembers
+      tags:
+        - ScraperTargets
+      summary: Add a member to a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      requestBody:
+        description: User to add as member
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1owners/post/requestBody/content/application~1json/schema'
+      responses:
+        '201':
+          description: Member added to scraper targets
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OnboardingResponse/properties/user'
+                  - type: object
+                    properties:
+                      role:
+                        type: string
+                        default: member
+                        enum:
+                          - member
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}/members/{userID}':
+    delete:
+      operationId: DeleteScrapersIDMembersID
+      tags:
+        - ScraperTargets
+      summary: Remove a member from a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: userID
+          schema:
+            type: string
+          required: true
+          description: The ID of member to remove.
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      responses:
+        '204':
+          description: Member removed
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}/owners':
+    get:
+      operationId: GetScrapersIDOwners
+      tags:
+        - ScraperTargets
+      summary: List all owners of a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      responses:
+        '200':
+          description: A list of scraper target owners
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1owners/post/responses/201/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+    post:
+      operationId: PostScrapersIDOwners
+      tags:
+        - ScraperTargets
+      summary: Add an owner to a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      requestBody:
+        description: User to add as owner
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+              required:
+                - id
+      responses:
+        '201':
+          description: Scraper target owner added
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OnboardingResponse/properties/user'
+                  - type: object
+                    properties:
+                      role:
+                        type: string
+                        default: owner
+                        enum:
+                          - owner
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/scrapers/{scraperTargetID}/owners/{userID}':
+    delete:
+      operationId: DeleteScrapersIDOwnersID
+      tags:
+        - ScraperTargets
+      summary: Remove an owner from a scraper target
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: userID
+          schema:
+            type: string
+          required: true
+          description: The ID of owner to remove.
+        - in: path
+          name: scraperTargetID
+          schema:
+            type: string
+          required: true
+          description: The scraper target ID.
+      responses:
+        '204':
+          description: Owner removed
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
 components:
   parameters: null
   schemas:
@@ -648,10 +1151,10 @@ components:
               properties:
                 self:
                   readOnly: true
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 user:
                   readOnly: true
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
     AuthorizationPostRequest:
       required:
         - orgID
@@ -677,19 +1180,7 @@ components:
       properties:
         links:
           readOnly: true
-          type: object
-          properties:
-            next:
-              type: string
-              format: uri
-              readOnly: true
-              description: URI of resource.
-            self:
-              $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-            prev:
-              $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-          required:
-            - self
+          $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1labels/get/responses/200/content/application~1json/schema/properties/links'
         authorizations:
           type: array
           items:
@@ -852,21 +1343,21 @@ components:
                 dashboards: /api/v2/dashboards?org=myorg
               properties:
                 self:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 members:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 owners:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 labels:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 secrets:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 buckets:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 tasks:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 dashboards:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             id:
               readOnly: true
               type: string
@@ -906,22 +1397,22 @@ components:
               properties:
                 labels:
                   description: URL to retrieve labels for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 members:
                   description: URL to retrieve members that can read this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 org:
                   description: URL to retrieve parent organization for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 owners:
                   description: URL to retrieve owners that can read and write to this bucket.
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 self:
                   description: URL for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 write:
                   description: URL to write line protocol for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             id:
               readOnly: true
               type: string
@@ -1021,24 +1512,7 @@ components:
         labels:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                readOnly: true
-                type: string
-              orgID:
-                readOnly: true
-                type: string
-              name:
-                type: string
-              properties:
-                type: object
-                additionalProperties:
-                  type: string
-                description: Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.
-                example:
-                  color: ffb3b3
-                  description: this is a description
+            $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1labels/post/responses/201/content/application~1json/schema/properties/label'
         arguments:
           type: object
           oneOf:
@@ -1117,6 +1591,76 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Variable'
+    ScraperTargetRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the scraper target.
+        type:
+          type: string
+          description: The type of the metrics to be parsed.
+          enum:
+            - prometheus
+        url:
+          type: string
+          description: The URL of the metrics endpoint.
+          example: 'http://localhost:9090/metrics'
+        orgID:
+          type: string
+          description: The organization ID.
+        bucketID:
+          type: string
+          description: The ID of the bucket to write to.
+        allowInsecure:
+          type: boolean
+          description: Skip TLS verification on endpoint.
+          default: false
+    ScraperTargetResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ScraperTargetRequest'
+        - type: object
+          properties:
+            id:
+              type: string
+              readOnly: true
+            org:
+              type: string
+              description: The organization name.
+            bucket:
+              type: string
+              description: The bucket name.
+            links:
+              type: object
+              readOnly: true
+              example:
+                self: /api/v2/scrapers/1
+                owners: /api/v2/scrapers/1/owners
+                members: /api/v2/scrapers/1/members
+                bucket: /api/v2/buckets/1
+                organization: /api/v2/orgs/1
+              properties:
+                self:
+                  type: string
+                  format: uri
+                  readOnly: true
+                  description: URI of resource.
+                members:
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+                owners:
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+                bucket:
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+                organization:
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
+    ScraperTargetResponses:
+      type: object
+      properties:
+        configurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScraperTargetResponse'
   responses:
     ServerError:
       description: Non 2XX error response from server.
