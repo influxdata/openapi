@@ -16,7 +16,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Routes'
           description: All routes
-      summary: Map of all top level routes available
+      summary: List all top level routes
+      tags:
+      - Routes
   /api/v2/authorizations:
     get:
       operationId: GetAuthorizations
@@ -92,7 +94,7 @@ paths:
       operationId: DeleteAuthorizationsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the authorization to delete.
+      - description: The identifier of the authorization to delete.
         in: path
         name: authID
         required: true
@@ -111,7 +113,7 @@ paths:
       operationId: GetAuthorizationsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the authorization to get.
+      - description: The identifier of the authorization to get.
         in: path
         name: authID
         required: true
@@ -131,10 +133,11 @@ paths:
       tags:
       - Authorizations
     patch:
+      description: Update an authorization's status to `active` or `inactive`.
       operationId: PatchAuthorizationsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the authorization to update.
+      - description: The identifier of the authorization to update.
         in: path
         name: authID
         required: true
@@ -145,7 +148,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorizationUpdateRequest'
-        description: Authorization to update
+        description: The updated Authorization object.
         required: true
       responses:
         "200":
@@ -153,11 +156,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: The active or inactie authorization
+          description: The updated authorization.
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
-      summary: Update an authorization to be active or inactive
+      summary: Update authorization status
       tags:
       - Authorizations
   /api/v2/buckets:
@@ -168,7 +171,7 @@ paths:
       - $ref: '#/components/parameters/Offset'
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/After'
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
@@ -602,22 +605,23 @@ paths:
     get:
       operationId: getMeasurementSchemas
       parameters:
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
           type: string
-      - description: The organization ID.
+      - description: The identifier of the organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: Find a measurement with matching name.
+      - description: The name of a measurement. Return schemas for this measurement
+          only.
         in: query
         name: name
         schema:
           type: string
-      - description: The ID of the bucket
+      - description: The identifier of the bucket.
         in: path
         name: bucketID
         required: true
@@ -638,23 +642,23 @@ paths:
         "404":
           $ref: '#/components/responses/ServerError'
           description: Bucket not found
-      summary: Retrieve a list of measurement schemas defined for this bucket
+      summary: List all measurement schemas of a bucket
       tags:
       - Bucket Schemas
     post:
       operationId: createMeasurementSchema
       parameters:
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
           type: string
-      - description: The organization ID.
+      - description: The identifier of the organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The ID of the bucket
+      - description: The identifier of the bucket.
         in: path
         name: bucketID
         required: true
@@ -671,7 +675,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
-          description: New measurement schema
+          description: The created measurement schema
           headers:
             ETag:
               description: The current version of the measurement schema
@@ -720,31 +724,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Client error with create request
-      summary: Create a new measurement schema for this bucket
+      summary: Create a measurement schema for a bucket
       tags:
       - Bucket Schemas
-    summary: APIs for describing bucket schema
+    summary: APIs for bucket schema
   /api/v2/buckets/{bucketID}/schema/measurements/{measurementID}:
     get:
       operationId: getMeasurementSchema
       parameters:
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
           type: string
-      - description: The organization ID.
+      - description: The identifier of the organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The ID of the bucket
+      - description: The identifier of the bucket.
         in: path
         name: bucketID
         required: true
         schema:
           type: string
-      - description: The ID of the measurement
+      - description: The identifier of the measurement.
         in: path
         name: measurementID
         required: true
@@ -762,29 +766,29 @@ paths:
               description: The current version of the measurement schema
               schema:
                 type: string
-      summary: Fetch schema information for a measurement
+      summary: Retrieve measurement schema information
       tags:
       - Bucket Schemas
     patch:
       operationId: updateMeasurementSchema
       parameters:
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
           type: string
-      - description: The organization ID.
+      - description: The identifier of the organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The ID of the bucket
+      - description: The identifier of the bucket.
         in: path
         name: bucketID
         required: true
         schema:
           type: string
-      - description: The ID of the measurement
+      - description: The identifier of the measurement.
         in: path
         name: measurementID
         required: true
@@ -801,7 +805,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
-          description: Updated measurement schema
+          description: The updated measurement schema
         "400":
           content:
             application/json:
@@ -816,10 +820,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Client error updating measurement schema
-      summary: Update existing measurement schema
+      summary: Update a measurement schema
       tags:
       - Bucket Schemas
-    summary: APIs for describing tables
+    summary: APIs for tables
   /api/v2/checks:
     get:
       operationId: GetChecks
@@ -846,7 +850,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get all checks
+      summary: List all checks
       tags:
       - Checks
     post:
@@ -926,7 +930,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a check
+      summary: Retrieve a check
       tags:
       - Checks
     patch:
@@ -1138,7 +1142,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a check query
+      summary: Retrieve a check query
       tags:
       - Checks
   /api/v2/dashboards:
@@ -1149,7 +1153,8 @@ paths:
       - $ref: '#/components/parameters/Offset'
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Descending'
-      - description: The owner ID.
+      - description: A user identifier. Returns only dashboards where this user has
+          the `owner` role.
         in: query
         name: owner
         schema:
@@ -1163,20 +1168,20 @@ paths:
           - CreatedAt
           - UpdatedAt
           type: string
-      - description: List of dashboard IDs to return. If both `id` and `owner` are
-          specified, only `id` is used.
+      - description: A list of dashboard identifiers. Returns only the listed dashboards.
+          If both `id` and `owner` are specified, only `id` is used.
         in: query
         name: id
         schema:
           items:
             type: string
           type: array
-      - description: The organization ID.
+      - description: The identifier of the organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
@@ -1194,7 +1199,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get all dashboards
+      summary: List all dashboards
       tags:
       - Dashboards
     post:
@@ -1281,7 +1286,7 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/Dashboard'
                 - $ref: '#/components/schemas/DashboardWithViewProperties'
-          description: Get a single dashboard
+          description: Retrieve a single dashboard
         "404":
           content:
             application/json:
@@ -1294,7 +1299,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a Dashboard
+      summary: Retrieve a Dashboard
       tags:
       - Dashboards
     patch:
@@ -2181,6 +2186,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
+      summary: List all templates
       tags:
       - Templates
     post:
@@ -2256,6 +2262,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
+      summary: Retrieve a template
       tags:
       - Templates
     put:
@@ -2288,6 +2295,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
+      summary: Update a template
       tags:
       - Templates
   /api/v2/documents/templates/{templateID}/labels:
@@ -2422,14 +2430,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelsResponse'
-          description: All labels
+          description: A list of labels
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get all labels
+      summary: List all labels
       tags:
       - Labels
     post:
@@ -2509,7 +2517,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a label
+      summary: Retrieve a label
       tags:
       - Labels
     patch:
@@ -2578,14 +2586,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-          description: Currently authenticated user
+          description: The currently authenticated user.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Return the current authenticated user
+      summary: Retrieve the currently authenticated user
       tags:
       - Users
   /api/v2/me/password:
@@ -2641,7 +2649,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get all notification endpoints
+      summary: List all notification endpoints
       tags:
       - NotificationEndpoints
     post:
@@ -2721,7 +2729,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a notification endpoint
+      summary: Retrieve a notification endpoint
       tags:
       - NotificationEndpoints
     patch:
@@ -2938,7 +2946,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get all notification rules
+      summary: List all notification rules
       tags:
       - NotificationRules
     post:
@@ -3018,7 +3026,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a notification rule
+      summary: Retrieve a notification rule
       tags:
       - NotificationRules
     patch:
@@ -3230,7 +3238,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Get a notification rule query
+      summary: Retrieve a notification rule query
       tags:
       - Rules
   /api/v2/orgs:
@@ -3390,7 +3398,7 @@ paths:
   /api/v2/orgs/{orgID}/limits:
     get:
       parameters:
-      - description: org to get limit for
+      - description: The identifier of the organization.
         in: path
         name: orgID
         required: true
@@ -3409,11 +3417,11 @@ paths:
                   links:
                     $ref: '#/components/schemas/Links'
                 type: object
-          description: A limit
+          description: The Limits defined for the organization.
         default:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
-      summary: Get limit for an org
+      summary: Retrieve limits for an organization
       tags:
       - Limits
   /api/v2/orgs/{orgID}/members:
@@ -3698,7 +3706,7 @@ paths:
   /api/v2/orgs/{orgID}/usage:
     get:
       parameters:
-      - description: org to get usage for
+      - description: The identifier of the organization.
         in: path
         name: orgID
         required: true
@@ -3748,14 +3756,14 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
-      summary: Get usage for an org
+      summary: Retrieve usage for an organization
       tags:
       - Usage
   /api/v2/poc-functions:
     get:
       operationId: GetFunctions
       parameters:
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
@@ -4187,13 +4195,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ASTResponse'
-          description: Abstract syntax tree of flux query.
+          description: Abstract syntax tree of the flux query.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Any response other than 200 is an internal server error
+      summary: Generate an Abstract Syntax Tree (AST) from a query
       tags:
       - Query
   /api/v2/query/suggestions:
@@ -4214,6 +4223,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Any response other than 200 is an internal server error
+      summary: Retrieve query suggestions
       tags:
       - Query
   /api/v2/query/suggestions/{name}:
@@ -4240,12 +4250,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Any response other than 200 is an internal server error
+      summary: Retrieve query suggestions for a branching suggestion
       tags:
       - Query
   /api/v2/setup:
     get:
-      description: Returns `true` if no default user, organization, or bucket has
-        been created.
+      description: Check if setup is allowed. Returns `true` if no default user, organization,
+        or bucket have been created.
       operationId: GetSetup
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -4255,12 +4266,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IsOnboarding'
-          description: allowed true or false
-      summary: Check if database has default user, org, bucket
+          description: Setup is allowed, true or false
+      summary: Retrieve setup status
       tags:
       - Setup
     post:
-      description: Post an onboarding request to set up initial user, org and bucket.
+      description: Post an onboarding request to create an initial user, organization,
+        and bucket.
       operationId: PostSetup
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -4277,16 +4289,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse'
-          description: Created default user, bucket, org
+          description: The created default user, bucket, and organization
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
-      summary: Set up initial user, org and bucket
+      summary: Create an initial user, organization, and bucket
       tags:
       - Setup
   /api/v2/setup/user:
     post:
-      description: Post an onboarding request to set up a new user, org and bucket.
+      description: Post an onboarding request to create a new user, organization,
+        and bucket.
       operationId: PostSetupUser
       requestBody:
         content:
@@ -4301,11 +4314,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse'
-          description: Created default user, bucket, org
+          description: The created default user, bucket, and organization.
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
-      summary: Set up a new user, org and bucket
+      summary: Create a new user, organization, and bucket
       tags:
       - Setup
   /api/v2/signin:
@@ -4396,7 +4409,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Grab a list of installed InfluxDB Templates
+      summary: List all installed InfluxDB templates
       tags:
       - InfluxDB Templates
     post:
@@ -4440,13 +4453,13 @@ paths:
     delete:
       operationId: DeleteStack
       parameters:
-      - description: The stack id
+      - description: Theidentifier of the stack.
         in: path
         name: stack_id
         required: true
         schema:
           type: string
-      - description: The organization id of the user
+      - description: The identifier of the organization.
         in: query
         name: orgID
         required: true
@@ -4454,20 +4467,20 @@ paths:
           type: string
       responses:
         "204":
-          description: Stack and all its associated resources are deleted
+          description: The stack and its associated resources are deleted
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Delete a stack and remove all its associated resources
+      summary: Delete a stack and associated resources
       tags:
       - InfluxDB Templates
     get:
       operationId: ReadStack
       parameters:
-      - description: The stack id
+      - description: Theidentifier of the stack.
         in: path
         name: stack_id
         required: true
@@ -4479,20 +4492,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Stack'
-          description: Read an influx stack by ID
+          description: The InfluxDB stack
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Grab a stack by its ID
+      summary: Retrieve a stack
       tags:
       - InfluxDB Templates
     patch:
       operationId: UpdateStack
       parameters:
-      - description: The stack id
+      - description: Theidentifier of the stack.
         in: path
         name: stack_id
         required: true
@@ -5284,6 +5297,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
+      summary: List all Telegraf plugins
+      tags:
+      - Telegraf Plugins
   /api/v2/telegrafs:
     get:
       operationId: GetTelegrafs
@@ -5300,13 +5316,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Telegrafs'
-          description: A list of Telegraf configs
+          description: A list of Telegraf configurations
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
+      summary: List all Telegraf configurations
       tags:
       - Telegrafs
     post:
@@ -5318,7 +5335,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TelegrafRequest'
-        description: Telegraf config to create
+        description: Telegraf configuration to create
         required: true
       responses:
         "201":
@@ -5326,14 +5343,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Telegraf'
-          description: Telegraf config created
+          description: Telegraf configuration created
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Create a Telegraf config
+      summary: Create a Telegraf configuration
       tags:
       - Telegrafs
   /api/v2/telegrafs/{telegrafID}:
@@ -5341,7 +5358,7 @@ paths:
       operationId: DeleteTelegrafsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The Telegraf config ID.
+      - description: The Telegraf configuration ID.
         in: path
         name: telegrafID
         required: true
@@ -5356,14 +5373,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Delete a Telegraf config
+      summary: Delete a Telegraf configuration
       tags:
       - Telegrafs
     get:
       operationId: GetTelegrafsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The Telegraf config ID.
+      - description: The Telegraf configuration ID.
         in: path
         name: telegrafID
         required: true
@@ -5397,14 +5414,14 @@ paths:
                 interval = "10s"
               schema:
                 type: string
-          description: Telegraf config details
+          description: Telegraf configuration details
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Retrieve a Telegraf config
+      summary: Retrieve a Telegraf configuration
       tags:
       - Telegrafs
     put:
@@ -5422,7 +5439,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TelegrafRequest'
-        description: Telegraf config update to apply
+        description: Telegraf configuration update to apply
         required: true
       responses:
         "200":
@@ -5430,14 +5447,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Telegraf'
-          description: An updated Telegraf config
+          description: An updated Telegraf configurations
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Update a Telegraf config
+      summary: Update a Telegraf configuration
       tags:
       - Telegrafs
   /api/v2/telegrafs/{telegrafID}/labels:
@@ -5629,7 +5646,7 @@ paths:
       operationId: GetTelegrafsIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The Telegraf config ID.
+      - description: The Telegraf configuration ID.
         in: path
         name: telegrafID
         required: true
@@ -5641,21 +5658,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwners'
-          description: A list of Telegraf config owners
+          description: Returns Telegraf configuration owners as a ResourceOwners list
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: List all owners of a Telegraf config
+      summary: List all owners of a Telegraf configuration
       tags:
       - Telegrafs
     post:
       operationId: PostTelegrafsIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The Telegraf config ID.
+      - description: The Telegraf configuration ID.
         in: path
         name: telegrafID
         required: true
@@ -5674,14 +5691,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
-          description: Telegraf config owner added
+          description: Telegraf configuration owner was added. Returns a ResourceOwner
+            that references the User.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Add an owner to a Telegraf config
+      summary: Add an owner to a Telegraf configuration
       tags:
       - Telegrafs
   /api/v2/telegrafs/{telegrafID}/owners/{userID}:
@@ -5935,7 +5953,7 @@ paths:
       operationId: GetVariables
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The organization name.
+      - description: The name of the organization.
         in: query
         name: org
         schema:
@@ -5951,14 +5969,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Variables'
-          description: All variables for an organization
+          description: A list of variables for an organization.
         "400":
           $ref: '#/components/responses/ServerError'
           description: Invalid request
         default:
           $ref: '#/components/responses/ServerError'
           description: Internal server error
-      summary: Get all variables
+      summary: List all variables
       tags:
       - Variables
     post:
@@ -6028,7 +6046,7 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Internal server error
-      summary: Get a variable
+      summary: Retrieve a variable
       tags:
       - Variables
     patch:
@@ -6401,7 +6419,7 @@ paths:
     delete:
       operationId: deleteAnnotation
       parameters:
-      - description: annotation to delete
+      - description: The identifier of the annotation.
         in: path
         name: annotationID
         required: true
@@ -6416,12 +6434,12 @@ paths:
           $ref: '#/components/responses/ServerError'
         "500":
           $ref: '#/components/responses/ServerError'
-      summary: Delete annotation by ID
+      summary: Delete an annotation by ID
       tags:
       - Annotations
     get:
       parameters:
-      - description: annotation to get
+      - description: The identifier of the annotation.
         in: path
         name: annotationID
         required: true
@@ -6433,7 +6451,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnnotationEvent'
-          description: Annotation matching id
+          description: The annotation details
         "400":
           $ref: '#/components/responses/ServerError'
         "401":
@@ -6442,13 +6460,13 @@ paths:
           $ref: '#/components/responses/ServerError'
         "500":
           $ref: '#/components/responses/ServerError'
-      summary: Get annotation
+      summary: Retrieve an annotation
       tags:
       - Annotations
     put:
       operationId: updateAnnotation
       parameters:
-      - description: annotation to update
+      - description: The identifier of the annotation.
         in: path
         name: annotationID
         required: true
@@ -6466,7 +6484,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnnotationEvent'
-          description: Annotation as updated
+          description: The updated annotation
         "400":
           $ref: '#/components/responses/ServerError'
         "401":
@@ -6475,7 +6493,7 @@ paths:
           $ref: '#/components/responses/ServerError'
         "500":
           $ref: '#/components/responses/ServerError'
-      summary: Update annotation by ID
+      summary: Update an annotation
       tags:
       - Annotations
   /api/v2private/flows/orgs/{orgID}/flows:
@@ -6676,7 +6694,7 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
-      summary: Get all limit events
+      summary: List all limit events
       tags:
       - Limits
   /api/v2private/oauth/clientConfig:
@@ -6691,13 +6709,13 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
-      summary: Get required oauth client variables
+      summary: Retrieve required OAuth client variables
       tags:
       - OAuth
   /api/v2private/orgs/{orgID}/limits:
     get:
       parameters:
-      - description: org to get limit for
+      - description: The identifier of the organization.
         in: path
         name: orgID
         required: true
@@ -6713,12 +6731,12 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
-      summary: Get limit for an org
+      summary: Retrieve limits for an organization
       tags:
       - Limits
     put:
       parameters:
-      - description: org to create limit for
+      - description: The identifier of the organization.
         in: path
         name: orgID
         required: true
@@ -6741,13 +6759,13 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
-      summary: Create or update limit for an org
+      summary: Create or update limits for an organization
       tags:
       - Limits
   /api/v2private/orgs/{orgID}/limits/status:
     get:
       parameters:
-      - description: ID of organization to get limit status for
+      - description: The identifier of the organization.
         in: path
         name: orgID
         required: true
@@ -6814,7 +6832,8 @@ paths:
       summary: Create or update settings for an org
   /api/v2private/setup/user:
     post:
-      description: Post an onboarding request to set up a new user, org and bucket.
+      description: Post an onboarding request to create a new user, organization,
+        and bucket.
       operationId: PostSetupUser
       requestBody:
         content:
@@ -6829,11 +6848,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse'
-          description: Created default user, bucket, org
+          description: The created default user, bucket, and organization.
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
-      summary: Set up a new user, org and bucket
+      summary: Create a new user, organization, and bucket
       tags:
       - Setup
   /api/v2private/streams:

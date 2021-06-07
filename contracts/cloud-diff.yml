@@ -135,13 +135,13 @@ paths:
       operationId: GetSetup
       tags:
         - Setup
-      summary: 'Check if database has default user, org, bucket'
-      description: 'Returns `true` if no default user, organization, or bucket has been created.'
+      summary: Retrieve setup status
+      description: 'Check if setup is allowed. Returns `true` if no default user, organization, or bucket have been created.'
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       responses:
         '200':
-          description: allowed true or false
+          description: 'Setup is allowed, true or false'
           content:
             application/json:
               schema:
@@ -154,8 +154,8 @@ paths:
       operationId: PostSetup
       tags:
         - Setup
-      summary: 'Set up initial user, org and bucket'
-      description: 'Post an onboarding request to set up initial user, org and bucket.'
+      summary: 'Create an initial user, organization, and bucket'
+      description: 'Post an onboarding request to create an initial user, organization, and bucket.'
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       requestBody:
@@ -167,7 +167,7 @@ paths:
               $ref: '#/components/schemas/OnboardingRequest'
       responses:
         '201':
-          description: 'Created default user, bucket, org'
+          description: 'The created default user, bucket, and organization'
           content:
             application/json:
               schema:
@@ -180,8 +180,8 @@ paths:
       operationId: PostSetupUser
       tags:
         - Setup
-      summary: 'Set up a new user, org and bucket'
-      description: 'Post an onboarding request to set up a new user, org and bucket.'
+      summary: 'Create a new user, organization, and bucket'
+      description: 'Post an onboarding request to create a new user, organization, and bucket.'
       requestBody:
         description: Source to create
         required: true
@@ -191,7 +191,7 @@ paths:
               $ref: '#/components/schemas/OnboardingRequest'
       responses:
         '201':
-          description: 'Created default user, bucket, org'
+          description: 'The created default user, bucket, and organization.'
           content:
             application/json:
               schema:
@@ -282,7 +282,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the authorization to get.
+          description: The identifier of the authorization to get.
       responses:
         '200':
           description: Authorization details
@@ -297,9 +297,10 @@ paths:
       operationId: PatchAuthorizationsID
       tags:
         - Authorizations
-      summary: Update an authorization to be active or inactive
+      summary: Update authorization status
+      description: Update an authorization's status to `active` or `inactive`.
       requestBody:
-        description: Authorization to update
+        description: The updated Authorization object.
         required: true
         content:
           application/json:
@@ -312,10 +313,10 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the authorization to update.
+          description: The identifier of the authorization to update.
       responses:
         '200':
-          description: The active or inactie authorization
+          description: The updated authorization.
           content:
             application/json:
               schema:
@@ -335,7 +336,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the authorization to delete.
+          description: The identifier of the authorization to delete.
       responses:
         '204':
           description: Authorization deleted
@@ -347,12 +348,12 @@ paths:
       operationId: GetVariables
       tags:
         - Variables
-      summary: Get all variables
+      summary: List all variables
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: query
           name: org
-          description: The organization name.
+          description: The name of the organization.
           schema:
             type: string
         - in: query
@@ -362,7 +363,7 @@ paths:
             type: string
       responses:
         '200':
-          description: All variables for an organization
+          description: A list of variables for an organization.
           content:
             application/json:
               schema:
@@ -402,7 +403,7 @@ paths:
       operationId: GetVariablesID
       tags:
         - Variables
-      summary: Get a variable
+      summary: Retrieve a variable
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -504,29 +505,29 @@ paths:
           description: Internal server error
           $ref: '#/components/responses/ServerError'
   '/buckets/{bucketID}/schema/measurements':
-    summary: APIs for describing bucket schema
+    summary: APIs for bucket schema
     get:
-      summary: Retrieve a list of measurement schemas defined for this bucket
+      summary: List all measurement schemas of a bucket
       operationId: getMeasurementSchemas
       parameters:
         - in: query
           name: org
-          description: The organization name.
+          description: The name of the organization.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The organization ID.
+          description: The identifier of the organization.
           schema:
             type: string
         - in: query
           name: name
-          description: Find a measurement with matching name.
+          description: The name of a measurement. Return schemas for this measurement only.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The ID of the bucket
+          description: The identifier of the bucket.
           schema:
             type: string
           required: true
@@ -548,22 +549,22 @@ paths:
           description: Bucket not found
           $ref: '#/components/responses/ServerError'
     post:
-      summary: Create a new measurement schema for this bucket
+      summary: Create a measurement schema for a bucket
       operationId: createMeasurementSchema
       parameters:
         - in: query
           name: org
-          description: The organization name.
+          description: The name of the organization.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The organization ID.
+          description: The identifier of the organization.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The ID of the bucket
+          description: The identifier of the bucket.
           schema:
             type: string
           required: true
@@ -576,7 +577,7 @@ paths:
               $ref: '#/components/schemas/MeasurementSchemaCreateRequest'
       responses:
         '201':
-          description: New measurement schema
+          description: The created measurement schema
           headers:
             ETag:
               description: The current version of the measurement schema
@@ -624,30 +625,30 @@ paths:
               schema:
                 $ref: '#/components/responses/ServerError/content/application~1json/schema'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
-    summary: APIs for describing tables
+    summary: APIs for tables
     get:
-      summary: Fetch schema information for a measurement
+      summary: Retrieve measurement schema information
       operationId: getMeasurementSchema
       parameters:
         - in: query
           name: org
-          description: The organization name.
+          description: The name of the organization.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The organization ID.
+          description: The identifier of the organization.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The ID of the bucket
+          description: The identifier of the bucket.
           schema:
             type: string
           required: true
         - in: path
           name: measurementID
-          description: The ID of the measurement
+          description: The identifier of the measurement.
           schema:
             type: string
           required: true
@@ -666,28 +667,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
     patch:
-      summary: Update existing measurement schema
+      summary: Update a measurement schema
       operationId: updateMeasurementSchema
       parameters:
         - in: query
           name: org
-          description: The organization name.
+          description: The name of the organization.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The organization ID.
+          description: The identifier of the organization.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The ID of the bucket
+          description: The identifier of the bucket.
           schema:
             type: string
           required: true
         - in: path
           name: measurementID
-          description: The ID of the measurement
+          description: The identifier of the measurement.
           schema:
             type: string
           required: true
@@ -700,7 +701,7 @@ paths:
               $ref: '#/components/schemas/MeasurementSchemaUpdateRequest'
       responses:
         '200':
-          description: Updated measurement schema
+          description: The updated measurement schema
           content:
             application/json:
               schema:
@@ -722,17 +723,17 @@ paths:
     get:
       tags:
         - Limits
-      summary: Get limit for an org
+      summary: Retrieve limits for an organization
       parameters:
         - in: path
           name: orgID
-          description: org to get limit for
+          description: The identifier of the organization.
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: A limit
+          description: The Limits defined for the organization.
           content:
             application/json:
               schema:
@@ -762,11 +763,11 @@ paths:
     get:
       tags:
         - Usage
-      summary: Get usage for an org
+      summary: Retrieve usage for an organization
       parameters:
         - in: path
           name: orgID
-          description: org to get usage for
+          description: The identifier of the organization.
           required: true
           schema:
             type: string
