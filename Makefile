@@ -1,7 +1,7 @@
 .PHONY: generate
 generate:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/generate.sh
-	./scripts/reference.sh
+	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagrag-ci sh /openapi/scripts/reference.sh
 
 .PHONY: generate-svc
 generate-svc:
@@ -13,7 +13,7 @@ generate-all: generate generate-svc
 .PHONY: test
 test:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/test.sh
-	CONTRACTS=/tmp/ref bash scripts/reference.sh && diff -r /tmp/ref contracts/ref/
+	docker run --rm -e CONTRACTS=/tmp/ref -v ${PWD}:/openapi quay.io/influxdb/swagrag-ci sh /openapi/scripts/reference.sh
 
 .PHONY: test-oats
 test-oats:
@@ -45,8 +45,7 @@ publish-docker: publish-oats publish-swagger
 publish-docker-ci:
 	docker build -t quay.io/influxdb/swagger-cli-ci -f scripts/ci-swagger-cli.dockerfile .
 	docker build -t quay.io/influxdb/oats-ci -f scripts/ci-oats.dockerfile .
+	docker build -t quay.io/influxdb/swagrag-ci -f scripts/ci-swagrag.dockerfile .
 	docker push quay.io/influxdb/swagger-cli-ci
 	docker push quay.io/influxdb/oats-ci
-
-.PHONY: publish-docker
-publish-docker: publish-oats publish-swagger
+	docker push quay.io/influxdb/swagrag-ci
