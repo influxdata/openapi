@@ -13,7 +13,7 @@ generate-all: generate generate-svc
 .PHONY: test
 test:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/test.sh
-	docker run --rm -e CONTRACTS=/tmp/ref -v ${PWD}:/openapi quay.io/influxdb/swagrag-ci sh /openapi/scripts/reference.sh
+	docker run --rm -e TCONTRACTS=/tmp/contracts -v ${PWD}:/openapi quay.io/influxdb/swagrag-ci sh /openapi/scripts/reference.sh
 
 .PHONY: test-oats
 test-oats:
