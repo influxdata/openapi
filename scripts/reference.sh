@@ -1,27 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 
-CONTRACTS=${CONTRACTS:-contracts/ref}
+CONTRACTS=${CONTRACTS:-/openapi/contracts}
+TCONTRACTS=${TCONTRACTS:-/openapi/contracts}
 
-mkdir -p $CONTRACTS
+mkdir -p $TCONTRACTS/ref
 
 echo "Aggregating cloud swaggers"
-docker run \
-  --rm \
-  -v ${PWD}:/openapi docker.io/glinton/swagrag \
-  -file /openapi/contracts/priv/cloud-priv.yml \
-  -file /openapi/contracts/cloud.yml \
-  -file /openapi/contracts/priv/annotationd.yml \
-  -file /openapi/contracts/priv/flowd.yml \
-  -file /openapi/contracts/mapsd.yml \
-  -file /openapi/contracts/managed-functions.yml \
+swagrag \
+  -file ${CONTRACTS}/priv/cloud-priv.yml \
+  -file ${CONTRACTS}/cloud.yml \
+  -file ${CONTRACTS}/priv/annotationd.yml \
+  -file ${CONTRACTS}/priv/flowd.yml \
+  -file ${CONTRACTS}/mapsd.yml \
+  -file ${CONTRACTS}/managed-functions.yml \
   -api-title "Complete InfluxDB Cloud API" \
-  > ${CONTRACTS}/cloud.yml
+  > ${TCONTRACTS}/ref/cloud.yml
 
 echo "Aggregating oss swaggers"
-docker run \
-  --rm \
-  -v ${PWD}:/openapi docker.io/glinton/swagrag \
-  -file /openapi/contracts/oss.yml \
-  -file /openapi/contracts/mapsd.yml \
+swagrag \
+  -file ${CONTRACTS}/oss.yml \
+  -file ${CONTRACTS}/mapsd.yml \
   -api-title "Complete InfluxDB OSS API" \
-  > ${CONTRACTS}/oss.yml
+  > ${TCONTRACTS}/ref/oss.yml
+
+diff -r ${CONTRACTS}/ref ${TCONTRACTS}/ref/
