@@ -5,59 +5,11 @@ info:
 servers:
   - url: /api/v2/quartz
 paths:
-  '/operator/account/{accountId}':
-    get:
-      operationId: GetAccountById
-      tags:
-        - Account
-        - Operator
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: path
-          name: accountId
-          schema:
-            type: string
-          required: true
-          description: The ID of the account to get.
-      responses:
-        '200':
-          description: the account
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Account'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
-    delete:
-      operationId: DeleteAccountById
-      requestBody:
-        content:
-          application/json; charset=utf-8:
-            schema:
-              type: object
-      tags:
-        - Account
-        - Operator
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: path
-          name: accountId
-          schema:
-            type: string
-          required: true
-          description: The ID of the account to delete.
-      responses:
-        '204':
-          description: Account deleted
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   /me:
     get:
       operationId: GetMe
       tags:
-        - Account
+        - Accounts
         - Operator
         - Region
         - Organization
@@ -531,45 +483,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
-  '/operator/account/{accountId}/users/{userId}':
-    delete:
-      operationId: RemoveUserFromAccount
-      tags:
-        - Accounts
-        - Users
-        - Organizations
-      summary: Removes a user from an account
-      requestBody:
-        content:
-          application/json; charset=utf-8:
-            schema:
-              type: object
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: path
-          name: accountId
-          schema:
-            type: string
-          required: true
-          description: The ID of the account to remove user from.
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: The ID of the user to remove from the account.
-      responses:
-        '204':
-          description: User removed from account
-        '401':
-          description: Unauthorized
-          $ref: '#/components/responses/ServerError'
-        '404':
-          description: Invite/Org not found
-          $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites/{inviteId}/resend':
     post:
       operationId: PostOrgsIdInvitesId
@@ -631,7 +544,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Users'
+                $ref: '#/components/schemas/OrgUsers'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -734,85 +647,11 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
-  '/orgs/{orgId}':
-    get:
-      operationId: GetOrganizationById
-      tags:
-        - Organizations
-        - Operator
-      summary: Retrieve an organization by ID
-      parameters:
-        - in: path
-          name: orgId
-          schema:
-            type: string
-          required: true
-          description: The ID of the organization
-      responses:
-        '200':
-          description: Organization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organization'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
-  /operator/accounts:
-    get:
-      operationId: getAccountsByName
-      tags:
-        - Accounts
-        - Operator
-      summary: Get the list of accounts by search term
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: query
-          name: searchTerm
-          schema:
-            type: string
-          required: false
-          description: The name of the account's billing contact email being searched
-      responses:
-        '200':
-          description: Account
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Accounts'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
-  /operator/orgs:
-    get:
-      operationId: getOrganizationsById
-      tags:
-        - Organizations
-        - Operator
-      summary: Get the list of orgs by search term
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: query
-          name: searchTerm
-          schema:
-            type: string
-          required: false
-          description: The id of the org being searched
-      responses:
-        '200':
-          description: Organization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organizations'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   /checkout:
     post:
       operationId: PostCheckout
       tags:
-        - Account
+        - Accounts
       requestBody:
         description: Information for Upgrading Account
         required: true
@@ -845,10 +684,306 @@ paths:
             schema:
               type: object
       tags:
-        - Account
+        - Accounts
       responses:
         '204':
           description: Account cancelled
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /operator/accounts:
+    get:
+      operationId: getAccounts
+      tags:
+        - Accounts
+        - Operator
+      summary: Get the list of accounts by search term
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: query
+          name: query
+          schema:
+            type: string
+          required: false
+          description: The partial email of any user in an account
+      responses:
+        '200':
+          description: Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accounts'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/accounts/{accountId}':
+    get:
+      operationId: GetAccountById
+      tags:
+        - Accounts
+        - Operator
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to get.
+      responses:
+        '200':
+          description: the account
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Account'
+                  - properties:
+                      billingContact:
+                        $ref: '#/components/schemas/BillingContact'
+                        description: billing contact for the account
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Accounts/items/allOf/1/properties/users/items'
+                      marketplaceSubscription:
+                        $ref: '#/components/schemas/Accounts/items/allOf/1/properties/marketplaceSubscription'
+                        description: 'which marketplace, nil if none'
+                      organizations:
+                        type: array
+                        description: organizations in the account
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/Organization'
+                            - properties:
+                                account:
+                                  description: the org's account
+                                  $ref: '#/components/schemas/Account'
+                            - required:
+                                - account
+                  - required:
+                      - billingContact
+                      - marketplaceSubscription
+                      - users
+                      - organizations
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Account not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+    delete:
+      operationId: DeleteAccountById
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      tags:
+        - Accounts
+        - Operator
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to delete.
+      responses:
+        '204':
+          description: Account deleted
+        '400':
+          description: Account is not deletable
+          $ref: '#/components/responses/ServerError'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Account not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/accounts/{accountId}/users/{userId}':
+    delete:
+      operationId: removeUserFromAccount
+      tags:
+        - Accounts
+        - Users
+        - Operator
+      summary: Removes a user from an account
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to remove user from.
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to remove from the account.
+      responses:
+        '204':
+          description: User removed from account
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Account/User not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /operator/orgs:
+    get:
+      operationId: getOrganizations
+      tags:
+        - Organizations
+        - Operator
+      summary: Get the list of orgs by search term
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: query
+          name: query
+          schema:
+            type: string
+          required: false
+          description: The partial idpe id of the org being searched
+      responses:
+        '200':
+          description: Organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizations'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/orgs/{orgId}':
+    get:
+      operationId: getOrganizationById
+      tags:
+        - Organizations
+        - Operator
+      summary: Get organization by id
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: the idpe id of the org
+      responses:
+        '200':
+          description: Organization
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Organization'
+                  - properties:
+                      account:
+                        description: organization's account
+                        $ref: '#/components/schemas/Account'
+                  - required:
+                      - account
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Org not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/orgs/{orgId}/limits':
+    get:
+      operationId: getOrganizationLimitsById
+      tags:
+        - Organizations
+        - Operator
+      summary: Get the org's limits
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE id of the org
+      responses:
+        '200':
+          description: Organization Limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgLimits'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Org not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+    put:
+      operationId: updateOrganizationLimitsById
+      tags:
+        - Organizations
+        - Operator
+      summary: Update the org's limits
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE id of the org
+      requestBody:
+        description: Updated limits for an organization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgLimits'
+      responses:
+        '200':
+          description: Organization Limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgLimits'
+        '400':
+          description: Invalid request
+          $ref: '#/components/responses/ServerError'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Org not found
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -910,11 +1045,7 @@ components:
           example: Google Cloud Marketplace
         shortName:
           description: marketplace acronyms
-          type: string
-          enum:
-            - aws
-            - gcm
-            - azure
+          $ref: '#/components/schemas/MarketplaceType'
           example: gcm
         url:
           description: link to marketplace
@@ -923,6 +1054,13 @@ components:
         - name
         - shortName
         - url
+    MarketplaceType:
+      type: string
+      description: marketplace acronym or name
+      enum:
+        - aws
+        - gcm
+        - azure
     TimeRange:
       type: string
       description: The timerange options for usage information
@@ -980,21 +1118,10 @@ components:
     Account:
       properties:
         id:
-          type: string
-          description: account id
-        quartzId:
           type: number
           description: account id in quartz
-        onboardingState:
-          type: string
-          description: stage of onboarding the account is in
-        marketplace:
-          $ref: '#/components/schemas/Marketplace'
-          description: 'which marketplace, nil if none'
         type:
           $ref: '#/components/schemas/AccountType'
-        organizations:
-          $ref: '#/components/schemas/Organizations'
         zuoraAccountId:
           type: string
           description: Zuora ID associated with the account
@@ -1004,23 +1131,79 @@ components:
         balance:
           type: number
           description: 'remaining balance on the account, nil if none'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        billingContact:
-          $ref: '#/components/schemas/BillingContact'
-          description: billing contact for the account
       required:
         - id
         - balance
-        - billingContact
-        - marketplace
-        - users
         - type
     Accounts:
       items:
-        $ref: '#/components/schemas/Account'
+        allOf:
+          - $ref: '#/components/schemas/Account'
+          - properties:
+              billingContact:
+                $ref: '#/components/schemas/BillingContact'
+                description: billing contact for the account
+              users:
+                type: array
+                items:
+                  properties:
+                    accountId:
+                      type: number
+                      description: account id in quartz
+                    email:
+                      type: string
+                      description: user's email
+                    firstName:
+                      type: string
+                      description: user's first name
+                    id:
+                      type: string
+                      description: user's id in quartz
+                    idpeId:
+                      type: string
+                      description: user's id in idpe
+                    lastName:
+                      type: string
+                      description: user's last name
+                    operator:
+                      type: boolean
+                      description: whether or not the user is an operator
+                    sfdcContactId:
+                      type: string
+                      description: the contact id of the user in salesforce
+                    onboardingState:
+                      type: string
+                      description: stage of onboarding the account is in
+                  required:
+                    - accountId
+                    - firstName
+                    - id
+                    - idpeId
+                    - lastName
+                    - onboardingState
+              marketplaceSubscription:
+                description: 'which marketplace, nil if none'
+                properties:
+                  marketplace:
+                    $ref: '#/components/schemas/MarketplaceType'
+                  status:
+                    type: string
+                    enum:
+                      - pending
+                      - subscribed
+                      - unsubscribed
+                      - failed
+                    description: status of the marketplace
+                  subscriberId:
+                    type: string
+                required:
+                  - marketplace
+                  - status
+                  - subscriberId
+          - required:
+              - billingContact
+              - marketplaceSubscription
+              - users
     Region:
       properties:
         title:
@@ -1266,7 +1449,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Invoice'
-    User:
+    OrgUser:
       properties:
         id:
           description: the idpe id of the user
@@ -1317,17 +1500,17 @@ components:
         - email
         - isOperator
         - isRegionBeta
-    Users:
+    OrgUsers:
       type: array
       items:
-        $ref: '#/components/schemas/User'
+        $ref: '#/components/schemas/OrgUser'
     Organization:
       type: object
       properties:
-        id:
+        idpeId:
           type: string
-          description: ID of the org
-        quartzId:
+          description: idpe ID of the org
+        id:
           type: number
           description: quartz ID of the org
         name:
@@ -1342,20 +1525,27 @@ components:
         date:
           type: string
           description: date org was created
-        relatedAccount:
-          $ref: '#/components/schemas/RelatedAccount'
-          description: subset of related account information
       required:
         - id
-        - quartzId
-        - name
+        - idpeId
         - region
         - provider
         - date
     Organizations:
       type: array
       items:
-        $ref: '#/components/schemas/Organization'
+        allOf:
+          - $ref: '#/components/schemas/Organization'
+          - properties:
+              account:
+                allOf:
+                  - $ref: '#/components/schemas/Account'
+                  - properties:
+                      billingContact:
+                        $ref: '#/components/schemas/BillingContact'
+                        description: billing contact for the account
+                  - required:
+                      - billingContact
     RelatedAccount:
       description: Subset of Account data related to the organization
       type: object
@@ -1397,15 +1587,15 @@ components:
           $ref: '#/components/schemas/NotificationRuleLimits'
         notificationEndpoint:
           $ref: '#/components/schemas/NotificationEndpointLimits'
-        required:
-          - orgID
-          - rate
-          - bucket
-          - task
-          - dashboard
-          - check
-          - notificationRule
-          - notificationEndpoint
+      required:
+        - orgID
+        - rate
+        - bucket
+        - task
+        - dashboard
+        - check
+        - notificationRule
+        - notificationEndpoint
     RateLimits:
       description: Usage rate limits
       type: object
