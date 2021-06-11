@@ -1,0 +1,87 @@
+# Oats is making this incredibly annoying with naming conflicts
+get:
+  operationId: GetAccountById
+  tags:
+    - Accounts
+    - Operators
+  parameters:
+    - $ref: '../../common/parameters/TraceSpan.yml'
+    - in: path
+      name: accountId
+      schema:
+        type: string
+      required: true
+      description: The ID of the account to get.
+  responses:
+    '200':
+      description: the account
+      content:
+        application/json:
+          schema:
+              allOf:
+                - $ref: '../schemas/Account.yml'
+                - properties:
+                    billingContact:
+                      $ref: '../schemas/BillingContact.yml'
+                      description: billing contact for the account
+                    users:
+                      type: array
+                      items:
+                        $ref: '../schemas/User.yml'
+                    marketplaceSubscription:
+                      $ref: '../schemas/MarketplaceSubscription.yml'
+                      description: which marketplace, nil if none
+                    organizations:
+                      type: array
+                      description: organizations in the account
+                      items:
+                        allOf:
+                          - $ref: '../schemas/Organization.yml'
+                          - properties:
+                              account:
+                                description: the org's account
+                                $ref: '../schemas/Account.yml'
+                          - required: [account]
+                - required: [billingContact, marketplaceSubscription, users, organizations]
+    '401':
+      description: Unauthorized
+      $ref: '../../common/responses/ServerError.yml'
+    '404':
+      description: Account not found
+      $ref: '../../common/responses/ServerError.yml'
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'
+delete:
+  operationId: DeleteAccountById
+  requestBody:
+    content:
+      application/json; charset=utf-8:
+        schema:
+          type: object
+  tags:
+    - Accounts
+    - Operators
+  parameters:
+    - $ref: '../../common/parameters/TraceSpan.yml'
+    - in: path
+      name: accountId
+      schema:
+        type: string
+      required: true
+      description: The ID of the account to delete.
+  responses:
+    '204':
+      description: Account deleted
+    '400':
+      description: Account is not deletable
+      $ref: '../../common/responses/ServerError.yml'
+    '401':
+      description: Unauthorized
+      $ref: '../../common/responses/ServerError.yml'
+    '404':
+      description: Account not found
+      $ref: '../../common/responses/ServerError.yml'
+    'default':
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'
