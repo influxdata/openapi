@@ -747,10 +747,9 @@ paths:
                         description: billing contact for the account
                       users:
                         type: array
-                        items:
-                          $ref: '#/components/schemas/Accounts/items/allOf/1/properties/users/items'
+                        $ref: '#/components/schemas/Users'
                       marketplaceSubscription:
-                        $ref: '#/components/schemas/Accounts/items/allOf/1/properties/marketplaceSubscription'
+                        $ref: '#/components/schemas/MarketplaceSubscription'
                         description: 'which marketplace, nil if none'
                       organizations:
                         type: array
@@ -1054,6 +1053,62 @@ components:
         - name
         - shortName
         - url
+    MarketplaceSubscription:
+      properties:
+        marketplace:
+          $ref: '#/components/schemas/MarketplaceType'
+        status:
+          type: string
+          enum:
+            - pending
+            - subscribed
+            - unsubscribed
+            - failed
+          description: status of the marketplace
+        subscriberId:
+          type: string
+      required:
+        - marketplace
+        - status
+        - subscriberId
+    Users:
+      type: array
+      items:
+        properties:
+          accountId:
+            type: number
+            description: account id in quartz
+          email:
+            type: string
+            description: user's email
+          firstName:
+            type: string
+            description: user's first name
+          id:
+            type: string
+            description: user's id in quartz
+          idpeId:
+            type: string
+            description: user's id in idpe
+          lastName:
+            type: string
+            description: user's last name
+          operator:
+            type: boolean
+            description: whether or not the user is an operator
+          sfdcContactId:
+            type: string
+            description: the contact id of the user in salesforce
+          onboardingState:
+            type: string
+            description: stage of onboarding the account is in
+        required:
+          - accountId
+          - firstName
+          - id
+          - idpeId
+          - lastName
+          - onboardingState
     MarketplaceType:
       type: string
       description: marketplace acronym or name
@@ -1145,61 +1200,10 @@ components:
                 description: billing contact for the account
               users:
                 type: array
-                items:
-                  properties:
-                    accountId:
-                      type: number
-                      description: account id in quartz
-                    email:
-                      type: string
-                      description: user's email
-                    firstName:
-                      type: string
-                      description: user's first name
-                    id:
-                      type: string
-                      description: user's id in quartz
-                    idpeId:
-                      type: string
-                      description: user's id in idpe
-                    lastName:
-                      type: string
-                      description: user's last name
-                    operator:
-                      type: boolean
-                      description: whether or not the user is an operator
-                    sfdcContactId:
-                      type: string
-                      description: the contact id of the user in salesforce
-                    onboardingState:
-                      type: string
-                      description: stage of onboarding the account is in
-                  required:
-                    - accountId
-                    - firstName
-                    - id
-                    - idpeId
-                    - lastName
-                    - onboardingState
+                $ref: '#/components/schemas/Users'
               marketplaceSubscription:
+                $ref: '#/components/schemas/MarketplaceSubscription'
                 description: 'which marketplace, nil if none'
-                properties:
-                  marketplace:
-                    $ref: '#/components/schemas/MarketplaceType'
-                  status:
-                    type: string
-                    enum:
-                      - pending
-                      - subscribed
-                      - unsubscribed
-                      - failed
-                    description: status of the marketplace
-                  subscriberId:
-                    type: string
-                required:
-                  - marketplace
-                  - status
-                  - subscriberId
           - required:
               - billingContact
               - marketplaceSubscription
