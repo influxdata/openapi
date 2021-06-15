@@ -712,7 +712,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Accounts'
+                $ref: '#/components/schemas/OperatorAccounts'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -740,33 +740,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Account'
+                  - $ref: '#/components/schemas/OperatorAccount'
                   - properties:
-                      billingContact:
-                        $ref: '#/components/schemas/BillingContact'
-                        description: billing contact for the account
-                      users:
-                        type: array
-                        $ref: '#/components/schemas/Users'
-                      marketplaceSubscription:
-                        $ref: '#/components/schemas/MarketplaceSubscription'
-                        description: 'which marketplace, nil if none'
                       organizations:
                         type: array
                         description: organizations in the account
-                        items:
-                          allOf:
-                            - $ref: '#/components/schemas/Organization'
-                            - properties:
-                                account:
-                                  description: the org's account
-                                  $ref: '#/components/schemas/Account'
-                            - required:
-                                - account
+                        $ref: '#/components/schemas/Organizations'
                   - required:
-                      - billingContact
-                      - marketplaceSubscription
-                      - users
                       - organizations
         '401':
           description: Unauthorized
@@ -903,7 +883,7 @@ paths:
                   - properties:
                       account:
                         description: organization's account
-                        $ref: '#/components/schemas/Account'
+                        $ref: '#/components/schemas/OperatorAccount'
                   - required:
                       - account
         '401':
@@ -1053,6 +1033,30 @@ components:
         - name
         - shortName
         - url
+    OperatorAccount:
+      properties: null
+      allOf:
+        - $ref: '#/components/schemas/Account'
+        - type: object
+          properties:
+            billingContact:
+              $ref: '#/components/schemas/BillingContact'
+              description: billing contact for the account
+            users:
+              type: array
+              $ref: '#/components/schemas/Users'
+            marketplaceSubscription:
+              $ref: '#/components/schemas/MarketplaceSubscription'
+              description: 'which marketplace, nil if none'
+          required:
+            - account
+            - billingContact
+            - marketplaceSubscription
+            - users
+    OperatorAccounts:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperatorAccount'
     MarketplaceSubscription:
       properties:
         marketplace:
@@ -1193,23 +1197,9 @@ components:
         - balance
         - type
     Accounts:
+      type: array
       items:
-        allOf:
-          - $ref: '#/components/schemas/Account'
-          - properties:
-              billingContact:
-                $ref: '#/components/schemas/BillingContact'
-                description: billing contact for the account
-              users:
-                type: array
-                $ref: '#/components/schemas/Users'
-              marketplaceSubscription:
-                $ref: '#/components/schemas/MarketplaceSubscription'
-                description: 'which marketplace, nil if none'
-          - required:
-              - billingContact
-              - marketplaceSubscription
-              - users
+        $ref: '#/components/schemas/Account'
     Region:
       properties:
         title:
@@ -1531,7 +1521,14 @@ components:
         date:
           type: string
           description: date org was created
+        account:
+          $ref: '#/components/schemas/RelatedAccount'
+        billingContact:
+          $ref: '#/components/schemas/BillingContact'
+          description: billing contact for the account
       required:
+        - account
+        - billingContact
         - id
         - idpeId
         - region
@@ -1540,18 +1537,7 @@ components:
     Organizations:
       type: array
       items:
-        allOf:
-          - $ref: '#/components/schemas/Organization'
-          - properties:
-              account:
-                allOf:
-                  - $ref: '#/components/schemas/Account'
-                  - properties:
-                      billingContact:
-                        $ref: '#/components/schemas/BillingContact'
-                        description: billing contact for the account
-                  - required:
-                      - billingContact
+        $ref: '#/components/schemas/Organization'
     RelatedAccount:
       description: Subset of Account data related to the organization
       type: object
