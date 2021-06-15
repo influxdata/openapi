@@ -157,6 +157,112 @@ paths:
       summary: Update an authorization to be active or inactive
       tags:
       - Authorizations
+  /api/v2/backup/metadata:
+    get:
+      operationId: GetBackupMetadata
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The Accept-Encoding request HTTP header advertises which content
+          encoding, usually a compression algorithm, the client is able to understand.
+        in: header
+        name: Accept-Encoding
+        schema:
+          default: identity
+          description: Specifies that the query response in the body should be encoded
+            with gzip or not encoded with identity.
+          enum:
+          - gzip
+          - identity
+          type: string
+      responses:
+        "200":
+          content:
+            multipart/mixed:
+              schema:
+                $ref: '#/components/schemas/MetadataBackup'
+          description: Snapshot of metadata
+          headers:
+            Content-Encoding:
+              description: The Content-Encoding entity header is used to compress
+                the media-type.  When present, its value indicates which encodings
+                were applied to the entity-body
+              schema:
+                default: identity
+                description: Specifies that the response in the body is encoded with
+                  gzip or not encoded with identity.
+                enum:
+                - gzip
+                - identity
+                type: string
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Download snapshot of all metadata in the server
+      tags:
+      - Backup
+  /api/v2/backup/shards/{shardID}:
+    get:
+      operationId: GetBackupShardId
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The Accept-Encoding request HTTP header advertises which content
+          encoding, usually a compression algorithm, the client is able to understand.
+        in: header
+        name: Accept-Encoding
+        schema:
+          default: identity
+          description: Specifies that the query response in the body should be encoded
+            with gzip or not encoded with identity.
+          enum:
+          - gzip
+          - identity
+          type: string
+      - description: The shard ID.
+        in: path
+        name: shardID
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: Earliest time to include in the snapshot. RFC3339 format.
+        in: query
+        name: since
+        schema:
+          format: date-time
+          type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: TSM snapshot.
+          headers:
+            Content-Encoding:
+              description: The Content-Encoding entity header is used to compress
+                the media-type.  When present, its value indicates which encodings
+                were applied to the entity-body
+              schema:
+                default: identity
+                description: Specifies that the response in the body is encoded with
+                  gzip or not encoded with identity.
+                enum:
+                - gzip
+                - identity
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Shard not found.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Download snapshot of all TSM data in a shard
+      tags:
+      - Backup
   /api/v2/buckets:
     get:
       operationId: GetBuckets
@@ -3715,6 +3821,139 @@ paths:
       - Ready
     servers:
     - url: ""
+  /api/v2/restore/bucket-metadata:
+    post:
+      operationId: PostRestoreBucketMetadata
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BucketMetadataManifest'
+        description: Metadata manifest for a bucket.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestoredBucketMappings'
+          description: ID mappings for shards in new bucket.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Create a new bucket pre-seeded with shard info from a backup.
+      tags:
+      - Restore
+  /api/v2/restore/kv:
+    post:
+      operationId: PostRestoreKV
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: When present, its value indicates to the database that compression
+          is applied to the line-protocol body.
+        in: header
+        name: Content-Encoding
+        schema:
+          default: identity
+          description: Specifies that the line protocol in the body is encoded with
+            gzip or not encoded with identity.
+          enum:
+          - gzip
+          - identity
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              format: binary
+              type: string
+        description: Full KV snapshot.
+        required: true
+      responses:
+        "204":
+          description: KV store successfully overwritten.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Overwrite the embedded KV store on the server with a backed-up snapshot.
+      tags:
+      - Restore
+  /api/v2/restore/shards/{shardID}:
+    post:
+      operationId: PostRestoreShardId
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: When present, its value indicates to the database that compression
+          is applied to the line-protocol body.
+        in: header
+        name: Content-Encoding
+        schema:
+          default: identity
+          description: Specifies that the line protocol in the body is encoded with
+            gzip or not encoded with identity.
+          enum:
+          - gzip
+          - identity
+          type: string
+      - description: The shard ID.
+        in: path
+        name: shardID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              format: binary
+              type: string
+        description: TSM snapshot.
+        required: true
+      responses:
+        "204":
+          description: TSM snapshot successfully restored.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Restore a TSM snapshot into a shard.
+      tags:
+      - Restore
+  /api/v2/restore/sql:
+    post:
+      operationId: PostRestoreSQL
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: When present, its value indicates to the database that compression
+          is applied to the line-protocol body.
+        in: header
+        name: Content-Encoding
+        schema:
+          default: identity
+          description: Specifies that the line protocol in the body is encoded with
+            gzip or not encoded with identity.
+          enum:
+          - gzip
+          - identity
+          type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              format: binary
+              type: string
+        description: Full SQL snapshot.
+        required: true
+      responses:
+        "204":
+          description: SQL store successfully overwritten.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Overwrite the embedded SQL store on the server with a backed-up snapshot.
+      tags:
+      - Restore
   /api/v2/scrapers:
     get:
       operationId: GetScrapers
@@ -6885,6 +7124,50 @@ components:
       required:
       - name
       - retentionRules
+    BucketMetadataManifest:
+      properties:
+        bucketID:
+          type: string
+        bucketName:
+          type: string
+        defaultRetentionPolicy:
+          type: string
+        description:
+          type: string
+        organizationID:
+          type: string
+        organizationName:
+          type: string
+        retentionPolicies:
+          $ref: '#/components/schemas/RetentionPolicyManifests'
+      required:
+      - organizationID
+      - organizationName
+      - bucketID
+      - bucketName
+      - defaultRetentionPolicy
+      - retentionPolicies
+      type: object
+    BucketMetadataManifests:
+      items:
+        $ref: '#/components/schemas/BucketMetadataManifest'
+      type: array
+    BucketShardMapping:
+      properties:
+        newId:
+          format: int64
+          type: integer
+        oldId:
+          format: int64
+          type: integer
+      required:
+      - oldId
+      - newId
+      type: object
+    BucketShardMappings:
+      items:
+        $ref: '#/components/schemas/BucketShardMapping'
+      type: array
     Buckets:
       properties:
         buckets:
@@ -8812,6 +9095,21 @@ components:
         type:
           $ref: '#/components/schemas/NodeType'
       type: object
+    MetadataBackup:
+      properties:
+        buckets:
+          $ref: '#/components/schemas/BucketMetadataManifests'
+        kv:
+          format: binary
+          type: string
+        sql:
+          format: binary
+          type: string
+      required:
+      - kv
+      - sql
+      - buckets
+      type: object
     MosaicViewProperties:
       properties:
         colors:
@@ -9694,6 +9992,48 @@ components:
             $ref: '#/components/schemas/ResourceOwner'
           type: array
       type: object
+    RestoredBucketMappings:
+      properties:
+        id:
+          description: New ID of the restored bucket
+          type: string
+        name:
+          type: string
+        shardMappings:
+          $ref: '#/components/schemas/BucketShardMappings'
+      required:
+      - id
+      - name
+      - shardMappings
+      type: object
+    RetentionPolicyManifest:
+      properties:
+        duration:
+          format: int64
+          type: integer
+        name:
+          type: string
+        replicaN:
+          type: integer
+        shardGroupDuration:
+          format: int64
+          type: integer
+        shardGroups:
+          $ref: '#/components/schemas/ShardGroupManifests'
+        subscriptions:
+          $ref: '#/components/schemas/SubscriptionManifests'
+      required:
+      - name
+      - replicaN
+      - duration
+      - shardGroupDuration
+      - shardGroups
+      - subscriptions
+      type: object
+    RetentionPolicyManifests:
+      items:
+        $ref: '#/components/schemas/RetentionPolicyManifest'
+      type: array
     RetentionRule:
       properties:
         everySeconds:
@@ -10126,6 +10466,63 @@ components:
         type: string
       example:
         apikey: abc123xyz
+    ShardGroupManifest:
+      properties:
+        deletedAt:
+          format: date-time
+          type: string
+        endTime:
+          format: date-time
+          type: string
+        id:
+          format: int64
+          type: integer
+        shards:
+          $ref: '#/components/schemas/ShardManifests'
+        startTime:
+          format: date-time
+          type: string
+        truncatedAt:
+          format: date-time
+          type: string
+      required:
+      - id
+      - startTime
+      - endTime
+      - shards
+      type: object
+    ShardGroupManifests:
+      items:
+        $ref: '#/components/schemas/ShardGroupManifest'
+      type: array
+    ShardManifest:
+      properties:
+        id:
+          format: int64
+          type: integer
+        shardOwners:
+          $ref: '#/components/schemas/ShardOwners'
+      required:
+      - id
+      - shardOwners
+      type: object
+    ShardManifests:
+      items:
+        $ref: '#/components/schemas/ShardManifest'
+      type: array
+    ShardOwner:
+      properties:
+        nodeID:
+          description: ID of the node that owns a shard.
+          format: int64
+          type: integer
+      required:
+      - nodeID
+      type: object
+    ShardOwners:
+      items:
+        $ref: '#/components/schemas/ShardOwner'
+      type: array
     SingleStatViewProperties:
       properties:
         colors:
@@ -10386,6 +10783,25 @@ components:
         value:
           type: string
       type: object
+    SubscriptionManifest:
+      properties:
+        destinations:
+          items:
+            type: string
+          type: array
+        mode:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - mode
+      - destinations
+      type: object
+    SubscriptionManifests:
+      items:
+        $ref: '#/components/schemas/SubscriptionManifest'
+      type: array
     TableViewProperties:
       properties:
         colors:
