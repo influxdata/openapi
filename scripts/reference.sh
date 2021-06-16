@@ -20,7 +20,6 @@ echo "Aggregating oss swaggers"
 swagrag \
   -file ${CONTRACTS}/oss.yml \
   -file ${CONTRACTS}/mapsd.yml \
-  -file ${CONTRACTS}/priv/annotationd.yml \
   -api-title "Complete InfluxDB OSS API" \
   > ${TCONTRACTS}/ref/oss.yml
 
