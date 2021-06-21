@@ -1886,7 +1886,11 @@ paths:
       - description: Specifies the organization ID to filter on
         in: query
         name: orgID
-        required: true
+        schema:
+          type: string
+      - description: Specifies the organization name to filter on
+        in: query
+        name: org
         schema:
           type: string
       - description: Specifies the mapping ID to filter on
@@ -1944,7 +1948,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DBRP'
+              $ref: '#/components/schemas/DBRPCreate'
         description: The database retention policy mapping to add
         required: true
       responses:
@@ -1977,7 +1981,11 @@ paths:
       - description: Specifies the organization ID of the mapping
         in: query
         name: orgID
-        required: true
+        schema:
+          type: string
+      - description: Specifies the organization name of the mapping
+        in: query
+        name: org
         schema:
           type: string
       - description: The database retention policy mapping
@@ -2011,7 +2019,11 @@ paths:
       - description: Specifies the organization ID of the mapping
         in: query
         name: orgID
-        required: true
+        schema:
+          type: string
+      - description: Specifies the organization name of the mapping
+        in: query
+        name: org
         schema:
           type: string
       - description: The database retention policy mapping ID
@@ -2025,7 +2037,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DBRP'
+                $ref: '#/components/schemas/DBRPGet'
           description: The database retention policy requested
         "400":
           content:
@@ -2049,7 +2061,11 @@ paths:
       - description: Specifies the organization ID of the mapping
         in: query
         name: orgID
-        required: true
+        schema:
+          type: string
+      - description: Specifies the organization name of the mapping
+        in: query
+        name: org
         schema:
           type: string
       - description: The database retention policy mapping.
@@ -2070,7 +2086,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DBRP'
+                $ref: '#/components/schemas/DBRPGet'
           description: An updated mapping
         "400":
           content:
@@ -7929,17 +7945,6 @@ components:
         - type
         type: object
     DBRP:
-      oneOf:
-      - required:
-        - orgID
-        - bucketID
-        - database
-        - retention_policy
-      - required:
-        - org
-        - bucketID
-        - database
-        - retention_policy
       properties:
         bucketID:
           description: the bucket ID used as target for the translation.
@@ -7957,6 +7962,32 @@ components:
           type: string
         links:
           $ref: '#/components/schemas/Links'
+        orgID:
+          description: the organization ID that owns this mapping.
+          type: string
+        retention_policy:
+          description: InfluxDB v1 retention policy
+          type: string
+      required:
+      - id
+      - orgID
+      - bucketID
+      - database
+      - retention_policy
+      - default
+      type: object
+    DBRPCreate:
+      properties:
+        bucketID:
+          description: the bucket ID used as target for the translation.
+          type: string
+        database:
+          description: InfluxDB v1 database
+          type: string
+        default:
+          description: Specify if this mapping represents the default retention policy
+            for the database specificed.
+          type: boolean
         org:
           description: the organization that owns this mapping.
           type: string
@@ -7966,16 +7997,21 @@ components:
         retention_policy:
           description: InfluxDB v1 retention policy
           type: string
+      required:
+      - bucketID
+      - database
+      - retention_policy
+      type: object
+    DBRPGet:
+      properties:
+        content:
+          $ref: '#/components/schemas/DBRP'
+          required: true
       type: object
     DBRPUpdate:
       properties:
-        database:
-          description: InfluxDB v1 database
-          type: string
         default:
           type: boolean
-        links:
-          $ref: '#/components/schemas/Links'
         retention_policy:
           description: InfluxDB v1 retention policy
           type: string
