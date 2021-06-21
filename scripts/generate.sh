@@ -72,6 +72,11 @@ sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-annotationd.yml > ./sr
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/annotationd.yml --type yaml && \
 rm src/.svc.yml
 
+# annotationd-oss
+sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-annotationd-oss.yml > ./src/.svc.yml && \
+swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/annotationd-oss.yml --type yaml && \
+rm src/.svc.yml
+
 # notebooksd
 sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-notebooksd.yml > ./src/.svc.yml && \
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/notebooksd.yml --type yaml && \
