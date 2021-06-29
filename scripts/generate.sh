@@ -62,11 +62,6 @@ rm src/.svc.yml
 
 ## private external service contracts
 
-# flowd
-sed -e "s|^  - url: '/'|  - url: '/api/v2private'|" src/svc-flowd.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/flowd.yml --type yaml && \
-rm src/.svc.yml
-
 # annotationd
 sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-annotationd.yml > ./src/.svc.yml && \
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/annotationd.yml --type yaml && \

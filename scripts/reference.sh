@@ -10,7 +10,6 @@ swagrag \
   -file ${CONTRACTS}/priv/cloud-priv.yml \
   -file ${CONTRACTS}/cloud.yml \
   -file ${CONTRACTS}/priv/annotationd.yml \
-  -file ${CONTRACTS}/priv/flowd.yml \
   -file ${CONTRACTS}/mapsd.yml \
   -file ${CONTRACTS}/managed-functions.yml \
   -api-title "Complete InfluxDB Cloud API" \
