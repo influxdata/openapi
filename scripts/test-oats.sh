@@ -2,23 +2,46 @@
 
 CONTRACTS=${CONTRACTS:-openapi/contracts}
 
-/src/node_modules/.bin/oats ${CONTRACTS}/oss.yml > /dev/null || exit 1
+TS=${TS:-ts}
+GEN_TS=${GEN_TS:-}
+DIFF_TS=${DIFF_TS:-}
 
-## uncomment below to test against oats' currently generated routes
-# TS=${TS:-ts}
-# mkdir -p ${TS}
+if [ ! -z "$GEN_TS" ]; then
+    mkdir -p ${TS}
 
-# /src/node_modules/.bin/oats ${CONTRACTS}/oss.yml > ${TS}/generatedRoutes.ts || exit 1
+    cat > .prettierrc.json <<-"EOF"
+{
+    "singleQuote": true,
+    "semi": false,
+    "trailingComma": "es5",
+    "bracketSpacing": false
+}
+EOF
 
-# cat > .prettierrc.json <<-"EOF"
-# {
-#   "singleQuote": true,
-#   "semi": false,
-#   "trailingComma": "es5",
-#   "bracketSpacing": false
-# }
-# EOF
+    [ ! -z "$DIFF_TS" ] && mkdir orig-ts
+fi
 
-# /src/node_modules/.bin/prettier --config .prettierrc.json --write ${TS}/generatedRoutes.ts
+for contract in $(find ${CONTRACTS} -iname *.yml | grep -v 'diff'); do
+    echo "ensuring simple oats compatibility with: ${contract}..."
+    if [ -z "$GEN_TS" ]; then
+        /src/node_modules/.bin/oats "${contract}" > /dev/null || exit 1
+    else
+        gend=${TS}/$(basename ${contract//.yml/.ts})
 
-# diff contracts/original-genRoutes.ts  contracts/generatedRoutes.ts
+        /src/node_modules/.bin/oats "${contract}" > ${gend} || exit 1
+
+        /src/node_modules/.bin/prettier --config .prettierrc.json --write ${gend}
+
+        if [ ! -z "$DIFF_TS" ]; then
+            ## generate client codes from master and compare
+            echo "diffing generated client from: ${contract}..."
+            origd=orig-ts/$(basename ${contract//.yml/.ts})
+
+            /src/node_modules/.bin/oats "https://raw.githubusercontent.com/influxdata/openapi/master/${contract#openapi/}" > ${origd} || continue
+
+            /src/node_modules/.bin/prettier --config .prettierrc.json --write ${origd}
+
+            diff ${origd} ${gend}
+        fi
+    fi
+done

@@ -1,0 +1,237 @@
+openapi: 3.0.0
+info:
+  title: notebooksd
+  version: 1.0.0
+servers:
+  - url: /api/v2private
+paths:
+  /notebooks:
+    get:
+      summary: get all Notebook records in org
+      operationId: getAllNotebooks
+      tags:
+        - Notebooks
+      parameters:
+        - name: orgID
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns all Notebook records in org
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebooks'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: creates a Notebook
+      operationId: createNotebook
+      tags:
+        - Notebooks
+      requestBody:
+        $ref: '#/components/requestBodies/NotebookParams'
+      responses:
+        '200':
+          description: Notebook created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/notebooks/{id}':
+    get:
+      summary: get single Notebook by its ID
+      operationId: getNotebook
+      tags:
+        - Notebooks
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns the Notebook record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: deletes a single Notebook by its ID
+      operationId: deleteNotebook
+      tags:
+        - Notebooks
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: update a single Notebook by its ID
+      operationId: putNotebook
+      tags:
+        - Notebooks
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/NotebookParams'
+      responses:
+        '200':
+          description: returns the Notebook record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: update a single Notebook by its ID
+      operationId: patchNotebook
+      tags:
+        - Notebooks
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/NotebookParams'
+      responses:
+        '200':
+          description: returns the Notebook record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  requestBodies:
+    NotebookParams:
+      description: Notebook record
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotebookParams'
+  schemas:
+    NotebookParams:
+      properties:
+        name:
+          type: string
+        orgID:
+          type: string
+        spec:
+          type: object
+    Notebook:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        orgID:
+          type: string
+        spec:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    NotebookArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Notebook'
+    Notebooks:
+      properties:
+        flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notebook'
+    Error:
+      properties:
+        code:
+          description: code is the machine-readable error code.
+          readOnly: true
+          type: string
+          enum:
+            - internal error
+            - not found
+            - conflict
+            - invalid
+            - unprocessable entity
+            - empty value
+            - unavailable
+            - forbidden
+            - too many requests
+            - unauthorized
+            - method not allowed
+            - request too large
+            - unsupported media type
+        message:
+          readOnly: true
+          description: message is a human-readable message.
+          type: string
+        op:
+          readOnly: true
+          description: op describes the logical code operation during error. Useful for debugging.
+          type: string
+        err:
+          readOnly: true
+          description: err is a stack of errors that occurred during processing of the request. Useful for debugging.
+          type: string
+      required:
+        - code
+        - message
+  responses:
+    NoContent:
+      description: No content
+    ServerError:
+      description: Non 2XX error response from server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

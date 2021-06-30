@@ -1,0 +1,57 @@
+get:
+  operationId: GetBackupShardId
+  tags:
+    - Backup
+  summary: Download snapshot of all TSM data in a shard
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: header
+      name: Accept-Encoding
+      description: The Accept-Encoding request HTTP header advertises which content encoding, usually a compression algorithm, the client is able to understand.
+      schema:
+        type: string
+        description: Specifies that the query response in the body should be encoded with gzip or not encoded with identity.
+        default: identity
+        enum:
+          - gzip
+          - identity
+    - in: path
+      name: shardID
+      schema:
+        type: integer
+        format: int64
+      required: true
+      description: The shard ID.
+    - in: query
+      name: since
+      description: Earliest time to include in the snapshot. RFC3339 format.
+      schema:
+        type: string
+        format: date-time
+  responses:
+    "200":
+      description: TSM snapshot.
+      headers:
+        Content-Encoding:
+          description: The Content-Encoding entity header is used to compress the media-type.  When present, its value indicates which encodings were applied to the entity-body
+          schema:
+            type: string
+            description: Specifies that the response in the body is encoded with gzip or not encoded with identity.
+            default: identity
+            enum:
+              - gzip
+              - identity
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    "404":
+      description: Shard not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'

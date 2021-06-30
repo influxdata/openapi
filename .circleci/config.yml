@@ -18,8 +18,32 @@ jobs:
       - run:
           name: Ensure compiled contracts match
           command: sh /root/project/scripts/test.sh
+  test-reference-contracts:
+    docker:
+      - image: "quay.io/influxdb/swagrag-ci"
+    steps:
+      - checkout
+      - run:
+          name: Ensure reference contracts match
+          command: sh /root/project/scripts/reference.sh
+          environment:
+            TCONTRACTS: '/tmp/contracts'
+            CONTRACTS: '/root/project/contracts'
+  lint-yamls:
+    docker:
+      - image: "cimg/base:2021.04"
+    steps:
+      - checkout
+      - run:
+          name: trailing spaces
+          command: "[ 0 -eq $(grep -rin ' $' $HOME/project/src/ | tee -a /dev/stderr | wc -l) ]"
+      - run:
+          name: missing ending newlines
+          command: "find $HOME/project/src/ -type f | xargs -I {} bash -c 'tail -c 1 {} | read -r _ || (echo \"Missing newline at end of {}\"; false)'"
 workflows:
   verify:
     jobs:
       - test-oats
       - test-contracts
+      - test-reference-contracts
+      - lint-yamls

@@ -1,6 +1,5 @@
-FROM alpine AS base
+FROM node:16-alpine
 
-RUN apk add --no-cache nodejs-current npm git
 RUN npm set progress=false && npm config set depth 0
 RUN npm install --only=production -g swagger-cli
 
