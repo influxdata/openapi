@@ -157,6 +157,28 @@ paths:
       summary: Update an authorization to be active or inactive
       tags:
       - Authorizations
+  /api/v2/backup/kv:
+    get:
+      deprecated: true
+      operationId: GetBackupKV
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: Snapshot of KV metadata
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Download snapshot of metadata stored in the server's embedded KV store.
+        Should not be used in versions > 2.1.x, as it doesn't include metadata stored
+        in embedded SQL.
+      tags:
+      - Backup
   /api/v2/backup/metadata:
     get:
       operationId: GetBackupMetadata
@@ -4041,6 +4063,47 @@ paths:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
       summary: Create a new bucket pre-seeded with shard info from a backup.
+      tags:
+      - Restore
+  /api/v2/restore/bucket/{bucketID}:
+    post:
+      deprecated: true
+      operationId: PostRestoreBucketID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The bucket ID.
+        in: path
+        name: bucketID
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: Content-Type
+        schema:
+          default: application/octet-stream
+          enum:
+          - application/octet-stream
+          type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              format: byte
+              type: string
+        description: Database info serialized as protobuf.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                format: byte
+                type: string
+          description: ID mappings for shards in bucket.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Overwrite storage metadata for a bucket with shard info from a backup.
       tags:
       - Restore
   /api/v2/restore/kv:
