@@ -22,4 +22,8 @@ swagrag \
   -api-title "Complete InfluxDB OSS API" \
   > ${TCONTRACTS}/ref/oss.yml
 
+echo "Fixing /ping path"
+sed -i '' -e "s|^  /api/v2/ping|  /ping|" ${TCONTRACTS}/ref/cloud.yml
+sed -i '' -e "s|^  /api/v2/ping|  /ping|" ${TCONTRACTS}/ref/oss.yml
+
 diff -r ${CONTRACTS}/ref ${TCONTRACTS}/ref/
