@@ -13,6 +13,7 @@ swagrag \
   -file ${CONTRACTS}/mapsd.yml \
   -file ${CONTRACTS}/managed-functions.yml \
   -api-title "Complete InfluxDB Cloud API" \
+  | sed -e 's|^  /api/v2/ping|  /ping|' \
   > ${TCONTRACTS}/ref/cloud.yml
 
 echo "Aggregating oss swaggers"
@@ -20,10 +21,7 @@ swagrag \
   -file ${CONTRACTS}/oss.yml \
   -file ${CONTRACTS}/mapsd.yml \
   -api-title "Complete InfluxDB OSS API" \
+  | sed -e 's|^  /api/v2/ping|  /ping|' \
   > ${TCONTRACTS}/ref/oss.yml
-
-echo "Fixing /ping path"
-sed -i '' -e "s|^  /api/v2/ping|  /ping|" ${TCONTRACTS}/ref/cloud.yml
-sed -i '' -e "s|^  /api/v2/ping|  /ping|" ${TCONTRACTS}/ref/oss.yml
 
 diff -r ${CONTRACTS}/ref ${TCONTRACTS}/ref/
