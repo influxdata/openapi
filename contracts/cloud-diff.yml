@@ -269,6 +269,64 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /experimental/sampledata/buckets:
+    get:
+      operationId: GetDemoDataBuckets
+      tags:
+        - DemoDataBuckets
+      summary: List of Demo Data Buckets
+      responses:
+        '200':
+          description: A list of demo data buckets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  '/experimental/sampledata/buckets/{bucketID}/members':
+    post:
+      operationId: GetDemoDataBucketMembers
+      tags:
+        - DemoDataBuckets
+      summary: List of Demo Data Buckets
+      parameters:
+        - description: bucket id
+        - in: query
+          name: bucketID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: if sampledata route is not available gateway responds with 200
+        '204':
+          description: A list of demo data buckets
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+    delete:
+      operationId: GetDemoDataBucketMembers
+      tags:
+        - DemoDataBuckets
+      summary: List of Demo Data Buckets
+      parameters:
+        - description: bucket id
+        - in: query
+          name: bucketID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: if sampledata route is not available gateway responds with 200
+        '204':
+          description: A list of demo data buckets
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -749,9 +807,9 @@ paths:
                         readOnly: true
                         description: URI of resource.
                       self:
-                        $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                        $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                       prev:
-                        $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                        $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                     required:
                       - self
                   limits:
@@ -877,6 +935,105 @@ paths:
 components:
   parameters: null
   schemas:
+    DemoDataBucket:
+      properties:
+        links:
+          type: object
+          readOnly: true
+          example:
+            labels: /api/v2/buckets/1/labels
+            members: /api/v2/buckets/1/members
+            org: /api/v2/orgs/2
+            owners: /api/v2/buckets/1/owners
+            self: /api/v2/buckets/1
+            write: /api/v2/write?org=2&bucket=1
+          properties:
+            labels:
+              description: URL to retrieve labels for this bucket
+              $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
+            members:
+              description: URL to retrieve members that can read this bucket
+              $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
+            org:
+              description: URL to retrieve parent organization for this bucket
+              $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
+            owners:
+              description: URL to retrieve owners that can read and write to this bucket.
+              $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
+            self:
+              description: URL for this bucket
+              $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
+            write:
+              description: URL to write line protocol for this bucket
+              $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
+        id:
+          readOnly: true
+          type: string
+        type:
+          readOnly: true
+          type: string
+          default: demodata
+        name:
+          type: string
+        description:
+          type: string
+        orgID:
+          type: string
+        rp:
+          type: string
+        schemaType:
+          default: implicit
+          type: string
+          enum:
+            - implicit
+            - explicit
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        retentionRules:
+          type: array
+          description: Rules to expire or retain data.  No rules means data never expires.
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                default: expire
+                enum:
+                  - expire
+              everySeconds:
+                type: integer
+                format: int64
+                description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+                example: 86400
+                minimum: 0
+              shardGroupDurationSeconds:
+                type: integer
+                format: int64
+                description: Shard duration measured in seconds.
+            required:
+              - type
+              - everySeconds
+        labels:
+          $ref: '#/components/schemas/Variable/properties/labels'
+      required:
+        - name
+        - retentionRules
+    DemoDataBuckets:
+      type: object
+      properties:
+        links:
+          readOnly: true
+          $ref: '#/paths/~1orgs~1%7BorgID%7D~1limits/get/responses/200/content/application~1json/schema/properties/links'
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/DemoDataBucket'
     Resource:
       type: object
       required:
@@ -995,10 +1152,10 @@ components:
               properties:
                 self:
                   readOnly: true
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 user:
                   readOnly: true
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
     Authorizations:
       type: object
       properties:
@@ -1115,21 +1272,21 @@ components:
                 dashboards: /api/v2/dashboards?org=myorg
               properties:
                 self:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 members:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 owners:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 labels:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 secrets:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 buckets:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 tasks:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 dashboards:
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
             id:
               readOnly: true
               type: string
@@ -1169,22 +1326,22 @@ components:
               properties:
                 labels:
                   description: URL to retrieve labels for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 members:
                   description: URL to retrieve members that can read this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 org:
                   description: URL to retrieve parent organization for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 owners:
                   description: URL to retrieve owners that can read and write to this bucket.
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 self:
                   description: URL for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
                 write:
                   description: URL to write line protocol for this bucket
-                  $ref: '#/paths/~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                  $ref: '#/components/schemas/DemoDataBuckets/properties/links/properties/next'
             id:
               readOnly: true
               type: string
@@ -1204,11 +1361,8 @@ components:
             rp:
               type: string
             schemaType:
+              $ref: '#/components/schemas/DemoDataBucket/properties/schemaType'
               default: implicit
-              type: string
-              enum:
-                - implicit
-                - explicit
             createdAt:
               type: string
               format: date-time
@@ -1218,29 +1372,7 @@ components:
               format: date-time
               readOnly: true
             retentionRules:
-              type: array
-              description: Rules to expire or retain data.  No rules means data never expires.
-              items:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    default: expire
-                    enum:
-                      - expire
-                  everySeconds:
-                    type: integer
-                    format: int64
-                    description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
-                    example: 86400
-                    minimum: 0
-                  shardGroupDurationSeconds:
-                    type: integer
-                    format: int64
-                    description: Shard duration measured in seconds.
-                required:
-                  - type
-                  - everySeconds
+              $ref: '#/components/schemas/DemoDataBucket/properties/retentionRules'
             labels:
               $ref: '#/components/schemas/Variable/properties/labels'
           required:
