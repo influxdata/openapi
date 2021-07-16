@@ -15,6 +15,12 @@ paths:
       tags:
         - OAuth
       summary: Retrieve required OAuth client variables
+      parameters:
+        - in: query
+          name: redirectTo
+          schema:
+            type: string
+          description: optional parameter to redirect the user to after a successful login.
       responses:
         '200':
           description: Required OAuth client variables
@@ -22,6 +28,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OAuthClientConfig'
+        default:
+          description: unexpected error
+          $ref: '#/components/responses/ServerError'
+  /flags:
+    get:
+      tags:
+        - Public Flags
+      summary: Retrieve public/preauth feature flags
+      responses:
+        '200':
+          description: Pre-authentication exposed feature flags
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
         default:
           description: unexpected error
           $ref: '#/components/responses/ServerError'
@@ -678,10 +700,13 @@ components:
         redirectURL:
           type: string
           format: uri
-        socialSignUpOn:
-          type: boolean
         state:
           type: string
+      required:
+        - clientID
+        - domain
+        - redirectURL
+        - state
     LimitEvent:
       type: object
       properties:
@@ -714,14 +739,20 @@ components:
           $ref: '#/components/schemas/LimitStatus'
         write:
           $ref: '#/components/schemas/LimitStatus'
+        cardinality:
+          $ref: '#/components/schemas/LimitStatus'
+      required:
+        - read
+        - write
+        - cardinality
     LimitStatus:
       type: object
       properties:
-        status:
-          type: string
-          enum:
-            - ok
-            - exceeded
+        enum:
+          - ok
+          - exceeded
+      required:
+        - status
     Limit:
       type: object
       description: These are org limits similar to those configured in/by quartz.
@@ -746,6 +777,12 @@ components:
             cardinality:
               type: integer
               description: Allowed organization total cardinality. 0 is unlimited.
+          required:
+            - readKBs
+            - concurrentReadRequests
+            - writeKBs
+            - concurrentWriteRequests
+            - cardinality
         bucket:
           type: object
           properties:
@@ -754,21 +791,30 @@ components:
             maxRetentionDuration:
               type: integer
               description: Max bucket retention duration in nanoseconds. 0 is unlimited.
+          required:
+            - maxBuckets
+            - maxRetentionDuration
         task:
           type: object
           properties:
             maxTasks:
               type: integer
+          required:
+            - maxTasks
         dashboard:
           type: object
           properties:
             maxDashboards:
               type: integer
+          required:
+            - maxDashboards
         check:
           type: object
           properties:
             maxChecks:
               type: integer
+          required:
+            - maxChecks
         notificationRule:
           type: object
           properties:
@@ -778,6 +824,9 @@ components:
               type: string
               description: comma separated list of notification rules
               example: 'http,pagerduty'
+          required:
+            - maxNotifications
+            - blockNotificationRules
         notificationEndpoint:
           type: object
           properties:
@@ -785,12 +834,22 @@ components:
               type: string
               description: comma separated list of notification endpoints
               example: 'http,pagerduty'
+          required:
+            - blockNotificationEndpoints
         features:
           type: object
           properties:
             allowDelete:
               type: boolean
               description: allow delete predicate endpoint
+      required:
+        - rate
+        - bucket
+        - task
+        - dashboard
+        - check
+        - notificationRule
+        - notificationEndpoint
     OrgSettings:
       type: object
       properties:

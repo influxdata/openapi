@@ -6544,6 +6544,22 @@ paths:
       summary: Update an annotation
       tags:
       - Annotations
+  /api/v2private/flags:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Pre-authentication exposed feature flags
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: unexpected error
+      summary: Retrieve public/preauth feature flags
+      tags:
+      - Public Flags
   /api/v2private/limitevents:
     get:
       parameters:
@@ -6592,6 +6608,13 @@ paths:
       - Limits
   /api/v2private/oauth/clientConfig:
     get:
+      parameters:
+      - description: optional parameter to redirect the user to after a successful
+          login.
+        in: query
+        name: redirectTo
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -9420,16 +9443,23 @@ components:
             maxRetentionDuration:
               description: Max bucket retention duration in nanoseconds. 0 is unlimited.
               type: integer
+          required:
+          - maxBuckets
+          - maxRetentionDuration
           type: object
         check:
           properties:
             maxChecks:
               type: integer
+          required:
+          - maxChecks
           type: object
         dashboard:
           properties:
             maxDashboards:
               type: integer
+          required:
+          - maxDashboards
           type: object
         features:
           properties:
@@ -9443,6 +9473,8 @@ components:
               description: comma separated list of notification endpoints
               example: http,pagerduty
               type: string
+          required:
+          - blockNotificationEndpoints
           type: object
         notificationRule:
           properties:
@@ -9452,6 +9484,9 @@ components:
               type: string
             maxNotifications:
               type: integer
+          required:
+          - maxNotifications
+          - blockNotificationRules
           type: object
         orgID:
           type: string
@@ -9472,12 +9507,28 @@ components:
             writeKBs:
               description: Write limit in kb/sec. 0 is unlimited.
               type: integer
+          required:
+          - readKBs
+          - concurrentReadRequests
+          - writeKBs
+          - concurrentWriteRequests
+          - cardinality
           type: object
         task:
           properties:
             maxTasks:
               type: integer
+          required:
+          - maxTasks
           type: object
+      required:
+      - rate
+      - bucket
+      - task
+      - dashboard
+      - check
+      - notificationRule
+      - notificationEndpoint
       type: object
     LimitEvent:
       properties:
@@ -9506,18 +9557,24 @@ components:
       type: object
     LimitStatus:
       properties:
-        status:
-          enum:
-          - ok
-          - exceeded
-          type: string
+        enum:
+        - ok
+        - exceeded
+      required:
+      - status
       type: object
     LimitStatuses:
       properties:
+        cardinality:
+          $ref: '#/components/schemas/LimitStatus'
         read:
           $ref: '#/components/schemas/LimitStatus'
         write:
           $ref: '#/components/schemas/LimitStatus'
+      required:
+      - read
+      - write
+      - cardinality
       type: object
     LinePlusSingleStatProperties:
       properties:
@@ -10296,10 +10353,13 @@ components:
         redirectURL:
           format: uri
           type: string
-        socialSignUpOn:
-          type: boolean
         state:
           type: string
+      required:
+      - clientID
+      - domain
+      - redirectURL
+      - state
       type: object
     ObjectExpression:
       description: Allows the declaration of an anonymous object within a declaration
