@@ -2409,6 +2409,69 @@ paths:
       summary: Delete a label from a template
       tags:
       - Templates
+  /api/v2/experimental/sampledata/buckets:
+    get:
+      operationId: GetDemoDataBuckets
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoDataBuckets'
+          description: A list of demo data buckets
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: List of Demo Data Buckets
+      tags:
+      - DemoDataBuckets
+  /api/v2/experimental/sampledata/buckets/{bucketID}/members:
+    delete:
+      operationId: GetDemoDataBucketMembers
+      parameters:
+      - description: bucket id
+      - in: path
+        name: bucketID
+        schema:
+          type: string
+      responses:
+        "200":
+          description: if sampledata route is not available gateway responds with
+            200
+        "204":
+          description: A list of demo data buckets
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: List of Demo Data Buckets
+      tags:
+      - DemoDataBuckets
+    post:
+      operationId: GetDemoDataBucketMembers
+      parameters:
+      - description: bucket id
+      - in: path
+        name: bucketID
+        schema:
+          type: string
+      responses:
+        "200":
+          description: if sampledata route is not available gateway responds with
+            200
+        "204":
+          description: A list of demo data buckets
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error
+      summary: List of Demo Data Buckets
+      tags:
+      - DemoDataBuckets
   /api/v2/flags:
     get:
       operationId: GetFlags
@@ -6571,6 +6634,22 @@ paths:
       summary: Update an annotation
       tags:
       - Annotations
+  /api/v2private/flags:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Pre-authentication exposed feature flags
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: unexpected error
+      summary: Retrieve public/preauth feature flags
+      tags:
+      - Public Flags
   /api/v2private/limitevents:
     get:
       parameters:
@@ -6619,6 +6698,14 @@ paths:
       - Limits
   /api/v2private/oauth/clientConfig:
     get:
+      parameters:
+      - description: optional parameter to redirect the user to after a successful
+          login.
+        in: query
+        name: redirectTo
+        required: false
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -8159,6 +8246,81 @@ components:
       - start
       - stop
       type: object
+    DemoDataBucket:
+      properties:
+        createdAt:
+          format: date-time
+          readOnly: true
+          type: string
+        description:
+          type: string
+        id:
+          readOnly: true
+          type: string
+        labels:
+          $ref: '#/components/schemas/Labels'
+        links:
+          example:
+            labels: /api/v2/buckets/1/labels
+            members: /api/v2/buckets/1/members
+            org: /api/v2/orgs/2
+            owners: /api/v2/buckets/1/owners
+            self: /api/v2/buckets/1
+            write: /api/v2/write?org=2&bucket=1
+          properties:
+            labels:
+              $ref: '#/components/schemas/Link'
+              description: URL to retrieve labels for this bucket
+            members:
+              $ref: '#/components/schemas/Link'
+              description: URL to retrieve members that can read this bucket
+            org:
+              $ref: '#/components/schemas/Link'
+              description: URL to retrieve parent organization for this bucket
+            owners:
+              $ref: '#/components/schemas/Link'
+              description: URL to retrieve owners that can read and write to this
+                bucket.
+            self:
+              $ref: '#/components/schemas/Link'
+              description: URL for this bucket
+            write:
+              $ref: '#/components/schemas/Link'
+              description: URL to write line protocol for this bucket
+          readOnly: true
+          type: object
+        name:
+          type: string
+        orgID:
+          type: string
+        retentionRules:
+          $ref: '#/components/schemas/RetentionRules'
+        rp:
+          type: string
+        schemaType:
+          $ref: '#/components/schemas/SchemaType'
+          default: implicit
+        type:
+          default: demodata
+          readOnly: true
+          type: string
+        updatedAt:
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - name
+      - retentionRules
+    DemoDataBuckets:
+      properties:
+        buckets:
+          items:
+            $ref: '#/components/schemas/DemoDataBucket'
+          type: array
+        links:
+          $ref: '#/components/schemas/Links'
+          readOnly: true
+      type: object
     Dialect:
       description: Dialect are options to change the default CSV output format; https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions
       properties:
@@ -9447,16 +9609,23 @@ components:
             maxRetentionDuration:
               description: Max bucket retention duration in nanoseconds. 0 is unlimited.
               type: integer
+          required:
+          - maxBuckets
+          - maxRetentionDuration
           type: object
         check:
           properties:
             maxChecks:
               type: integer
+          required:
+          - maxChecks
           type: object
         dashboard:
           properties:
             maxDashboards:
               type: integer
+          required:
+          - maxDashboards
           type: object
         features:
           properties:
@@ -9470,6 +9639,8 @@ components:
               description: comma separated list of notification endpoints
               example: http,pagerduty
               type: string
+          required:
+          - blockNotificationEndpoints
           type: object
         notificationRule:
           properties:
@@ -9479,6 +9650,9 @@ components:
               type: string
             maxNotifications:
               type: integer
+          required:
+          - maxNotifications
+          - blockNotificationRules
           type: object
         orgID:
           type: string
@@ -9499,12 +9673,28 @@ components:
             writeKBs:
               description: Write limit in kb/sec. 0 is unlimited.
               type: integer
+          required:
+          - readKBs
+          - concurrentReadRequests
+          - writeKBs
+          - concurrentWriteRequests
+          - cardinality
           type: object
         task:
           properties:
             maxTasks:
               type: integer
+          required:
+          - maxTasks
           type: object
+      required:
+      - rate
+      - bucket
+      - task
+      - dashboard
+      - check
+      - notificationRule
+      - notificationEndpoint
       type: object
     LimitEvent:
       properties:
@@ -9538,13 +9728,21 @@ components:
           - ok
           - exceeded
           type: string
+      required:
+      - status
       type: object
     LimitStatuses:
       properties:
+        cardinality:
+          $ref: '#/components/schemas/LimitStatus'
         read:
           $ref: '#/components/schemas/LimitStatus'
         write:
           $ref: '#/components/schemas/LimitStatus'
+      required:
+      - read
+      - write
+      - cardinality
       type: object
     LinePlusSingleStatProperties:
       properties:
@@ -10323,10 +10521,13 @@ components:
         redirectURL:
           format: uri
           type: string
-        socialSignUpOn:
-          type: boolean
         state:
           type: string
+      required:
+      - clientID
+      - domain
+      - redirectURL
+      - state
       type: object
     ObjectExpression:
       description: Allows the declaration of an anonymous object within a declaration
