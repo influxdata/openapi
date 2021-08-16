@@ -4100,6 +4100,166 @@ paths:
       - Ready
     servers:
     - url: ""
+  /api/v2/remotes:
+    get:
+      operationId: GetRemoteConnections
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The organization ID.
+        in: query
+        name: orgID
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: name
+        schema:
+          type: string
+      - in: query
+        name: remoteURL
+        schema:
+          format: uri
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteConnections'
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: List all remote connections
+      tags:
+      - RemoteConnections
+    post:
+      operationId: PostRemoteConnection
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: If true, validate the remote connection, but don't save it.
+        in: query
+        name: dryRun
+        schema:
+          default: false
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteConnectionCreationRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteConnection'
+          description: Remote connection validated and saved
+        "204":
+          description: Remote connection validated, but not saved
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Remote connection failed validation
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Register a new remote connection
+      tags:
+      - RemoteConnections
+  /api/v2/remotes/{remoteID}:
+    delete:
+      operationId: DeleteRemoteConnectionByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: remoteID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Remote connection info deleted.
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Delete a remote connection
+      tags:
+      - RemoteConnections
+    get:
+      operationId: GetRemoteConnectionByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: remoteID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteConnection'
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Retrieve a remote connection
+      tags:
+      - RemoteConnections
+    patch:
+      operationId: PatchRemoteConnectionByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: remoteID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteConnectionUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteConnection'
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Remote connection failed validation
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Update a remote connection
+      tags:
+      - RemoteConnections
+  /api/v2/remotes/{remoteID}/validate:
+    post:
+      operationId: PostValidateRemoteConnectionByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: remoteID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Remote connection is valid
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Remote connection failed validation
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Validate a remote connection
+      tags:
+      - RemoteConnections
   /api/v2/resources:
     get:
       operationId: GetResources
@@ -10328,6 +10488,82 @@ components:
           $ref: '#/components/schemas/NodeType'
         value:
           type: string
+      type: object
+    RemoteConnection:
+      properties:
+        allowInsecureTLS:
+          default: false
+          type: boolean
+        description:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        orgID:
+          type: string
+        remoteOrgID:
+          type: string
+        remoteURL:
+          format: uri
+          type: string
+      required:
+      - id
+      - name
+      - orgID
+      - remoteURL
+      - remoteOrgID
+      - allowInsecureTLS
+      type: object
+    RemoteConnectionCreationRequest:
+      properties:
+        allowInsecureTLS:
+          default: false
+          type: boolean
+        description:
+          type: string
+        name:
+          type: string
+        orgID:
+          type: string
+        remoteAPIToken:
+          type: string
+        remoteOrgID:
+          type: string
+        remoteURL:
+          format: uri
+          type: string
+      required:
+      - name
+      - orgID
+      - remoteURL
+      - remoteAPIToken
+      - remoteOrgID
+      - allowInsecureTLS
+      type: object
+    RemoteConnectionUpdateRequest:
+      properties:
+        allowInsecureTLS:
+          default: false
+          type: boolean
+        description:
+          type: string
+        name:
+          type: string
+        remoteAPIToken:
+          type: string
+        remoteOrgID:
+          type: string
+        remoteURL:
+          format: uri
+          type: string
+      type: object
+    RemoteConnections:
+      properties:
+        remotes:
+          items:
+            $ref: '#/components/schemas/RemoteConnection'
+          type: array
       type: object
     RenamableField:
       description: Describes a field that can be renamed and made visible or invisible.
