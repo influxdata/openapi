@@ -408,7 +408,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: The database retention policy mapping to add
+        description: The Database Retention Policy Mapping to add
         required: true
         content:
           application/json:
@@ -416,7 +416,7 @@ paths:
               $ref: '#/components/schemas/DBRPCreate'
       responses:
         '201':
-          description: Database retention policy mapping created
+          description: The created Database Retention Policy Mapping
           content:
             application/json:
               schema:
@@ -1449,90 +1449,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /dashboards:
-    post:
-      operationId: PostDashboards
-      tags:
-        - Dashboards
-      summary: Create a dashboard
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-      requestBody:
-        description: Dashboard to create
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateDashboardRequest'
-      responses:
-        '201':
-          description: Added dashboard
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Dashboard'
-                  - $ref: '#/components/schemas/DashboardWithViewProperties'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    get:
-      operationId: GetDashboards
-      tags:
-        - Dashboards
-      summary: List all dashboards
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Descending'
-        - in: query
-          name: owner
-          description: A user identifier. Returns only dashboards where this user has the `owner` role.
-          schema:
-            type: string
-        - in: query
-          name: sortBy
-          description: The column to sort by.
-          schema:
-            type: string
-            enum:
-              - ID
-              - CreatedAt
-              - UpdatedAt
-        - in: query
-          name: id
-          description: 'A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.'
-          schema:
-            type: array
-            items:
-              type: string
-        - in: query
-          name: orgID
-          description: The identifier of the organization.
-          schema:
-            type: string
-        - in: query
-          name: org
-          description: The name of the organization.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: All dashboards
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Dashboards'
         default:
           description: Unexpected error
           content:
@@ -3599,95 +3515,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /tasks:
-    get:
-      operationId: GetTasks
-      tags:
-        - Tasks
-      summary: List all tasks
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: query
-          name: name
-          description: Returns task with a specific name.
-          schema:
-            type: string
-        - in: query
-          name: after
-          schema:
-            type: string
-          description: Return tasks after a specified ID.
-        - in: query
-          name: user
-          schema:
-            type: string
-          description: Filter tasks to a specific user ID.
-        - in: query
-          name: org
-          schema:
-            type: string
-          description: Filter tasks to a specific organization name.
-        - in: query
-          name: orgID
-          schema:
-            type: string
-          description: Filter tasks to a specific organization ID.
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum:
-              - active
-              - inactive
-          description: Filter tasks by a status--"inactive" or "active".
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 500
-            default: 100
-          description: The number of tasks to return
-      responses:
-        '200':
-          description: A list of tasks
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tasks'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      operationId: PostTasks
-      tags:
-        - Tasks
-      summary: Create a new task
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-      requestBody:
-        description: Task to create
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TaskCreateRequest'
-      responses:
-        '201':
-          description: Task created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   '/tasks/{taskID}':
     get:
       operationId: GetTasksID
@@ -5646,7 +5473,7 @@ paths:
           description: The ID of the authorization to update.
       responses:
         '200':
-          description: The active or inactie authorization
+          description: The active or inactive authorization
           content:
             application/json:
               schema:
@@ -6664,7 +6491,7 @@ paths:
       operationId: GetBackupKV
       tags:
         - Backup
-      summary: 'Download snapshot of metadata stored in the server''s embedded KV store. Should not be used in versions > 2.1.x, as it doesn''t include metadata stored in embedded SQL.'
+      summary: 'Download snapshot of metadata stored in the server''s embedded KV store. Should not be used in versions greater than 2.1.x, as it doesn''t include metadata stored in embedded SQL.'
       deprecated: true
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
@@ -6989,6 +6816,7 @@ paths:
             format: uri
       responses:
         '200':
+          description: List of remote connections
           content:
             application/json:
               schema:
@@ -7044,6 +6872,7 @@ paths:
           required: true
       responses:
         '200':
+          description: Remote connection
           content:
             application/json:
               schema:
@@ -7131,6 +6960,351 @@ paths:
           $ref: '#/components/responses/ServerError'
         default:
           $ref: '#/components/responses/ServerError'
+  /replications:
+    get:
+      operationId: GetReplications
+      tags:
+        - Replications
+      summary: List all replications
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: query
+          name: orgID
+          description: The organization ID.
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: remoteID
+          schema:
+            type: string
+        - in: query
+          name: localBucketID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of replications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replications'
+        '404':
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+    post:
+      operationId: PostReplication
+      tags:
+        - Replications
+      summary: Register a new replication
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: query
+          name: validate
+          description: 'If true, validate the replication, but don''t save it.'
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicationCreationRequest'
+      responses:
+        '201':
+          description: Replication saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replication'
+        '204':
+          description: 'Replication validated, but not saved'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+  '/replications/{replicationID}':
+    get:
+      operationId: GetReplicationByID
+      tags:
+        - Replications
+      summary: Retrieve a replication
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: replicationID
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Replication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replication'
+        '404':
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+    patch:
+      operationId: PatchReplicationByID
+      tags:
+        - Replications
+      summary: Update a replication
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: replicationID
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: validate
+          description: 'If true, validate the updated information, but don''t save it.'
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicationUpdateRequest'
+      responses:
+        '200':
+          description: Updated information saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replication'
+        '204':
+          description: 'Updated replication validated, but not saved'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+    delete:
+      operationId: DeleteReplicationByID
+      tags:
+        - Replications
+      summary: Delete a replication
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: replicationID
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Replication deleted.
+        '404':
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+  '/replications/{replicationID}/validate':
+    post:
+      operationId: PostValidateReplicationByID
+      tags:
+        - Replications
+      summary: Validate a replication
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: replicationID
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Replication is valid
+        '400':
+          description: Replication failed validation
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+  /dashboards:
+    post:
+      operationId: PostDashboards
+      tags:
+        - Dashboards
+      summary: Create a dashboard
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      requestBody:
+        description: Dashboard to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDashboardRequest'
+      responses:
+        '201':
+          description: Added dashboard
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Dashboard'
+                  - $ref: '#/components/schemas/DashboardWithViewProperties'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      operationId: GetDashboards
+      tags:
+        - Dashboards
+      summary: List all dashboards
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Descending'
+        - in: query
+          name: owner
+          description: A user identifier. Returns only dashboards where this user has the `owner` role.
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: The column to sort by.
+          schema:
+            type: string
+            enum:
+              - ID
+              - CreatedAt
+              - UpdatedAt
+        - in: query
+          name: id
+          description: 'A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.'
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: orgID
+          description: The identifier of the organization.
+          schema:
+            type: string
+        - in: query
+          name: org
+          description: The name of the organization.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All dashboards
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboards'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks:
+    get:
+      operationId: GetTasks
+      tags:
+        - Tasks
+      summary: List all tasks
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: query
+          name: name
+          description: Returns task with a specific name.
+          schema:
+            type: string
+        - in: query
+          name: after
+          schema:
+            type: string
+          description: Return tasks after a specified ID.
+        - in: query
+          name: user
+          schema:
+            type: string
+          description: Filter tasks to a specific user ID.
+        - in: query
+          name: org
+          schema:
+            type: string
+          description: Filter tasks to a specific organization name.
+        - in: query
+          name: orgID
+          schema:
+            type: string
+          description: Filter tasks to a specific organization ID.
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - active
+              - inactive
+          description: Filter tasks by a status--"inactive" or "active".
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+          description: The number of tasks to return
+      responses:
+        '200':
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tasks'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: PostTasks
+      tags:
+        - Tasks
+      summary: Create a new task
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      requestBody:
+        description: Task to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   parameters:
     TraceSpan:
@@ -13002,6 +13176,91 @@ components:
         allowInsecureTLS:
           type: boolean
           default: false
+    Replication:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        orgID:
+          type: string
+        remoteID:
+          type: string
+        localBucketID:
+          type: string
+        remoteBucketID:
+          type: string
+        maxQueueSizeBytes:
+          type: integer
+          format: int64
+        currentQueueSizeBytes:
+          type: integer
+          format: int64
+        latestResponseCode:
+          type: integer
+        latestErrorMessage:
+          type: string
+      required:
+        - id
+        - name
+        - remoteID
+        - orgID
+        - localBucketID
+        - remoteBucketID
+        - maxQueueSizeBytes
+        - currentQueueSizeBytes
+    Replications:
+      type: object
+      properties:
+        replications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Replication'
+    ReplicationCreationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        orgID:
+          type: string
+        remoteID:
+          type: string
+        localBucketID:
+          type: string
+        remoteBucketID:
+          type: string
+        maxQueueSizeBytes:
+          type: integer
+          format: int64
+          minimum: 33554430
+          default: 67108860
+      required:
+        - name
+        - orgID
+        - remoteID
+        - sourceBucketID
+        - targetBucketID
+        - maxQueueSizeBytes
+    ReplicationUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        remoteID:
+          type: string
+        remoteBucketID:
+          type: string
+        maxQueueSizeBytes:
+          type: integer
+          format: int64
+          minimum: 33554430
   responses:
     ServerError:
       description: Non 2XX error response from server.

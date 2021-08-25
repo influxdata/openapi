@@ -150,7 +150,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: The active or inactie authorization
+          description: The active or inactive authorization
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
@@ -175,8 +175,8 @@ paths:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
       summary: Download snapshot of metadata stored in the server's embedded KV store.
-        Should not be used in versions > 2.1.x, as it doesn't include metadata stored
-        in embedded SQL.
+        Should not be used in versions greater than 2.1.x, as it doesn't include metadata
+        stored in embedded SQL.
       tags:
       - Backup
   /api/v2/backup/metadata:
@@ -1848,7 +1848,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/DBRPCreate'
-        description: The database retention policy mapping to add
+        description: The Database Retention Policy Mapping to add
         required: true
       responses:
         "201":
@@ -1856,7 +1856,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DBRP'
-          description: Database retention policy mapping created
+          description: The created Database Retention Policy Mapping
         "400":
           content:
             application/json:
@@ -4126,6 +4126,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RemoteConnections'
+          description: List of remote connections
         "404":
           $ref: '#/components/responses/ServerError'
         default:
@@ -4200,6 +4201,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RemoteConnection'
+          description: Remote connection
         "404":
           $ref: '#/components/responses/ServerError'
         default:
@@ -4267,6 +4269,178 @@ paths:
       summary: Validate a remote connection
       tags:
       - RemoteConnections
+  /api/v2/replications:
+    get:
+      operationId: GetReplications
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The organization ID.
+        in: query
+        name: orgID
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: name
+        schema:
+          type: string
+      - in: query
+        name: remoteID
+        schema:
+          type: string
+      - in: query
+        name: localBucketID
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replications'
+          description: List of replications
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: List all replications
+      tags:
+      - Replications
+    post:
+      operationId: PostReplication
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: If true, validate the replication, but don't save it.
+        in: query
+        name: validate
+        schema:
+          default: false
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicationCreationRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replication'
+          description: Replication saved
+        "204":
+          description: Replication validated, but not saved
+        "400":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Register a new replication
+      tags:
+      - Replications
+  /api/v2/replications/{replicationID}:
+    delete:
+      operationId: DeleteReplicationByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: replicationID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Replication deleted.
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Delete a replication
+      tags:
+      - Replications
+    get:
+      operationId: GetReplicationByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: replicationID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replication'
+          description: Replication
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Retrieve a replication
+      tags:
+      - Replications
+    patch:
+      operationId: PatchReplicationByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: replicationID
+        required: true
+        schema:
+          type: string
+      - description: If true, validate the updated information, but don't save it.
+        in: query
+        name: validate
+        schema:
+          default: false
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicationUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Replication'
+          description: Updated information saved
+        "204":
+          description: Updated replication validated, but not saved
+        "400":
+          $ref: '#/components/responses/ServerError'
+        "404":
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Update a replication
+      tags:
+      - Replications
+  /api/v2/replications/{replicationID}/validate:
+    post:
+      operationId: PostValidateReplicationByID
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - in: path
+        name: replicationID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Replication is valid
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Replication failed validation
+        default:
+          $ref: '#/components/responses/ServerError'
+      summary: Validate a replication
+      tags:
+      - Replications
   /api/v2/resources:
     get:
       operationId: GetResources
@@ -10585,6 +10759,91 @@ components:
         visible:
           description: Indicates whether this field should be visible on the table.
           type: boolean
+      type: object
+    Replication:
+      properties:
+        currentQueueSizeBytes:
+          format: int64
+          type: integer
+        description:
+          type: string
+        id:
+          type: string
+        latestErrorMessage:
+          type: string
+        latestResponseCode:
+          type: integer
+        localBucketID:
+          type: string
+        maxQueueSizeBytes:
+          format: int64
+          type: integer
+        name:
+          type: string
+        orgID:
+          type: string
+        remoteBucketID:
+          type: string
+        remoteID:
+          type: string
+      required:
+      - id
+      - name
+      - remoteID
+      - orgID
+      - localBucketID
+      - remoteBucketID
+      - maxQueueSizeBytes
+      - currentQueueSizeBytes
+      type: object
+    ReplicationCreationRequest:
+      properties:
+        description:
+          type: string
+        localBucketID:
+          type: string
+        maxQueueSizeBytes:
+          default: 67108860
+          format: int64
+          minimum: 33554430
+          type: integer
+        name:
+          type: string
+        orgID:
+          type: string
+        remoteBucketID:
+          type: string
+        remoteID:
+          type: string
+      required:
+      - name
+      - orgID
+      - remoteID
+      - sourceBucketID
+      - targetBucketID
+      - maxQueueSizeBytes
+      type: object
+    ReplicationUpdateRequest:
+      properties:
+        description:
+          type: string
+        maxQueueSizeBytes:
+          format: int64
+          minimum: 33554430
+          type: integer
+        name:
+          type: string
+        remoteBucketID:
+          type: string
+        remoteID:
+          type: string
+      type: object
+    Replications:
+      properties:
+        replications:
+          items:
+            $ref: '#/components/schemas/Replication'
+          type: array
       type: object
     Resource:
       properties:
