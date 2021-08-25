@@ -1,0 +1,90 @@
+post:
+  operationId: PostDashboards
+  tags:
+    - Dashboards
+  summary: Create a dashboard
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+  requestBody:
+    description: Dashboard to create
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../common/schemas/CreateDashboardRequest.yml"
+  responses:
+    "201":
+      description: Added dashboard
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../../common/schemas/Dashboard.yml"
+              - $ref: "../../common/schemas/DashboardWithViewProperties.yml"
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+get:
+  operationId: GetDashboards
+  tags:
+    - Dashboards
+  summary: List all dashboards
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - $ref: "../../common/parameters/Offset.yml"
+    - $ref: "../../common/parameters/Descending.yml"
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: -1
+        maximum: 100
+        default: 20
+      description: The non-zero number of dashboards to return
+    - in: query
+      name: owner
+      description: A user identifier. Returns only dashboards where this user has the `owner` role.
+      schema:
+        type: string
+    - in: query
+      name: sortBy
+      description: The column to sort by.
+      schema:
+        type: string
+        enum:
+          - "ID"
+          - "CreatedAt"
+          - "UpdatedAt"
+    - in: query
+      name: id
+      description: A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.
+      schema:
+        type: array
+        items:
+          type: string
+    - in: query
+      name: orgID
+      description: The identifier of the organization.
+      schema:
+        type: string
+    - in: query
+      name: org
+      description: The name of the organization.
+      schema:
+        type: string
+  responses:
+    "200":
+      description: All dashboards
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Dashboards.yml"
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
