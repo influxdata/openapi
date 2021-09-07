@@ -1,12 +1,15 @@
 #!/bin/sh
 
 CONTRACTS=${CONTRACTS:-contracts}
+INFLUXDB_DOCS_URL=https://docs.influxdb.com/influxdb
 
 # generate oss contract
 sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/oss.yml |
 sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
 sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > src/.oss_gen.yml && \
-swagger-cli bundle src/.oss_gen.yml --outfile ${CONTRACTS}/oss.yml --type yaml && \
+swagger-cli bundle src/.oss_gen.yml --type yaml | \
+(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/v2.0|" > ${CONTRACTS}/oss.yml)  && \
+swagger-cli bundle ${CONTRACTS}/oss.yml --outfile ${CONTRACTS}/oss.yml --type yaml
 swagger-cli bundle src/.oss_gen.yml --outfile ${CONTRACTS}/oss.json --type json && \
 rm src/.oss_gen.yml
 
