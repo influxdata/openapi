@@ -2,17 +2,96 @@ openapi: 3.0.0
 info:
   title: Influx OSS API Service
   version: 2.0.0
+  description: |
+    The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
 servers:
   - url: /api/v2
+tags:
+  - name: Authentication
+    description: |
+      Use one of the following schemes to authenticate to the InfluxDB API: 
+      - [Token authentication](#section/Authentication/TokenAuth)
+      - [Basic authentication](#section/Authentication/BasicAuth)
+      - [Querystring authentication](#section/Authentication/QuerystringAuth)
+      <!-- ReDoc-Inject: <security-definitions> -->
+    x-traitTag: true
+  - name: Query
+    description: |
+      Retrieve data, analyze queries, and get query suggestions.
+  - name: Write
+    description: |
+      Write time-series data to buckets.
+  - name: Authorizations
+    description: |
+      Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. To assign a token to a specific user, scope the authorization to the user ID.
+x-tagGroups:
+  - name: Get started
+    tags:
+      - Authentication
+  - name: ' '
+    tags:
+      - Write
+      - Query
+  - name: Resource endpoints
+    tags:
+      - Buckets
+      - Dashboards
+      - Tasks
+  - name: Security and access endpoints
+    tags:
+      - Authorizations
+      - Organizations
+      - Users
+  - name: System information endpoints
+    tags:
+      - Health
+      - Ping
+      - Ready
+      - Routes
+  - name: All endpoints
+    tags:
+      - Authorizations
+      - Backup
+      - Buckets
+      - Cells
+      - Checks
+      - DBRPs
+      - Dashboards
+      - Delete
+      - Health
+      - Labels
+      - Legacy Authorizations
+      - NotificationEndpoints
+      - NotificationRules
+      - Organizations
+      - Ping
+      - Query
+      - Ready
+      - RemoteConnections
+      - Replications
+      - Restore
+      - Routes
+      - Rules
+      - Secrets
+      - Setup
+      - Signin
+      - Signout
+      - Sources
+      - Tasks
+      - Telegrafs
+      - Templates
+      - Users
+      - Variables
+      - Write
 paths:
   /health:
-    servers:
-      - url: ''
     get:
       operationId: GetHealth
       tags:
         - Health
       summary: Get the health of an instance
+      servers:
+        - url: /
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       responses:
@@ -53,13 +132,13 @@ paths:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
   /ready:
-    servers:
-      - url: ''
     get:
       operationId: GetReady
       tags:
         - Ready
       summary: Get the readiness of an instance at startup
+      servers:
+        - url: /
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -5173,6 +5252,59 @@ components:
               - code
               - message
   securitySchemes:
+    TokenAuth:
+      type: http
+      scheme: token
+      bearerFormat: InfluxDB Token String
+      description: |
+        InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.
+
+        Include your API token in an `Authentication: Token YOUR_API_TOKEN` HTTP header with each request.
+
+        ### Example
+
+          `curl http://localhost:8086/ping
+              --header "Authentication: Token YOUR_API_TOKEN"`
+
+        For more information and examples, see the following:
+          - [Use tokens in API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
+          - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
+          - [`/authorizations`](#tag/Authorizations) endpoint.
     BasicAuth:
       type: http
       scheme: basic
+      description: |
+        Use Basic authentication with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme).
+
+        Username and password schemes require the following credentials:
+          - **username**: 1.x username (this is separate from the UI login username)
+          - **password**: 1.x password or InfluxDB API token
+
+        ### Example
+
+        `curl --get "http://localhost:8086/query"
+              --user "YOUR_1.x_USERNAME":"YOUR_TOKEN_OR_PASSWORD"`
+
+        For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
+    QuerystringAuth:
+      type: apiKey
+      in: query
+      name: u=&p=
+      description: |
+        Use InfluxDB 1.x API parameters to provide credentials through the query string.
+
+        Username and password schemes require the following credentials:
+          - **username**: 1.x username (this is separate from the UI login username)
+          - **password**: 1.x password or InfluxDB API token
+
+        ### Example
+
+        `curl --get "http://localhost:8086/query"
+              --data-urlencode "u=YOUR_1.x_USERNAME"
+              --data-urlencode "p=YOUR_TOKEN_OR_PASSWORD"`
+
+        For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
+security:
+  - TokenAuth: []
+  - BasicAuth: []
+  - QuerystringAuth: []
