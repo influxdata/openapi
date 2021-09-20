@@ -147,6 +147,182 @@ paths:
           $ref: '#/components/responses/ServerError'
         '500':
           $ref: '#/components/responses/ServerError'
+  /notebooks/share:
+    get:
+      summary: get all Share records in org
+      operationId: getAllShares
+      tags:
+        - Share
+      parameters:
+        - name: orgID
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: notebookID
+          in: query
+          schema:
+            type: string
+          required: false
+      responses:
+        '200':
+          description: returns all Share records in org
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shares'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: creates a Share
+      operationId: createShare
+      tags:
+        - Share
+      requestBody:
+        $ref: '#/components/requestBodies/ShareParams'
+      responses:
+        '200':
+          description: Share created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Share'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/notebooks/share/{id}':
+    get:
+      summary: get single Share by its ID
+      operationId: getShare
+      tags:
+        - Share
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns the Share record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Share'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: deletes a single Share by its ID
+      operationId: deleteShare
+      tags:
+        - Share
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          $ref: '#/components/responses/ServerError'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: update a single Share by its ID
+      operationId: putShare
+      tags:
+        - Share
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/ShareParams'
+      responses:
+        '200':
+          description: returns the Share record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Share'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/api/share/{id}/query/{pipeID}':
+    get:
+      summary: run the pipe's query and return the result
+      operationId: queryPipe
+      tags:
+        - Unauthenticated
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: pipeID
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns result from the pipe's query
+          content:
+            text/csv:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/api/share/{id}':
+    get:
+      summary: get a notebook by an accessID
+      operationId: getSharedNotebook
+      tags:
+        - Unauthenticated
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns the shared Notebook record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
   requestBodies:
     NotebookParams:
@@ -156,6 +332,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/NotebookParams'
+    ShareParams:
+      description: Share record
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ShareParams'
   schemas:
     NotebookParams:
       properties:
@@ -191,6 +374,40 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Notebook'
+    ShareParams:
+      properties:
+        notebookID:
+          type: string
+        orgID:
+          type: string
+        token:
+          type: string
+        region:
+          type: string
+    Share:
+      properties:
+        id:
+          type: string
+        orgID:
+          type: string
+        notebookID:
+          type: string
+        accessID:
+          type: string
+        token:
+          type: object
+        region:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Shares:
+      type: array
+      items:
+        $ref: '#/components/schemas/Share'
     Error:
       properties:
         code:
