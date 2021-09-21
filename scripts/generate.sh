@@ -8,7 +8,7 @@ sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/oss.yml |
 sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
 sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > src/.oss_gen.yml && \
 swagger-cli bundle src/.oss_gen.yml --type yaml | \
-(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/v2.0|g" > ${CONTRACTS}/oss.yml)  && \
+(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/v2.0|g" > ${CONTRACTS}/oss.yml) && \
 swagger-cli bundle ${CONTRACTS}/oss.yml --outfile ${CONTRACTS}/oss.yml --type yaml
 swagger-cli bundle src/.oss_gen.yml --outfile ${CONTRACTS}/oss.json --type json && \
 rm src/.oss_gen.yml
@@ -18,7 +18,7 @@ sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/cloud.yml |
 sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
 sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > ./src/.cloud_gen.yml && \
 swagger-cli bundle src/.cloud_gen.yml --type yaml | \
-(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/cloud|g" > ${CONTRACTS}/cloud.yml)  && \
+(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/cloud|g" > ${CONTRACTS}/cloud.yml) && \
 swagger-cli bundle ${CONTRACTS}/cloud.yml --outfile ${CONTRACTS}/cloud.yml --type yaml
 swagger-cli bundle src/.cloud_gen.yml --outfile ${CONTRACTS}/cloud.json --type json && \
 rm src/.cloud_gen.yml
@@ -28,7 +28,7 @@ sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/common.yml |
 sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
 sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > src/.common_gen.yml && \
 swagger-cli bundle src/.common_gen.yml --type yaml | \
-(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/common|g" > ${CONTRACTS}/common.yml)  && \
+(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/common|g" > ${CONTRACTS}/common.yml) && \
 swagger-cli bundle ${CONTRACTS}/common.yml --outfile ${CONTRACTS}/common.yml --type yaml
 rm src/.common_gen.yml
 
