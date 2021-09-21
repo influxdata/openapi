@@ -3,6 +3,8 @@
 CONTRACTS=${CONTRACTS:-contracts}
 INFLUXDB_DOCS_URL=https://docs.influxdata.com/influxdb
 
+mkdir -p $CONTRACTS
+
 # generate oss contract
 sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/oss.yml |
 sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
