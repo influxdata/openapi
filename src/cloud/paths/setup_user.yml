@@ -20,4 +20,57 @@ post:
             $ref: "../schemas/OnboardingResponse.yml"
     default:
       description: Unexpected error
-      $ref: '../../common/responses/ServerError.yml'
+      $ref: "../../common/responses/ServerError.yml"
+put:
+    operationId: PutSetupUser
+    tags:
+      - Setup
+    description: Create a new user, organization, and bucket. Idempotent. Requests can be retried.
+    requestBody:
+      description: Create user and org with supplied IDs
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/OnboardingWithIDsRequest.yml"
+    responses:
+      "201":
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/OnboardingWithTokenResponse.yml"
+        description: The user name and ID, the org name and ID, the token for user if requested
+      "400":
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/responses/ServerError.yml"
+        description: Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names, and invalid limits
+      "401":
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/responses/ServerError.yml"
+        description: Credentials not provided
+      "403":
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/responses/ServerError.yml"
+        description: Insufficient credentials to create an organization
+      "409":
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/responses/ServerError.yml"
+        description: Conflict. Causes can be user already exists with a different name, org already exists with a different name, org exists with different limits.
+      "501":
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/responses/ServerError.yml"
+        description: Internal Server Error. Request can be retried
+      default:
+        $ref: "../../common/responses/ServerError.yml"
+        description: Unexpected error
+

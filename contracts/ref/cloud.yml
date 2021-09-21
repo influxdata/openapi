@@ -4495,6 +4495,99 @@ paths:
       summary: Create a new user, organization, and bucket
       tags:
       - Setup
+    put:
+      description: Create a new user, organization, and bucket. Idempotent. Requests
+        can be retried.
+      operationId: PutSetupUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                config:
+                  properties:
+                    bucket:
+                      description: name of non system bucket
+                      type: string
+                    limit:
+                      $ref: '#/components/schemas/Limit'
+                    retentionPeriodSeconds:
+                      description: retention period of non system bucket
+                      type: integer
+                  type: object
+                org:
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                  type: object
+                returnToken:
+                  description: if true will return the auth token in the response
+                  type: bool
+                user:
+                  $ref: '#/paths/~1setup~1user/put/requestBody/content/application~1json/schema/properties/org'
+              required:
+              - username
+              - org
+              - config
+              type: object
+        description: Create user and org with supplied IDs
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                properties:
+                  auth:
+                    description: the auth token for the created user
+                    type: string
+                  org:
+                    $ref: '#/paths/~1setup~1user/put/requestBody/content/application~1json/schema/properties/org'
+                  user:
+                    $ref: '#/paths/~1setup~1user/put/requestBody/content/application~1json/schema/properties/org'
+                type: object
+          description: The user name and ID, the org name and ID, the token for user
+            if requested
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Bad request. Data in request is invalid. Examples include Invalid
+            IDs, invalid names, and invalid limits
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Insufficient credentials to create an organization
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Conflict. Causes can be user already exists with a different
+            name, org already exists with a different name, org exists with different
+            limits.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      tags:
+      - Setup
   /api/v2/signin:
     post:
       operationId: PostSignin
@@ -6902,6 +6995,63 @@ paths:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
       summary: Create a new user, organization, and bucket
+      tags:
+      - Setup
+    put:
+      description: Create a new user, organization, and bucket. Idempotent. Requests
+        can be retried.
+      operationId: PutSetupUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingWithIDsRequest'
+        description: Create user and org with supplied IDs
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingWithTokenResponse'
+          description: The user name and ID, the org name and ID, the token for user
+            if requested
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Bad request. Data in request is invalid. Examples include Invalid
+            IDs, invalid names, and invalid limits
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Insufficient credentials to create an organization
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Conflict. Causes can be user already exists with a different
+            name, org already exists with a different name, org exists with different
+            limits.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
       tags:
       - Setup
   /api/v2private/streams:
@@ -9476,6 +9626,22 @@ components:
         type:
           $ref: '#/components/schemas/NodeType'
       type: object
+    Identity:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+    IdentityLinks:
+      properties:
+        id:
+          type: string
+        links:
+          $ref: '#/components/schemas/Links'
+        name:
+          type: string
+      type: object
     ImportDeclaration:
       description: Declares a package import
       properties:
@@ -10960,6 +11126,66 @@ components:
               type: string
           required:
           - name
+      type: object
+    OnboardingUserRequest:
+      properties:
+        orgID:
+          description: organization id to add user to
+          type: string
+        role:
+          description: Role of the User
+          enum:
+          - owner
+          - member
+          type: string
+        user:
+          $ref: '#/components/schemas/Identity'
+      required:
+      - user
+      - orgID
+      - Role
+      type: object
+    OnboardingWithIDsRequest:
+      properties:
+        config:
+          properties:
+            bucket:
+              description: name of non system bucket
+              type: string
+            limit:
+              $ref: '#/components/schemas/Limit'
+            retentionPeriodSeconds:
+              description: retention period of non system bucket
+              type: integer
+          type: object
+        org:
+          $ref: '#/components/schemas/Identity'
+        returnToken:
+          description: if true will return the auth token in the response
+          type: bool
+        user:
+          $ref: '#/components/schemas/Identity'
+      required:
+      - username
+      - org
+      - config
+      type: object
+    OnboardingWithIDsResponse:
+      properties:
+        org:
+          $ref: '#/components/schemas/IdentityLinks'
+        user:
+          $ref: '#/components/schemas/Identity'
+      type: object
+    OnboardingWithTokenResponse:
+      properties:
+        auth:
+          description: the auth token for the created user
+          type: string
+        org:
+          $ref: '#/components/schemas/Identity'
+        user:
+          $ref: '#/components/schemas/Identity'
       type: object
     OptionStatement:
       description: A single variable declaration
