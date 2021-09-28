@@ -6924,40 +6924,16 @@ paths:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
       summary: Create or update settings for an org
-  /api/v2private/setup/user:
-    post:
-      description: Post an onboarding request to create a new user, organization,
-        and bucket.
-      operationId: PostSetupUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OnboardingRequest'
-        description: Source to create
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OnboardingResponse'
-          description: The created default user, bucket, and organization.
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Create a new user, organization, and bucket
-      tags:
-      - Setup
+  /api/v2private/provision:
     put:
       description: Create a new user, organization, and bucket. Idempotent. Requests
         can be retried.
-      operationId: PutSetupUser
+      operationId: PutProvision
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OnboardingWithIDsRequest'
+              $ref: '#/components/schemas/ProvisionRequest'
         description: Create user and org with supplied IDs
         required: true
       responses:
@@ -6965,7 +6941,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OnboardingWithTokenResponse'
+                $ref: '#/components/schemas/ProvisionResponse'
           description: The user name and ID, the org name and ID, the token for user
             if requested
         "400":
@@ -6995,6 +6971,13 @@ paths:
           description: Conflict. Causes can be user already exists with a different
             name, org already exists with a different name, org exists with different
             limits.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Unprocessable Entity. Retention seconds that are higher than
+            max allowed.
         "501":
           content:
             application/json:
@@ -7006,6 +6989,73 @@ paths:
           description: Unexpected error
       tags:
       - Setup
+  /api/v2private/provision/user:
+    put:
+      operationId: PutProvisionUser
+      parameters:
+      - description: OpenTracing span context
+        example:
+          baggage:
+            key: value
+          span_id: "1"
+          trace_id: "1"
+        in: header
+        name: Zap-Trace-Span
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionUserRequest'
+        description: User to create and org id to add user to
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionUserResponse'
+          description: User created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Bad request. Data in request is invalid. Examples include Invalid
+            IDs, invalid names.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Insufficient credentials to create a user
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Conflict. User already exists with a different name.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Create/Add a user to an existing org. Creates a user if doesn't exist.
+        Idempotent
+      tags:
+      - Users
   /api/v2private/streams:
     delete:
       operationId: deleteStream
@@ -7167,72 +7217,6 @@ paths:
           $ref: '#/components/responses/ServerError'
           description: unexpected error
       summary: This is a temporary, experimental, soon to be depricated API for Quartz
-  /api/v2private/user:
-    put:
-      operationId: PutUserPrivate
-      parameters:
-      - description: OpenTracing span context
-        example:
-          baggage:
-            key: value
-          span_id: "1"
-          trace_id: "1"
-        in: header
-        name: Zap-Trace-Span
-        required: false
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OnboardingUserRequest'
-        description: User to create and org id to add user to
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OnboardingUserResponse'
-          description: User created
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Bad request. Data in request is invalid. Examples include Invalid
-            IDs, invalid names.
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Credentials not provided
-        "403":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Insufficient credentials to create a user
-        "409":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Conflict. User already exists with a different name.
-        "501":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Internal Server Error. Request can be retried.
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Create a user. Idempotent
-      tags:
-      - Users
 components:
   parameters:
     After:
@@ -11145,66 +11129,6 @@ components:
           required:
           - name
       type: object
-    OnboardingUserRequest:
-      properties:
-        orgID:
-          description: organization id to add user to
-          type: string
-        role:
-          description: Role of the User
-          enum:
-          - owner
-          - member
-          type: string
-        user:
-          $ref: '#/components/schemas/Identity'
-      required:
-      - user
-      - orgID
-      - role
-      type: object
-    OnboardingUserResponse:
-      properties:
-        org:
-          $ref: '#/components/schemas/Identity'
-        user:
-          $ref: '#/components/schemas/Identity'
-      type: object
-    OnboardingWithIDsRequest:
-      properties:
-        config:
-          properties:
-            bucket:
-              description: name of non system bucket
-              type: string
-            limit:
-              $ref: '#/components/schemas/Limit'
-            retentionPeriodSeconds:
-              description: retention period of non system bucket
-              type: integer
-          type: object
-        org:
-          $ref: '#/components/schemas/Identity'
-        returnToken:
-          description: if true will return the auth token in the response
-          type: bool
-        user:
-          $ref: '#/components/schemas/Identity'
-      required:
-      - username
-      - org
-      - config
-      type: object
-    OnboardingWithTokenResponse:
-      properties:
-        org:
-          $ref: '#/components/schemas/IdentityWithLinks'
-        token:
-          description: the token for the created user
-          type: string
-        user:
-          $ref: '#/components/schemas/Identity'
-      type: object
     OptionStatement:
       description: A single variable declaration
       properties:
@@ -11507,6 +11431,66 @@ components:
       oneOf:
       - $ref: '#/components/schemas/Identifier'
       - $ref: '#/components/schemas/StringLiteral'
+    ProvisionRequest:
+      properties:
+        config:
+          properties:
+            bucket:
+              description: name of non system bucket
+              type: string
+            limit:
+              $ref: '#/components/schemas/Limit'
+            retentionPeriodSeconds:
+              description: retention period of non system bucket
+              type: integer
+          type: object
+        org:
+          $ref: '#/components/schemas/Identity'
+        returnToken:
+          description: if true will return the auth token in the response
+          type: bool
+        user:
+          $ref: '#/components/schemas/Identity'
+      required:
+      - username
+      - org
+      - config
+      type: object
+    ProvisionResponse:
+      properties:
+        org:
+          $ref: '#/components/schemas/IdentityWithLinks'
+        token:
+          description: the token for the created user
+          type: string
+        user:
+          $ref: '#/components/schemas/Identity'
+      type: object
+    ProvisionUserRequest:
+      properties:
+        orgID:
+          description: organization id to add user to
+          type: string
+        role:
+          description: Role of the User
+          enum:
+          - owner
+          - member
+          type: string
+        user:
+          $ref: '#/components/schemas/Identity'
+      required:
+      - user
+      - orgID
+      - role
+      type: object
+    ProvisionUserResponse:
+      properties:
+        org:
+          $ref: '#/components/schemas/Identity'
+        user:
+          $ref: '#/components/schemas/Identity'
+      type: object
     Query:
       description: Query influx using the Flux language
       properties:

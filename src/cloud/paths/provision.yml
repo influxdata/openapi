@@ -1,28 +1,5 @@
-post:
-  operationId: PostSetupUser
-  tags:
-    - Setup
-  summary: Create a new user, organization, and bucket
-  description: Post an onboarding request to create a new user, organization, and bucket.
-  requestBody:
-    description: Source to create
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: "../schemas/OnboardingRequest.yml"
-  responses:
-    "201":
-      description: The created default user, bucket, and organization.
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/OnboardingResponse.yml"
-    default:
-      description: Unexpected error
-      $ref: "../../common/responses/ServerError.yml"
 put:
-    operationId: PutSetupUser
+    operationId: PutProvision
     tags:
       - Setup
     description: Create a new user, organization, and bucket. Idempotent. Requests can be retried.
@@ -32,13 +9,13 @@ put:
       content:
         application/json:
           schema:
-            $ref: "../schemas/OnboardingWithIDsRequest.yml"
+            $ref: "../schemas/ProvisionRequest.yml"
     responses:
       "201":
         content:
           application/json:
             schema:
-              $ref: "../schemas/OnboardingWithTokenResponse.yml"
+              $ref: "../schemas/ProvisionResponse.yml"
         description: The user name and ID, the org name and ID, the token for user if requested
       "400":
         content:
@@ -64,6 +41,12 @@ put:
             schema:
               $ref: "../../common/responses/ServerError.yml"
         description: Conflict. Causes can be user already exists with a different name, org already exists with a different name, org exists with different limits.
+      "422":
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/responses/ServerError.yml"
+        description: Unprocessable Entity. Retention seconds that are higher than max allowed.
       "501":
         content:
           application/json:

@@ -257,32 +257,9 @@ paths:
         default:
           description: unexpected error
           $ref: '#/components/responses/ServerError'
-  /setup/user:
-    post:
-      operationId: PostSetupUser
-      tags:
-        - Setup
-      summary: 'Create a new user, organization, and bucket'
-      description: 'Post an onboarding request to create a new user, organization, and bucket.'
-      requestBody:
-        description: Source to create
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OnboardingRequest'
-      responses:
-        '201':
-          description: 'The created default user, bucket, and organization.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OnboardingResponse'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+  /provision:
     put:
-      operationId: PutSetupUser
+      operationId: PutProvision
       tags:
         - Setup
       description: 'Create a new user, organization, and bucket. Idempotent. Requests can be retried.'
@@ -292,13 +269,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OnboardingWithIDsRequest'
+              $ref: '#/components/schemas/ProvisionRequest'
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OnboardingWithTokenResponse'
+                $ref: '#/components/schemas/ProvisionResponse'
           description: 'The user name and ID, the org name and ID, the token for user if requested'
         '400':
           content:
@@ -324,6 +301,12 @@ paths:
               schema:
                 $ref: '#/components/responses/ServerError'
           description: 'Conflict. Causes can be user already exists with a different name, org already exists with a different name, org exists with different limits.'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Unprocessable Entity. Retention seconds that are higher than max allowed.
         '501':
           content:
             application/json:
@@ -333,12 +316,12 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
-  /user:
+  /provision/user:
     put:
-      operationId: PutUserPrivate
+      operationId: PutProvisionUser
       tags:
         - Users
-      summary: Create a user. Idempotent
+      summary: Create/Add a user to an existing org. Creates a user if doesn't exist. Idempotent
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -357,14 +340,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OnboardingUserRequest'
+              $ref: '#/components/schemas/ProvisionUserRequest'
       responses:
         '201':
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OnboardingUserResponse'
+                $ref: '#/components/schemas/ProvisionUserResponse'
         '400':
           content:
             application/json:
@@ -736,7 +719,7 @@ components:
                     user:
                       readOnly: true
                       $ref: '#/components/schemas/Link'
-    OnboardingWithIDsRequest:
+    ProvisionRequest:
       type: object
       properties:
         user:
@@ -761,7 +744,7 @@ components:
         - username
         - org
         - config
-    OnboardingUserRequest:
+    ProvisionUserRequest:
       type: object
       properties:
         user:
@@ -779,14 +762,14 @@ components:
         - user
         - orgID
         - role
-    OnboardingUserResponse:
+    ProvisionUserResponse:
       type: object
       properties:
         user:
           $ref: '#/components/schemas/Identity'
         org:
           $ref: '#/components/schemas/Identity'
-    OnboardingWithTokenResponse:
+    ProvisionResponse:
       type: object
       properties:
         user:
