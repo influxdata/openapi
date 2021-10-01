@@ -7783,6 +7783,24 @@ components:
       required:
       - name
       - retentionRules
+    BucketLimits:
+      description: Bucket limits
+      properties:
+        maxBuckets:
+          description: Number of buckets allowed
+          example: 2
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/Unlimited'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+        maxRetentionDuration:
+          description: Retention duration limits in nanoseconds
+          example: 2592000000000000
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/Unlimited'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+      type: object
     Buckets:
       properties:
         buckets:
@@ -8009,6 +8027,17 @@ components:
       - $ref: '#/components/schemas/DeadmanCheck'
       - $ref: '#/components/schemas/ThresholdCheck'
       - $ref: '#/components/schemas/CustomCheck'
+    CheckLimits:
+      description: Check limits
+      properties:
+        maxChecks:
+          description: Number of checks allowed
+          example: 2
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/Unlimited'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+      type: object
     CheckPatch:
       properties:
         description:
@@ -8315,6 +8344,17 @@ components:
       - hex
       - name
       - value
+      type: object
+    DashboardLimits:
+      description: Dashboard limits
+      properties:
+        maxDashboards:
+          description: Number of dashboards allowed
+          example: 5
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/Unlimited'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
       type: object
     DashboardQuery:
       properties:
@@ -10575,6 +10615,14 @@ components:
       - $ref: '#/components/schemas/PagerDutyNotificationEndpoint'
       - $ref: '#/components/schemas/HTTPNotificationEndpoint'
       - $ref: '#/components/schemas/TelegramNotificationEndpoint'
+    NotificationEndpointLimits:
+      description: Notification endpoint limits
+      properties:
+        blockedNotificationEndpoints:
+          description: Notification endpoints not allowed CSV
+          example: http,pagerduty
+          type: string
+      type: object
     NotificationEndpointType:
       enum:
       - slack
@@ -10731,6 +10779,21 @@ components:
       - $ref: '#/components/schemas/PagerDutyNotificationRule'
       - $ref: '#/components/schemas/HTTPNotificationRule'
       - $ref: '#/components/schemas/TelegramNotificationRule'
+    NotificationRuleLimits:
+      description: Notification rule limits
+      properties:
+        blockedNotificationRules:
+          description: Notification rules not allowed CSV
+          example: http,pagerduty
+          type: string
+        maxNotifications:
+          description: Number of notifications allowed
+          example: 2
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/Unlimited'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+      type: object
     NotificationRuleUpdate:
       properties:
         description:
@@ -11139,6 +11202,36 @@ components:
         type:
           $ref: '#/components/schemas/NodeType'
       type: object
+    OrgLimits:
+      properties:
+        bucket:
+          $ref: '#/components/schemas/BucketLimits'
+        check:
+          $ref: '#/components/schemas/CheckLimits'
+        dashboard:
+          $ref: '#/components/schemas/DashboardLimits'
+        notificationEndpoint:
+          $ref: '#/components/schemas/NotificationEndpointLimits'
+        notificationRule:
+          $ref: '#/components/schemas/NotificationRuleLimits'
+        orgID:
+          description: ID of the org for which these rates apply
+          readOnly: true
+          type: string
+        rate:
+          $ref: '#/components/schemas/RateLimits'
+        task:
+          $ref: '#/components/schemas/TaskLimits'
+      required:
+      - orgID
+      - rate
+      - bucket
+      - task
+      - dashboard
+      - check
+      - notificationRule
+      - notificationEndpoint
+      type: object
     OrgSetting:
       properties:
         key:
@@ -11158,59 +11251,25 @@ components:
       type: object
     Organization:
       properties:
-        createdAt:
-          format: date-time
+        apiUrl:
+          description: URL for talking to a specific cluster
           readOnly: true
-          type: string
-        description:
           type: string
         id:
+          description: the IDPE organization ID
           readOnly: true
           type: string
-        links:
-          example:
-            buckets: /api/v2/buckets?org=myorg
-            dashboards: /api/v2/dashboards?org=myorg
-            labels: /api/v2/orgs/1/labels
-            members: /api/v2/orgs/1/members
-            owners: /api/v2/orgs/1/owners
-            secrets: /api/v2/orgs/1/secrets
-            self: /api/v2/orgs/1
-            tasks: /api/v2/tasks?org=myorg
-          properties:
-            buckets:
-              $ref: '#/components/schemas/Link'
-            dashboards:
-              $ref: '#/components/schemas/Link'
-            labels:
-              $ref: '#/components/schemas/Link'
-            members:
-              $ref: '#/components/schemas/Link'
-            owners:
-              $ref: '#/components/schemas/Link'
-            secrets:
-              $ref: '#/components/schemas/Link'
-            self:
-              $ref: '#/components/schemas/Link'
-            tasks:
-              $ref: '#/components/schemas/Link'
-          readOnly: true
-          type: object
-        name:
-          type: string
-        status:
-          default: active
-          description: If inactive the organization is inactive.
+        provider:
+          description: name of the cloud provider
           enum:
-          - active
-          - inactive
+          - AWS
+          - GCP
+          - Azure
           type: string
-        updatedAt:
-          format: date-time
-          readOnly: true
+        region:
+          description: name of the region within the cloud provider
           type: string
-      required:
-      - name
+      type: object
     OrganizationRequest:
       properties:
         bucket:
@@ -11229,15 +11288,26 @@ components:
           example: user@email.com
           type: string
       type: object
+    OrganizationWithToken:
+      allOf:
+      - $ref: '#/components/schemas/Organization'
+      - properties:
+          links:
+            description: Links to the IDPE resources for this organization
+            example:
+              resource: path/to/resource
+            readOnly: true
+            type: object
+          token:
+            description: Authentication token to manage the organization and its resources
+              in IDPE
+            readOnly: true
+            type: string
+        type: object
     Organizations:
-      properties:
-        links:
-          $ref: '#/components/schemas/Links'
-        orgs:
-          items:
-            $ref: '#/components/schemas/Organization'
-          type: array
-      type: object
+      items:
+        $ref: '#/components/schemas/Organization'
+      type: array
     Package:
       description: Represents a complete package source tree.
       properties:
@@ -11439,7 +11509,7 @@ components:
               description: name of non system bucket
               type: string
             limit:
-              $ref: '#/components/schemas/Limit'
+              $ref: '#/components/schemas/OrgLimits'
             retentionPeriodSeconds:
               description: retention period of non system bucket
               type: integer
@@ -11559,6 +11629,31 @@ components:
         - max
         - within
         type: object
+    RateLimits:
+      description: Usage rate limits
+      properties:
+        cardinality:
+          description: Max cardinality of data
+          example: 10000
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+            maximum: 1000000
+        readKBs:
+          description: KB of data query'd per second
+          example: 1000
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+            maximum: 10000
+        writeKBs:
+          description: KB of data written per second
+          example: 17
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+            maximum: 10000
+      type: object
     ReadStream:
       properties:
         createdAt:
@@ -11705,6 +11800,11 @@ components:
             $ref: '#/components/schemas/ResourceOwner'
           type: array
       type: object
+    RestrictedLimit:
+      description: Restrict access entirely
+      enum:
+      - -1
+      type: integer
     RetentionRule:
       properties:
         everySeconds:
@@ -12517,6 +12617,19 @@ components:
           $ref: '#/components/schemas/TaskStatusType'
       required:
       - flux
+      type: object
+    TaskLimits:
+      description: Task limits
+      properties:
+        maxTasks:
+          description: Number of tasks allowed
+          example: 5
+          oneOf:
+          - $ref: '#/components/schemas/RestrictedLimit'
+          - $ref: '#/components/schemas/Unlimited'
+          - description: Limit of at least 1
+            minimum: 1
+            type: integer
       type: object
     TaskStatusType:
       enum:
@@ -13647,6 +13760,11 @@ components:
           description: message is a human-readable message.
           readOnly: true
           type: string
+    Unlimited:
+      description: Unbounded limit
+      enum:
+      - 0
+      type: integer
     UnsignedIntegerLiteral:
       description: Represents integer numbers
       properties:

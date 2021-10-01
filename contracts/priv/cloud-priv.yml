@@ -736,7 +736,7 @@ components:
               type: integer
               description: retention period of non system bucket
             limit:
-              $ref: '#/components/schemas/Limit'
+              $ref: '#/components/schemas/OrgLimits'
         returnToken:
           type: boolean
           description: if true will return the auth token in the response
@@ -1086,6 +1086,187 @@ components:
         bucket:
           type: string
           description: the name of the bucket to be created
+    BucketLimits:
+      description: Bucket limits
+      type: object
+      properties:
+        maxBuckets:
+          example: 2
+          description: Number of buckets allowed
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+        maxRetentionDuration:
+          description: Retention duration limits in nanoseconds
+          example: 2592000000000000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+    CheckLimits:
+      description: Check limits
+      type: object
+      properties:
+        maxChecks:
+          description: Number of checks allowed
+          example: 2
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+    DashboardLimits:
+      description: Dashboard limits
+      type: object
+      properties:
+        maxDashboards:
+          description: Number of dashboards allowed
+          example: 5
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+    NotificationEndpointLimits:
+      description: Notification endpoint limits
+      type: object
+      properties:
+        blockedNotificationEndpoints:
+          description: Notification endpoints not allowed CSV
+          example: 'http,pagerduty'
+          type: string
+    NotificationRuleLimits:
+      description: Notification rule limits
+      type: object
+      properties:
+        maxNotifications:
+          description: Number of notifications allowed
+          example: 2
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+        blockedNotificationRules:
+          description: Notification rules not allowed CSV
+          example: 'http,pagerduty'
+          type: string
+    OrganizationWithToken:
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+        - type: object
+          properties:
+            token:
+              description: Authentication token to manage the organization and its resources in IDPE
+              readOnly: true
+              type: string
+            links:
+              description: Links to the IDPE resources for this organization
+              readOnly: true
+              type: object
+              example:
+                resource: path/to/resource
+    Organization:
+      type: object
+      properties:
+        id:
+          description: the IDPE organization ID
+          readOnly: true
+          type: string
+        apiUrl:
+          description: URL for talking to a specific cluster
+          readOnly: true
+          type: string
+        region:
+          description: name of the region within the cloud provider
+          type: string
+        provider:
+          description: name of the cloud provider
+          type: string
+          enum:
+            - AWS
+            - GCP
+            - Azure
+    Organizations:
+      type: array
+      items:
+        $ref: '#/components/schemas/Organization'
+    OrgLimits:
+      type: object
+      properties:
+        orgID:
+          type: string
+          readOnly: true
+          description: ID of the org for which these rates apply
+        rate:
+          $ref: '#/components/schemas/RateLimits'
+        bucket:
+          $ref: '#/components/schemas/BucketLimits'
+        task:
+          $ref: '#/components/schemas/TaskLimits'
+        dashboard:
+          $ref: '#/components/schemas/DashboardLimits'
+        check:
+          $ref: '#/components/schemas/CheckLimits'
+        notificationRule:
+          $ref: '#/components/schemas/NotificationRuleLimits'
+        notificationEndpoint:
+          $ref: '#/components/schemas/NotificationEndpointLimits'
+      required:
+        - orgID
+        - rate
+        - bucket
+        - task
+        - dashboard
+        - check
+        - notificationRule
+        - notificationEndpoint
+    RateLimits:
+      description: Usage rate limits
+      type: object
+      properties:
+        readKBs:
+          description: KB of data query'd per second
+          example: 1000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+              maximum: 10000
+        writeKBs:
+          description: KB of data written per second
+          example: 17
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+              maximum: 10000
+        cardinality:
+          description: Max cardinality of data
+          example: 10000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/TaskLimits/properties/maxTasks/oneOf/2'
+              maximum: 1000000
+    RestrictedLimit:
+      description: Restrict access entirely
+      type: integer
+      enum:
+        - -1
+    TaskLimits:
+      description: Task limits
+      type: object
+      properties:
+        maxTasks:
+          description: Number of tasks allowed
+          example: 5
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Unlimited'
+            - description: Limit of at least 1
+              type: integer
+              minimum: 1
+    Unlimited:
+      description: Unbounded limit
+      type: integer
+      enum:
+        - 0
   responses:
     ServerError:
       description: Non 2XX error response from server.
