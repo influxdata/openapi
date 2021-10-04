@@ -25,7 +25,7 @@ post:
           type: string
           format: byte
   parameters:
-    - $ref: "../parameters/TraceSpan.yml"
+    - $ref: "../../common/parameters/TraceSpan.yml"
     - in: header
       name: Content-Encoding
       description: When present, the header value tells the database that compression is applied to the line protocol in the request body.
@@ -86,7 +86,7 @@ post:
       name: precision
       description: The precision for the unix timestamps within the body line-protocol.
       schema:
-        $ref: "../schemas/WritePrecision.yml"
+        $ref: "../../common/schemas/WritePrecision.yml"
   responses:
     "204":
       description: InfluxDB validated the request data format and accepted the data for writing to the bucket.
@@ -96,17 +96,33 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../schemas/LineProtocolError.yml"
+            $ref: "../../common/schemas/LineProtocolError.yml"
+          examples:
+            measurementSchemaFieldTypeConflict:
+              summary: Field type conflict thrown by an explicit bucket schema
+              value: {
+               "code": "invalid",
+               "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
+              }
     "401":
-      $ref: "../responses/AuthorizationError.yml"
+      $ref: "../../common/responses/AuthorizationError.yml"
     "404":
-      $ref: "../responses/ResourceNotFoundError.yml"
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
     "413":
-      description: Request entity too large. The payload exceeded the 50MB limit. InfluxDB rejected the batch and did not write any data.
+      description: Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.
       content:
-        application/json:
-          schema:
-            $ref: "../schemas/LineProtocolLengthError.yml"
+        text/html:
+          examples:
+            dataExceedsSizeLimit:
+              summary: Cloud response 
+              value: |
+                <html>
+                  <head><title>413 Request Entity Too Large</title></head>
+                  <body>
+                    <center><h1>413 Request Entity Too Large</h1></center>
+                    <hr><center>nginx</center>
+                  </body>
+                </html>
     "429":
       description: The token is temporarily over quota. The Retry-After header describes when to try the write again.
       headers:
@@ -123,9 +139,7 @@ post:
           schema:
             type: integer
             format: int32
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../../common/responses/InternalServerError.yml"
