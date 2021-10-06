@@ -7397,35 +7397,9 @@ paths:
             The response body contains the first malformed line in the data. InfluxDB
             rejected the batch and did not write any data.
         "401":
-          content:
-            application/json:
-              examples:
-                tokenNotAuthorized:
-                  summary: Token is not authorized to access the organization or resource
-                  value:
-                    code: unauthorized
-                    message: unauthorized access
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: |
-            Unauthorized. The error may indicate one of the following:
-              * The `Authorization: Token` header is missing or malformed.
-              * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
+          $ref: '#components/responses/AuthorizationError'
         "404":
-          content:
-            application/json:
-              examples:
-                resource-not-found:
-                  summary: Not found error
-                  value:
-                    code: not found
-                    message: bucket "air_sensor" not found
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Not found. A requested resource was not found. The response
-            body contains the requested resource type, e.g. `organization name` or
-            `bucket`, and name.
+          $ref: '#components/responses/ResourceNotFoundError'
         "413":
           content:
             application/json:
@@ -7434,16 +7408,7 @@ paths:
           description: |
             All request data was rejected and not written. InfluxDB OSS only returns this error if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
         "500":
-          content:
-            application/json:
-              examples:
-                internalError:
-                  summary: Internal error example
-                  value:
-                    code: internal error
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Internal server error.
+          $ref: '#components/responses/InternalServerError.yml'
         "503":
           description: The server is temporarily unavailable to accept writes.  The
             `Retry-After` header describes when to try the write again.
@@ -7455,7 +7420,7 @@ paths:
                 format: int32
                 type: integer
         default:
-          $ref: '#/paths/~1write/post/responses/500'
+          $ref: '#components/responses/InternalServerError.yml'
       summary: Write data
       tags:
       - Write
@@ -13487,6 +13452,47 @@ components:
       - position
       type: object
   responses:
+    AuthorizationError:
+      content:
+        application/json:
+          examples:
+            tokenNotAuthorized:
+              summary: Token is not authorized to access the organization or resource
+              value:
+                code: unauthorized
+                message: unauthorized access
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: |
+        Unauthorized. The error may indicate one of the following:
+          * The `Authorization: Token` header is missing or malformed.
+          * The API token value is missing from the header.
+          * The token does not have sufficient permissions to write to this organization and bucket.
+    InternalError:
+      content:
+        application/json:
+          examples:
+            internalError:
+              summary: Internal error example
+              value:
+                code: internal error
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Internal server error.
+    ResourceNotFoundError:
+      content:
+        application/json:
+          examples:
+            resource-not-found:
+              summary: Not found error
+              value:
+                code: not found
+                message: bucket "air_sensor" not found
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Not found. A requested resource was not found. The response body
+        contains the requested resource type, e.g. `organization name` or `bucket`,
+        and name.
     ServerError:
       content:
         application/json:
