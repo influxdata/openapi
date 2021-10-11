@@ -2503,6 +2503,282 @@ paths:
       summary: Return the feature flags for the currently authenticated user
       tags:
       - Users
+  /api/v2/functions:
+    get:
+      operationId: GetFunctions
+      parameters:
+      - description: The name of the organization.
+        in: query
+        name: org
+        schema:
+          type: string
+      - description: The organization ID.
+        in: query
+        name: orgID
+        schema:
+          type: string
+      - description: The number of functions to return
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Functions'
+          description: A list of functions
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: List all Functions
+      tags:
+      - Functions
+    post:
+      operationId: PostFunctions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionCreateRequest'
+        description: Function to create
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Function'
+          description: Function created
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Create a new function
+      tags:
+      - Functions
+  /api/v2/functions/{functionID}:
+    delete:
+      description: Deletes a function and all associated records
+      operationId: DeleteFunctionsID
+      parameters:
+      - description: The ID of the function to delete.
+        in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Function deleted
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Delete a function
+      tags:
+      - Functions
+    get:
+      operationId: GetFunctionsID
+      parameters:
+      - description: The function ID.
+        in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Function'
+          description: Function details
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Retrieve a function
+      tags:
+      - Functions
+    patch:
+      description: Update a function
+      operationId: PatchFunctionsID
+      parameters:
+      - description: The function ID.
+        in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionUpdateRequest'
+        description: Function update to apply
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Function'
+          description: Updated function
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Update a function
+      tags:
+      - Functions
+  /api/v2/functions/{functionID}/invoke:
+    get:
+      operationId: GetFunctionsIDInvoke
+      parameters:
+      - in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      - explode: true
+        in: query
+        name: params
+        schema:
+          additionalProperties: true
+          type: object
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionHTTPResponseData'
+          description: Response defined by function
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Manually invoke a function with params in query
+      tags:
+      - Functions
+    post:
+      operationId: PostFunctionsIDInvoke
+      parameters:
+      - in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionInvocationParams'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionHTTPResponseData'
+          description: Response defined by function
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Manually invoke a function with params in request body
+      tags:
+      - Functions
+  /api/v2/functions/{functionID}/runs:
+    get:
+      operationId: GetFunctionsIDRuns
+      parameters:
+      - description: The ID of the function to get runs for.
+        in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      - description: The number of functions to return
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionRuns'
+          description: A list of function runs
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: List runs for a function
+      tags:
+      - Functions
+  /api/v2/functions/{functionID}/runs/{runID}:
+    get:
+      operationId: GetFunctionsIDRunsID
+      parameters:
+      - description: The function ID.
+        in: path
+        name: functionID
+        required: true
+        schema:
+          type: string
+      - description: The run ID.
+        in: path
+        name: runID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionRun'
+          description: The run record
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Retrieve a single run for a function
+      tags:
+      - Functions
+  /api/v2/functions/trigger:
+    post:
+      operationId: PostFunctionsTrigger
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionTriggerRequest'
+        description: Function to be triggered
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionTriggerResponse'
+          description: Function successfully triggered
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Manually trigger a function without creating an associated function
+        resource
+      tags:
+      - Functions
   /api/v2/labels:
     get:
       operationId: GetLabels
@@ -3911,282 +4187,6 @@ paths:
       summary: Checks the status of InfluxDB instance and version of InfluxDB.
       tags:
       - Ping
-  /api/v2/poc-functions:
-    get:
-      operationId: GetFunctions
-      parameters:
-      - description: The name of the organization.
-        in: query
-        name: org
-        schema:
-          type: string
-      - description: The organization ID.
-        in: query
-        name: orgID
-        schema:
-          type: string
-      - description: The number of functions to return
-        in: query
-        name: limit
-        required: false
-        schema:
-          type: integer
-      - description: Offset for pagination
-        in: query
-        name: offset
-        required: false
-        schema:
-          type: integer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Functions'
-          description: A list of functions
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: List all Functions
-      tags:
-      - Functions
-    post:
-      operationId: PostFunctions
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FunctionCreateRequest'
-        description: Function to create
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Function'
-          description: Function created
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Create a new function
-      tags:
-      - Functions
-  /api/v2/poc-functions/{functionID}:
-    delete:
-      description: Deletes a function and all associated records
-      operationId: DeleteFunctionsID
-      parameters:
-      - description: The ID of the function to delete.
-        in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Function deleted
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Delete a function
-      tags:
-      - Functions
-    get:
-      operationId: GetFunctionsID
-      parameters:
-      - description: The function ID.
-        in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Function'
-          description: Function details
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Retrieve a function
-      tags:
-      - Functions
-    patch:
-      description: Update a function
-      operationId: PatchFunctionsID
-      parameters:
-      - description: The function ID.
-        in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FunctionUpdateRequest'
-        description: Function update to apply
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Function'
-          description: Updated function
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Update a function
-      tags:
-      - Functions
-  /api/v2/poc-functions/{functionID}/invoke:
-    get:
-      operationId: GetFunctionsIDInvoke
-      parameters:
-      - in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      - explode: true
-        in: query
-        name: params
-        schema:
-          additionalProperties: true
-          type: object
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FunctionHTTPResponseData'
-          description: Response defined by function
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Manually invoke a function with params in query
-      tags:
-      - Functions
-    post:
-      operationId: PostFunctionsIDInvoke
-      parameters:
-      - in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FunctionInvocationParams'
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FunctionHTTPResponseData'
-          description: Response defined by function
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Manually invoke a function with params in request body
-      tags:
-      - Functions
-  /api/v2/poc-functions/{functionID}/runs:
-    get:
-      operationId: GetFunctionsIDRuns
-      parameters:
-      - description: The ID of the function to get runs for.
-        in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      - description: The number of functions to return
-        in: query
-        name: limit
-        required: false
-        schema:
-          type: integer
-      - description: Offset for pagination
-        in: query
-        name: offset
-        required: false
-        schema:
-          type: integer
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FunctionRuns'
-          description: A list of function runs
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: List runs for a function
-      tags:
-      - Functions
-  /api/v2/poc-functions/{functionID}/runs/{runID}:
-    get:
-      operationId: GetFunctionsIDRunsID
-      parameters:
-      - description: The function ID.
-        in: path
-        name: functionID
-        required: true
-        schema:
-          type: string
-      - description: The run ID.
-        in: path
-        name: runID
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FunctionRun'
-          description: The run record
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Retrieve a single run for a function
-      tags:
-      - Functions
-  /api/v2/poc-functions/trigger:
-    post:
-      operationId: PostFunctionsTrigger
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FunctionTriggerRequest'
-        description: Function to be triggered
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FunctionTriggerResponse'
-          description: Function successfully triggered
-        default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
-      summary: Manually trigger a function without creating an associated function
-        resource
-      tags:
-      - Functions
   /api/v2/query:
     post:
       description: |

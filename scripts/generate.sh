@@ -56,8 +56,7 @@ swagger-cli bundle src/unity.yml --outfile ${CONTRACTS}/priv/unity.yml --type ya
 ## public external service contracts
 
 # managed-functions
-sed -e "s|^  - url: '/'|  - url: '/api/v2'|" src/svc-managed-functions.yml | \
-sed -e "s|'/functions|'/poc-functions|" > ./src/.svc.yml && \
+sed -e "s|^  - url: '/'|  - url: '/api/v2'|" src/svc-managed-functions.yml > ./src/.svc.yml && \
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/managed-functions.yml --type yaml && \
 rm src/.svc.yml
 
