@@ -28,6 +28,7 @@ rm src/.cloud_gen.yml
 # generate common-only contract
 sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/common.yml |
 sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
+sed -e '/#REF_COMMON_RESPONSES/{r ./src/common/_responses.yml' -e 'd}' |
 sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > src/.common_gen.yml && \
 swagger-cli bundle src/.common_gen.yml --type yaml | \
 (sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/common|g" > ${CONTRACTS}/common.yml) && \
