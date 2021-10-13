@@ -273,10 +273,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/OnboardingResponse'
+                $ref: '#/components/schemas/OnboardingResponse'
         default:
           description: Unexpected error
-          $ref: '#components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
   /setup/user:
     post:
       operationId: PostSetupUser
@@ -3113,9 +3113,33 @@ paths:
                     code: invalid
                     message: 'partial write error (2 written): unable to parse ''air_sensor,service=S1,sensor=L1 temperature="90.5",humidity=70.0 1632850122'': schema: field type for field "temperature" not permitted by schema; got String but expected Float'
         '401':
-          $ref: '#components/responses/AuthorizationError'
+          description: |
+            Unauthorized. The error may indicate one of the following:
+              * The `Authorization: Token` header is missing or malformed.
+              * The API token value is missing from the header.
+              * The token does not have sufficient permissions to write to this organization and bucket.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+              examples:
+                tokenNotAuthorized:
+                  summary: Token is not authorized to access the organization or resource
+                  value:
+                    code: unauthorized
+                    message: unauthorized access
         '404':
-          $ref: '#components/responses/ResourceNotFoundError'
+          description: 'Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+              examples:
+                resource-not-found:
+                  summary: Not found error
+                  value:
+                    code: not found
+                    message: bucket "air_sensor" not found
         '413':
           description: Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.
           content:
@@ -3140,7 +3164,16 @@ paths:
                 type: integer
                 format: int32
         '500':
-          $ref: '#components/responses/InternalError'
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+              examples:
+                internalError:
+                  summary: Internal error example
+                  value:
+                    code: internal error
         '503':
           description: The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.
           headers:
@@ -3150,7 +3183,7 @@ paths:
                 type: integer
                 format: int32
         default:
-          $ref: '#components/responses/ServerError'
+          $ref: '#/components/responses/ServerError'
 components:
   parameters: null
   schemas:
@@ -3993,45 +4026,6 @@ components:
           items:
             $ref: '#/components/schemas/MeasurementSchemaColumn'
   responses:
-    AuthorizationError:
-      description: |
-        Unauthorized. The error may indicate one of the following:
-          * The `Authorization: Token` header is missing or malformed.
-          * The API token value is missing from the header.
-          * The token does not have sufficient permissions to write to this organization and bucket.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/responses/ServerError/content/application~1json/schema'
-          examples:
-            tokenNotAuthorized:
-              summary: Token is not authorized to access the organization or resource
-              value:
-                code: unauthorized
-                message: unauthorized access
-    InternalError:
-      description: Internal server error.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/responses/ServerError/content/application~1json/schema'
-          examples:
-            internalError:
-              summary: Internal error example
-              value:
-                code: internal error
-    ResourceNotFoundError:
-      description: 'Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name.'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/responses/ServerError/content/application~1json/schema'
-          examples:
-            resource-not-found:
-              summary: Not found error
-              value:
-                code: not found
-                message: bucket "air_sensor" not found
     ServerError:
       description: Non 2XX error response from server.
       content:
