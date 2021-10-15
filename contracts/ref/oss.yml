@@ -2744,7 +2744,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Unsuccessful authentication
       security:
-      - BasicAuth: []
+      - BasicAuthentication: []
       summary: Update a password
       tags:
       - Users
@@ -5179,7 +5179,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Unsuccessful authentication.
       security:
-      - BasicAuth: []
+      - BasicAuthentication: []
       summary: Create a user session.
       tags:
       - Signin
@@ -7018,7 +7018,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Unsuccessful authentication
       security:
-      - BasicAuth: []
+      - BasicAuthentication: []
       summary: Update a password
       tags:
       - Users
@@ -7381,6 +7381,16 @@ paths:
         "400":
           content:
             application/json:
+              examples:
+                measurementSchemaFieldTypeConflict:
+                  summary: Example of a field type conflict thrown by an explicit
+                    bucket schema
+                  value:
+                    code: invalid
+                    message: 'partial write error (2 written): unable to parse ''air_sensor,service=S1,sensor=L1
+                      temperature="90.5",humidity=70.0 1632850122'': schema: field
+                      type for field "temperature" not permitted by schema; got String
+                      but expected Float'
               schema:
                 $ref: '#/components/schemas/LineProtocolError'
           description: Bad request. The line protocol data in the request is malformed.
@@ -7389,6 +7399,12 @@ paths:
         "401":
           content:
             application/json:
+              examples:
+                tokenNotAuthorized:
+                  summary: Token is not authorized to access the organization or resource
+                  value:
+                    code: unauthorized
+                    message: unauthorized access
               schema:
                 $ref: '#/components/schemas/Error'
           description: |
@@ -7399,6 +7415,12 @@ paths:
         "404":
           content:
             application/json:
+              examples:
+                resource-not-found:
+                  summary: Not found error
+                  value:
+                    code: not found
+                    message: bucket "air_sensor" not found
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not found. A requested resource was not found. The response
@@ -7409,18 +7431,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LineProtocolLengthError'
-          description: Request entity too large. The payload exceeded the 50MB limit.
-            InfluxDB rejected the batch and did not write any data.
-        "429":
-          description: The token is temporarily over quota. The Retry-After header
-            describes when to try the write again.
-          headers:
-            Retry-After:
-              description: A non-negative decimal integer indicating the seconds to
-                delay after the response is received.
+          description: |
+            All request data was rejected and not written. InfluxDB OSS only returns this error if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
+        "500":
+          content:
+            application/json:
+              examples:
+                internalError:
+                  summary: Internal error example
+                  value:
+                    code: internal error
               schema:
-                format: int32
-                type: integer
+                $ref: '#/components/schemas/Error'
+          description: Internal server error.
         "503":
           description: The server is temporarily unavailable to accept writes.  The
             `Retry-After` header describes when to try the write again.
@@ -7432,11 +7455,7 @@ paths:
                 format: int32
                 type: integer
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Internal server error
+          $ref: '#/components/responses/ServerError'
       summary: Write data
       tags:
       - Write

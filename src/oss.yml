@@ -10,10 +10,16 @@ tags:
   - name: Authentication
     description: |
       Use one of the following schemes to authenticate to the InfluxDB API:
-      - [Token authentication](#section/Authentication/TokenAuth)
-      - [Basic authentication](#section/Authentication/BasicAuth)
-      - [Querystring authentication](#section/Authentication/QuerystringAuth)
+      - [Token authentication](#section/Authentication/TokenAuthentication)
+      - [Basic authentication](#section/Authentication/BasicAuthentication)
+      - [Querystring authentication](#section/Authentication/QuerystringAuthentication)
       <!-- ReDoc-Inject: <security-definitions> -->
+    x-traitTag: true
+  - name: Quick start
+    $ref: "./common/_quick-start.yml"
+    x-traitTag: true
+  - name: Response codes
+    $ref: "./common/_response-codes.yml"
     x-traitTag: true
   - name: Query
     description: |
@@ -25,10 +31,12 @@ tags:
     description: |
       Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. To assign a token to a specific user, scope the authorization to the user ID.
 x-tagGroups:
-  - name: Get started
+  - name: Overview
     tags:
+      - Quick start
       - Authentication
-  - name: " "
+      - Response codes
+  - name: Data I/O endpoints
     tags:
       - Write
       - Query
@@ -171,6 +179,8 @@ paths:
     $ref: "./common/paths/dashboards.yml"
   /tasks:
     $ref: "./common/paths/tasks.yml"
+  /write:
+    $ref: "./oss/paths/write.yml"
 components:
   parameters:
 #REF_COMMON_PARAMETERS
@@ -260,13 +270,15 @@ components:
       $ref: "./oss/schemas/ReplicationUpdateRequest.yml"
   responses:
     ServerError:
-      $ref: "./common/responses/ServerError.yml"
+      $ref: './common/responses/ServerError.yml'
   securitySchemes:
-    TokenAuth:
+    TokenAuthentication:
       type: http
       scheme: token
       bearerFormat: InfluxDB Token String
       description: |
+        ### Token authentication scheme
+
         InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.
 
         Include your API token in an `Authentication: Token YOUR_API_TOKEN` HTTP header with each request.
@@ -280,11 +292,13 @@ components:
           - [Use tokens in API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
           - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
           - [`/authorizations`](#tag/Authorizations) endpoint.
-    BasicAuth:
+    BasicAuthentication:
       type: http
       scheme: basic
       description: |
-        Use Basic authentication with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme).
+        ### Basic authentication scheme
+
+        Use HTTP Basic Auth with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme).
 
         Username and password schemes require the following credentials:
           - **username**: 1.x username (this is separate from the UI login username)
@@ -296,11 +310,13 @@ components:
               --user "YOUR_1.x_USERNAME":"YOUR_TOKEN_OR_PASSWORD"`
 
         For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
-    QuerystringAuth:
+    QuerystringAuthentication:
       type: apiKey
       in: query
       name: u=&p=
       description: |
+        ### Querystring authentication scheme
+
         Use InfluxDB 1.x API parameters to provide credentials through the query string.
 
         Username and password schemes require the following credentials:
@@ -315,6 +331,6 @@ components:
 
         For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
 security:
-- TokenAuth: []
-- BasicAuth: []
-- QuerystringAuth: []
+- TokenAuthentication: []
+- BasicAuthentication: []
+- QuerystringAuthentication: []

@@ -10,11 +10,36 @@ tags:
   - name: Authentication
     description: |
       Use one of the following schemes to authenticate to the InfluxDB API:
-      - [Token authentication](#section/Authentication/TokenAuth)
-      - [Basic authentication](#section/Authentication/BasicAuth)
-      - [Querystring authentication](#section/Authentication/QuerystringAuth)
+      - [Token authentication](#section/Authentication/TokenAuthentication)
+      - [Basic authentication](#section/Authentication/BasicAuthentication)
+      - [Querystring authentication](#section/Authentication/QuerystringAuthentication)
       <!-- ReDoc-Inject: <security-definitions> -->
     x-traitTag: true
+  - name: Quick start
+    x-traitTag: true
+    description: |
+      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
+
+      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
+  - name: Response codes
+    x-traitTag: true
+    description: |
+      The InfluxDB API uses standard HTTP status codes for success and failure responses.
+      The response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.
+
+      API operations may return the following HTTP status codes:
+
+      | &nbsp;Code&nbsp; | Status                   | Description      |
+      |:-----------:|:------------------------ |:--------------------- |
+      | `200`       | Success                  |                       |
+      | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
+      | `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
+      | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)</li> |
+      | `404`       | Not found                | Requested resource was not found. `message` in the response body contains details about the requested resource. |
+      | `413`       | Request entity too large | Request payload exceeds the size limit. |
+      | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
+      | `500`       | Internal server error    |                       |
+      | `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |
   - name: Query
     description: |
       Retrieve data, analyze queries, and get query suggestions.
@@ -25,10 +50,12 @@ tags:
     description: |
       Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. To assign a token to a specific user, scope the authorization to the user ID.
 x-tagGroups:
-  - name: Get started
+  - name: Overview
     tags:
+      - Quick start
       - Authentication
-  - name: ' '
+      - Response codes
+  - name: Data I/O endpoints
     tags:
       - Write
       - Query
@@ -4208,6 +4235,224 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/responses/ServerError/content/application~1json/schema'
+  /write:
+    post:
+      operationId: PostWrite
+      tags:
+        - Write
+      summary: Write data
+      description: |
+        Writes data to a bucket.
+
+        To write data into InfluxDB, you need the following:
+        - **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+        - **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for
+         instructions on viewing your bucket ID._
+        - **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+         for instructions on viewing your API token._
+        - **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
+        - data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.
+
+        For more information and examples, see [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).
+      requestBody:
+        description: Data in line protocol format.
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              format: byte
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: header
+          name: Content-Encoding
+          description: 'When present, the header value tells the database that compression is applied to the line protocol in the request body.'
+          schema:
+            type: string
+            description: The header value specifies that the line protocol in the request body is encoded with gzip or not encoded with identity.
+            default: identity
+            enum:
+              - gzip
+              - identity
+        - in: header
+          name: Content-Type
+          description: The header value indicates the format of the data in the request body.
+          schema:
+            type: string
+            description: |
+              `text/plain` specifies line protocol. `UTF-8` is the default character set.
+            default: text/plain; charset=utf-8
+            enum:
+              - text/plain
+              - text/plain; charset=utf-8
+              - application/vnd.influx.arrow
+        - in: header
+          name: Content-Length
+          description: 'The header value indicates the size of the entity-body, in bytes, sent to the database. If the length is greater than the database''s `max body` configuration option, the server responds with status code `413`.'
+          schema:
+            type: integer
+            description: The length in decimal number of octets.
+        - in: header
+          name: Accept
+          description: The header value specifies the response format.
+          schema:
+            type: string
+            description: The response format for errors.
+            default: application/json
+            enum:
+              - application/json
+        - in: query
+          name: org
+          description: 'The parameter value specifies the destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence.'
+          required: true
+          schema:
+            type: string
+            description: Organization name or ID.
+        - in: query
+          name: orgID
+          description: 'The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.'
+          schema:
+            type: string
+        - in: query
+          name: bucket
+          description: The destination bucket for writes.
+          required: true
+          schema:
+            type: string
+            description: All points within batch are written to this bucket.
+        - in: query
+          name: precision
+          description: The precision for the unix timestamps within the body line-protocol.
+          schema:
+            type: string
+            enum:
+              - ms
+              - s
+              - us
+              - ns
+      responses:
+        '204':
+          description: 'InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn''t indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot).'
+        '400':
+          description: Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: Code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - empty value
+                      - unavailable
+                  message:
+                    readOnly: true
+                    description: Message is a human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: Op describes the logical code operation during error. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: Err is a stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                  line:
+                    readOnly: true
+                    description: First line within sent body containing malformed data
+                    type: integer
+                    format: int32
+                required:
+                  - code
+                  - message
+                  - op
+                  - err
+              examples:
+                measurementSchemaFieldTypeConflict:
+                  summary: Example of a field type conflict thrown by an explicit bucket schema
+                  value:
+                    code: invalid
+                    message: 'partial write error (2 written): unable to parse ''air_sensor,service=S1,sensor=L1 temperature="90.5",humidity=70.0 1632850122'': schema: field type for field "temperature" not permitted by schema; got String but expected Float'
+        '401':
+          description: |
+            Unauthorized. The error may indicate one of the following:
+              * The `Authorization: Token` header is missing or malformed.
+              * The API token value is missing from the header.
+              * The token does not have sufficient permissions to write to this organization and bucket.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+              examples:
+                tokenNotAuthorized:
+                  summary: Token is not authorized to access the organization or resource
+                  value:
+                    code: unauthorized
+                    message: unauthorized access
+        '404':
+          description: 'Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+              examples:
+                resource-not-found:
+                  summary: Not found error
+                  value:
+                    code: not found
+                    message: bucket "air_sensor" not found
+        '413':
+          description: |
+            All request data was rejected and not written. InfluxDB OSS only returns this error if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: Code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - invalid
+                  message:
+                    readOnly: true
+                    description: Message is a human-readable message.
+                    type: string
+                  maxLength:
+                    readOnly: true
+                    description: Max length in bytes for a body of line-protocol.
+                    type: integer
+                    format: int32
+                required:
+                  - code
+                  - message
+                  - maxLength
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+              examples:
+                internalError:
+                  summary: Internal error example
+                  value:
+                    code: internal error
+        '503':
+          description: The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.
+          headers:
+            Retry-After:
+              description: A non-negative decimal integer indicating the seconds to delay after the response is received.
+              schema:
+                type: integer
+                format: int32
+        default:
+          $ref: '#/components/responses/ServerError'
 components:
   parameters: null
   schemas:
@@ -5252,11 +5497,13 @@ components:
               - code
               - message
   securitySchemes:
-    TokenAuth:
+    TokenAuthentication:
       type: http
       scheme: token
       bearerFormat: InfluxDB Token String
       description: |
+        ### Token authentication scheme
+
         InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.
 
         Include your API token in an `Authentication: Token YOUR_API_TOKEN` HTTP header with each request.
@@ -5270,11 +5517,13 @@ components:
           - [Use tokens in API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
           - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
           - [`/authorizations`](#tag/Authorizations) endpoint.
-    BasicAuth:
+    BasicAuthentication:
       type: http
       scheme: basic
       description: |
-        Use Basic authentication with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme).
+        ### Basic authentication scheme
+
+        Use HTTP Basic Auth with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme).
 
         Username and password schemes require the following credentials:
           - **username**: 1.x username (this is separate from the UI login username)
@@ -5286,11 +5535,13 @@ components:
               --user "YOUR_1.x_USERNAME":"YOUR_TOKEN_OR_PASSWORD"`
 
         For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
-    QuerystringAuth:
+    QuerystringAuthentication:
       type: apiKey
       in: query
       name: u=&p=
       description: |
+        ### Querystring authentication scheme
+
         Use InfluxDB 1.x API parameters to provide credentials through the query string.
 
         Username and password schemes require the following credentials:
@@ -5305,6 +5556,6 @@ components:
 
         For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
 security:
-  - TokenAuth: []
-  - BasicAuth: []
-  - QuerystringAuth: []
+  - TokenAuthentication: []
+  - BasicAuthentication: []
+  - QuerystringAuthentication: []

@@ -25,7 +25,7 @@ post:
           type: string
           format: byte
   parameters:
-    - $ref: "../parameters/TraceSpan.yml"
+    - $ref: "../../common/parameters/TraceSpan.yml"
     - in: header
       name: Content-Encoding
       description: When present, the header value tells the database that compression is applied to the line protocol in the request body.
@@ -86,7 +86,7 @@ post:
       name: precision
       description: The precision for the unix timestamps within the body line-protocol.
       schema:
-        $ref: "../schemas/WritePrecision.yml"
+        $ref: "../../common/schemas/WritePrecision.yml"
   responses:
     "204":
       description: InfluxDB validated the request data format and accepted the data for writing to the bucket.
@@ -96,25 +96,29 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../schemas/LineProtocolError.yml"
+            $ref: "../../common/schemas/LineProtocolError.yml"
+          examples:
+            measurementSchemaFieldTypeConflict:
+              summary: Example of a field type conflict thrown by an explicit bucket schema
+              value: {
+               "code": "invalid",
+               "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
+              }
     "401":
-      $ref: "../responses/AuthorizationError.yml"
+      $ref: "../../common/responses/AuthorizationError.yml"
     "404":
-      $ref: "../responses/ResourceNotFoundError.yml"
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
     "413":
-      description: Request entity too large. The payload exceeded the 50MB limit. InfluxDB rejected the batch and did not write any data.
+      description: >
+        All request data was rejected and not written.
+        InfluxDB OSS only returns this error if the
+        [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
       content:
         application/json:
           schema:
-            $ref: "../schemas/LineProtocolLengthError.yml"
-    "429":
-      description: The token is temporarily over quota. The Retry-After header describes when to try the write again.
-      headers:
-        Retry-After:
-          description: A non-negative decimal integer indicating the seconds to delay after the response is received.
-          schema:
-            type: integer
-            format: int32
+            $ref: "../../common/schemas/LineProtocolLengthError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     "503":
       description: The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.
       headers:
@@ -124,8 +128,4 @@ post:
             type: integer
             format: int32
     default:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../../common/responses/ServerError.yml"
