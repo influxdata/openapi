@@ -257,130 +257,30 @@ paths:
         default:
           description: unexpected error
           $ref: '#/components/responses/ServerError'
-  /provision:
-    put:
-      operationId: PutProvision
+  /setup/user:
+    post:
+      operationId: PostSetupUser
       tags:
-        - Provision
-      description: 'Create a new user, organization, and bucket. Idempotent. Requests can be retried.'
+        - Setup
+      summary: 'Create a new user, organization, and bucket'
+      description: 'Post an onboarding request to create a new user, organization, and bucket.'
       requestBody:
-        description: Create user and org with supplied IDs
+        description: Source to create
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProvisionRequest'
+              $ref: '#/components/schemas/OnboardingRequest'
       responses:
         '201':
+          description: 'The created default user, bucket, and organization.'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProvisionResponse'
-          description: 'The user name and ID, the org name and ID, the token for user if requested'
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: 'Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names, and invalid limits'
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Credentials not provided
-        '403':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Insufficient credentials to create an organization
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: |
-            Unprocessable Entity
-                      - Retention seconds that are higher than max allowed.
-            Conflict
-                      - user with ID exists with different name
-                      - org with ID exists with different name
-                      - user name already in use withe different id
-                      - org name already in use with differnet id
-        '501':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Internal Server Error. Request can be retried
+                $ref: '#/components/schemas/OnboardingResponse'
         default:
-          $ref: '#/components/responses/ServerError'
           description: Unexpected error
-  /provision/user:
-    put:
-      operationId: PutProvisionUser
-      tags:
-        - ProvisionUser
-      summary: Create/Add a user to an existing org. Creates a user if doesn't exist. Idempotent
-      parameters:
-        - in: header
-          name: Zap-Trace-Span
-          description: OpenTracing span context
-          example:
-            trace_id: '1'
-            span_id: '1'
-            baggage:
-              key: value
-          required: false
-          schema:
-            type: string
-      requestBody:
-        description: User to create and org id to add user to
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProvisionUserRequest'
-      responses:
-        '201':
-          description: User created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProvisionUserResponse'
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: 'Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names.'
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Credentials not provided or insufficient credentials to provision a user
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: |
-            Unprocessable Entity
-                      - Org with ID does not exist.
-            Conflict
-                      - user with ID exists with different name
-                      - user name already in use with different id
-        '501':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/ServerError'
-          description: Internal Server Error. Request can be retried.
-        default:
           $ref: '#/components/responses/ServerError'
-          description: Unexpected error
 components:
   schemas:
     OnboardingRequest:
@@ -736,7 +636,7 @@ components:
               type: integer
               description: retention period of non system bucket
             limit:
-              $ref: '#/components/schemas/OrgLimits'
+              $ref: '#/components/schemas/Limit'
         returnToken:
           type: boolean
           description: if true will return the auth token in the response
@@ -1086,189 +986,6 @@ components:
         bucket:
           type: string
           description: the name of the bucket to be created
-    BucketLimits:
-      description: Bucket limits
-      type: object
-      properties:
-        maxBuckets:
-          example: 2
-          description: Number of buckets allowed
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/Unlimited'
-            - $ref: '#/components/schemas/QuartzLimit'
-        maxRetentionDuration:
-          description: Retention duration limits in nanoseconds
-          example: 2592000000000000
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/Unlimited'
-            - $ref: '#/components/schemas/QuartzLimit'
-    CheckLimits:
-      description: Check limits
-      type: object
-      properties:
-        maxChecks:
-          description: Number of checks allowed
-          example: 2
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/Unlimited'
-            - $ref: '#/components/schemas/QuartzLimit'
-    DashboardLimits:
-      description: Dashboard limits
-      type: object
-      properties:
-        maxDashboards:
-          description: Number of dashboards allowed
-          example: 5
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/Unlimited'
-            - $ref: '#/components/schemas/QuartzLimit'
-    NotificationEndpointLimits:
-      description: Notification endpoint limits
-      type: object
-      properties:
-        blockedNotificationEndpoints:
-          description: Notification endpoints not allowed CSV
-          example: 'http,pagerduty'
-          type: string
-    NotificationRuleLimits:
-      description: Notification rule limits
-      type: object
-      properties:
-        maxNotifications:
-          description: Number of notifications allowed
-          example: 2
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/Unlimited'
-            - $ref: '#/components/schemas/QuartzLimit'
-        blockedNotificationRules:
-          description: Notification rules not allowed CSV
-          example: 'http,pagerduty'
-          type: string
-    OrganizationWithToken:
-      allOf:
-        - $ref: '#/components/schemas/Organization'
-        - type: object
-          properties:
-            token:
-              description: Authentication token to manage the organization and its resources in IDPE
-              readOnly: true
-              type: string
-            links:
-              description: Links to the IDPE resources for this organization
-              readOnly: true
-              type: object
-              example:
-                resource: path/to/resource
-    Organization:
-      type: object
-      properties:
-        id:
-          description: the IDPE organization ID
-          readOnly: true
-          type: string
-        apiUrl:
-          description: URL for talking to a specific cluster
-          readOnly: true
-          type: string
-        region:
-          description: name of the region within the cloud provider
-          type: string
-        provider:
-          description: name of the cloud provider
-          type: string
-          enum:
-            - AWS
-            - GCP
-            - Azure
-    Organizations:
-      type: array
-      items:
-        $ref: '#/components/schemas/Organization'
-    OrgLimits:
-      type: object
-      properties:
-        orgID:
-          type: string
-          readOnly: true
-          description: ID of the org for which these rates apply
-        rate:
-          $ref: '#/components/schemas/RateLimits'
-        bucket:
-          $ref: '#/components/schemas/BucketLimits'
-        task:
-          $ref: '#/components/schemas/TaskLimits'
-        dashboard:
-          $ref: '#/components/schemas/DashboardLimits'
-        check:
-          $ref: '#/components/schemas/CheckLimits'
-        notificationRule:
-          $ref: '#/components/schemas/NotificationRuleLimits'
-        notificationEndpoint:
-          $ref: '#/components/schemas/NotificationEndpointLimits'
-      required:
-        - orgID
-        - rate
-        - bucket
-        - task
-        - dashboard
-        - check
-        - notificationRule
-        - notificationEndpoint
-    RateLimits:
-      description: Usage rate limits
-      type: object
-      properties:
-        readKBs:
-          description: KB of data query'd per second
-          example: 1000
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/QuartzLimit'
-              maximum: 10000
-        writeKBs:
-          description: KB of data written per second
-          example: 17
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/QuartzLimit'
-              maximum: 10000
-        cardinality:
-          description: Max cardinality of data
-          example: 10000
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/QuartzLimit'
-              maximum: 1000000
-    RestrictedLimit:
-      description: Restrict access entirely
-      type: integer
-      enum:
-        - -1
-    TaskLimits:
-      description: Task limits
-      type: object
-      properties:
-        maxTasks:
-          description: Number of tasks allowed
-          example: 5
-          oneOf:
-            - $ref: '#/components/schemas/RestrictedLimit'
-            - $ref: '#/components/schemas/Unlimited'
-            - $ref: '#/components/schemas/QuartzLimit'
-    Unlimited:
-      description: Unbounded limit
-      type: integer
-      enum:
-        - 0
-    QuartzLimit:
-      description: Limit of at least 1
-      type: integer
-      minimum: 1
   responses:
     ServerError:
       description: Non 2XX error response from server.
