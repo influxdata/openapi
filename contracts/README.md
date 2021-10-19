@@ -1,6 +1,6 @@
 # InfluxDB API Contracts
 
-Refer to the [FAQs](../README.md#FAQs) for vocabulary definitions.
+Refer to the [FAQs](../README.md#FAQs) for vocabulary definitions. The files in this directory are generated and should not be modified by hand.
 
 ## "Public" APIs
 | File | Description |
