@@ -8,7 +8,7 @@ Refer to the [FAQs](../README.md#FAQs) for vocabulary definitions.
 | [`cloud-diff.yml`](./cloud-diff.yml) | Defines the cloud specific api elements |
 | [`cloud.yml`](./cloud.yml) | Defines the cloud api |
 | [`common.yml`](./common.yml) | Defines the shared api elements (between cloud and oss) |
-| [`managed-functions.yml`](./managed-functions.yml) | Defines the managed functions api |
+| [`invocable-scripts.yml`](./invocable-scripts.yml) | Defines the invocable scripts api |
 | [`mapsd.yml`](./svc/mapsd.yml) | Defines the mapsd api |
 | [`oss-diff.yml`](./oss-diff.yml) | Defines the oss specific api elements |
 | [`oss.yml`](./oss.yml) | Defines the oss api |
@@ -28,7 +28,7 @@ Refer to the [FAQs](../README.md#FAQs) for vocabulary definitions.
 | -- | -- |
 | [`annotationd.yml`](./svc/annotationd.yml) | Defines the annotationd api |
 | [`flowd.yml`](./svc/flowd.yml) | Defines the flowd api |
-| [`managed-functions.yml`](./svc/managed-functions.yml) | Defines the managed-functions api |
+| [`invocable-scripts.yml`](./svc/invocable-scripts.yml) | Defines the invocable scripts api |
 | [`mapsd.yml`](./svc/mapsd.yml) | Defines the mapsd api |
 
 ## Convenience Definitions for Reference
