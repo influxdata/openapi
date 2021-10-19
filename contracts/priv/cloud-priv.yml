@@ -281,6 +281,130 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /provision:
+    put:
+      operationId: PutProvision
+      tags:
+        - Provision
+      description: 'Create a new user, organization, and bucket. Idempotent. Requests can be retried.'
+      requestBody:
+        description: Create user and org with supplied IDs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionResponse'
+          description: 'The user name and ID, the org name and ID, the token for user if requested'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: 'Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names, and invalid limits'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Insufficient credentials to create an organization
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: |
+            Unprocessable Entity
+                      - Retention seconds that are higher than max allowed.
+            Conflict
+                      - user with ID exists with different name
+                      - org with ID exists with different name
+                      - user name already in use with different id
+                      - org name already in use with differnet id
+        '501':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+  /provision/user:
+    put:
+      operationId: PutProvisionUser
+      tags:
+        - ProvisionUser
+      summary: Create/Add a user to an existing org. Creates a user if doesn't exist. Idempotent
+      parameters:
+        - in: header
+          name: Zap-Trace-Span
+          description: OpenTracing span context
+          example:
+            trace_id: '1'
+            span_id: '1'
+            baggage:
+              key: value
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: User to create and org id to add user to
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionUserResponse'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: 'Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names.'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to provision a user
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: |
+            Unprocessable Entity
+                      - Org with ID does not exist.
+            Conflict
+                      - user with ID exists with different name
+                      - user name already in use with different id
+        '501':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
 components:
   schemas:
     OnboardingRequest:
