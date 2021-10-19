@@ -11,7 +11,7 @@ swagrag \
   -file ${CONTRACTS}/cloud.yml \
   -file ${CONTRACTS}/priv/annotationd.yml \
   -file ${CONTRACTS}/mapsd.yml \
-  -file ${CONTRACTS}/managed-functions.yml \
+  -file ${CONTRACTS}/invocable-scripts.yml \
   -api-title "Complete InfluxDB Cloud API" \
   | sed -e 's|^  /api/v2/ping|  /ping|' \
   > ${TCONTRACTS}/ref/cloud.yml
