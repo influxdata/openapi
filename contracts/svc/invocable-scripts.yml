@@ -1,10 +1,15 @@
 openapi: 3.0.0
 info:
-  title: Influxdata API Invocable Scripts
+  title: InfluxData Invocable Scripts API
   version: 0.1.0
   description: |
-    An API Invocable Script maps your custom Flux script to a new InfluxDB API endpoint.
-    You can invoke your script with an HTTP request to the endpoint and provide query parameters that are passed as parameters to the script.
+    Manage and execute scripts in InfluxDB.
+    An API Invocable Script assigns your custom Flux script to a new InfluxDB API endpoint for your organization.
+    Invocable scripts let you execute your script with an HTTP request to the endpoint.
+    You can reference parameters in your script as `params.myparameter`.
+    When you invoke your script, InfluxDB substitutes your `params` references with key-value pairs that you send in the `params` object.
+
+    For more information and examples, see [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invocable-scripts).
 servers:
   - url: /
 paths:
@@ -24,7 +29,7 @@ paths:
         - in: query
           name: offset
           required: false
-          description: Offset for pagination
+          description: The offset for pagination.
           schema:
             type: integer
       responses:
@@ -65,6 +70,7 @@ paths:
       tags:
         - Invocable Scripts
       summary: Retrieve a script
+      description: Uses script ID to retrieve details of an invocable script.
       parameters:
         - in: path
           name: scriptID
@@ -74,7 +80,7 @@ paths:
           description: The script ID.
       responses:
         '200':
-          description: Script details
+          description: The requested script object.
           content:
             application/json:
               schema:
@@ -87,7 +93,8 @@ paths:
       tags:
         - Invocable Scripts
       summary: Update a script
-      description: Update a script
+      description: |
+        Updates properties (`name`, `description`, and `script`) of an invocable script.
       requestBody:
         description: Script update to apply
         required: true
@@ -104,7 +111,7 @@ paths:
           description: The script ID.
       responses:
         '200':
-          description: Updated script
+          description: The updated script.
           content:
             application/json:
               schema:
@@ -117,7 +124,7 @@ paths:
       tags:
         - Invocable Scripts
       summary: Delete a script
-      description: Deletes a script and all associated records
+      description: Deletes a script and all associated records.
       parameters:
         - in: path
           name: scriptID
@@ -127,7 +134,7 @@ paths:
           description: The ID of the script to delete.
       responses:
         '204':
-          description: Script deleted
+          description: The script is deleted.
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -136,7 +143,8 @@ paths:
       operationId: PostScriptsIDInvoke
       tags:
         - Invocable Scripts
-      summary: Manually invoke a script with params in request body
+      summary: Invoke a script
+      description: Invokes a script and substitutes `params` keys referenced in the script with `params` key-values sent in the request body.
       parameters:
         - in: path
           name: scriptID
@@ -150,7 +158,7 @@ paths:
               $ref: '#/components/schemas/ScriptInvocationParams'
       responses:
         '200':
-          description: Response defined by script
+          description: The result of the script execution.
           content:
             application/json:
               schema:
@@ -246,8 +254,6 @@ components:
         name:
           description: The name of the script. The name must be unique within the organization.
           type: string
-        description:
-          type: string
         script:
           description: The script to execute.
           type: string
@@ -270,8 +276,8 @@ components:
           description: script is script to be executed
           type: string
     ScriptHTTPResponseData:
-      description: The data sent to end user when a script is invoked using http. User defined and dynamic
-      type: object
+      description: The data sent in the response body when a script is invoked by an HTTP request. User defined and dynamic.
+      type: string
     ScriptInvocationParams:
       type: object
       properties:
