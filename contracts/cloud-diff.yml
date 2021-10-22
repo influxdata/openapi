@@ -35,8 +35,9 @@ tags:
       | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
       | `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
       | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)</li> |
-      | `404`       | Not found                | Requested resource was not found. `message` in the response body contains details about the requested resource. |
+      | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
       | `413`       | Request entity too large | Request payload exceeds the size limit. |
+      | `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
       | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
       | `500`       | Internal server error    |                       |
       | `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |
@@ -64,6 +65,7 @@ x-tagGroups:
       - Buckets
       - Dashboards
       - Tasks
+      - Resources
   - name: Security and access endpoints
     tags:
       - Authorizations
@@ -75,6 +77,7 @@ x-tagGroups:
       - Routes
   - name: All endpoints
     tags:
+      - Annotations
       - Authorizations
       - Buckets
       - Cells
@@ -83,6 +86,7 @@ x-tagGroups:
       - Dashboards
       - Delete
       - DemoDataBuckets
+      - Invocable Scripts
       - Labels
       - Limits
       - NotificationEndpoints
@@ -92,14 +96,16 @@ x-tagGroups:
       - Ping
       - Public Flags
       - Query
+      - Resources
       - Routes
       - Rules
       - Secrets
       - Setup
       - Signin
       - Signout
-      - Sources
+      - Streams
       - Tasks
+      - Telegraf Plugins
       - Telegrafs
       - Templates
       - Usage
@@ -670,7 +676,7 @@ paths:
           description: Internal server error
           $ref: '#/components/responses/ServerError'
   '/buckets/{bucketID}/schema/measurements':
-    summary: APIs for bucket schema
+    summary: Bucket schemas
     get:
       summary: List all measurement schemas of a bucket
       operationId: getMeasurementSchemas
@@ -687,7 +693,7 @@ paths:
             type: string
         - in: query
           name: name
-          description: The name of a measurement. Return schemas for this measurement only.
+          description: The name of the measurement to return schemas for.
           schema:
             type: string
         - in: path
@@ -700,7 +706,7 @@ paths:
         - Bucket Schemas
       responses:
         '200':
-          description: A list of measurement schemas returning summary information
+          description: A list of measurement schemas returning summary information.
           headers:
             ETag:
               description: The current version of the bucket schema
@@ -742,7 +748,7 @@ paths:
               $ref: '#/components/schemas/MeasurementSchemaCreateRequest'
       responses:
         '201':
-          description: The created measurement schema
+          description: The created measurement schema.
           headers:
             ETag:
               description: The current version of the measurement schema
@@ -790,7 +796,7 @@ paths:
               schema:
                 $ref: '#/components/responses/ServerError/content/application~1json/schema'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
-    summary: APIs for tables
+    summary: Bucket Schema
     get:
       summary: Retrieve measurement schema information
       operationId: getMeasurementSchema
