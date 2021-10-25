@@ -13,8 +13,18 @@
   "tags": [
     {
       "name": "Authentication",
-      "description": "Use one of the following schemes to authenticate to the InfluxDB API:\n- [Token authentication](#section/Authentication/TokenAuth)\n- [Basic authentication](#section/Authentication/BasicAuth)\n- [Querystring authentication](#section/Authentication/QuerystringAuth)\n<!-- ReDoc-Inject: <security-definitions> -->\n",
+      "description": "Use one of the following schemes to authenticate to the InfluxDB API:\n- [Token authentication](#section/Authentication/TokenAuthentication)\n- [Basic authentication](#section/Authentication/BasicAuthentication)\n- [Querystring authentication](#section/Authentication/QuerystringAuthentication)\n<!-- ReDoc-Inject: <security-definitions> -->\n",
       "x-traitTag": true
+    },
+    {
+      "name": "Quick start",
+      "x-traitTag": true,
+      "description": "See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.\n\n[**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.\n"
+    },
+    {
+      "name": "Response codes",
+      "x-traitTag": true,
+      "description": "The InfluxDB API uses standard HTTP status codes for success and failure responses.\nThe response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.\n\nAPI operations may return the following HTTP status codes:\n\n| &nbsp;Code&nbsp; | Status                   | Description      |\n|:-----------:|:------------------------ |:--------------------- |\n| `200`       | Success                  |                       |\n| `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |\n| `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |\n| `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)</li> |\n| `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |\n| `413`       | Request entity too large | Request payload exceeds the size limit. |\n| `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |\n| `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |\n| `500`       | Internal server error    |                       |\n| `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |\n"
     },
     {
       "name": "Query",
@@ -31,13 +41,15 @@
   ],
   "x-tagGroups": [
     {
-      "name": "Get started",
+      "name": "Overview",
       "tags": [
-        "Authentication"
+        "Quick start",
+        "Authentication",
+        "Response codes"
       ]
     },
     {
-      "name": " ",
+      "name": "Data I/O endpoints",
       "tags": [
         "Write",
         "Query"
@@ -48,7 +60,8 @@
       "tags": [
         "Buckets",
         "Dashboards",
-        "Tasks"
+        "Tasks",
+        "Resources"
       ]
     },
     {
@@ -69,6 +82,7 @@
     {
       "name": "All endpoints",
       "tags": [
+        "Annotations",
         "Authorizations",
         "Buckets",
         "Cells",
@@ -77,6 +91,7 @@
         "Dashboards",
         "Delete",
         "DemoDataBuckets",
+        "Invocable Scripts",
         "Labels",
         "Limits",
         "NotificationEndpoints",
@@ -86,14 +101,16 @@
         "Ping",
         "Public Flags",
         "Query",
+        "Resources",
         "Routes",
         "Rules",
         "Secrets",
         "Setup",
         "Signin",
         "Signout",
-        "Sources",
+        "Streams",
         "Tasks",
+        "Telegraf Plugins",
         "Telegrafs",
         "Templates",
         "Usage",
@@ -114,7 +131,7 @@
         ],
         "security": [
           {
-            "BasicAuth": []
+            "BasicAuthentication": []
           }
         ],
         "parameters": [
@@ -205,7 +222,7 @@
         "summary": "Checks the status of InfluxDB instance and version of InfluxDB.",
         "servers": [
           {
-            "url": "/"
+            "url": ""
           }
         ],
         "tags": [
@@ -236,7 +253,7 @@
         "summary": "Checks the status of InfluxDB instance and version of InfluxDB.",
         "servers": [
           {
-            "url": "/"
+            "url": ""
           }
         ],
         "tags": [
@@ -282,394 +299,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Routes"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/documents/templates": {
-      "get": {
-        "operationId": "GetDocumentsTemplates",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "List all templates",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "query",
-            "name": "org",
-            "description": "Specifies the name of the organization of the template.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "orgID",
-            "description": "Specifies the organization ID of the template.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of template documents",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Documents"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "PostDocumentsTemplates",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "Create a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          }
-        ],
-        "requestBody": {
-          "description": "Template that will be created",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DocumentCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Template created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Document"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/documents/templates/{templateID}": {
-      "get": {
-        "operationId": "GetDocumentsTemplatesID",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "Retrieve a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "path",
-            "name": "templateID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The template ID."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The template requested",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Document"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "PutDocumentsTemplatesID",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "Update a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "path",
-            "name": "templateID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The template ID."
-          }
-        ],
-        "requestBody": {
-          "description": "Template that will be updated",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DocumentUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The newly updated template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Document"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "DeleteDocumentsTemplatesID",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "Delete a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "path",
-            "name": "templateID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The template ID."
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Delete has been accepted"
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/documents/templates/{templateID}/labels": {
-      "get": {
-        "operationId": "GetDocumentsTemplatesIDLabels",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "List all labels for a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "path",
-            "name": "templateID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The template ID."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of all labels for a template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LabelsResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "PostDocumentsTemplatesIDLabels",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "Add a label to a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "path",
-            "name": "templateID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The template ID."
-          }
-        ],
-        "requestBody": {
-          "description": "Label to add",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LabelMapping"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "The label added to the template",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LabelResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/documents/templates/{templateID}/labels/{labelID}": {
-      "delete": {
-        "operationId": "DeleteDocumentsTemplatesIDLabelsID",
-        "tags": [
-          "Templates"
-        ],
-        "summary": "Delete a label from a template",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "path",
-            "name": "templateID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The template ID."
-          },
-          {
-            "in": "path",
-            "name": "labelID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The label ID."
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Delete has been accepted"
-          },
-          "404": {
-            "description": "Template not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -1944,199 +1573,6 @@
           },
           "default": {
             "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/write": {
-      "post": {
-        "operationId": "PostWrite",
-        "tags": [
-          "Write"
-        ],
-        "summary": "Write data",
-        "description": "Writes data to a bucket.\n\nTo write data into InfluxDB, you need the following:\n- **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._\n- **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for\n instructions on viewing your bucket ID._\n- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n for instructions on viewing your API token._\n- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.\n- data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.\n\nFor more information and examples, see [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n",
-        "requestBody": {
-          "description": "Data in line protocol format.",
-          "required": true,
-          "content": {
-            "text/plain": {
-              "schema": {
-                "type": "string",
-                "format": "byte"
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "header",
-            "name": "Content-Encoding",
-            "description": "When present, the header value tells the database that compression is applied to the line protocol in the request body.",
-            "schema": {
-              "type": "string",
-              "description": "The header value specifies that the line protocol in the request body is encoded with gzip or not encoded with identity.",
-              "default": "identity",
-              "enum": [
-                "gzip",
-                "identity"
-              ]
-            }
-          },
-          {
-            "in": "header",
-            "name": "Content-Type",
-            "description": "The header value indicates the format of the data in the request body.",
-            "schema": {
-              "type": "string",
-              "description": "`text/plain` specifies line protocol. `UTF-8` is the default character set.\n",
-              "default": "text/plain; charset=utf-8",
-              "enum": [
-                "text/plain",
-                "text/plain; charset=utf-8",
-                "application/vnd.influx.arrow"
-              ]
-            }
-          },
-          {
-            "in": "header",
-            "name": "Content-Length",
-            "description": "The header value indicates the size of the entity-body, in bytes, sent to the database. If the length is greater than the database's `max body` configuration option, the server responds with status code `413`.",
-            "schema": {
-              "type": "integer",
-              "description": "The length in decimal number of octets."
-            }
-          },
-          {
-            "in": "header",
-            "name": "Accept",
-            "description": "The header value specifies the response format.",
-            "schema": {
-              "type": "string",
-              "description": "The response format for errors.",
-              "default": "application/json",
-              "enum": [
-                "application/json"
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "org",
-            "description": "The parameter value specifies the destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "Organization name or ID."
-            }
-          },
-          {
-            "in": "query",
-            "name": "orgID",
-            "description": "The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "bucket",
-            "description": "The destination bucket for writes.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "All points within batch are written to this bucket."
-            }
-          },
-          {
-            "in": "query",
-            "name": "precision",
-            "description": "The precision for the unix timestamps within the body line-protocol.",
-            "schema": {
-              "$ref": "#/components/schemas/WritePrecision"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
-          },
-          "400": {
-            "description": "Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LineProtocolError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized. The error may indicate one of the following:\n  * The `Authorization: Token` header is missing or malformed.\n  * The API token value is missing from the header.\n  * The token does not have sufficient permissions to write to this organization and bucket.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Request entity too large. The payload exceeded the 50MB limit. InfluxDB rejected the batch and did not write any data.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LineProtocolLengthError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "The token is temporarily over quota. The Retry-After header describes when to try the write again.",
-            "headers": {
-              "Retry-After": {
-                "description": "A non-negative decimal integer indicating the seconds to delay after the response is received.",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.",
-            "headers": {
-              "Retry-After": {
-                "description": "A non-negative decimal integer indicating the seconds to delay after the response is received.",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -5374,7 +4810,7 @@
       "get": {
         "operationId": "GetResources",
         "tags": [
-          "resource list"
+          "Resources"
         ],
         "summary": "List all known resources",
         "parameters": [
@@ -6633,7 +6069,7 @@
         "summary": "Update a password",
         "security": [
           {
-            "BasicAuth": []
+            "BasicAuthentication": []
           }
         ],
         "parameters": [
@@ -6970,7 +6406,7 @@
         "summary": "Update a password",
         "security": [
           {
-            "BasicAuth": []
+            "BasicAuthentication": []
           }
         ],
         "parameters": [
@@ -9440,7 +8876,7 @@
       }
     },
     "/buckets/{bucketID}/schema/measurements": {
-      "summary": "APIs for bucket schema",
+      "summary": "Bucket schemas",
       "get": {
         "summary": "List all measurement schemas of a bucket",
         "operationId": "getMeasurementSchemas",
@@ -9464,7 +8900,7 @@
           {
             "in": "query",
             "name": "name",
-            "description": "The name of a measurement. Return schemas for this measurement only.",
+            "description": "The name of the measurement to return schemas for.",
             "schema": {
               "type": "string"
             }
@@ -9484,7 +8920,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of measurement schemas returning summary information",
+            "description": "A list of measurement schemas returning summary information.",
             "headers": {
               "ETag": {
                 "description": "The current version of the bucket schema",
@@ -9551,7 +8987,7 @@
         },
         "responses": {
           "201": {
-            "description": "The created measurement schema",
+            "description": "The created measurement schema.",
             "headers": {
               "ETag": {
                 "description": "The current version of the measurement schema",
@@ -9624,7 +9060,7 @@
       }
     },
     "/buckets/{bucketID}/schema/measurements/{measurementID}": {
-      "summary": "APIs for tables",
+      "summary": "Bucket Schema",
       "get": {
         "summary": "Retrieve measurement schema information",
         "operationId": "getMeasurementSchema",
@@ -10202,6 +9638,243 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/write": {
+      "post": {
+        "operationId": "PostWrite",
+        "tags": [
+          "Write"
+        ],
+        "summary": "Write data",
+        "description": "Writes data to a bucket.\n\nTo write data into InfluxDB, you need the following:\n\n- **organization name or ID** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._\n- **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for\n instructions on viewing your bucket ID._\n- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n for instructions on viewing your API token._\n- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.\n- data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.\n\nFor more information and examples, see [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n",
+        "requestBody": {
+          "description": "Data in line protocol format.",
+          "required": true,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "header",
+            "name": "Content-Encoding",
+            "description": "When present, the header value tells the database that compression is applied to the line protocol in the request body.",
+            "schema": {
+              "type": "string",
+              "description": "The header value specifies that the line protocol in the request body is encoded with gzip or not encoded with identity.",
+              "default": "identity",
+              "enum": [
+                "gzip",
+                "identity"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Content-Type",
+            "description": "The header value indicates the format of the data in the request body.",
+            "schema": {
+              "type": "string",
+              "description": "`text/plain` specifies line protocol. `UTF-8` is the default character set.\n",
+              "default": "text/plain; charset=utf-8",
+              "enum": [
+                "text/plain",
+                "text/plain; charset=utf-8",
+                "application/vnd.influx.arrow"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Content-Length",
+            "description": "The header value indicates the size of the entity-body, in bytes, sent to the database. If the length is greater than the database's `max body` configuration option, the server responds with status code `413`.",
+            "schema": {
+              "type": "integer",
+              "description": "The length in decimal number of octets."
+            }
+          },
+          {
+            "in": "header",
+            "name": "Accept",
+            "description": "The header value specifies the response format.",
+            "schema": {
+              "type": "string",
+              "description": "The response format for errors.",
+              "default": "application/json",
+              "enum": [
+                "application/json"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "org",
+            "description": "The parameter value specifies the destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Organization name or ID."
+            }
+          },
+          {
+            "in": "query",
+            "name": "orgID",
+            "description": "The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "bucket",
+            "description": "The destination bucket for writes.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "All points within batch are written to this bucket."
+            }
+          },
+          {
+            "in": "query",
+            "name": "precision",
+            "description": "The precision for the unix timestamps within the body line-protocol.",
+            "schema": {
+              "$ref": "#/components/schemas/WritePrecision"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
+          },
+          "400": {
+            "description": "Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LineProtocolError"
+                },
+                "examples": {
+                  "measurementSchemaFieldTypeConflict": {
+                    "summary": "Field type conflict thrown by an explicit bucket schema",
+                    "value": {
+                      "code": "invalid",
+                      "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The error may indicate one of the following:\n  * The `Authorization: Token` header is missing or malformed.\n  * The API token value is missing from the header.\n  * The token does not have sufficient permissions to write to this organization and bucket.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "tokenNotAuthorized": {
+                    "summary": "Token is not authorized to access the organization or resource",
+                    "value": {
+                      "code": "unauthorized",
+                      "message": "unauthorized access"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "resource-not-found": {
+                    "summary": "Not found error",
+                    "value": {
+                      "code": "not found",
+                      "message": "bucket \"air_sensor\" not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "dataExceedsSizeLimit": {
+                    "summary": "Cloud response",
+                    "value": "<html>\n  <head><title>413 Request Entity Too Large</title></head>\n  <body>\n    <center><h1>413 Request Entity Too Large</h1></center>\n    <hr>\n    <center>nginx</center>\n  </body>\n</html>\n"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The token is temporarily over quota. The Retry-After header describes when to try the write again.",
+            "headers": {
+              "Retry-After": {
+                "description": "A non-negative decimal integer indicating the seconds to delay after the response is received.",
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "internalError": {
+                    "summary": "Internal error example",
+                    "value": {
+                      "code": "internal error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.",
+            "headers": {
+              "Retry-After": {
+                "description": "A non-negative decimal integer indicating the seconds to delay after the response is received.",
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -16079,160 +15752,6 @@
           }
         }
       },
-      "DocumentMeta": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "templateID": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "name",
-          "version"
-        ]
-      },
-      "Document": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "meta": {
-            "$ref": "#/components/schemas/DocumentMeta"
-          },
-          "content": {
-            "type": "object"
-          },
-          "labels": {
-            "$ref": "#/components/schemas/Labels"
-          },
-          "links": {
-            "type": "object",
-            "readOnly": true,
-            "example": {
-              "self": "/api/v2/documents/templates/1"
-            },
-            "properties": {
-              "self": {
-                "description": "The document URL.",
-                "$ref": "#/components/schemas/Link"
-              }
-            }
-          }
-        },
-        "required": [
-          "id",
-          "meta",
-          "content"
-        ]
-      },
-      "DocumentCreate": {
-        "type": "object",
-        "properties": {
-          "meta": {
-            "$ref": "#/components/schemas/DocumentMeta"
-          },
-          "content": {
-            "type": "object"
-          },
-          "org": {
-            "type": "string",
-            "description": "The organization Name. Specify either `orgID` or `org`."
-          },
-          "orgID": {
-            "type": "string",
-            "description": "The organization Name. Specify either `orgID` or `org`."
-          },
-          "labels": {
-            "type": "array",
-            "description": "An array of label IDs to be added as labels to the document.",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "meta",
-          "content"
-        ]
-      },
-      "DocumentUpdate": {
-        "type": "object",
-        "properties": {
-          "meta": {
-            "$ref": "#/components/schemas/DocumentMeta"
-          },
-          "content": {
-            "type": "object"
-          }
-        }
-      },
-      "DocumentListEntry": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "meta": {
-            "$ref": "#/components/schemas/DocumentMeta"
-          },
-          "labels": {
-            "$ref": "#/components/schemas/Labels"
-          },
-          "links": {
-            "type": "object",
-            "readOnly": true,
-            "example": {
-              "self": "/api/v2/documents/templates/1"
-            },
-            "properties": {
-              "self": {
-                "description": "The document URL.",
-                "$ref": "#/components/schemas/Link"
-              }
-            }
-          }
-        },
-        "required": [
-          "id",
-          "meta"
-        ]
-      },
-      "Documents": {
-        "type": "object",
-        "properties": {
-          "documents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DocumentListEntry"
-            }
-          }
-        }
-      },
       "TelegrafRequest": {
         "type": "object",
         "properties": {
@@ -18560,6 +18079,8 @@
         "type": "object",
         "example": {
           "id": "1a3c5e7f9b0a8642",
+          "orgID": "0a3c5e7f9b0a0001",
+          "bucketID": "ba3c5e7f9b0a0010",
           "name": "cpu",
           "columns": [
             {
@@ -18599,6 +18120,14 @@
           "id": {
             "type": "string",
             "readOnly": true
+          },
+          "orgID": {
+            "type": "string",
+            "description": "ID of organization that the measurement schema is associated with."
+          },
+          "bucketID": {
+            "type": "string",
+            "description": "ID of the bucket that the measurement schema is associated with."
           },
           "name": {
             "type": "string",
@@ -18699,18 +18228,24 @@
           "measurementSchemas": [
             {
               "id": "1a3c5e7f9b0a8642",
+              "orgID": "0a3c5e7f9b0a0001",
+              "bucketID": "ba3c5e7f9b0a0010",
               "name": "cpu",
               "createdAt": "2021-01-21T00:48:40.993Z",
               "updatedAt": "2021-01-21T00:48:40.993Z"
             },
             {
               "id": "1a3c5e7f9b0a8643",
+              "orgID": "0a3c5e7f9b0a0001",
+              "bucketID": "ba3c5e7f9b0a0010",
               "name": "memory",
               "createdAt": "2021-01-21T00:48:40.993Z",
               "updatedAt": "2021-01-21T00:48:40.993Z"
             },
             {
               "id": "1a3c5e7f9b0a8644",
+              "orgID": "0a3c5e7f9b0a0001",
+              "bucketID": "ba3c5e7f9b0a0010",
               "name": "disk",
               "createdAt": "2021-01-21T00:48:40.993Z",
               "updatedAt": "2021-01-21T00:48:40.993Z"
@@ -18786,34 +18321,34 @@
       }
     },
     "securitySchemes": {
-      "TokenAuth": {
+      "TokenAuthentication": {
         "type": "http",
         "scheme": "token",
         "bearerFormat": "InfluxDB Token String",
-        "description": "InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.\n\nInclude your API token in an `Authentication: Token YOUR_API_TOKEN` HTTP header with each request.\n\n### Example\n\n`curl https://us-east-1-1.aws.cloud2.influxdata.com/\n      --header \"Authentication: Token YOUR_API_TOKEN\"`\n\nFor more information and examples, see the following:\n  - [Use tokens in API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).\n  - [`/authorizations`](#tag/Authorizations) endpoint.\n"
+        "description": "### Token authentication scheme\n\nInfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.\n\nInclude your API token in an `Authentication: Token YOUR_API_TOKEN` HTTP header with each request.\n\n### Example\n\n`curl https://us-east-1-1.aws.cloud2.influxdata.com/\n      --header \"Authentication: Token YOUR_API_TOKEN\"`\n\nFor more information and examples, see the following:\n  - [Use tokens in API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).\n  - [`/authorizations`](#tag/Authorizations) endpoint.\n"
       },
-      "BasicAuth": {
+      "BasicAuthentication": {
         "type": "http",
         "scheme": "basic",
-        "description": "Use Basic authentication with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme):\n  - **username**: InfluxDB Cloud username\n  - **password**: InfluxDB Cloud API token\n\n### Example\n\n`curl --get \"https://europe-west1-1.gcp.cloud2.influxdata.com/query\"\n      --user \"YOUR_USERNAME\":\"YOUR_TOKEN_OR_PASSWORD\"`\n\nFor more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/).\n"
+        "description": "### Basic authentication scheme\n\nUse HTTP Basic Auth with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme):\n  - **username**: InfluxDB Cloud username\n  - **password**: InfluxDB Cloud API token\n\n### Example\n\n`curl --get \"https://europe-west1-1.gcp.cloud2.influxdata.com/query\"\n      --user \"YOUR_USERNAME\":\"YOUR_TOKEN_OR_PASSWORD\"`\n\nFor more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/).\n"
       },
-      "QuerystringAuth": {
+      "QuerystringAuthentication": {
         "type": "apiKey",
         "in": "query",
         "name": "u=&p=",
-        "description": "Use InfluxDB 1.x API parameters to provide credentials through the query string.\n\nUsername and password schemes require the following credentials:\n- **username**: InfluxDB Cloud username\n- **password**: InfluxDB Cloud API token\n\n### Example\n\n`curl --get \"https://europe-west1-1.gcp.cloud2.influxdata.com/query\"\n      --data-urlencode \"u=YOUR_USERNAME\"\n      --data-urlencode \"p=YOUR_TOKEN_OR_PASSWORD\"`\n\nFor more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/).\n"
+        "description": "### Querystring authentication scheme\n\nUse InfluxDB 1.x API parameters to provide credentials through the query string.\n\nUsername and password schemes require the following credentials:\n- **username**: InfluxDB Cloud username\n- **password**: InfluxDB Cloud API token\n\n### Example\n\n`curl --get \"https://europe-west1-1.gcp.cloud2.influxdata.com/query\"\n      --data-urlencode \"u=YOUR_USERNAME\"\n      --data-urlencode \"p=YOUR_TOKEN_OR_PASSWORD\"`\n\nFor more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/).\n"
       }
     }
   },
   "security": [
     {
-      "TokenAuth": []
+      "TokenAuthentication": []
     },
     {
-      "BasicAuth": []
+      "BasicAuthentication": []
     },
     {
-      "QuerystringAuth": []
+      "QuerystringAuthentication": []
     }
   ]
 }
