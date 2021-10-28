@@ -1838,7 +1838,7 @@ paths:
       operationId: PostQueryAnalyze
       tags:
         - Query
-      summary: Analyze an InfluxQL or Flux query
+      summary: Analyze a Flux query
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: header
@@ -1848,7 +1848,7 @@ paths:
             enum:
               - application/json
       requestBody:
-        description: Flux or InfluxQL query to analyze
+        description: Flux query to analyze
         content:
           application/json:
             schema:
@@ -1889,7 +1889,7 @@ paths:
         - **API token** – _See [View tokens](https://docs.influxdata.com/influxdb/common/security/tokens/view-tokens/)
          for instructions on viewing your API token._
         - **InfluxDB URL** – _See [InfluxDB URLs](https://docs.influxdata.com/influxdb/common/reference/urls/)_.
-        - [Flux](https://docs.influxdata.com/influxdb/common/reference/flux) or [InfluxQL](https://docs.influxdata.com/influxdb/common/query-data/influxql/) query.
+        - **Flux query** – _See [Flux](https://docs.influxdata.com/flux/v0.x/)._
 
         For more information and examples, see [Query with the InfluxDB API](https://docs.influxdata.com/influxdb/common/query-data/execute-queries/influx-api/).
       parameters:
@@ -1926,12 +1926,14 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/Query'
-                - $ref: '#/components/schemas/InfluxQLQuery'
+              $ref: '#/components/schemas/Query'
           application/vnd.flux:
             schema:
               type: string
+            example: |
+              from(bucket: "example-bucket")
+                  |> range(start: -5m)
+                  |> filter(fn: (r) => r._measurement == "example-measurement")
       responses:
         '200':
           description: Success. Returns query results.
@@ -4901,23 +4903,6 @@ components:
           description: Specifies the time that should be reported as "now" in the query. Default is the server's now time.
           type: string
           format: date-time
-    InfluxQLQuery:
-      description: Query influx using the InfluxQL language
-      type: object
-      required:
-        - query
-      properties:
-        query:
-          description: InfluxQL query execute.
-          type: string
-        type:
-          description: The type of query. Must be "influxql".
-          type: string
-          enum:
-            - influxql
-        bucket:
-          description: Bucket is to be used instead of the database and retention policy specified in the InfluxQL query.
-          type: string
     Package:
       description: Represents a complete package source tree.
       type: object
