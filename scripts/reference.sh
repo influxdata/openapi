@@ -7,9 +7,7 @@ mkdir -p $TCONTRACTS/ref
 
 echo "Aggregating cloud swaggers"
 swagrag \
-  -file ${CONTRACTS}/priv/cloud-priv.yml \
   -file ${CONTRACTS}/cloud.yml \
-  -file ${CONTRACTS}/priv/annotationd.yml \
   -file ${CONTRACTS}/mapsd.yml \
   -file ${CONTRACTS}/invocable-scripts.yml \
   -api-title "Complete InfluxDB Cloud API" \
