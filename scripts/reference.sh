@@ -22,6 +22,8 @@ swagrag \
   -file ${CONTRACTS}/mapsd.yml \
   -api-title "Complete InfluxDB OSS API" \
   | sed -e 's|^  /api/v2/ping|  /ping|' \
+  | sed -e 's|^  /api/v2/ready|  /ready|' \
+  | sed -e 's|^  /api/v2/health|  /health|' \
   > ${TCONTRACTS}/ref/oss.yml
 
 diff -r ${CONTRACTS}/ref ${TCONTRACTS}/ref/
