@@ -11,7 +11,7 @@ This repository is organized as follows:
 ```
 .
 ├── contracts/              # contains the aggregated openapi definitions; the "source of truth"
-|   └── svc/                # contains the aggregated openapi definitions for each individual standalone service
+|   └── svc/                # contains the aggregated openapi internal api definitions for each individual standalone service
 ├── scripts/                # contains various scripts to aid in the generation of the contracts
 └── src/                    # contains the raw openapi definitions
     ├── cloud/              # contains cloud specific openapi definitions
@@ -70,7 +70,46 @@ When changes are complete, simply run `make generate-all` (`docker` currently re
  - Logic states that the further the API spec is from the implementing code, the greater the potential drift between the two. There are several reasons the service specific ("internal") definitions are in this repo and not living next to the code they define. Primarily it comes down to standardization. By standardizing on where to locate all swagger definitions, consumers aren't left wondering where they need to look for the current API contract of a service. Another equally important reason is more technical. While it is possible to reference swagger components via URL (as opposed to local relative file), the fact that many of the services are closed source re-introduce the issue of consuming private swagger. Third slightly relates to the last reason, as it simplifies the integration of the service into the "external" API (no reference path update required).
 
 #### Other swagger definitions?
- - The goal of this repo is to not only provide a central, trusted location for consumers of our external APIs, but also to provide a re-usable means for service maintainers to easily maintain their service API definition. As this repository is more widely adopted, it is expected that we remove duplicate definitions from our organization's codebase where appropriate, rather than continue providing an API definition in multiple locations.
+ - The goal of this repo is to not only provide a central, trusted location for consumers of our external APIs, but also to provide a re-usable means for service maintainers to easily maintain their service API definitions. **As repository adoption increases, we expect to remove duplicate definitions from our organization's codebase where appropriate, rather than provide API definitions in multiple locations.**
+
+
+## How to use:
+
+#### Prologue:
+
+From swagger, client *libraries* can be generated. From client libraries, generated or not, client *applications* can be created. This repository, specifically the [`contracts`](./contracts/) directory, contains swagger definitions to generate client libraries. In [Go (golang)](https://go.dev/), there is a standard library made up of a plethora of smaller, more granularly defined libraries. The contracts in this repo allow consumers to generate granular libraries so users don't have to import an entire library when they only need a portion of the utility.
+
+It is intended that an individual client library is generated for each service defined. `cloud` and `oss` definitions will continue to exist as monolithic definitions while we postpone splitting them up in order to preserve functionality. As this repository gains adoption, we would like to break subsets of the `cloud` and `oss` definitions into more granular services, such as `query`, `write`, and `tasks`.
+
+These more specialized swagger definitions (similar to the `datasourcesd`, `mapsd`, and `managed-functions` definitions), will allow the creation of granular libraries. The creation of more granular client libraries will allow developers to avoid bloat in their applications while still preserving the ability to consume a library to perform any action against our full API. Again, this modular workflow is preferred and benefits developers by not mandating that they consume a single client library that supports the entire API surface area.
+
+As the "InfluxDB API" evolves and eventually gets versioned, we can continue to provide complete API definitions in [`ref`](./contracts/ref/), while allowing each sub-service (write, query, tasks, etc.) to evolve on its own.
+
+
+#### Example (consumer):
+
+If I were producing a golang client library for other consumers to use the `mapsd` service, I could do something like the following:
+
+```sh
+# prepare directory for generated library
+mkdir -p /tmp/output
+
+# generate golang library for mapsd (same pattern goes for any service or definition)
+docker run --rm -v /tmp/output:/out -it swaggerapi/swagger-codegen-cli-v3 generate -i https://raw.githubusercontent.com/influxdata/openapi/master/contracts/mapsd.yml -l go -o /out/
+```
+
+The library is then ready for use in an application:
+```go
+import mapsd "<some-prefix>/mapsd/swagger"
+
+...
+
+  mapsd.NewAPIClient.GetMapboxToken(context.Background())
+```
+
+#### Example (producer):
+
+Everything (nearly) in the `contracts` directory is generated and should not be edited manually. Running `make generate-all` after editing files in `src` should be sufficient to propagate the change.
 
 ### Notes:
 
