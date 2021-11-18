@@ -1,0 +1,15 @@
+package commonschemas
+
+LineProtocolErrorCode: {
+	description: "Code is the machine-readable error code."
+	readOnly:    true
+	type:        "string"
+	enum: [
+		"internal error",
+		"not found",
+		"conflict",
+		"invalid",
+		"empty value",
+		"unavailable",
+	]
+}

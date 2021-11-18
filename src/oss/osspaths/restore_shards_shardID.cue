@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 restore_shards_shardID: post: {
 	operationId: "PostRestoreShardId"

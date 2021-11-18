@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 restore_bucket_bucketID: post: {
 	operationId: "PostRestoreBucketID"

@@ -1,0 +1,45 @@
+package commonpaths
+
+setup: {
+	get: {
+		operationId: "GetSetup"
+		tags: [
+			"Setup",
+		]
+		summary:     "Check if database has default user, org, bucket"
+		description: "Returns `true` if no default user, organization, or bucket has been created."
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}]
+		responses: "200": {
+			description: "allowed true or false"
+			content: "application/json": schema: $ref: "../../common/schemas/IsOnboarding.yml"
+		}
+	}
+	post: {
+		operationId: "PostSetup"
+		tags: [
+			"Setup",
+		]
+		summary:     "Set up initial user, org and bucket"
+		description: "Post an onboarding request to set up initial user, org and bucket."
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}]
+		requestBody: {
+			description: "Source to create"
+			required:    true
+			content: "application/json": schema: $ref: "../../common/schemas/OnboardingRequest.yml"
+		}
+		responses: {
+			"201": {
+				description: "Created default user, bucket, org"
+				content: "application/json": schema: $ref: "../../common/schemas/OnboardingResponse.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+		}
+	}
+}

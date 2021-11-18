@@ -1,0 +1,14 @@
+package commonschemas
+
+DashboardQuery: {
+	type: "object"
+	properties: {
+		text: {
+			type:        "string"
+			description: "The text of the Flux query."
+		}
+		editMode: $ref: "./QueryEditMode.yml"
+		name: type: "string"
+		builderConfig: $ref: "./BuilderConfig.yml"
+	}
+}

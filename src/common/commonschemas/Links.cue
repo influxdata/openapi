@@ -1,0 +1,11 @@
+package commonschemas
+
+Links: {
+	type: "object"
+	properties: {
+		next: $ref: "./Link.yml"
+		self: $ref: "./Link.yml"
+		prev: $ref: "./Link.yml"
+	}
+	required: ["self"]
+}

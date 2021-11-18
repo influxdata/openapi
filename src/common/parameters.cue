@@ -1,11 +1,13 @@
 package common
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 #Parameters: {
 	...
-	TraceSpan: $ref: "./common/parameters/TraceSpan.yml"
-	Offset: $ref: "./common/parameters/Offset.yml"
-	Limit: $ref: "./common/parameters/Limit.yml"
-	Descending: $ref: "./common/parameters/Descending.yml"
-	SortBy: $ref: "./common/parameters/SortBy.yml"
-	After: $ref: "./common/parameters/After.yml"
+	TraceSpan: commonparameters.TraceSpan
+	Offset: commonparameters.Offset
+	Limit: commonparameters.Limit
+	Descending: commonparameters.Descending
+	SortBy: commonparameters.SortBy
+	After: commonparameters.After
 }

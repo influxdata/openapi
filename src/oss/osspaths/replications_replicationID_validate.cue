@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 replications_replicationID_validate: post: {
 	operationId: "PostValidateReplicationByID"

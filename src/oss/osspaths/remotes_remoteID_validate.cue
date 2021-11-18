@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 remotes_remoteID_validate: post: {
 	operationId: "PostValidateRemoteConnectionByID"

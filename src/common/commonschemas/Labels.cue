@@ -1,0 +1,6 @@
+package commonschemas
+
+Labels: {
+	type: "array"
+	items: $ref: "./Label.yml"
+}

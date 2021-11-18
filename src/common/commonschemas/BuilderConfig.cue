@@ -1,0 +1,26 @@
+package commonschemas
+
+BuilderConfig: {
+	type: "object"
+	properties: {
+		buckets: {
+			type: "array"
+			items: type: "string"
+		}
+		tags: {
+			type: "array"
+			items: $ref: "./BuilderTagsType.yml"
+		}
+		functions: {
+			type: "array"
+			items: $ref: "./BuilderFunctionsType.yml"
+		}
+		aggregateWindow: {
+			type: "object"
+			properties: {
+				period: type: "string"
+				fillValues: type: "boolean"
+			}
+		}
+	}
+}

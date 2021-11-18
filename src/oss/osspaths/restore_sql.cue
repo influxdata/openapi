@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 restore_sql: post: {
 	operationId: "PostRestoreSQL"

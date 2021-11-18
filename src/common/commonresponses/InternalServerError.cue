@@ -1,0 +1,13 @@
+package commonresponses
+
+InternalServerError: {
+	// This represents the body of a 500 error.
+	description: "Internal server error."
+	content: "application/json": {
+		schema: $ref: "../schemas/Error.yml"
+		examples: internalError: {
+			summary: "Internal error example"
+			value: code: "internal error"
+		}
+	}
+}

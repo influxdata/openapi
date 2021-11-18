@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 backup_metadata: get: {
 	operationId: "GetBackupMetadata"

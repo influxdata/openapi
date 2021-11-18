@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 backup_kv: get: {
 	operationId: "GetBackupKV"

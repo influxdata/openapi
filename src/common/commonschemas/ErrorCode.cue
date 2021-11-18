@@ -1,0 +1,23 @@
+package commonschemas
+
+ErrorCode: {
+	description: "code is the machine-readable error code."
+	readOnly:    true
+	type:        "string"
+	// This set of enumerations must remain in sync with the constants defined in errors.go
+	enum: [
+		"internal error",
+		"not found",
+		"conflict",
+		"invalid",
+		"unprocessable entity",
+		"empty value",
+		"unavailable",
+		"forbidden",
+		"too many requests",
+		"unauthorized",
+		"method not allowed",
+		"request too large",
+		"unsupported media type",
+	]
+}

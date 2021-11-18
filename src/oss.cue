@@ -1,6 +1,13 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/common"
+import (
+	"github.com/influxdata/openapi/src/common/commonpaths"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common"
+	"github.com/influxdata/openapi/src/oss/osspaths"
+	"github.com/influxdata/openapi/src/oss/ossschemas"
+)
 
 oss: {
 	openapi: "3.0.0"
@@ -136,129 +143,129 @@ oss: {
 	}]
 	paths: {
 		common.#Paths
-		"/health": $ref: "./oss/paths/health.yml"
-		"/ready": $ref: "./oss/paths/ready.yml"
-		"/users": $ref: "./common/paths/users.yml"
-		"/users/{userID}": $ref: "./common/paths/users_userID.yml"
-		"/setup": $ref: "./common/paths/setup.yml"
-		"/authorizations": $ref: "./common/paths/authorizations.yml"
-		"/authorizations/{authID}": $ref: "./common/paths/authorizations_authID.yml"
+		"/health": osspaths.health
+		"/ready": osspaths.ready
+		"/users": commonpaths.users
+		"/users/{userID}": commonpaths.users_userID
+		"/setup": commonpaths.setup
+		"/authorizations": commonpaths.authorizations
+		"/authorizations/{authID}": commonpaths.authorizations_authID
 		"/legacy/authorizations": {
 			servers: [{
 				url: "/private"
 			}]
-			$ref: "./oss/paths/legacy_authorizations.yml"
+			osspaths.legacy_authorizations
 		}
 		"/legacy/authorizations/{authID}": {
 			servers: [{
 				url: "/private"
 			}]
-			$ref: "./oss/paths/legacy_authorizations_authID.yml"
+			osspaths.legacy_authorizations_authID
 		}
 		"/legacy/authorizations/{authID}/password": {
 			servers: [{
 				url: "/private"
 			}]
-			$ref: "./oss/paths/legacy_authorizations_authID_password.yml"
+			osspaths.legacy_authorizations_authID_password
 		}
-		"/variables": $ref: "./common/paths/variables.yml"
-		"/variables/{variableID}": $ref: "./common/paths/variables_variableID.yml"
-		"/sources": $ref: "./common/paths/sources.yml"
-		"/sources/{sourceID}": $ref: "./common/paths/sources_sourceID.yml"
-		"/sources/{sourceID}/health": $ref: "./common/paths/sources_sourceID_health.yml"
-		"/sources/{sourceID}/buckets": $ref: "./common/paths/sources_sourceID_buckets.yml"
-		"/scrapers": $ref: "./common/paths/scrapers.yml"
-		"/scrapers/{scraperTargetID}": $ref: "./common/paths/scrapers_scraperTargetID.yml"
-		"/scrapers/{scraperTargetID}/labels": $ref: "./common/paths/scrapers_scraperTargetID_labels.yml"
-		"/scrapers/{scraperTargetID}/labels/{labelID}": $ref: "./common/paths/scrapers_scraperTargetID_labels_labelID.yml"
-		"/scrapers/{scraperTargetID}/members": $ref: "./common/paths/scrapers_scraperTargetID_members.yml"
-		"/scrapers/{scraperTargetID}/members/{userID}": $ref: "./common/paths/scrapers_scraperTargetID_members_userID.yml"
-		"/scrapers/{scraperTargetID}/owners": $ref: "./common/paths/scrapers_scraperTargetID_owners.yml"
-		"/scrapers/{scraperTargetID}/owners/{userID}": $ref: "./common/paths/scrapers_scraperTargetID_owners_userID.yml"
-		"/backup/kv": $ref: "./oss/paths/backup_kv.yml"
-		"/backup/metadata": $ref: "./oss/paths/backup_metadata.yml"
-		"/backup/shards/{shardID}": $ref: "./oss/paths/backup_shards_shardID.yml"
-		"/restore/kv": $ref: "./oss/paths/restore_kv.yml"
-		"/restore/sql": $ref: "./oss/paths/restore_sql.yml"
-		"/restore/bucket/{bucketID}": $ref: "./oss/paths/restore_bucket_bucketID.yml"
-		"/restore/bucketMetadata": $ref: "./oss/paths/restore_bucketMetadata.yml"
-		"/restore/shards/{shardID}": $ref: "./oss/paths/restore_shards_shardID.yml"
+		"/variables": commonpaths.variables
+		"/variables/{variableID}": commonpaths.variables_variableID
+		"/sources": commonpaths.sources
+		"/sources/{sourceID}": commonpaths.sources_sourceID
+		"/sources/{sourceID}/health": commonpaths.sources_sourceID_health
+		"/sources/{sourceID}/buckets": commonpaths.sources_sourceID_buckets
+		"/scrapers": commonpaths.scrapers
+		"/scrapers/{scraperTargetID}": commonpaths.scrapers_scraperTargetID
+		"/scrapers/{scraperTargetID}/labels": commonpaths.scrapers_scraperTargetID_labels
+		"/scrapers/{scraperTargetID}/labels/{labelID}": commonpaths.scrapers_scraperTargetID_labels_labelID
+		"/scrapers/{scraperTargetID}/members": commonpaths.scrapers_scraperTargetID_members
+		"/scrapers/{scraperTargetID}/members/{userID}": commonpaths.scrapers_scraperTargetID_members_userID
+		"/scrapers/{scraperTargetID}/owners": commonpaths.scrapers_scraperTargetID_owners
+		"/scrapers/{scraperTargetID}/owners/{userID}": commonpaths.scrapers_scraperTargetID_owners_userID
+		"/backup/kv": osspaths.backup_kv
+		"/backup/metadata": osspaths.backup_metadata
+		"/backup/shards/{shardID}": osspaths.backup_shards_shardID
+		"/restore/kv": osspaths.restore_kv
+		"/restore/sql": osspaths.restore_sql
+		"/restore/bucket/{bucketID}": osspaths.restore_bucket_bucketID
+		"/restore/bucketMetadata": osspaths.restore_bucketMetadata
+		"/restore/shards/{shardID}": osspaths.restore_shards_shardID
 		// TODO: Uncomment when replications is on by default in OSS
 		//  /remotes:
-		//    $ref: "./oss/paths/remotes.yml"
+		//    osspaths.remotes
 		//  /remotes/{remoteID}:
-		//    $ref: "./oss/paths/remotes_remoteID.yml"
+		//    osspaths.remotes_remoteID
 		//  /remotes/{remoteID}/validate:
-		//    $ref: "./oss/paths/remotes_remoteID_validate.yml"
+		//    osspaths.remotes_remoteID_validate
 		//  /replications:
-		//    $ref: "./oss/paths/replications.yml"
+		//    osspaths.replications
 		//  /replications/{replicationID}:
-		//    $ref: "./oss/paths/replications_replicationID.yml"
+		//    osspaths.replications_replicationID
 		//  /replications/{replicationID}/validate:
-		//    $ref: "./oss/paths/replications_replicationID_validate.yml"
+		//    osspaths.replications_replicationID_validate
 		"/dashboards": {
-			$ref: "./common/paths/dashboards.yml"
+			commonpaths.dashboards
 		}
-		"/tasks": $ref: "./common/paths/tasks.yml"
-		"/write": $ref: "./oss/paths/write.yml"
+		"/tasks": commonpaths.tasks
+		"/write": osspaths.write
 	}
 	components: {
 		parameters: common.#Parameters
 		schemas: {
 			common.#Schemas
-			Authorization: $ref: "./common/schemas/Authorization.yml"
-			AuthorizationPostRequest: $ref: "./common/schemas/AuthorizationPostRequest.yml"
-			LegacyAuthorizationPostRequest: $ref: "./oss/schemas/LegacyAuthorizationPostRequest.yml"
-			Authorizations: $ref: "./common/schemas/Authorizations.yml"
-			Permission: $ref: "./common/schemas/Permission.yml"
-			Resource: $ref: "./common/schemas/Resource.yml"
-			User: $ref: "./common/schemas/User.yml"
-			Users: $ref: "./common/schemas/Users.yml"
-			OnboardingRequest: $ref: "./common/schemas/OnboardingRequest.yml"
-			OnboardingResponse: $ref: "./common/schemas/OnboardingResponse.yml"
-			Variable: $ref: "./common/schemas/Variable.yml"
-			Variables: $ref: "./common/schemas/Variables.yml"
-			Source: $ref: "./common/schemas/Source.yml"
-			Sources: $ref: "./common/schemas/Sources.yml"
-			ScraperTargetRequest: $ref: "./common/schemas/ScraperTargetRequest.yml"
-			ScraperTargetResponse: $ref: "./common/schemas/ScraperTargetResponse.yml"
-			ScraperTargetResponses: $ref: "./common/schemas/ScraperTargetResponses.yml"
-			MetadataBackup: $ref: "./oss/schemas/MetadataBackup.yml"
-			BucketMetadataManifests: $ref: "./oss/schemas/BucketMetadataManifests.yml"
-			BucketMetadataManifest: $ref: "./oss/schemas/BucketMetadataManifest.yml"
-			RetentionPolicyManifests: $ref: "./oss/schemas/RetentionPolicyManifests.yml"
-			RetentionPolicyManifest: $ref: "./oss/schemas/RetentionPolicyManifest.yml"
-			ShardGroupManifests: $ref: "./oss/schemas/ShardGroupManifests.yml"
-			ShardGroupManifest: $ref: "./oss/schemas/ShardGroupManifest.yml"
-			ShardManifests: $ref: "./oss/schemas/ShardManifests.yml"
-			ShardManifest: $ref: "./oss/schemas/ShardManifest.yml"
-			ShardOwners: $ref: "./oss/schemas/ShardOwners.yml"
-			ShardOwner: $ref: "./oss/schemas/ShardOwner.yml"
-			SubscriptionManifests: $ref: "./oss/schemas/SubscriptionManifests.yml"
-			SubscriptionManifest: $ref: "./oss/schemas/SubscriptionManifest.yml"
-			RestoredBucketMappings: $ref: "./oss/schemas/RestoredBucketMappings.yml"
-			BucketShardMappings: $ref: "./oss/schemas/BucketShardMappings.yml"
-			BucketShardMapping: $ref: "./oss/schemas/BucketShardMapping.yml"
+			Authorization: commonschemas.Authorization
+			AuthorizationPostRequest: commonschemas.AuthorizationPostRequest
+			LegacyAuthorizationPostRequest: ossschemas.LegacyAuthorizationPostRequest
+			Authorizations: commonschemas.Authorizations
+			Permission: commonschemas.Permission
+			Resource: commonschemas.Resource
+			User: commonschemas.User
+			Users: commonschemas.Users
+			OnboardingRequest: commonschemas.OnboardingRequest
+			OnboardingResponse: commonschemas.OnboardingResponse
+			Variable: commonschemas.Variable
+			Variables: commonschemas.Variables
+			Source: commonschemas.Source
+			Sources: commonschemas.Sources
+			ScraperTargetRequest: commonschemas.ScraperTargetRequest
+			ScraperTargetResponse: commonschemas.ScraperTargetResponse
+			ScraperTargetResponses: commonschemas.ScraperTargetResponses
+			MetadataBackup: ossschemas.MetadataBackup
+			BucketMetadataManifests: ossschemas.BucketMetadataManifests
+			BucketMetadataManifest: ossschemas.BucketMetadataManifest
+			RetentionPolicyManifests: ossschemas.RetentionPolicyManifests
+			RetentionPolicyManifest: ossschemas.RetentionPolicyManifest
+			ShardGroupManifests: ossschemas.ShardGroupManifests
+			ShardGroupManifest: ossschemas.ShardGroupManifest
+			ShardManifests: ossschemas.ShardManifests
+			ShardManifest: ossschemas.ShardManifest
+			ShardOwners: ossschemas.ShardOwners
+			ShardOwner: ossschemas.ShardOwner
+			SubscriptionManifests: ossschemas.SubscriptionManifests
+			SubscriptionManifest: ossschemas.SubscriptionManifest
+			RestoredBucketMappings: ossschemas.RestoredBucketMappings
+			BucketShardMappings: ossschemas.BucketShardMappings
+			BucketShardMapping: ossschemas.BucketShardMapping
 		}
 		// TODO: Uncomment when replications is on by default in OSS
 		//    RemoteConnection:
-		//      $ref: "./oss/schemas/RemoteConnection.yml"
+		//      ossschemas.RemoteConnection
 		//    RemoteConnections:
-		//      $ref: "./oss/schemas/RemoteConnections.yml"
+		//      ossschemas.RemoteConnections
 		//    RemoteConnectionCreationRequest:
-		//      $ref: "./oss/schemas/RemoteConnectionCreationRequest.yml"
+		//      ossschemas.RemoteConnectionCreationRequest
 		//    RemoteConnectionUpdateRequest:
-		//      $ref: "./oss/schemas/RemoteConnectionUpdateRequest.yml"
+		//      ossschemas.RemoteConnectionUpdateRequest
 		//    Replication:
-		//      $ref: "./oss/schemas/Replication.yml"
+		//      ossschemas.Replication
 		//    Replications:
-		//      $ref: "./oss/schemas/Replications.yml"
+		//      ossschemas.Replications
 		//    ReplicationCreationRequest:
-		//      $ref: "./oss/schemas/ReplicationCreationRequest.yml"
+		//      ossschemas.ReplicationCreationRequest
 		//    ReplicationUpdateRequest:
-		//      $ref: "./oss/schemas/ReplicationUpdateRequest.yml"
+		//      ossschemas.ReplicationUpdateRequest
 		responses: {
-			ServerError: $ref: "./common/responses/ServerError.yml"
+			ServerError: commonresponses.ServerError
 		}
 		securitySchemes: {
 			TokenAuthentication: {

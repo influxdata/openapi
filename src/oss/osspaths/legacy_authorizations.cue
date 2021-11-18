@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 legacy_authorizations: {
 	get: {

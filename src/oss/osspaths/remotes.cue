@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 remotes: {
 	get: {

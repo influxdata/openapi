@@ -1,9 +1,0 @@
-package schemas
-
-IsOnboarding: {
-	type: "object"
-	properties: allowed: {
-		description: "True means that the influxdb instance has NOT had initial setup; false means that the database has been setup."
-		type:        "boolean"
-	}
-}

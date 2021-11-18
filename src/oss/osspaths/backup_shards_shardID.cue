@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 backup_shards_shardID: get: {
 	operationId: "GetBackupShardId"

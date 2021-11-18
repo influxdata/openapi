@@ -1,0 +1,17 @@
+package commonschemas
+
+AuthorizationUpdateRequest: properties: {
+	status: {
+		description: "If inactive the token is inactive and requests using the token will be rejected."
+		default:     "active"
+		type:        "string"
+		enum: [
+			"active",
+			"inactive",
+		]
+	}
+	description: {
+		type:        "string"
+		description: "A description of the token."
+	}
+}

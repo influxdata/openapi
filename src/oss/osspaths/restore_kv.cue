@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 restore_kv: post: {
 	operationId: "PostRestoreKV"

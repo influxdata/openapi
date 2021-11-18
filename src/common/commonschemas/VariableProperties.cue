@@ -1,0 +1,12 @@
+package commonschemas
+
+VariableProperties: {
+	type: "object"
+	oneOf: [{
+		$ref: "./QueryVariableProperties.yml"
+	}, {
+		$ref: "./ConstantVariableProperties.yml"
+	}, {
+		$ref: "./MapVariableProperties.yml"
+	}]
+}

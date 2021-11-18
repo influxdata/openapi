@@ -1,0 +1,29 @@
+package commonpaths
+
+scrapers_scraperTargetID_owners_userID: delete: {
+	operationId: "DeleteScrapersIDOwnersID"
+	tags: ["Scraper Targets"]
+	summary: "Remove an owner from a scraper target"
+	parameters: [{
+		$ref: "../parameters/TraceSpan.yml"
+	}, {
+		in:   "path"
+		name: "userID"
+		schema: type: "string"
+		required:    true
+		description: "The ID of owner to remove."
+	}, {
+		in:   "path"
+		name: "scraperTargetID"
+		schema: type: "string"
+		required:    true
+		description: "The scraper target ID."
+	}]
+	responses: {
+		"204": description: "Owner removed"
+		default: {
+			description: "Unexpected error"
+			content: "application/json": schema: $ref: "../schemas/Error.yml"
+		}
+	}
+}

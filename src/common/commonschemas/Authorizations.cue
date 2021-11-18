@@ -1,0 +1,15 @@
+package commonschemas
+
+Authorizations: {
+	type: "object"
+	properties: {
+		links: {
+			readOnly: true
+			$ref:     "./Links.yml"
+		}
+		authorizations: {
+			type: "array"
+			items: $ref: "./Authorization.yml"
+		}
+	}
+}

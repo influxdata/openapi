@@ -1,4 +1,4 @@
-package paths
+package osspaths
 
 ready: get: {
 	operationId: "GetReady"
