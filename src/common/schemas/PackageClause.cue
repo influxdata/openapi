@@ -1,0 +1,10 @@
+package schemas
+
+PackageClause: {
+	description: "Defines a package identifier"
+	type:        "object"
+	properties: {
+		type: $ref: "./NodeType.yml"
+		name: $ref: "./Identifier.yml"
+	}
+}

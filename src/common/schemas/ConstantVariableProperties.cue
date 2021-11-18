@@ -1,0 +1,12 @@
+package schemas
+
+ConstantVariableProperties: properties: {
+	type: {
+		type: "string"
+		enum: ["constant"]
+	}
+	values: {
+		type: "array"
+		items: type: "string"
+	}
+}

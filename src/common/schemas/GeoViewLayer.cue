@@ -1,0 +1,14 @@
+package schemas
+
+GeoViewLayer: {
+	type: "object"
+	oneOf: [{
+		$ref: "./GeoCircleViewLayer.yml"
+	}, {
+		$ref: "./GeoHeatMapViewLayer.yml"
+	}, {
+		$ref: "./GeoPointMapViewLayer.yml"
+	}, {
+		$ref: "./GeoTrackMapViewLayer.yml"
+	}]
+}

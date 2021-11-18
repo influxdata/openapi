@@ -1,0 +1,12 @@
+package schemas
+
+BinaryExpression: {
+	description: "uses binary operators to act on two operands in an expression"
+	type:        "object"
+	properties: {
+		type: $ref: "./NodeType.yml"
+		operator: type: "string"
+		left: $ref: "./Expression.yml"
+		right: $ref: "./Expression.yml"
+	}
+}

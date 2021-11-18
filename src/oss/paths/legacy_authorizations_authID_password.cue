@@ -1,0 +1,30 @@
+package paths
+
+legacy_authorizations_authID_password: post: {
+	operationId: "PostLegacyAuthorizationsIDPassword"
+	tags: [
+		"Legacy Authorizations",
+	]
+	summary: "Set a legacy authorization password"
+	parameters: [{
+		$ref: "../../common/parameters/TraceSpan.yml"
+	}, {
+		in:   "path"
+		name: "authID"
+		schema: type: "string"
+		required:    true
+		description: "The ID of the legacy authorization to update."
+	}]
+	requestBody: {
+		description: "New password"
+		required:    true
+		content: "application/json": schema: $ref: "../../common/schemas/PasswordResetBody.yml"
+	}
+	responses: {
+		"204": description: "Legacy authorization password set"
+		default: {
+			description: "Unexpected error"
+			$ref:        "../../common/responses/ServerError.yml"
+		}
+	}
+}

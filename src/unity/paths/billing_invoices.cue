@@ -1,0 +1,22 @@
+package paths
+
+billing_invoices: get: {
+	operationId: "GetInvoices"
+	tags: [
+		"Billing",
+	]
+	responses: {
+		"200": {
+			description: "A list of invoices"
+			content: "application/json": schema: $ref: "../schemas/Invoices.yml"
+		}
+		"401": {
+			description: "Unauthorized"
+			$ref:        "../../common/responses/ServerError.yml"
+		}
+		default: {
+			description: "Unexpected error"
+			$ref:        "../../common/responses/ServerError.yml"
+		}
+	}
+}

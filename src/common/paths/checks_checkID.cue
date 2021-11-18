@@ -1,0 +1,127 @@
+package paths
+
+checks_checkID: {
+	get: {
+		operationId: "GetChecksID"
+		tags: [
+			"Checks",
+		]
+		summary: "Retrieve a check"
+		parameters: [{
+			$ref: "../parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "checkID"
+			schema: type: "string"
+			required:    true
+			description: "The check ID."
+		}]
+		responses: {
+			"200": {
+				description: "The check requested"
+				content: "application/json": schema: $ref: "../schemas/Check.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+		}
+	}
+	put: {
+		operationId: "PutChecksID"
+		tags: [
+			"Checks",
+		]
+		summary: "Update a check"
+		requestBody: {
+			description: "Check update to apply"
+			required:    true
+			content: "application/json": schema: $ref: "../schemas/Check.yml"
+		}
+		parameters: [{
+			$ref: "../parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "checkID"
+			schema: type: "string"
+			required:    true
+			description: "The check ID."
+		}]
+		responses: {
+			"200": {
+				description: "An updated check"
+				content: "application/json": schema: $ref: "../schemas/Check.yml"
+			}
+			"404": {
+				description: "The check was not found"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+		}
+	}
+	patch: {
+		operationId: "PatchChecksID"
+		tags: [
+			"Checks",
+		]
+		summary: "Update a check"
+		requestBody: {
+			description: "Check update to apply"
+			required:    true
+			content: "application/json": schema: $ref: "../schemas/CheckPatch.yml"
+		}
+		parameters: [{
+			$ref: "../parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "checkID"
+			schema: type: "string"
+			required:    true
+			description: "The check ID."
+		}]
+		responses: {
+			"200": {
+				description: "An updated check"
+				content: "application/json": schema: $ref: "../schemas/Check.yml"
+			}
+			"404": {
+				description: "The check was not found"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+		}
+	}
+	delete: {
+		operationId: "DeleteChecksID"
+		tags: [
+			"Checks",
+		]
+		summary: "Delete a check"
+		parameters: [{
+			$ref: "../parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "checkID"
+			schema: type: "string"
+			required:    true
+			description: "The check ID."
+		}]
+		responses: {
+			"204": description: "Delete has been accepted"
+			"404": {
+				description: "The check was not found"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+		}
+	}
+}

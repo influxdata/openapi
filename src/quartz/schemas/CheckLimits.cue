@@ -1,0 +1,17 @@
+package schemas
+
+CheckLimits: {
+	description: "Check limits"
+	type:        "object"
+	properties: maxChecks: {
+		description: "Number of checks allowed"
+		example:     2
+		oneOf: [{
+			$ref: "./RestrictedLimit.yml"
+		}, {
+			$ref: "./Unlimited.yml"
+		}, {
+			$ref: "./Limit.yml"
+		}]
+	}
+}

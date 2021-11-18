@@ -1,0 +1,61 @@
+package paths
+
+buckets_bucketID_owners: {
+	get: {
+		operationId: "GetBucketsIDOwners"
+		tags: [
+			"Buckets",
+		]
+		summary: "List all owners of a bucket"
+		parameters: [{
+			$ref: "../parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "bucketID"
+			schema: type: "string"
+			required:    true
+			description: "The bucket ID."
+		}]
+		responses: {
+			"200": {
+				description: "A list of bucket owners"
+				content: "application/json": schema: $ref: "../schemas/ResourceOwners.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+		}
+	}
+	post: {
+		operationId: "PostBucketsIDOwners"
+		tags: [
+			"Buckets",
+		]
+		summary: "Add an owner to a bucket"
+		parameters: [{
+			$ref: "../parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "bucketID"
+			schema: type: "string"
+			required:    true
+			description: "The bucket ID."
+		}]
+		requestBody: {
+			description: "User to add as owner"
+			required:    true
+			content: "application/json": schema: $ref: "../schemas/AddResourceMemberRequestBody.yml"
+		}
+		responses: {
+			"201": {
+				description: "Bucket owner added"
+				content: "application/json": schema: $ref: "../schemas/ResourceOwner.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				content: "application/json": schema: $ref: "../schemas/Error.yml"
+			}
+		}
+	}
+}

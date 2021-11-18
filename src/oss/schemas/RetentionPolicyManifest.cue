@@ -1,0 +1,20 @@
+package schemas
+
+RetentionPolicyManifest: {
+	type: "object"
+	properties: {
+		name: type: "string"
+		replicaN: type: "integer"
+		duration: {
+			type:   "integer"
+			format: "int64"
+		}
+		shardGroupDuration: {
+			type:   "integer"
+			format: "int64"
+		}
+		shardGroups: $ref: "./ShardGroupManifests.yml"
+		subscriptions: $ref: "./SubscriptionManifests.yml"
+	}
+	required: ["name", "replicaN", "duration", "shardGroupDuration", "shardGroups", "subscriptions"]
+}

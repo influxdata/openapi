@@ -1,0 +1,14 @@
+package schemas
+
+StreamListFilter: allOf: [{
+	$ref: "../schemas/BasicFilter.yml"
+}, {
+	type: "object"
+	properties: {
+		streamIncludes: {
+			type: "array"
+			items: type: "string"
+		}
+		allStreams: type: "boolean"
+	}
+}]

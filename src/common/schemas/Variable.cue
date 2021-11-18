@@ -1,0 +1,51 @@
+package schemas
+
+Variable: {
+	type: "object"
+	required: [
+		"name",
+		"orgID",
+		"arguments",
+	]
+	properties: {
+		links: {
+			type:     "object"
+			readOnly: true
+			properties: {
+				self: {
+					type:   "string"
+					format: "uri"
+				}
+				org: {
+					type:   "string"
+					format: "uri"
+				}
+				labels: {
+					type:   "string"
+					format: "uri"
+				}
+			}
+		}
+		id: {
+			readOnly: true
+			type:     "string"
+		}
+		orgID: type: "string"
+		name: type: "string"
+		description: type: "string"
+		selected: {
+			type: "array"
+			items: type: "string"
+		}
+		labels: $ref: "./Labels.yml"
+		arguments: $ref: "./VariableProperties.yml"
+		createdAt: {
+			type:   "string"
+			format: "date-time"
+		}
+		updatedAt: {
+			type:   "string"
+			format: "date-time"
+		}
+	}
+}

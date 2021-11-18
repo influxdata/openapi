@@ -1,0 +1,15 @@
+package schemas
+
+PatchOrganizationRequest: {
+	type: "object"
+	properties: {
+		name: {
+			type:        "string"
+			description: "New name to set on the organization"
+		}
+		description: {
+			type:        "string"
+			description: "New description to set on the organization"
+		}
+	}
+}

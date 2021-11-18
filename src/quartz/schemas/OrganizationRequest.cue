@@ -1,0 +1,25 @@
+package schemas
+
+OrganizationRequest: {
+	type: "object"
+	properties: {
+		orgName: {
+			description: "name of the organization"
+			type:        "string"
+		}
+		provider: {
+			description: "name of the cloud provider"
+			type:        "string"
+			enum: [
+				"AWS",
+				"GCP",
+				"Azure",
+			]
+		}
+		region: {
+			description: "name of the region within the cloud provider"
+			type:        "string"
+		}
+		rateLimits: $ref: "./OrgLimits.yml"
+	}
+}

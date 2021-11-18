@@ -1,0 +1,15 @@
+package schemas
+
+QueryVariableProperties: properties: {
+	type: {
+		type: "string"
+		enum: ["query"]
+	}
+	values: {
+		type: "object"
+		properties: {
+			query: type: "string"
+			language: type: "string"
+		}
+	}
+}

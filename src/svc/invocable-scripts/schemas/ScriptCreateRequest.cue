@@ -1,0 +1,18 @@
+package schemas
+
+ScriptCreateRequest: {
+	type: "object"
+	properties: {
+		name: {
+			description: "The name of the script. The name must be unique within the organization."
+			type:        "string"
+		}
+		description: type: "string"
+		script: {
+			description: "The script to execute."
+			type:        "string"
+		}
+		language: $ref: "./ScriptLanguage.yml"
+	}
+	required: ["name", "script", "language", "description"]
+}

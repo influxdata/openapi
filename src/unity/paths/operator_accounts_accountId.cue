@@ -1,0 +1,81 @@
+package paths
+
+operator_accounts_accountId: {
+	// Oats is making this incredibly annoying with naming conflicts
+	get: {
+		operationId: "GetAccountById"
+		tags: [
+			"Accounts",
+			"Operators",
+		]
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "accountId"
+			schema: type: "string"
+			required:    true
+			description: "The ID of the account to get."
+		}]
+		responses: {
+			"200": {
+				description: "the account"
+				content: "application/json": schema: allOf: [{
+					$ref: "../schemas/OperatorAccount.yml"
+				}, {
+					properties: organizations: {
+						type:        "array"
+						description: "organizations in the account"
+						$ref:        "../schemas/Organizations.yml"
+					}
+				}, {
+					required: ["organizations"]
+				}]
+			}
+			"401": {
+				description: "Unauthorized"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+			"404": {
+				description: "Account not found"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+		}
+	}
+	delete: {
+		operationId: "DeleteAccountById"
+		requestBody: content: "application/json; charset=utf-8": schema: type: "object"
+		tags: [
+			"Accounts",
+			"Operators",
+		]
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "accountId"
+			schema: type: "string"
+			required:    true
+			description: "The ID of the account to delete."
+		}]
+		responses: {
+			"204": description: "Account deleted"
+			"400": {
+				description: "Account is not deletable"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+			"401": {
+				description: "Unauthorized"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+		}
+	}
+}
