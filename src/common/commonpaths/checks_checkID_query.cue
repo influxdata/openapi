@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 checks_checkID_query: get: {
 	operationId: "GetChecksIDQuery"
 	tags: [
@@ -7,7 +11,7 @@ checks_checkID_query: get: {
 	]
 	summary: "Retrieve a check query"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "checkID"
@@ -18,19 +22,19 @@ checks_checkID_query: get: {
 	responses: {
 		"200": {
 			description: "The check query requested"
-			content: "application/json": schema: $ref: "../schemas/FluxResponse.yml"
+			content: "application/json": schema: commonschemas.FluxResponse.#Ref
 		}
 		"400": {
 			description: "Invalid request"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		"404": {
 			description: "Check not found"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

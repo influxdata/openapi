@@ -4,9 +4,9 @@ ConditionalExpression: {
 	description: "Selects one of two expressions, `Alternate` or `Consequent`, depending on a third boolean expression, `Test`"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		test: $ref: "./Expression.yml"
-		alternate: $ref: "./Expression.yml"
-		consequent: $ref: "./Expression.yml"
+		type: NodeType.#Ref
+		test: Expression.#Ref
+		alternate: Expression.#Ref
+		consequent: Expression.#Ref
 	}
 }

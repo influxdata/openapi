@@ -9,11 +9,11 @@ BuilderConfig: {
 		}
 		tags: {
 			type: "array"
-			items: $ref: "./BuilderTagsType.yml"
+			items: BuilderTagsType.#Ref
 		}
 		functions: {
 			type: "array"
-			items: $ref: "./BuilderFunctionsType.yml"
+			items: BuilderFunctionsType.#Ref
 		}
 		aggregateWindow: {
 			type: "object"

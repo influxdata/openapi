@@ -10,7 +10,7 @@ GeoViewProperties: {
 		}
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		shape: {
 			type: "string"
@@ -58,7 +58,7 @@ GeoViewProperties: {
 			description: "String to define the column"
 			type:        "string"
 		}
-		latLonColumns: $ref: "./LatLonColumns.yml"
+		latLonColumns: LatLonColumns.#Ref
 		mapStyle: {
 			description: "Define map type - regular, satellite etc."
 			type:        "string"
@@ -71,12 +71,12 @@ GeoViewProperties: {
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		layers: {
 			description: "List of individual layers shown in the map"
 			type:        "array"
-			items: $ref: "./GeoViewLayer.yml"
+			items: GeoViewLayer.#Ref
 		}
 	}
 }

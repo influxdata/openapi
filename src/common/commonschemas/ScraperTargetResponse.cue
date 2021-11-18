@@ -3,7 +3,7 @@ package commonschemas
 ScraperTargetResponse: {
 	type: "object"
 	allOf: [{
-		$ref: "./ScraperTargetRequest.yml"
+		ScraperTargetRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -30,11 +30,11 @@ ScraperTargetResponse: {
 					organization: "/api/v2/orgs/1"
 				}
 				properties: {
-					self: $ref: "./Link.yml"
-					members: $ref: "./Link.yml"
-					owners: $ref: "./Link.yml"
-					bucket: $ref: "./Link.yml"
-					organization: $ref: "./Link.yml"
+					self: Link.#Ref
+					members: Link.#Ref
+					owners: Link.#Ref
+					bucket: Link.#Ref
+					organization: Link.#Ref
 				}
 			}
 		}

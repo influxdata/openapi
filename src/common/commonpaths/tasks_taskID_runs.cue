@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 tasks_taskID_runs: {
 	get: {
 		operationId: "GetTasksIDRuns"
@@ -8,7 +12,7 @@ tasks_taskID_runs: {
 		]
 		summary: "List runs for a task"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -50,11 +54,11 @@ tasks_taskID_runs: {
 		responses: {
 			"200": {
 				description: "A list of task runs"
-				content: "application/json": schema: $ref: "../schemas/Runs.yml"
+				content: "application/json": schema: commonschemas.Runs.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -65,22 +69,22 @@ tasks_taskID_runs: {
 		]
 		summary: "Manually start a task run, overriding the current schedule"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
 			schema: type: "string"
 			required: true
 		}]
-		requestBody: content: "application/json": schema: $ref: "../schemas/RunManually.yml"
+		requestBody: content: "application/json": schema: commonschemas.RunManually.#Ref
 		responses: {
 			"201": {
 				description: "Run scheduled to start"
-				content: "application/json": schema: $ref: "../schemas/Run.yml"
+				content: "application/json": schema: commonschemas.Run.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

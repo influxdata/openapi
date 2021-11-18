@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 notificationRules: {
 	get: {
 		operationId: "GetNotificationRules"
@@ -8,11 +12,11 @@ notificationRules: {
 		]
 		summary: "List all notification rules"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -37,11 +41,11 @@ notificationRules: {
 		responses: {
 			"200": {
 				description: "A list of notification rules"
-				content: "application/json": schema: $ref: "../schemas/NotificationRules.yml"
+				content: "application/json": schema: commonschemas.NotificationRules.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -54,16 +58,16 @@ notificationRules: {
 		requestBody: {
 			description: "Notification rule to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PostNotificationRule.yml"
+			content: "application/json": schema: commonschemas.PostNotificationRule.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Notification rule created"
-				content: "application/json": schema: $ref: "../schemas/NotificationRule.yml"
+				content: "application/json": schema: commonschemas.NotificationRule.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

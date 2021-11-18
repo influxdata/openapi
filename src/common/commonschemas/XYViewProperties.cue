@@ -21,12 +21,12 @@ XYViewProperties: {
 		}
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -37,8 +37,8 @@ XYViewProperties: {
 			description: "If true, will display note when empty"
 			type:        "boolean"
 		}
-		axes: $ref: "./Axes.yml"
-		staticLegend: $ref: "./StaticLegend.yml"
+		axes: Axes.#Ref
+		staticLegend: StaticLegend.#Ref
 		xColumn: type: "string"
 		generateXAxisTicks: {
 			type: "array"
@@ -76,7 +76,7 @@ XYViewProperties: {
 			type: "string"
 			enum: ["overlaid", "stacked"]
 		}
-		geom: $ref: "./XYGeom.yml"
+		geom: XYGeom.#Ref
 		legendColorizeRows: type: "boolean"
 		legendHide: type: "boolean"
 		legendOpacity: {

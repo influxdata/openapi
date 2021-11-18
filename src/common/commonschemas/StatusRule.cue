@@ -3,8 +3,8 @@ package commonschemas
 StatusRule: {
 	type: "object"
 	properties: {
-		currentLevel: $ref: "./RuleStatusLevel.yml"
-		previousLevel: $ref: "./RuleStatusLevel.yml"
+		currentLevel: RuleStatusLevel.#Ref
+		previousLevel: RuleStatusLevel.#Ref
 		count: type: "integer"
 		period: type: "string"
 	}

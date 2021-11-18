@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 dbrps_dbrpID: {
 	get: {
 		operationId: "GetDBRPsID"
@@ -8,7 +12,7 @@ dbrps_dbrpID: {
 		]
 		summary: "Retrieve a database retention policy mapping"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -29,15 +33,15 @@ dbrps_dbrpID: {
 		responses: {
 			"200": {
 				description: "The database retention policy requested"
-				content: "application/json": schema: $ref: "../schemas/DBRPGet.yml"
+				content: "application/json": schema: commonschemas.DBRPGet.#Ref
 			}
 			"400": {
 				description: "if any of the IDs passed is invalid"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -50,10 +54,10 @@ dbrps_dbrpID: {
 		requestBody: {
 			description: "Database retention policy update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/DBRPUpdate.yml"
+			content: "application/json": schema: commonschemas.DBRPUpdate.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -74,19 +78,19 @@ dbrps_dbrpID: {
 		responses: {
 			"200": {
 				description: "An updated mapping"
-				content: "application/json": schema: $ref: "../schemas/DBRPGet.yml"
+				content: "application/json": schema: commonschemas.DBRPGet.#Ref
 			}
 			"404": {
 				description: "The mapping was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			"400": {
 				description: "if any of the IDs passed is invalid"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -97,7 +101,7 @@ dbrps_dbrpID: {
 		]
 		summary: "Delete a database retention policy"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -119,11 +123,11 @@ dbrps_dbrpID: {
 			"204": description: "Delete has been accepted"
 			"400": {
 				description: "if any of the IDs passed is invalid"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

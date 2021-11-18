@@ -23,12 +23,12 @@ LinePlusSingleStatProperties: {
 		}
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -39,8 +39,8 @@ LinePlusSingleStatProperties: {
 			description: "If true, will display note when empty"
 			type:        "boolean"
 		}
-		axes: $ref: "./Axes.yml"
-		staticLegend: $ref: "./StaticLegend.yml"
+		axes: Axes.#Ref
+		staticLegend: StaticLegend.#Ref
 		xColumn: type: "string"
 		generateXAxisTicks: {
 			type: "array"
@@ -80,7 +80,7 @@ LinePlusSingleStatProperties: {
 		}
 		prefix: type: "string"
 		suffix: type: "string"
-		decimalPlaces: $ref: "./DecimalPlaces.yml"
+		decimalPlaces: DecimalPlaces.#Ref
 		legendColorizeRows: type: "boolean"
 		legendHide: type: "boolean"
 		legendOpacity: {

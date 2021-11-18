@@ -3,7 +3,7 @@ package commonschemas
 DashboardWithViewProperties: {
 	type: "object"
 	allOf: [{
-		$ref: "./CreateDashboardRequest.yml"
+		CreateDashboardRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -18,12 +18,12 @@ DashboardWithViewProperties: {
 					org:     "/api/v2/labels/1"
 				}
 				properties: {
-					self: $ref: "./Link.yml"
-					cells: $ref: "./Link.yml"
-					members: $ref: "./Link.yml"
-					owners: $ref: "./Link.yml"
-					labels: $ref: "./Link.yml"
-					org: $ref: "./Link.yml"
+					self: Link.#Ref
+					cells: Link.#Ref
+					members: Link.#Ref
+					owners: Link.#Ref
+					labels: Link.#Ref
+					org: Link.#Ref
 				}
 			}
 			id: {
@@ -43,8 +43,8 @@ DashboardWithViewProperties: {
 					}
 				}
 			}
-			cells: $ref: "./CellsWithViewProperties.yml"
-			labels: $ref: "./Labels.yml"
+			cells: CellsWithViewProperties.#Ref
+			labels: Labels.#Ref
 		}
 	}]
 }

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 orgs_orgID_members_userID: delete: {
 	operationId: "DeleteOrgsIDMembersID"
 	tags: [
@@ -7,7 +11,7 @@ orgs_orgID_members_userID: delete: {
 	]
 	summary: "Remove a member from an organization"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "userID"
@@ -25,7 +29,7 @@ orgs_orgID_members_userID: delete: {
 		"204": description: "Member removed"
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

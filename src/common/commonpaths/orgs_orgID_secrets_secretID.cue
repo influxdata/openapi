@@ -1,5 +1,8 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+
 orgs_orgID_secrets_secretID: delete: {
 	operationId: "DeleteOrgsIDSecretsID"
 	tags: [
@@ -7,7 +10,7 @@ orgs_orgID_secrets_secretID: delete: {
 	]
 	summary: "Delete a secret from an organization"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "orgID"

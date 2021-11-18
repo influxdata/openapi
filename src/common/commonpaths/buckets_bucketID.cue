@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 buckets_bucketID: {
 	get: {
 		operationId: "GetBucketsID"
@@ -8,7 +12,7 @@ buckets_bucketID: {
 		]
 		summary: "Retrieve a bucket"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "bucketID"
@@ -19,11 +23,11 @@ buckets_bucketID: {
 		responses: {
 			"200": {
 				description: "Bucket details"
-				content: "application/json": schema: $ref: "../schemas/Bucket.yml"
+				content: "application/json": schema: commonschemas.Bucket.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -36,10 +40,10 @@ buckets_bucketID: {
 		requestBody: {
 			description: "Bucket update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PatchBucketRequest.yml"
+			content: "application/json": schema: commonschemas.PatchBucketRequest.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "bucketID"
@@ -50,11 +54,11 @@ buckets_bucketID: {
 		responses: {
 			"200": {
 				description: "An updated bucket"
-				content: "application/json": schema: $ref: "../schemas/Bucket.yml"
+				content: "application/json": schema: commonschemas.Bucket.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -65,7 +69,7 @@ buckets_bucketID: {
 		]
 		summary: "Delete a bucket"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "bucketID"
@@ -77,11 +81,11 @@ buckets_bucketID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "Bucket not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

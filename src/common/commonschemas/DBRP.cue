@@ -28,7 +28,7 @@ DBRP: {
 			type:        "boolean"
 			description: "Specify if this mapping represents the default retention policy for the database specificed."
 		}
-		links: $ref: "./Links.yml"
+		links: Links.#Ref
 	}
 	required: [
 		"id",

@@ -29,6 +29,6 @@ Axis: {
 			type:        "string"
 			enum: ["", "2", "10"]
 		}
-		scale: $ref: "./AxisScale.yml"
+		scale: AxisScale.#Ref
 	}
 }

@@ -3,10 +3,10 @@ package commonschemas
 VariableProperties: {
 	type: "object"
 	oneOf: [{
-		$ref: "./QueryVariableProperties.yml"
+		QueryVariableProperties.#Ref
 	}, {
-		$ref: "./ConstantVariableProperties.yml"
+		ConstantVariableProperties.#Ref
 	}, {
-		$ref: "./MapVariableProperties.yml"
+		MapVariableProperties.#Ref
 	}]
 }

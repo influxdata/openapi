@@ -5,11 +5,11 @@ Authorizations: {
 	properties: {
 		links: {
 			readOnly: true
-			$ref:     "./Links.yml"
+			Links.#Ref
 		}
 		authorizations: {
 			type: "array"
-			items: $ref: "./Authorization.yml"
+			items: Authorization.#Ref
 		}
 	}
 }

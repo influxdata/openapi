@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 resources: get: {
 	operationId: "GetResources"
 	tags: [
@@ -7,16 +11,16 @@ resources: get: {
 	]
 	summary: "List all known resources"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {
 			description: "All resources targets"
-			content: "application/json": schema: $ref: "../schemas/Resources.yml"
+			content: "application/json": schema: commonschemas.Resources.#Ref
 		}
 		default: {
 			description: "Internal server error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

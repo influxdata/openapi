@@ -16,6 +16,6 @@ View: {
 			type:     "string"
 		}
 		name: type: "string"
-		properties: $ref: "./ViewProperties.yml"
+		properties: ViewProperties.#Ref
 	}
 }

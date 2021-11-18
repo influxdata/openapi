@@ -46,6 +46,6 @@ Variables: {
 	}]
 	properties: variables: {
 		type: "array"
-		items: $ref: "./Variable.yml"
+		items: Variable.#Ref
 	}
 }

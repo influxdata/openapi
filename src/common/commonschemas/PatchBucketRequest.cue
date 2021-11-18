@@ -6,6 +6,6 @@ PatchBucketRequest: {
 	properties: {
 		name: type: "string"
 		description: type: "string"
-		retentionRules: $ref: "./PatchRetentionRules.yml"
+		retentionRules: PatchRetentionRules.#Ref
 	}
 }

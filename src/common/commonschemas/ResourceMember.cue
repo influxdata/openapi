@@ -1,7 +1,7 @@
 package commonschemas
 
 ResourceMember: allOf: [{
-	$ref: "./UserResponse.yml"
+	UserResponse.#Ref
 }, {
 	type: "object"
 	properties: role: {

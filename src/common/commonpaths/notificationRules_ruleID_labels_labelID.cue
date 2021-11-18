@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 notificationRules_ruleID_labels_labelID: delete: {
 	operationId: "DeleteNotificationRulesIDLabelsID"
 	tags: [
@@ -7,7 +11,7 @@ notificationRules_ruleID_labels_labelID: delete: {
 	]
 	summary: "Delete label from a notification rule"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "ruleID"
@@ -25,11 +29,11 @@ notificationRules_ruleID_labels_labelID: delete: {
 		"204": description: "Delete has been accepted"
 		"404": {
 			description: "Rule or label not found"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

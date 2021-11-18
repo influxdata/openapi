@@ -5,11 +5,11 @@ Tasks: {
 	properties: {
 		links: {
 			readOnly: true
-			$ref:     "./Links.yml"
+			Links.#Ref
 		}
 		tasks: {
 			type: "array"
-			items: $ref: "./Task.yml"
+			items: Task.#Ref
 		}
 	}
 }

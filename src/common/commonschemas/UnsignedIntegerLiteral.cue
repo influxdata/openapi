@@ -4,7 +4,7 @@ UnsignedIntegerLiteral: {
 	description: "Represents integer numbers"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		value: type: "string"
 	}
 }

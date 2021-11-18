@@ -1,7 +1,7 @@
 package commonschemas
 
 GeoPointMapViewLayer: allOf: [{
-	$ref: "./GeoViewLayerProperties.yml"
+	GeoViewLayerProperties.#Ref
 }, {
 	type: "object"
 	required: ["colorField", "colorDimension", "colors"]
@@ -10,11 +10,11 @@ GeoPointMapViewLayer: allOf: [{
 			type:        "string"
 			description: "Marker color field"
 		}
-		colorDimension: $ref: "./Axis.yml"
+		colorDimension: Axis.#Ref
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		isClustered: {
 			description: "Cluster close markers together"

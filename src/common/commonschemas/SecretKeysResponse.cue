@@ -1,7 +1,7 @@
 package commonschemas
 
 SecretKeysResponse: allOf: [{
-	$ref: "./SecretKeys.yml"
+	SecretKeys.#Ref
 }, {
 	type: "object"
 	properties: links: {

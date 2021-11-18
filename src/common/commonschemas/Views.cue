@@ -9,7 +9,7 @@ Views: {
 		}
 		views: {
 			type: "array"
-			items: $ref: "./View.yml"
+			items: View.#Ref
 		}
 	}
 }

@@ -4,9 +4,9 @@ BinaryExpression: {
 	description: "uses binary operators to act on two operands in an expression"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		operator: type: "string"
-		left: $ref: "./Expression.yml"
-		right: $ref: "./Expression.yml"
+		left: Expression.#Ref
+		right: Expression.#Ref
 	}
 }

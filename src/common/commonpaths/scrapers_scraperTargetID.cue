@@ -1,12 +1,16 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 scrapers_scraperTargetID: {
 	get: {
 		operationId: "GetScrapersID"
 		tags: ["Scraper Targets"]
 		summary: "Retrieve a scraper target"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "scraperTargetID"
@@ -17,11 +21,11 @@ scrapers_scraperTargetID: {
 		responses: {
 			"200": {
 				description: "The scraper target"
-				content: "application/json": schema: $ref: "../schemas/ScraperTargetResponse.yml"
+				content: "application/json": schema: commonschemas.ScraperTargetResponse.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -30,7 +34,7 @@ scrapers_scraperTargetID: {
 		tags: ["Scraper Targets"]
 		summary: "Delete a scraper target"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "scraperTargetID"
@@ -42,7 +46,7 @@ scrapers_scraperTargetID: {
 			"204": description: "Scraper target deleted"
 			default: {
 				description: "Internal server error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -51,7 +55,7 @@ scrapers_scraperTargetID: {
 		summary:     "Update a scraper target"
 		tags: ["Scraper Targets"]
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "scraperTargetID"
@@ -62,16 +66,16 @@ scrapers_scraperTargetID: {
 		requestBody: {
 			description: "Scraper target update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/ScraperTargetRequest.yml"
+			content: "application/json": schema: commonschemas.ScraperTargetRequest.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Scraper target updated"
-				content: "application/json": schema: $ref: "../schemas/ScraperTargetResponse.yml"
+				content: "application/json": schema: commonschemas.ScraperTargetResponse.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

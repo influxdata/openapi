@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 signout: post: {
 	operationId: "PostSignout"
 	summary:     "Expire the current UI session"
@@ -8,17 +12,17 @@ signout: post: {
 	]
 	description: "Expires the current UI session for the user."
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"204": description: "Session successfully expired"
 		"401": {
 			description: "Unauthorized access"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "Unsuccessful session expiry"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

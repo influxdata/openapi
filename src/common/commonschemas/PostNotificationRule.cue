@@ -1,5 +1,5 @@
 package commonschemas
 
 PostNotificationRule: allOf: [{
-	$ref: "./NotificationRuleDiscriminator.yml"
+	NotificationRuleDiscriminator.#Ref
 }]

@@ -3,7 +3,7 @@ package commonschemas
 Authorization: {
 	required: ["orgID", "permissions"]
 	allOf: [{
-		$ref: "./AuthorizationUpdateRequest.yml"
+		AuthorizationUpdateRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -25,7 +25,7 @@ Authorization: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: $ref: "./Permission.yml"
+				items: Permission.#Ref
 			}
 			id: {
 				readOnly: true
@@ -61,11 +61,11 @@ Authorization: {
 				properties: {
 					self: {
 						readOnly: true
-						$ref:     "./Link.yml"
+						Link.#Ref
 					}
 					user: {
 						readOnly: true
-						$ref:     "./Link.yml"
+						Link.#Ref
 					}
 				}
 			}

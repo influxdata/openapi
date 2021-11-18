@@ -3,7 +3,7 @@ package commonschemas
 Telegraf: {
 	type: "object"
 	allOf: [{
-		$ref: "./TelegrafRequest.yml"
+		TelegrafRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -21,15 +21,15 @@ Telegraf: {
 					members: "/api/v2/telegrafs/1/members"
 				}
 				properties: {
-					self: $ref: "./Link.yml"
-					labels: $ref: "./Link.yml"
-					members: $ref: "./Link.yml"
-					owners: $ref: "./Link.yml"
+					self: Link.#Ref
+					labels: Link.#Ref
+					members: Link.#Ref
+					owners: Link.#Ref
 				}
 			}
 			labels: {
 				readOnly: true
-				$ref:     "./Labels.yml"
+				Labels.#Ref
 			}
 		}
 	}]

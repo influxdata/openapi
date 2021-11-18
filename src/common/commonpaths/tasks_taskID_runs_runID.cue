@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 tasks_taskID_runs_runID: {
 	get: {
 		operationId: "GetTasksIDRunsID"
@@ -8,7 +12,7 @@ tasks_taskID_runs_runID: {
 		]
 		summary: "Retrieve a single run for a task"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -25,11 +29,11 @@ tasks_taskID_runs_runID: {
 		responses: {
 			"200": {
 				description: "The run record"
-				content: "application/json": schema: $ref: "../schemas/Run.yml"
+				content: "application/json": schema: commonschemas.Run.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -40,7 +44,7 @@ tasks_taskID_runs_runID: {
 		]
 		summary: "Cancel a running task"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -58,7 +62,7 @@ tasks_taskID_runs_runID: {
 			"204": description: "Delete has been accepted"
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 query_ast: post: {
 	operationId: "PostQueryAst"
 	description: "Analyzes flux query and generates a query specification."
@@ -8,7 +12,7 @@ query_ast: post: {
 	]
 	summary: "Generate an Abstract Syntax Tree (AST) from a query"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "header"
 		name: "Content-Type"
@@ -21,16 +25,16 @@ query_ast: post: {
 	}]
 	requestBody: {
 		description: "Analyzed Flux query to generate abstract syntax tree."
-		content: "application/json": schema: $ref: "../schemas/LanguageRequest.yml"
+		content: "application/json": schema: commonschemas.LanguageRequest.#Ref
 	}
 	responses: {
 		"200": {
 			description: "Abstract syntax tree of the flux query."
-			content: "application/json": schema: $ref: "../schemas/ASTResponse.yml"
+			content: "application/json": schema: commonschemas.ASTResponse.#Ref
 		}
 		default: {
 			description: "Any response other than 200 is an internal server error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 labels_labelID: {
 	get: {
 		operationId: "GetLabelsID"
@@ -8,7 +12,7 @@ labels_labelID: {
 		]
 		summary: "Retrieve a label"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "labelID"
@@ -19,11 +23,11 @@ labels_labelID: {
 		responses: {
 			"200": {
 				description: "A label"
-				content: "application/json": schema: $ref: "../schemas/LabelResponse.yml"
+				content: "application/json": schema: commonschemas.LabelResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -36,10 +40,10 @@ labels_labelID: {
 		requestBody: {
 			description: "Label update"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/LabelUpdate.yml"
+			content: "application/json": schema: commonschemas.LabelUpdate.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "labelID"
@@ -50,15 +54,15 @@ labels_labelID: {
 		responses: {
 			"200": {
 				description: "Updated label"
-				content: "application/json": schema: $ref: "../schemas/LabelResponse.yml"
+				content: "application/json": schema: commonschemas.LabelResponse.#Ref
 			}
 			"404": {
 				description: "Label not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -69,7 +73,7 @@ labels_labelID: {
 		]
 		summary: "Delete a label"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "labelID"
@@ -81,11 +85,11 @@ labels_labelID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "Label not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

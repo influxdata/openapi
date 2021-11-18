@@ -1,7 +1,7 @@
 package commonschemas
 
 SMTPNotificationRule: allOf: [{
-	$ref: "./NotificationRuleBase.yml"
+	NotificationRuleBase.#Ref
 }, {
-	$ref: "./SMTPNotificationRuleBase.yml"
+	SMTPNotificationRuleBase.#Ref
 }]

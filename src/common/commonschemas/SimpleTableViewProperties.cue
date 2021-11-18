@@ -18,7 +18,7 @@ SimpleTableViewProperties: {
 		showAll: type: "boolean"
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		shape: {
 			type: "string"

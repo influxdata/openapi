@@ -4,7 +4,7 @@ TemplateEntry: {
 	type: "object"
 	properties: {
 		apiVersion: type: "string"
-		kind: $ref: "./TemplateKind.yml"
+		kind: TemplateKind.#Ref
 		meta: {
 			type: "object"
 			properties: name: type: "string"

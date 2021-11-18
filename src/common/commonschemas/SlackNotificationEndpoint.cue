@@ -3,7 +3,7 @@ package commonschemas
 SlackNotificationEndpoint: {
 	type: "object"
 	allOf: [{
-		$ref: "./NotificationEndpointBase.yml"
+		NotificationEndpointBase.#Ref
 	}, {
 		type: "object"
 		properties: {

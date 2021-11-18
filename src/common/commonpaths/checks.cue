@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 checks: {
 	get: {
 		operationId: "GetChecks"
@@ -8,11 +12,11 @@ checks: {
 		]
 		summary: "List all checks"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -23,11 +27,11 @@ checks: {
 		responses: {
 			"200": {
 				description: "A list of checks"
-				content: "application/json": schema: $ref: "../schemas/Checks.yml"
+				content: "application/json": schema: commonschemas.Checks.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -40,16 +44,16 @@ checks: {
 		requestBody: {
 			description: "Check to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PostCheck.yml"
+			content: "application/json": schema: commonschemas.PostCheck.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Check created"
-				content: "application/json": schema: $ref: "../schemas/Check.yml"
+				content: "application/json": schema: commonschemas.Check.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

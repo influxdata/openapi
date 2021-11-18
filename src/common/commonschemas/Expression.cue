@@ -1,49 +1,49 @@
 package commonschemas
 
 Expression: oneOf: [{
-	$ref: "./ArrayExpression.yml"
+	ArrayExpression.#Ref
 }, {
-	$ref: "./DictExpression.yml"
+	DictExpression.#Ref
 }, {
-	$ref: "./FunctionExpression.yml"
+	FunctionExpression.#Ref
 }, {
-	$ref: "./BinaryExpression.yml"
+	BinaryExpression.#Ref
 }, {
-	$ref: "./CallExpression.yml"
+	CallExpression.#Ref
 }, {
-	$ref: "./ConditionalExpression.yml"
+	ConditionalExpression.#Ref
 }, {
-	$ref: "./LogicalExpression.yml"
+	LogicalExpression.#Ref
 }, {
-	$ref: "./MemberExpression.yml"
+	MemberExpression.#Ref
 }, {
-	$ref: "./IndexExpression.yml"
+	IndexExpression.#Ref
 }, {
-	$ref: "./ObjectExpression.yml"
+	ObjectExpression.#Ref
 }, {
-	$ref: "./ParenExpression.yml"
+	ParenExpression.#Ref
 }, {
-	$ref: "./PipeExpression.yml"
+	PipeExpression.#Ref
 }, {
-	$ref: "./UnaryExpression.yml"
+	UnaryExpression.#Ref
 }, {
-	$ref: "./BooleanLiteral.yml"
+	BooleanLiteral.#Ref
 }, {
-	$ref: "./DateTimeLiteral.yml"
+	DateTimeLiteral.#Ref
 }, {
-	$ref: "./DurationLiteral.yml"
+	DurationLiteral.#Ref
 }, {
-	$ref: "./FloatLiteral.yml"
+	FloatLiteral.#Ref
 }, {
-	$ref: "./IntegerLiteral.yml"
+	IntegerLiteral.#Ref
 }, {
-	$ref: "./PipeLiteral.yml"
+	PipeLiteral.#Ref
 }, {
-	$ref: "./RegexpLiteral.yml"
+	RegexpLiteral.#Ref
 }, {
-	$ref: "./StringLiteral.yml"
+	StringLiteral.#Ref
 }, {
-	$ref: "./UnsignedIntegerLiteral.yml"
+	UnsignedIntegerLiteral.#Ref
 }, {
-	$ref: "./Identifier.yml"
+	Identifier.#Ref
 }]

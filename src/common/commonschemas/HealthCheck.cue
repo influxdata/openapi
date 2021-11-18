@@ -11,9 +11,9 @@ HealthCheck: {
 		message: type: "string"
 		checks: {
 			type: "array"
-			items: $ref: "./HealthCheck.yml"
+			items: HealthCheck.#Ref
 		}
-		status: $ref: "./HealthCheckStatus.yml"
+		status: HealthCheckStatus.#Ref
 		version: type: "string"
 		commit: type: "string"
 	}

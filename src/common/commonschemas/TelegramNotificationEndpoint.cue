@@ -3,7 +3,7 @@ package commonschemas
 TelegramNotificationEndpoint: {
 	type: "object"
 	allOf: [{
-		$ref: "./NotificationEndpointBase.yml"
+		NotificationEndpointBase.#Ref
 	}, {
 		type: "object"
 		required: ["token", "channel"]

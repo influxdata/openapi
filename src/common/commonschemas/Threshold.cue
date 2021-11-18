@@ -2,11 +2,11 @@ package commonschemas
 
 Threshold: {
 	oneOf: [{
-		$ref: "./GreaterThreshold.yml"
+		GreaterThreshold.#Ref
 	}, {
-		$ref: "./LesserThreshold.yml"
+		LesserThreshold.#Ref
 	}, {
-		$ref: "./RangeThreshold.yml"
+		RangeThreshold.#Ref
 	}]
 	discriminator: {
 		propertyName: "type"

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 dashboards_dashboardID_members: {
 	get: {
 		operationId: "GetDashboardsIDMembers"
@@ -8,7 +12,7 @@ dashboards_dashboardID_members: {
 		]
 		summary: "List all dashboard members"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -19,11 +23,11 @@ dashboards_dashboardID_members: {
 		responses: {
 			"200": {
 				description: "A list of users who have member privileges for a dashboard"
-				content: "application/json": schema: $ref: "../schemas/ResourceMembers.yml"
+				content: "application/json": schema: commonschemas.ResourceMembers.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -34,7 +38,7 @@ dashboards_dashboardID_members: {
 		]
 		summary: "Add a member to a dashboard"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -45,16 +49,16 @@ dashboards_dashboardID_members: {
 		requestBody: {
 			description: "User to add as member"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/AddResourceMemberRequestBody.yml"
+			content: "application/json": schema: commonschemas.AddResourceMemberRequestBody.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Added to dashboard members"
-				content: "application/json": schema: $ref: "../schemas/ResourceMember.yml"
+				content: "application/json": schema: commonschemas.ResourceMember.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

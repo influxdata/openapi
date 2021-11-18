@@ -3,10 +3,10 @@ package commonschemas
 Organizations: {
 	type: "object"
 	properties: {
-		links: $ref: "./Links.yml"
+		links: Links.#Ref
 		orgs: {
 			type: "array"
-			items: $ref: "./Organization.yml"
+			items: Organization.#Ref
 		}
 	}
 }

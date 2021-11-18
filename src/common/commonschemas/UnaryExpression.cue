@@ -4,8 +4,8 @@ UnaryExpression: {
 	description: "Uses operators to act on a single operand in an expression"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		operator: type: "string"
-		argument: $ref: "./Expression.yml"
+		argument: Expression.#Ref
 	}
 }

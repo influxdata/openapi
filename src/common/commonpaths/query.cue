@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 query: post: {
 	operationId: "PostQuery"
 	tags: [
@@ -61,7 +63,7 @@ query: post: {
 	}], requestBody: {
 		description:
 			"Flux query or specification to execute", content: {
-			"application/json": schema: $ref: "../schemas/Query.yml", "application/vnd.flux": {
+			"application/json": schema: commonschemas.Query.#Ref, "application/vnd.flux": {
 
 				schema: type: "string"
 				example: """
@@ -128,7 +130,7 @@ query: post: {
 			}
 		}, default: {
 			description:
-				"Error processing query", content: "application/json": schema: $ref: "../schemas/Error.yml"
+				"Error processing query", content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

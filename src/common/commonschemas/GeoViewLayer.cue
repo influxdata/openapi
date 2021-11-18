@@ -3,12 +3,12 @@ package commonschemas
 GeoViewLayer: {
 	type: "object"
 	oneOf: [{
-		$ref: "./GeoCircleViewLayer.yml"
+		GeoCircleViewLayer.#Ref
 	}, {
-		$ref: "./GeoHeatMapViewLayer.yml"
+		GeoHeatMapViewLayer.#Ref
 	}, {
-		$ref: "./GeoPointMapViewLayer.yml"
+		GeoPointMapViewLayer.#Ref
 	}, {
-		$ref: "./GeoTrackMapViewLayer.yml"
+		GeoTrackMapViewLayer.#Ref
 	}]
 }

@@ -12,7 +12,7 @@ ResourceOwners: {
 		}
 		users: {
 			type: "array"
-			items: $ref: "./ResourceOwner.yml"
+			items: ResourceOwner.#Ref
 		}
 	}
 }

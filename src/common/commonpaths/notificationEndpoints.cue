@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 notificationEndpoints: {
 	get: {
 		operationId: "GetNotificationEndpoints"
@@ -8,11 +12,11 @@ notificationEndpoints: {
 		]
 		summary: "List all notification endpoints"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -23,11 +27,11 @@ notificationEndpoints: {
 		responses: {
 			"200": {
 				description: "A list of notification endpoints"
-				content: "application/json": schema: $ref: "../schemas/NotificationEndpoints.yml"
+				content: "application/json": schema: commonschemas.NotificationEndpoints.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -40,16 +44,16 @@ notificationEndpoints: {
 		requestBody: {
 			description: "Notification endpoint to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PostNotificationEndpoint.yml"
+			content: "application/json": schema: commonschemas.PostNotificationEndpoint.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Notification endpoint created"
-				content: "application/json": schema: $ref: "../schemas/NotificationEndpoint.yml"
+				content: "application/json": schema: commonschemas.NotificationEndpoint.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

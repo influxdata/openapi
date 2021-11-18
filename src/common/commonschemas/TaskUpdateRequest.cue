@@ -3,7 +3,7 @@ package commonschemas
 TaskUpdateRequest: {
 	type: "object"
 	properties: {
-		status: $ref: "./TaskStatusType.yml"
+		status: TaskStatusType.#Ref
 		flux: {
 			description: "The Flux script to run for this task."
 			type:        "string"

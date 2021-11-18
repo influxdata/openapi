@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 sources_sourceID: {
 	delete: {
 		operationId: "DeleteSourcesID"
@@ -8,7 +12,7 @@ sources_sourceID: {
 		]
 		summary: "Delete a source"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "sourceID"
@@ -20,11 +24,11 @@ sources_sourceID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "View not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -35,7 +39,7 @@ sources_sourceID: {
 		]
 		summary: "Update a Source"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "sourceID"
@@ -46,20 +50,20 @@ sources_sourceID: {
 		requestBody: {
 			description: "Source update"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Source.yml"
+			content: "application/json": schema: commonschemas.Source.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Created Source"
-				content: "application/json": schema: $ref: "../schemas/Source.yml"
+				content: "application/json": schema: commonschemas.Source.#Ref
 			}
 			"404": {
 				description: "Source not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -70,7 +74,7 @@ sources_sourceID: {
 		]
 		summary: "Retrieve a source"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "sourceID"
@@ -81,15 +85,15 @@ sources_sourceID: {
 		responses: {
 			"200": {
 				description: "A source"
-				content: "application/json": schema: $ref: "../schemas/Source.yml"
+				content: "application/json": schema: commonschemas.Source.#Ref
 			}
 			"404": {
 				description: "Source not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

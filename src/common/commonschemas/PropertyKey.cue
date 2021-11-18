@@ -1,7 +1,7 @@
 package commonschemas
 
 PropertyKey: oneOf: [{
-	$ref: "./Identifier.yml"
+	Identifier.#Ref
 }, {
-	$ref: "./StringLiteral.yml"
+	StringLiteral.#Ref
 }]

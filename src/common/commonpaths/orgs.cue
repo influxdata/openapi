@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 orgs: {
 	get: {
 		operationId: "GetOrgs"
@@ -8,13 +12,13 @@ orgs: {
 		]
 		summary: "List all organizations"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
-			$ref: "../parameters/Descending.yml"
+			commonparameters.Descending.#Ref
 		}, {
 			in:   "query"
 			name: "org"
@@ -34,11 +38,11 @@ orgs: {
 		responses: {
 			"200": {
 				description: "A list of organizations"
-				content: "application/json": schema: $ref: "../schemas/Organizations.yml"
+				content: "application/json": schema: commonschemas.Organizations.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -49,21 +53,21 @@ orgs: {
 		]
 		summary: "Create an organization"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Organization to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PostOrganizationRequest.yml"
+			content: "application/json": schema: commonschemas.PostOrganizationRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Organization created"
-				content: "application/json": schema: $ref: "../schemas/Organization.yml"
+				content: "application/json": schema: commonschemas.Organization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

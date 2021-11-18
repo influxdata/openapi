@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 sources_sourceID_buckets: get: {
 	operationId: "GetSourcesIDBuckets"
 	tags: [
@@ -8,7 +12,7 @@ sources_sourceID_buckets: get: {
 	]
 	summary: "Get buckets in a source"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "sourceID"
@@ -24,15 +28,15 @@ sources_sourceID_buckets: get: {
 	responses: {
 		"200": {
 			description: "A source"
-			content: "application/json": schema: $ref: "../schemas/Buckets.yml"
+			content: "application/json": schema: commonschemas.Buckets.#Ref
 		}
 		"404": {
 			description: "Source not found"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

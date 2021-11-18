@@ -3,10 +3,10 @@ package commonschemas
 Dashboards: {
 	type: "object"
 	properties: {
-		links: $ref: "./Links.yml"
+		links: Links.#Ref
 		dashboards: {
 			type: "array"
-			items: $ref: "./Dashboard.yml"
+			items: Dashboard.#Ref
 		}
 	}
 }

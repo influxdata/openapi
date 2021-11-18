@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 notificationRules_ruleID_labels: {
 	get: {
 		operationId: "GetNotificationRulesIDLabels"
@@ -8,7 +12,7 @@ notificationRules_ruleID_labels: {
 		]
 		summary: "List all labels for a notification rule"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "ruleID"
@@ -19,11 +23,11 @@ notificationRules_ruleID_labels: {
 		responses: {
 			"200": {
 				description: "A list of all labels for a notification rule"
-				content: "application/json": schema: $ref: "../schemas/LabelsResponse.yml"
+				content: "application/json": schema: commonschemas.LabelsResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -34,7 +38,7 @@ notificationRules_ruleID_labels: {
 		]
 		summary: "Add a label to a notification rule"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "ruleID"
@@ -45,16 +49,16 @@ notificationRules_ruleID_labels: {
 		requestBody: {
 			description: "Label to add"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/LabelMapping.yml"
+			content: "application/json": schema: commonschemas.LabelMapping.#Ref
 		}
 		responses: {
 			"201": {
 				description: "The label was added to the notification rule"
-				content: "application/json": schema: $ref: "../schemas/LabelResponse.yml"
+				content: "application/json": schema: commonschemas.LabelResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

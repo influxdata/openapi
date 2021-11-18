@@ -12,7 +12,7 @@ Users: {
 		}
 		users: {
 			type: "array"
-			items: $ref: "./UserResponse.yml"
+			items: UserResponse.#Ref
 		}
 	}
 }

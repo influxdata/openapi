@@ -4,8 +4,8 @@ Property: {
 	description: "The value associated with a key"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		key: $ref: "./PropertyKey.yml"
-		value: $ref: "./Expression.yml"
+		type: NodeType.#Ref
+		key: PropertyKey.#Ref
+		value: Expression.#Ref
 	}
 }

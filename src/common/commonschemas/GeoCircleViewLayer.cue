@@ -1,7 +1,7 @@
 package commonschemas
 
 GeoCircleViewLayer: allOf: [{
-	$ref: "./GeoViewLayerProperties.yml"
+	GeoViewLayerProperties.#Ref
 }, {
 	type: "object"
 	required: ["radiusField", "radiusDimension", "colorField", "colorDimension", "colors"]
@@ -10,16 +10,16 @@ GeoCircleViewLayer: allOf: [{
 			type:        "string"
 			description: "Radius field"
 		}
-		radiusDimension: $ref: "./Axis.yml"
+		radiusDimension: Axis.#Ref
 		colorField: {
 			type:        "string"
 			description: "Circle color field"
 		}
-		colorDimension: $ref: "./Axis.yml"
+		colorDimension: Axis.#Ref
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		radius: {
 			description: "Maximum radius size in pixels"

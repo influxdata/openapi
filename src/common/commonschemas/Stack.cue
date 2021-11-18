@@ -29,14 +29,14 @@ Stack: {
 							properties: {
 								apiVersion: type: "string"
 								resourceID: type: "string"
-								kind: $ref: "./TemplateKind.yml"
+								kind: TemplateKind.#Ref
 								templateMetaName: type: "string"
 								associations: {
 									type: "array"
 									items: {
 										type: "object"
 										properties: {
-											kind: $ref: "./TemplateKind.yml"
+											kind: TemplateKind.#Ref
 											metaName: type: "string"
 										}
 									}

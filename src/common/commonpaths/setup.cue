@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 setup: {
 	get: {
 		operationId: "GetSetup"
@@ -9,11 +13,11 @@ setup: {
 		summary:     "Check if database has default user, org, bucket"
 		description: "Returns `true` if no default user, organization, or bucket has been created."
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		responses: "200": {
 			description: "allowed true or false"
-			content: "application/json": schema: $ref: "../../common/schemas/IsOnboarding.yml"
+			content: "application/json": schema: commonschemas.IsOnboarding.#Ref
 		}
 	}
 	post: {
@@ -24,17 +28,17 @@ setup: {
 		summary:     "Set up initial user, org and bucket"
 		description: "Post an onboarding request to set up initial user, org and bucket."
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Source to create"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/OnboardingRequest.yml"
+			content: "application/json": schema: commonschemas.OnboardingRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Created default user, bucket, org"
-				content: "application/json": schema: $ref: "../../common/schemas/OnboardingResponse.yml"
+				content: "application/json": schema: commonschemas.OnboardingResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"

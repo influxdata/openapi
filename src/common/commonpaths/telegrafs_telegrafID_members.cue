@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 telegrafs_telegrafID_members: {
 	get: {
 		operationId: "GetTelegrafsIDMembers"
@@ -8,7 +12,7 @@ telegrafs_telegrafID_members: {
 		]
 		summary: "List all users with member privileges for a Telegraf config"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "telegrafID"
@@ -19,11 +23,11 @@ telegrafs_telegrafID_members: {
 		responses: {
 			"200": {
 				description: "A list of Telegraf config members"
-				content: "application/json": schema: $ref: "../schemas/ResourceMembers.yml"
+				content: "application/json": schema: commonschemas.ResourceMembers.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -34,7 +38,7 @@ telegrafs_telegrafID_members: {
 		]
 		summary: "Add a member to a Telegraf config"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "telegrafID"
@@ -45,16 +49,16 @@ telegrafs_telegrafID_members: {
 		requestBody: {
 			description: "User to add as member"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/AddResourceMemberRequestBody.yml"
+			content: "application/json": schema: commonschemas.AddResourceMemberRequestBody.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Member added to Telegraf config"
-				content: "application/json": schema: $ref: "../schemas/ResourceMember.yml"
+				content: "application/json": schema: commonschemas.ResourceMember.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

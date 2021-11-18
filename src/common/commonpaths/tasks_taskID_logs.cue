@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 tasks_taskID_logs: get: {
 	operationId: "GetTasksIDLogs"
 	tags: [
@@ -7,7 +11,7 @@ tasks_taskID_logs: get: {
 	]
 	summary: "Retrieve all logs for a task"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "taskID"
@@ -18,11 +22,11 @@ tasks_taskID_logs: get: {
 	responses: {
 		"200": {
 			description: "All logs for a task"
-			content: "application/json": schema: $ref: "../schemas/Logs.yml"
+			content: "application/json": schema: commonschemas.Logs.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

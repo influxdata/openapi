@@ -8,6 +8,6 @@ BuilderTagsType: {
 			type: "array"
 			items: type: "string"
 		}
-		aggregateFunctionType: $ref: "./BuilderAggregateFunctionType.yml"
+		aggregateFunctionType: BuilderAggregateFunctionType.#Ref
 	}
 }

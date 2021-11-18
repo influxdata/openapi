@@ -18,33 +18,33 @@ TemplateSummary: {
 						properties: {
 							id: type: "string"
 							orgID: type: "string"
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							name: type: "string"
 							description: type: "string"
 							retentionPeriod: type: "integer"
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}
 				}
 				checks: {
 					type: "array"
 					items: allOf: [{
-						$ref: "./CheckDiscriminator.yml"
+						CheckDiscriminator.#Ref
 					}, {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}]
 				}
@@ -55,25 +55,25 @@ TemplateSummary: {
 						properties: {
 							id: type: "string"
 							orgID: type: "string"
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							name: type: "string"
 							description: type: "string"
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
 							charts: {
 								type: "array"
-								items: $ref: "./TemplateChart.yml"
+								items: TemplateChart.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}
 				}
 				labels: {
 					type: "array"
-					items: $ref: "./TemplateSummaryLabel.yml"
+					items: TemplateSummaryLabel.#Ref
 				}
 				labelMappings: {
 					type: "array"
@@ -102,17 +102,17 @@ TemplateSummary: {
 				notificationEndpoints: {
 					type: "array"
 					items: allOf: [{
-						$ref: "./NotificationEndpointDiscriminator.yml"
+						NotificationEndpointDiscriminator.#Ref
 					}, {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}]
 				}
@@ -121,7 +121,7 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							name: type: "string"
 							description: type: "string"
@@ -155,9 +155,9 @@ TemplateSummary: {
 							}
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}
 				}
@@ -166,7 +166,7 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							id: type: "string"
 							name: type: "string"
@@ -176,24 +176,24 @@ TemplateSummary: {
 							offset: type: "string"
 							query: type: "string"
 							status: type: "string"
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}
 				}
 				telegrafConfigs: {
 					type: "array"
 					items: allOf: [{
-						$ref: "./TelegrafRequest.yml"
+						TelegrafRequest.#Ref
 					}, {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}]
 				}
@@ -202,18 +202,18 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							id: type: "string"
 							orgID: type: "string"
 							name: type: "string"
 							description: type: "string"
-							arguments: $ref: "./VariableProperties.yml"
+							arguments: VariableProperties.#Ref
 							labelAssociations: {
 								type: "array"
-								items: $ref: "./TemplateSummaryLabel.yml"
+								items: TemplateSummaryLabel.#Ref
 							}
-							envReferences: $ref: "./TemplateEnvReferences.yml"
+							envReferences: TemplateEnvReferences.#Ref
 						}
 					}
 				}
@@ -227,7 +227,7 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
@@ -236,7 +236,7 @@ TemplateSummary: {
 								properties: {
 									name: type: "string"
 									description: type: "string"
-									retentionRules: $ref: "./RetentionRules.yml"
+									retentionRules: RetentionRules.#Ref
 								}
 							}
 							old: {
@@ -244,7 +244,7 @@ TemplateSummary: {
 								properties: {
 									name: type: "string"
 									description: type: "string"
-									retentionRules: $ref: "./RetentionRules.yml"
+									retentionRules: RetentionRules.#Ref
 								}
 							}
 						}
@@ -255,12 +255,12 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
-							new: $ref: "./CheckDiscriminator.yml"
-							old: $ref: "./CheckDiscriminator.yml"
+							new: CheckDiscriminator.#Ref
+							old: CheckDiscriminator.#Ref
 						}
 					}
 				}
@@ -271,7 +271,7 @@ TemplateSummary: {
 						properties: {
 							stateStatus: type: "string"
 							id: type: "string"
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
@@ -280,7 +280,7 @@ TemplateSummary: {
 									description: type: "string"
 									charts: {
 										type: "array"
-										items: $ref: "./TemplateChart.yml"
+										items: TemplateChart.#Ref
 									}
 								}
 							}
@@ -291,7 +291,7 @@ TemplateSummary: {
 									description: type: "string"
 									charts: {
 										type: "array"
-										items: $ref: "./TemplateChart.yml"
+										items: TemplateChart.#Ref
 									}
 								}
 							}
@@ -304,7 +304,7 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							stateStatus: type: "string"
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							id: type: "string"
 							templateMetaName: type: "string"
 							new: {
@@ -347,12 +347,12 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
-							new: $ref: "./NotificationEndpointDiscriminator.yml"
-							old: $ref: "./NotificationEndpointDiscriminator.yml"
+							new: NotificationEndpointDiscriminator.#Ref
+							old: NotificationEndpointDiscriminator.#Ref
 						}
 					}
 				}
@@ -361,7 +361,7 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
@@ -443,7 +443,7 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
@@ -479,12 +479,12 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
-							new: $ref: "./TelegrafRequest.yml"
-							old: $ref: "./TelegrafRequest.yml"
+							new: TelegrafRequest.#Ref
+							old: TelegrafRequest.#Ref
 						}
 					}
 				}
@@ -493,7 +493,7 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							stateStatus: type: "string"
 							id: type: "string"
 							templateMetaName: type: "string"
@@ -502,7 +502,7 @@ TemplateSummary: {
 								properties: {
 									name: type: "string"
 									description: type: "string"
-									args: $ref: "./VariableProperties.yml"
+									args: VariableProperties.#Ref
 								}
 							}
 							old: {
@@ -510,7 +510,7 @@ TemplateSummary: {
 								properties: {
 									name: type: "string"
 									description: type: "string"
-									args: $ref: "./VariableProperties.yml"
+									args: VariableProperties.#Ref
 								}
 							}
 						}
@@ -523,7 +523,7 @@ TemplateSummary: {
 			items: {
 				type: "object"
 				properties: {
-					kind: $ref: "./TemplateKind.yml"
+					kind: TemplateKind.#Ref
 					reason: type: "string"
 					fields: {
 						type: "array"

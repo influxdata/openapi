@@ -5,7 +5,7 @@ LatLonColumns: {
 	type:        "object"
 	required: ["lat", "lon"]
 	properties: {
-		lat: $ref: "./LatLonColumn.yml"
-		lon: $ref: "./LatLonColumn.yml"
+		lat: LatLonColumn.#Ref
+		lon: LatLonColumn.#Ref
 	}
 }

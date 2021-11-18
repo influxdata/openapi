@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 users: {
 	get: {
 		operationId: "GetUsers"
@@ -8,13 +12,13 @@ users: {
 		]
 		summary: "List all users"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../../common/parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../../common/parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
-			$ref: "../../common/parameters/After.yml"
+			commonparameters.After.#Ref
 		}, {
 			in:   "query"
 			name: "name"
@@ -27,7 +31,7 @@ users: {
 		responses: {
 			"200": {
 				description: "A list of users"
-				content: "application/json": schema: $ref: "../../common/schemas/Users.yml"
+				content: "application/json": schema: commonschemas.Users.#Ref
 			}
 			default: {
 				description: "Unexpected error"
@@ -42,17 +46,17 @@ users: {
 		]
 		summary: "Create a user"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "User to create"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/User.yml"
+			content: "application/json": schema: commonschemas.User.#Ref
 		}
 		responses: {
 			"201": {
 				description: "User created"
-				content: "application/json": schema: $ref: "../../common/schemas/UserResponse.yml"
+				content: "application/json": schema: commonschemas.UserResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"

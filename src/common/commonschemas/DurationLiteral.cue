@@ -4,11 +4,11 @@ DurationLiteral: {
 	description: "Represents the elapsed time between two instants as an int64 nanosecond count with syntax of golang's time.Duration"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		values: {
 			description: "Duration values"
 			type:        "array"
-			items: $ref: "./Duration.yml"
+			items: Duration.#Ref
 		}
 	}
 }

@@ -4,7 +4,7 @@ Package: {
 	description: "Represents a complete package source tree."
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		path: {
 			description: "Package import path"
 			type:        "string"
@@ -16,7 +16,7 @@ Package: {
 		files: {
 			description: "Package files"
 			type:        "array"
-			items: $ref: "./File.yml"
+			items: File.#Ref
 		}
 	}
 }

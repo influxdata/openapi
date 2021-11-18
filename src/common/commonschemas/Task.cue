@@ -31,8 +31,8 @@ Task: {
 			description: "An optional description of the task."
 			type:        "string"
 		}
-		status: $ref: "./TaskStatusType.yml"
-		labels: $ref: "./Labels.yml"
+		status: TaskStatusType.#Ref
+		labels: Labels.#Ref
 		authorizationID: {
 			description: "The ID of the authorization used when this task communicates with the query engine."
 			type:        "string"
@@ -94,12 +94,12 @@ Task: {
 				logs:    "/api/v2/tasks/1/logs"
 			}
 			properties: {
-				self: $ref: "./Link.yml"
-				owners: $ref: "./Link.yml"
-				members: $ref: "./Link.yml"
-				runs: $ref: "./Link.yml"
-				logs: $ref: "./Link.yml"
-				labels: $ref: "./Link.yml"
+				self: Link.#Ref
+				owners: Link.#Ref
+				members: Link.#Ref
+				runs: Link.#Ref
+				logs: Link.#Ref
+				labels: Link.#Ref
 			}
 		}
 	}

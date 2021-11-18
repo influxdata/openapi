@@ -7,7 +7,7 @@ TelegrafPlugins: {
 		os: type: "string"
 		plugins: {
 			type: "array"
-			items: $ref: "./TelegrafPlugin.yml"
+			items: TelegrafPlugin.#Ref
 		}
 	}
 }

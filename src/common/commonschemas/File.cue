@@ -4,21 +4,21 @@ File: {
 	description: "Represents a source from a single file"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		name: {
 			description: "The name of the file."
 			type:        "string"
 		}
-		package: $ref: "./PackageClause.yml"
+		package: PackageClause.#Ref
 		imports: {
 			description: "A list of package imports"
 			type:        "array"
-			items: $ref: "./ImportDeclaration.yml"
+			items: ImportDeclaration.#Ref
 		}
 		body: {
 			description: "List of Flux statements"
 			type:        "array"
-			items: $ref: "./Statement.yml"
+			items: Statement.#Ref
 		}
 	}
 }

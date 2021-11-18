@@ -4,8 +4,8 @@ DictItem: {
 	description: "A key/value pair in a dictionary"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		key: $ref: "./Expression.yml"
-		val: $ref: "./Expression.yml"
+		type: NodeType.#Ref
+		key: Expression.#Ref
+		val: Expression.#Ref
 	}
 }

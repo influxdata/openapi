@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 labels: {
 	post: {
 		operationId: "PostLabels"
@@ -10,16 +14,16 @@ labels: {
 		requestBody: {
 			description: "Label to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/LabelCreateRequest.yml"
+			content: "application/json": schema: commonschemas.LabelCreateRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Added label"
-				content: "application/json": schema: $ref: "../schemas/LabelResponse.yml"
+				content: "application/json": schema: commonschemas.LabelResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -30,7 +34,7 @@ labels: {
 		]
 		summary: "List all labels"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -40,11 +44,11 @@ labels: {
 		responses: {
 			"200": {
 				description: "A list of labels"
-				content: "application/json": schema: $ref: "../schemas/LabelsResponse.yml"
+				content: "application/json": schema: commonschemas.LabelsResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

@@ -2,7 +2,7 @@ package commonschemas
 
 Error: {
 	properties: {
-		code: $ref: "./ErrorCode.yml"
+		code: ErrorCode.#Ref
 		message: {
 			readOnly:    true
 			description: "message is a human-readable message."

@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 templates_export: post: {
 	operationId: "ExportTemplate"
 	tags: [
@@ -10,22 +12,22 @@ templates_export: post: {
 		description: "Export resources as an InfluxDB template."
 		required:    false
 		content: "application/json": schema: oneOf: [{
-			$ref: "../schemas/TemplateExportByID.yml"
+			commonschemas.TemplateExportByID.#Ref
 		}, {
-			$ref: "../schemas/TemplateExportByName.yml"
+			commonschemas.TemplateExportByName.#Ref
 		}]
 	}
 	responses: {
 		"200": {
 			description: "The template was created successfully. Returns the newly created template."
 			content: {
-				"application/json": schema: $ref: "../schemas/Template.yml"
-				"application/x-yaml": schema: $ref: "../schemas/Template.yml"
+				"application/json": schema: commonschemas.Template.#Ref
+				"application/x-yaml": schema: commonschemas.Template.#Ref
 			}
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

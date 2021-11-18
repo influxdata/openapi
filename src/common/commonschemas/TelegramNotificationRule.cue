@@ -1,7 +1,7 @@
 package commonschemas
 
 TelegramNotificationRule: allOf: [{
-	$ref: "./NotificationRuleBase.yml"
+	NotificationRuleBase.#Ref
 }, {
-	$ref: "./TelegramNotificationRuleBase.yml"
+	TelegramNotificationRuleBase.#Ref
 }]

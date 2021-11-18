@@ -3,7 +3,7 @@ package commonschemas
 Checks: properties: {
 	checks: {
 		type: "array"
-		items: $ref: "./Check.yml"
+		items: Check.#Ref
 	}
-	links: $ref: "./Links.yml"
+	links: Links.#Ref
 }

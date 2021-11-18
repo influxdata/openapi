@@ -1,7 +1,7 @@
 package commonschemas
 
 DeadmanCheck: allOf: [{
-	$ref: "./CheckBase.yml"
+	CheckBase.#Ref
 }, {
 	type: "object"
 	required: ["type"]
@@ -22,7 +22,7 @@ DeadmanCheck: allOf: [{
 			description: "If only zero values reported since time, trigger an alert"
 			type:        "boolean"
 		}
-		level: $ref: "./CheckStatusLevel.yml"
+		level: CheckStatusLevel.#Ref
 		every: {
 			description: "Check repetition interval."
 			type:        "string"

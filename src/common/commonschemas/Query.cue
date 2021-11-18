@@ -7,7 +7,7 @@ Query: {
 		"query",
 	]
 	properties: {
-		extern: $ref: "./File.yml"
+		extern: File.#Ref
 		query: {
 			description: "Query script to execute."
 			type:        "string"
@@ -28,7 +28,7 @@ Query: {
 				"""
 		}
 
-		dialect: $ref: "./Dialect.yml"
+		dialect: Dialect.#Ref
 		now: {
 			description: "Specifies the time that should be reported as \"now\" in the query. Default is the server's now time."
 			type:        "string"

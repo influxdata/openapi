@@ -4,7 +4,7 @@ TestStatement: {
 	description: "Declares a Flux test case"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		assignment: $ref: "./VariableAssignment.yml"
+		type: NodeType.#Ref
+		assignment: VariableAssignment.#Ref
 	}
 }

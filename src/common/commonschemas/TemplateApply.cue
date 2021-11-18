@@ -14,7 +14,7 @@ TemplateApply: {
 					type: "array"
 					items: type: "string"
 				}
-				contents: $ref: "./Template.yml"
+				contents: Template.#Ref
 			}
 		}
 		templates: {
@@ -27,7 +27,7 @@ TemplateApply: {
 						type: "array"
 						items: type: "string"
 					}
-					contents: $ref: "./Template.yml"
+					contents: Template.#Ref
 				}
 			}
 		}
@@ -69,7 +69,7 @@ TemplateApply: {
 					}
 					properties: {
 						type: "object"
-						properties: kind: $ref: "./TemplateKind.yml"
+						properties: kind: TemplateKind.#Ref
 						required: ["kind"]
 					}
 				}
@@ -83,7 +83,7 @@ TemplateApply: {
 					properties: {
 						type: "object"
 						properties: {
-							kind: $ref: "./TemplateKind.yml"
+							kind: TemplateKind.#Ref
 							resourceTemplateName: type: "string"
 						}
 						required: ["kind", "resourceTemplateName"]

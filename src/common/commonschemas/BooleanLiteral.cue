@@ -4,7 +4,7 @@ BooleanLiteral: {
 	description: "Represents boolean values"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		value: type: "boolean"
 	}
 }

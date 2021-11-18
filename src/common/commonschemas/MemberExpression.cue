@@ -4,8 +4,8 @@ MemberExpression: {
 	description: "Represents accessing a property of an object"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		object: $ref: "./Expression.yml"
-		property: $ref: "./PropertyKey.yml"
+		type: NodeType.#Ref
+		object: Expression.#Ref
+		property: PropertyKey.#Ref
 	}
 }

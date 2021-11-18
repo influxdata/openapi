@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 notificationEndpoints_endpointID: {
 	get: {
 		operationId: "GetNotificationEndpointsID"
@@ -8,7 +12,7 @@ notificationEndpoints_endpointID: {
 		]
 		summary: "Retrieve a notification endpoint"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "endpointID"
@@ -19,11 +23,11 @@ notificationEndpoints_endpointID: {
 		responses: {
 			"200": {
 				description: "The notification endpoint requested"
-				content: "application/json": schema: $ref: "../schemas/NotificationEndpoint.yml"
+				content: "application/json": schema: commonschemas.NotificationEndpoint.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -36,10 +40,10 @@ notificationEndpoints_endpointID: {
 		requestBody: {
 			description: "A new notification endpoint to replace the existing endpoint with"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/NotificationEndpoint.yml"
+			content: "application/json": schema: commonschemas.NotificationEndpoint.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "endpointID"
@@ -50,15 +54,15 @@ notificationEndpoints_endpointID: {
 		responses: {
 			"200": {
 				description: "An updated notification endpoint"
-				content: "application/json": schema: $ref: "../schemas/NotificationEndpoint.yml"
+				content: "application/json": schema: commonschemas.NotificationEndpoint.#Ref
 			}
 			"404": {
 				description: "The notification endpoint was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -71,10 +75,10 @@ notificationEndpoints_endpointID: {
 		requestBody: {
 			description: "Check update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/NotificationEndpointUpdate.yml"
+			content: "application/json": schema: commonschemas.NotificationEndpointUpdate.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "endpointID"
@@ -85,15 +89,15 @@ notificationEndpoints_endpointID: {
 		responses: {
 			"200": {
 				description: "An updated notification endpoint"
-				content: "application/json": schema: $ref: "../schemas/NotificationEndpoint.yml"
+				content: "application/json": schema: commonschemas.NotificationEndpoint.#Ref
 			}
 			"404": {
 				description: "The notification endpoint was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -104,7 +108,7 @@ notificationEndpoints_endpointID: {
 		]
 		summary: "Delete a notification endpoint"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "endpointID"
@@ -116,11 +120,11 @@ notificationEndpoints_endpointID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "The endpoint was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 tasks_taskID: {
 	get: {
 		operationId: "GetTasksID"
@@ -8,7 +12,7 @@ tasks_taskID: {
 		]
 		summary: "Retrieve a task"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -19,11 +23,11 @@ tasks_taskID: {
 		responses: {
 			"200": {
 				description: "Task details"
-				content: "application/json": schema: $ref: "../schemas/Task.yml"
+				content: "application/json": schema: commonschemas.Task.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -37,10 +41,10 @@ tasks_taskID: {
 		requestBody: {
 			description: "Task update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/TaskUpdateRequest.yml"
+			content: "application/json": schema: commonschemas.TaskUpdateRequest.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -51,11 +55,11 @@ tasks_taskID: {
 		responses: {
 			"200": {
 				description: "Task updated"
-				content: "application/json": schema: $ref: "../schemas/Task.yml"
+				content: "application/json": schema: commonschemas.Task.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -67,7 +71,7 @@ tasks_taskID: {
 		summary:     "Delete a task"
 		description: "Deletes a task and all associated records"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -79,7 +83,7 @@ tasks_taskID: {
 			"204": description: "Task deleted"
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

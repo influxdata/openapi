@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 variables_variableID_labels_labelID: delete: {
 	operationId: "DeleteVariablesIDLabelsID"
 	tags: [
@@ -7,7 +11,7 @@ variables_variableID_labels_labelID: delete: {
 	]
 	summary: "Delete a label from a variable"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "variableID"
@@ -25,11 +29,11 @@ variables_variableID_labels_labelID: delete: {
 		"204": description: "Delete has been accepted"
 		"404": {
 			description: "Variable not found"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package commonschemas
 
 Node: oneOf: [{
-	$ref: "./Expression.yml"
+	Expression.#Ref
 }, {
-	$ref: "./Block.yml"
+	Block.#Ref
 }]

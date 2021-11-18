@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 sources_sourceID_health: get: {
 	operationId: "GetSourcesIDHealth"
 	tags: [
@@ -7,7 +11,7 @@ sources_sourceID_health: get: {
 	]
 	summary: "Get the health of a source"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "sourceID"
@@ -18,15 +22,15 @@ sources_sourceID_health: get: {
 	responses: {
 		"200": {
 			description: "The source is healthy"
-			content: "application/json": schema: $ref: "../schemas/HealthCheck.yml"
+			content: "application/json": schema: commonschemas.HealthCheck.#Ref
 		}
 		"503": {
 			description: "The source is not healthy"
-			content: "application/json": schema: $ref: "../schemas/HealthCheck.yml"
+			content: "application/json": schema: commonschemas.HealthCheck.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

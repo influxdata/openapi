@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 tasks_taskID_members: {
 	get: {
 		operationId: "GetTasksIDMembers"
@@ -8,7 +12,7 @@ tasks_taskID_members: {
 		]
 		summary: "List all task members"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -19,11 +23,11 @@ tasks_taskID_members: {
 		responses: {
 			"200": {
 				description: "A list of users who have member privileges for a task"
-				content: "application/json": schema: $ref: "../schemas/ResourceMembers.yml"
+				content: "application/json": schema: commonschemas.ResourceMembers.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -34,7 +38,7 @@ tasks_taskID_members: {
 		]
 		summary: "Add a member to a task"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "taskID"
@@ -45,16 +49,16 @@ tasks_taskID_members: {
 		requestBody: {
 			description: "User to add as member"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/AddResourceMemberRequestBody.yml"
+			content: "application/json": schema: commonschemas.AddResourceMemberRequestBody.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Added to task members"
-				content: "application/json": schema: $ref: "../schemas/ResourceMember.yml"
+				content: "application/json": schema: commonschemas.ResourceMember.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

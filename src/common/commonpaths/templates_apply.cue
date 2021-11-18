@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 templates_apply: post: {
 	operationId: "ApplyTemplate"
 	tags: [
@@ -10,9 +12,9 @@ templates_apply: post: {
 	requestBody: {
 		required: true
 		content: {
-			"application/json": schema: $ref: "../schemas/TemplateApply.yml"
-			"application/x-jsonnet": schema: $ref: "../schemas/TemplateApply.yml"
-			"text/yml": schema: $ref: "../schemas/TemplateApply.yml"
+			"application/json": schema: commonschemas.TemplateApply.#Ref
+			"application/x-jsonnet": schema: commonschemas.TemplateApply.#Ref
+			"text/yml": schema: commonschemas.TemplateApply.#Ref
 		}
 	}
 	responses: {
@@ -22,7 +24,7 @@ templates_apply: post: {
 
 				"""
 
-			content: "application/json": schema: $ref: "../schemas/TemplateSummary.yml"
+			content: "application/json": schema: commonschemas.TemplateSummary.#Ref
 		}
 		"201": {
 			description: """
@@ -30,11 +32,11 @@ templates_apply: post: {
 
 				"""
 
-			content: "application/json": schema: $ref: "../schemas/TemplateSummary.yml"
+			content: "application/json": schema: commonschemas.TemplateSummary.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

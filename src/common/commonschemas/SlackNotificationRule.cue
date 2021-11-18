@@ -1,7 +1,7 @@
 package commonschemas
 
 SlackNotificationRule: allOf: [{
-	$ref: "./NotificationRuleBase.yml"
+	NotificationRuleBase.#Ref
 }, {
-	$ref: "./SlackNotificationRuleBase.yml"
+	SlackNotificationRuleBase.#Ref
 }]

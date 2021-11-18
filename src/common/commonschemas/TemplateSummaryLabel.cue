@@ -5,7 +5,7 @@ TemplateSummaryLabel: {
 	properties: {
 		id: type: "string"
 		orgID: type: "string"
-		kind: $ref: "./TemplateKind.yml"
+		kind: TemplateKind.#Ref
 		templateMetaName: type: "string"
 		name: type: "string"
 		properties: {
@@ -15,6 +15,6 @@ TemplateSummaryLabel: {
 				description: type: "string"
 			}
 		}
-		envReferences: $ref: "./TemplateEnvReferences.yml"
+		envReferences: TemplateEnvReferences.#Ref
 	}
 }

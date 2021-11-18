@@ -2,11 +2,11 @@ package commonschemas
 
 CheckDiscriminator: {
 	oneOf: [{
-		$ref: "./DeadmanCheck.yml"
+		DeadmanCheck.#Ref
 	}, {
-		$ref: "./ThresholdCheck.yml"
+		ThresholdCheck.#Ref
 	}, {
-		$ref: "./CustomCheck.yml"
+		CustomCheck.#Ref
 	}]
 	discriminator: {
 		propertyName: "type"

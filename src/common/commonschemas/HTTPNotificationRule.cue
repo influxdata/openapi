@@ -1,7 +1,7 @@
 package commonschemas
 
 HTTPNotificationRule: allOf: [{
-	$ref: "./NotificationRuleBase.yml"
+	NotificationRuleBase.#Ref
 }, {
-	$ref: "./HTTPNotificationRuleBase.yml"
+	HTTPNotificationRuleBase.#Ref
 }]

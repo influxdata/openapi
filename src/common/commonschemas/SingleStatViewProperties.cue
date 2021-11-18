@@ -22,12 +22,12 @@ SingleStatViewProperties: {
 		}
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -42,7 +42,7 @@ SingleStatViewProperties: {
 		tickPrefix: type: "string"
 		suffix: type: "string"
 		tickSuffix: type: "string"
-		staticLegend: $ref: "./StaticLegend.yml"
-		decimalPlaces: $ref: "./DecimalPlaces.yml"
+		staticLegend: StaticLegend.#Ref
+		decimalPlaces: DecimalPlaces.#Ref
 	}
 }

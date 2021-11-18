@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 variables_variableID_labels: {
 	get: {
 		operationId: "GetVariablesIDLabels"
@@ -8,7 +12,7 @@ variables_variableID_labels: {
 		]
 		summary: "List all labels for a variable"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "variableID"
@@ -19,11 +23,11 @@ variables_variableID_labels: {
 		responses: {
 			"200": {
 				description: "A list of all labels for a variable"
-				content: "application/json": schema: $ref: "../schemas/LabelsResponse.yml"
+				content: "application/json": schema: commonschemas.LabelsResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -34,7 +38,7 @@ variables_variableID_labels: {
 		]
 		summary: "Add a label to a variable"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "variableID"
@@ -45,16 +49,16 @@ variables_variableID_labels: {
 		requestBody: {
 			description: "Label to add"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/LabelMapping.yml"
+			content: "application/json": schema: commonschemas.LabelMapping.#Ref
 		}
 		responses: {
 			"201": {
 				description: "The newly added label"
-				content: "application/json": schema: $ref: "../schemas/LabelResponse.yml"
+				content: "application/json": schema: commonschemas.LabelResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

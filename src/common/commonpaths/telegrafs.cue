@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 telegrafs: {
 	get: {
 		operationId: "GetTelegrafs"
@@ -8,7 +12,7 @@ telegrafs: {
 		]
 		summary: "List all Telegraf configurations"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -18,11 +22,11 @@ telegrafs: {
 		responses: {
 			"200": {
 				description: "A list of Telegraf configurations"
-				content: "application/json": schema: $ref: "../schemas/Telegrafs.yml"
+				content: "application/json": schema: commonschemas.Telegrafs.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -33,21 +37,21 @@ telegrafs: {
 		]
 		summary: "Create a Telegraf configuration"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Telegraf configuration to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/TelegrafRequest.yml"
+			content: "application/json": schema: commonschemas.TelegrafRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Telegraf configuration created"
-				content: "application/json": schema: $ref: "../schemas/Telegraf.yml"
+				content: "application/json": schema: commonschemas.Telegraf.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

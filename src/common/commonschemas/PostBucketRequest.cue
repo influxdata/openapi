@@ -6,9 +6,9 @@ PostBucketRequest: {
 		name: type: "string"
 		description: type: "string"
 		rp: type: "string"
-		retentionRules: $ref: "./RetentionRules.yml"
+		retentionRules: RetentionRules.#Ref
 		schemaType: {
-			$ref:    "./SchemaType.yml"
+			SchemaType.#Ref
 			default: "implicit"
 		}
 	}

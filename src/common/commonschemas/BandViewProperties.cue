@@ -20,12 +20,12 @@ BandViewProperties: {
 		}
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -36,8 +36,8 @@ BandViewProperties: {
 			description: "If true, will display note when empty"
 			type:        "boolean"
 		}
-		axes: $ref: "./Axes.yml"
-		staticLegend: $ref: "./StaticLegend.yml"
+		axes: Axes.#Ref
+		staticLegend: StaticLegend.#Ref
 		xColumn: type: "string"
 		generateXAxisTicks: {
 			type: "array"
@@ -73,7 +73,7 @@ BandViewProperties: {
 			type: "string"
 			enum: ["auto", "x", "y", "xy"]
 		}
-		geom: $ref: "./XYGeom.yml"
+		geom: XYGeom.#Ref
 		legendColorizeRows: type: "boolean"
 		legendHide: type: "boolean"
 		legendOpacity: {

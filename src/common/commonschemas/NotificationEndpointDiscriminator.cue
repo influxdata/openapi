@@ -2,13 +2,13 @@ package commonschemas
 
 NotificationEndpointDiscriminator: {
 	oneOf: [{
-		$ref: "./SlackNotificationEndpoint.yml"
+		SlackNotificationEndpoint.#Ref
 	}, {
-		$ref: "./PagerDutyNotificationEndpoint.yml"
+		PagerDutyNotificationEndpoint.#Ref
 	}, {
-		$ref: "./HTTPNotificationEndpoint.yml"
+		HTTPNotificationEndpoint.#Ref
 	}, {
-		$ref: "./TelegramNotificationEndpoint.yml"
+		TelegramNotificationEndpoint.#Ref
 	}]
 	discriminator: {
 		propertyName: "type"

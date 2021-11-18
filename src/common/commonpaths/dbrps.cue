@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 dbrps: {
 	get: {
 		operationId: "GetDBRPs"
@@ -8,7 +12,7 @@ dbrps: {
 		]
 		summary: "List database retention policy mappings"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -48,15 +52,15 @@ dbrps: {
 		responses: {
 			"200": {
 				description: "Success. Returns a list of database retention policy mappings."
-				content: "application/json": schema: $ref: "../schemas/DBRPs.yml"
+				content: "application/json": schema: commonschemas.DBRPs.#Ref
 			}
 			"400": {
 				description: "Bad request. The request has one or more invalid parameters."
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -67,25 +71,25 @@ dbrps: {
 		]
 		summary: "Add a database retention policy mapping"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "The database retention policy mapping to add"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/DBRPCreate.yml"
+			content: "application/json": schema: commonschemas.DBRPCreate.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Created. Returns the created database retention policy mapping."
-				content: "application/json": schema: $ref: "../schemas/DBRP.yml"
+				content: "application/json": schema: commonschemas.DBRP.#Ref
 			}
 			"400": {
 				description: "Bad request. The mapping in the request has one or more invalid IDs."
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

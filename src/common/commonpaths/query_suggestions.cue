@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 query_suggestions: get: {
 	operationId: "GetQuerySuggestions"
 	tags: [
@@ -7,16 +11,16 @@ query_suggestions: get: {
 	]
 	summary: "Retrieve query suggestions"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {
 			description: "Suggestions for next functions in call chain"
-			content: "application/json": schema: $ref: "../schemas/FluxSuggestions.yml"
+			content: "application/json": schema: commonschemas.FluxSuggestions.#Ref
 		}
 		default: {
 			description: "Any response other than 200 is an internal server error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

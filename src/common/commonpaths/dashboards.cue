@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 dashboards: {
 	post: {
 		operationId: "PostDashboards"
@@ -8,25 +12,25 @@ dashboards: {
 		]
 		summary: "Create a dashboard"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Dashboard to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/CreateDashboardRequest.yml"
+			content: "application/json": schema: commonschemas.CreateDashboardRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Added dashboard"
 				content: "application/json": schema: oneOf: [{
-					$ref: "../schemas/Dashboard.yml"
+					commonschemas.Dashboard.#Ref
 				}, {
-					$ref: "../schemas/DashboardWithViewProperties.yml"
+					commonschemas.DashboardWithViewProperties.#Ref
 				}]
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -37,13 +41,13 @@ dashboards: {
 		]
 		summary: "List all dashboards"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
-			$ref: "../parameters/Descending.yml"
+			commonparameters.Descending.#Ref
 		}, {
 			in:          "query"
 			name:        "owner"
@@ -83,11 +87,11 @@ dashboards: {
 		responses: {
 			"200": {
 				description: "All dashboards"
-				content: "application/json": schema: $ref: "../schemas/Dashboards.yml"
+				content: "application/json": schema: commonschemas.Dashboards.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

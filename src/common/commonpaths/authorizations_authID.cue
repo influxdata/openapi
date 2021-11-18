@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 authorizations_authID: {
 	get: {
 		operationId: "GetAuthorizationsID"
@@ -8,7 +12,7 @@ authorizations_authID: {
 		]
 		summary: "Retrieve an authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -19,7 +23,7 @@ authorizations_authID: {
 		responses: {
 			"200": {
 				description: "Authorization details"
-				content: "application/json": schema: $ref: "../../common/schemas/Authorization.yml"
+				content: "application/json": schema: commonschemas.Authorization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
@@ -36,10 +40,10 @@ authorizations_authID: {
 		requestBody: {
 			description: "Authorization to update"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/AuthorizationUpdateRequest.yml"
+			content: "application/json": schema: commonschemas.AuthorizationUpdateRequest.#Ref
 		}
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -50,7 +54,7 @@ authorizations_authID: {
 		responses: {
 			"200": {
 				description: "The active or inactive authorization"
-				content: "application/json": schema: $ref: "../../common/schemas/Authorization.yml"
+				content: "application/json": schema: commonschemas.Authorization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
@@ -65,7 +69,7 @@ authorizations_authID: {
 		]
 		summary: "Delete an authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"

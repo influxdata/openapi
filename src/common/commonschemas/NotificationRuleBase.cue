@@ -57,7 +57,7 @@ NotificationRuleBase: {
 			format:   "date-time"
 			readOnly: true
 		}
-		status: $ref: "./TaskStatusType.yml"
+		status: TaskStatusType.#Ref
 		name: {
 			description: "Human-readable name describing the notification rule."
 			type:        "string"
@@ -83,7 +83,7 @@ NotificationRuleBase: {
 		tagRules: {
 			description: "List of tag rules the notification rule attempts to match."
 			type:        "array"
-			items: $ref: "./TagRule.yml"
+			items: TagRule.#Ref
 		}
 		description: {
 			description: "An optional description of the notification rule."
@@ -93,9 +93,9 @@ NotificationRuleBase: {
 			description: "List of status rules the notification rule attempts to match."
 			type:        "array"
 			minItems:    1
-			items: $ref: "./StatusRule.yml"
+			items: StatusRule.#Ref
 		}
-		labels: $ref: "./Labels.yml"
+		labels: Labels.#Ref
 		links: {
 			type:     "object"
 			readOnly: true
@@ -109,23 +109,23 @@ NotificationRuleBase: {
 			properties: {
 				self: {
 					description: "URL for this endpoint."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				labels: {
 					description: "URL to retrieve labels for this notification rule."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				members: {
 					description: "URL to retrieve members for this notification rule."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				owners: {
 					description: "URL to retrieve owners for this notification rule."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				query: {
 					description: "URL to retrieve flux script for this notification rule."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 stacks_stack_id_uninstall: post: {
 	operationId: "UninstallStack"
 	tags: [
@@ -16,11 +18,11 @@ stacks_stack_id_uninstall: post: {
 	responses: {
 		"200": {
 			description: "Returns the uninstalled stack."
-			content: "application/json": schema: $ref: "../schemas/Stack.yml"
+			content: "application/json": schema: commonschemas.Stack.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

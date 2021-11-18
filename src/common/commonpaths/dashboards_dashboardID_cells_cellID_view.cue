@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 dashboards_dashboardID_cells_cellID_view: {
 	get: {
 		operationId: "GetDashboardsIDCellsIDView"
@@ -10,7 +14,7 @@ dashboards_dashboardID_cells_cellID_view: {
 		]
 		summary: "Retrieve the view for a cell"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -27,15 +31,15 @@ dashboards_dashboardID_cells_cellID_view: {
 		responses: {
 			"200": {
 				description: "A dashboard cells view"
-				content: "application/json": schema: $ref: "../schemas/View.yml"
+				content: "application/json": schema: commonschemas.View.#Ref
 			}
 			"404": {
 				description: "Cell or dashboard not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -49,10 +53,10 @@ dashboards_dashboardID_cells_cellID_view: {
 		summary: "Update the view for a cell"
 		requestBody: {
 			required: true
-			content: "application/json": schema: $ref: "../schemas/View.yml"
+			content: "application/json": schema: commonschemas.View.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -69,15 +73,15 @@ dashboards_dashboardID_cells_cellID_view: {
 		responses: {
 			"200": {
 				description: "Updated cell view"
-				content: "application/json": schema: $ref: "../schemas/View.yml"
+				content: "application/json": schema: commonschemas.View.#Ref
 			}
 			"404": {
 				description: "Cell or dashboard not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

@@ -4,12 +4,12 @@ FunctionExpression: {
 	description: "Function expression"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		params: {
 			description: "Function parameters"
 			type:        "array"
-			items: $ref: "./Property.yml"
+			items: Property.#Ref
 		}
-		body: $ref: "./Node.yml"
+		body: Node.#Ref
 	}
 }

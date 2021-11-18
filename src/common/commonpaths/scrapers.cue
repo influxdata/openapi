@@ -1,12 +1,16 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 scrapers: {
 	get: {
 		operationId: "GetScrapers"
 		tags: ["Scraper Targets"]
 		summary: "List all scraper targets"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "name"
@@ -33,7 +37,7 @@ scrapers: {
 		}]
 		responses: "200": {
 			description: "All scraper targets"
-			content: "application/json": schema: $ref: "../schemas/ScraperTargetResponses.yml"
+			content: "application/json": schema: commonschemas.ScraperTargetResponses.#Ref
 		}
 	}
 	post: {
@@ -41,21 +45,21 @@ scrapers: {
 		summary:     "Create a scraper target"
 		tags: ["Scraper Targets"]
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Scraper target to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/ScraperTargetRequest.yml"
+			content: "application/json": schema: commonschemas.ScraperTargetRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Scraper target created"
-				content: "application/json": schema: $ref: "../schemas/ScraperTargetResponse.yml"
+				content: "application/json": schema: commonschemas.ScraperTargetResponse.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

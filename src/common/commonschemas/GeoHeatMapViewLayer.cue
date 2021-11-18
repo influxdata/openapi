@@ -1,7 +1,7 @@
 package commonschemas
 
 GeoHeatMapViewLayer: allOf: [{
-	$ref: "./GeoViewLayerProperties.yml"
+	GeoViewLayerProperties.#Ref
 }, {
 	type: "object"
 	required: ["intensityField", "intensityDimension", "radius", "blur", "colors"]
@@ -10,7 +10,7 @@ GeoHeatMapViewLayer: allOf: [{
 			type:        "string"
 			description: "Intensity field"
 		}
-		intensityDimension: $ref: "./Axis.yml"
+		intensityDimension: Axis.#Ref
 		radius: {
 			description: "Radius size in pixels"
 			type:        "integer"
@@ -22,7 +22,7 @@ GeoHeatMapViewLayer: allOf: [{
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 	}
 }]

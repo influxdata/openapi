@@ -1,7 +1,7 @@
 package commonschemas
 
 RangeThreshold: allOf: [{
-	$ref: "./ThresholdBase.yml"
+	ThresholdBase.#Ref
 }, {
 	type: "object"
 	required: ["type", "min", "max", "within"]

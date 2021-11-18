@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 variables: {
 	get: {
 		operationId: "GetVariables"
@@ -8,7 +12,7 @@ variables: {
 		]
 		summary: "List all variables"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "org"
@@ -23,7 +27,7 @@ variables: {
 		responses: {
 			"200": {
 				description: "A list of variables for an organization"
-				content: "application/json": schema: $ref: "../../common/schemas/Variables.yml"
+				content: "application/json": schema: commonschemas.Variables.#Ref
 			}
 			"400": {
 				description: "Invalid request"
@@ -42,17 +46,17 @@ variables: {
 			"Variables",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Variable to create"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+			content: "application/json": schema: commonschemas.Variable.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Variable created"
-				content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+				content: "application/json": schema: commonschemas.Variable.#Ref
 			}
 			default: {
 				description: "Internal server error"

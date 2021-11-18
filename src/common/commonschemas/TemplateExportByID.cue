@@ -19,7 +19,7 @@ TemplateExportByID: {
 							}
 							byResourceKind: {
 								type: "array"
-								items: $ref: "./TemplateKind.yml"
+								items: TemplateKind.#Ref
 							}
 						}
 					}
@@ -32,7 +32,7 @@ TemplateExportByID: {
 				type: "object"
 				properties: {
 					id: type: "string"
-					kind: $ref: "./TemplateKind.yml"
+					kind: TemplateKind.#Ref
 					name: {
 						type:        "string"
 						description: "if defined with id, name is used for resource exported by id. if defined independently, resources strictly matching name are exported"

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 buckets: {
 	get: {
 		operationId: "GetBuckets"
@@ -8,13 +12,13 @@ buckets: {
 		]
 		summary: "List all buckets"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../parameters/Limit.yml"
+			commonparameters.Limit.#Ref
 		}, {
-			$ref: "../parameters/After.yml"
+			commonparameters.After.#Ref
 		}, {
 			in:          "query"
 			name:        "org"
@@ -39,11 +43,11 @@ buckets: {
 		responses: {
 			"200": {
 				description: "A list of buckets"
-				content: "application/json": schema: $ref: "../schemas/Buckets.yml"
+				content: "application/json": schema: commonschemas.Buckets.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -54,25 +58,25 @@ buckets: {
 		]
 		summary: "Create a bucket"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Bucket to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PostBucketRequest.yml"
+			content: "application/json": schema: commonschemas.PostBucketRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Bucket created"
-				content: "application/json": schema: $ref: "../schemas/Bucket.yml"
+				content: "application/json": schema: commonschemas.Bucket.#Ref
 			}
 			"422": {
 				description: "Request body failed validation"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

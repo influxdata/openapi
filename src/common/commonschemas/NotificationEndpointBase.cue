@@ -28,7 +28,7 @@ NotificationEndpointBase: {
 			type:        "string"
 			enum: ["active", "inactive"]
 		}
-		labels: $ref: "./Labels.yml"
+		labels: Labels.#Ref
 		links: {
 			type:     "object"
 			readOnly: true
@@ -41,22 +41,22 @@ NotificationEndpointBase: {
 			properties: {
 				self: {
 					description: "URL for this endpoint."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				labels: {
 					description: "URL to retrieve labels for this endpoint."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				members: {
 					description: "URL to retrieve members for this endpoint."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				owners: {
 					description: "URL to retrieve owners for this endpoint."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 			}
 		}
-		type: $ref: "./NotificationEndpointType.yml"
+		type: NotificationEndpointType.#Ref
 	}
 }

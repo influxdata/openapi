@@ -5,9 +5,9 @@ Axes: {
 	type:        "object"
 	required: ["x", "y"]
 	properties: {
-		x: $ref: "./Axis.yml"
+		x: Axis.#Ref
 		y: {// Quoted to prevent YAML parser from interpreting y as shorthand for true.
-			$ref: "./Axis.yml"
+			Axis.#Ref
 		}
 	}
 }

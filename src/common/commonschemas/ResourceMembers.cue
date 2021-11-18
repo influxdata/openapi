@@ -12,7 +12,7 @@ ResourceMembers: {
 		}
 		users: {
 			type: "array"
-			items: $ref: "./ResourceMember.yml"
+			items: ResourceMember.#Ref
 		}
 	}
 }

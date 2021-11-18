@@ -1,7 +1,7 @@
 package commonschemas
 
 VariableOrMemberAssignment: oneOf: [{
-	$ref: "./VariableAssignment.yml"
+	VariableAssignment.#Ref
 }, {
-	$ref: "./MemberAssignment.yml"
+	MemberAssignment.#Ref
 }]

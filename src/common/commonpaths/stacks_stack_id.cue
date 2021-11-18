@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 stacks_stack_id: {
 	get: {
 		operationId: "ReadStack"
@@ -17,11 +19,11 @@ stacks_stack_id: {
 		responses: {
 			"200": {
 				description: "Returns the stack."
-				content: "application/json": schema: $ref: "../schemas/Stack.yml"
+				content: "application/json": schema: commonschemas.Stack.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -76,11 +78,11 @@ stacks_stack_id: {
 		responses: {
 			"200": {
 				description: "Returns the updated stack."
-				content: "application/json": schema: $ref: "../schemas/Stack.yml"
+				content: "application/json": schema: commonschemas.Stack.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -107,7 +109,7 @@ stacks_stack_id: {
 			"204": description: "The stack and its associated resources were deleted."
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

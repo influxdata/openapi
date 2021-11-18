@@ -4,8 +4,8 @@ IndexExpression: {
 	description: "Represents indexing into an array"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		array: $ref: "./Expression.yml"
-		index: $ref: "./Expression.yml"
+		type: NodeType.#Ref
+		array: Expression.#Ref
+		index: Expression.#Ref
 	}
 }

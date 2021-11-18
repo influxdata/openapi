@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 orgs_orgID: {
 	get: {
 		operationId: "GetOrgsID"
@@ -8,7 +12,7 @@ orgs_orgID: {
 		]
 		summary: "Retrieve an organization"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "orgID"
@@ -19,11 +23,11 @@ orgs_orgID: {
 		responses: {
 			"200": {
 				description: "Organization details"
-				content: "application/json": schema: $ref: "../schemas/Organization.yml"
+				content: "application/json": schema: commonschemas.Organization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -36,10 +40,10 @@ orgs_orgID: {
 		requestBody: {
 			description: "Organization update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/PatchOrganizationRequest.yml"
+			content: "application/json": schema: commonschemas.PatchOrganizationRequest.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "orgID"
@@ -50,11 +54,11 @@ orgs_orgID: {
 		responses: {
 			"200": {
 				description: "Organization updated"
-				content: "application/json": schema: $ref: "../schemas/Organization.yml"
+				content: "application/json": schema: commonschemas.Organization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -65,7 +69,7 @@ orgs_orgID: {
 		]
 		summary: "Delete an organization"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "orgID"
@@ -77,11 +81,11 @@ orgs_orgID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "Organization not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

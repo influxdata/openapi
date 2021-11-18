@@ -21,12 +21,12 @@ TableViewProperties: {
 		}
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -45,7 +45,7 @@ TableViewProperties: {
 
 					type: "boolean"
 				}
-				sortBy: $ref: "./RenamableField.yml"
+				sortBy: RenamableField.#Ref
 				wrapping: {
 					description: "Wrapping describes the text wrapping style to be used in table views"
 					type:        "string"
@@ -66,13 +66,13 @@ TableViewProperties: {
 			description: "fieldOptions represent the fields retrieved by the query with customization options"
 
 			type: "array"
-			items: $ref: "./RenamableField.yml"
+			items: RenamableField.#Ref
 		}
 		timeFormat: {
 			description: "timeFormat describes the display format for time values according to moment.js date formatting"
 
 			type: "string"
 		}
-		decimalPlaces: $ref: "./DecimalPlaces.yml"
+		decimalPlaces: DecimalPlaces.#Ref
 	}
 }

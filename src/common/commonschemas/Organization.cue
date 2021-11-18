@@ -16,14 +16,14 @@ Organization: {
 				dashboards: "/api/v2/dashboards?org=myorg"
 			}
 			properties: {
-				self: $ref: "./Link.yml"
-				members: $ref: "./Link.yml"
-				owners: $ref: "./Link.yml"
-				labels: $ref: "./Link.yml"
-				secrets: $ref: "./Link.yml"
-				buckets: $ref: "./Link.yml"
-				tasks: $ref: "./Link.yml"
-				dashboards: $ref: "./Link.yml"
+				self: Link.#Ref
+				members: Link.#Ref
+				owners: Link.#Ref
+				labels: Link.#Ref
+				secrets: Link.#Ref
+				buckets: Link.#Ref
+				tasks: Link.#Ref
+				dashboards: Link.#Ref
 			}
 		}
 		id: {

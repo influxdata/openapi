@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 buckets_bucketID_owners_userID: delete: {
 	operationId: "DeleteBucketsIDOwnersID"
 	tags: [
@@ -7,7 +11,7 @@ buckets_bucketID_owners_userID: delete: {
 	]
 	summary: "Remove an owner from a bucket"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "userID"
@@ -25,7 +29,7 @@ buckets_bucketID_owners_userID: delete: {
 		"204": description: "Owner removed"
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

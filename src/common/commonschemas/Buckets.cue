@@ -5,11 +5,11 @@ Buckets: {
 	properties: {
 		links: {
 			readOnly: true
-			$ref:     "./Links.yml"
+			Links.#Ref
 		}
 		buckets: {
 			type: "array"
-			items: $ref: "./Bucket.yml"
+			items: Bucket.#Ref
 		}
 	}
 }

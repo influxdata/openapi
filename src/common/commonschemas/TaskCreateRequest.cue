@@ -11,7 +11,7 @@ TaskCreateRequest: {
 			description: "The name of the organization that owns this Task."
 			type:        "string"
 		}
-		status: $ref: "./TaskStatusType.yml"
+		status: TaskStatusType.#Ref
 		flux: {
 			description: "The Flux script to run for this task."
 			type:        "string"

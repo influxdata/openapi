@@ -1,7 +1,7 @@
 package commonschemas
 
 CustomCheck: allOf: [{
-	$ref: "./CheckBase.yml"
+	CheckBase.#Ref
 }, {
 	type: "object"
 	properties: type: {

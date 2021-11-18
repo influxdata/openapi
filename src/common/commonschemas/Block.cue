@@ -4,11 +4,11 @@ Block: {
 	description: "A set of statements"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
+		type: NodeType.#Ref
 		body: {
 			description: "Block body"
 			type:        "array"
-			items: $ref: "./Statement.yml"
+			items: Statement.#Ref
 		}
 	}
 }

@@ -16,27 +16,27 @@ Bucket: {
 			properties: {
 				labels: {
 					description: "URL to retrieve labels for this bucket"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				members: {
 					description: "URL to retrieve members that can read this bucket"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				org: {
 					description: "URL to retrieve parent organization for this bucket"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				owners: {
 					description: "URL to retrieve owners that can read and write to this bucket."
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				self: {
 					description: "URL for this bucket"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				write: {
 					description: "URL to write line protocol for this bucket"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 			}
 		}
@@ -58,7 +58,7 @@ Bucket: {
 		orgID: type: "string"
 		rp: type: "string"
 		schemaType: {
-			$ref:    "./SchemaType.yml"
+			SchemaType.#Ref
 			default: "implicit"
 		}
 		createdAt: {
@@ -71,8 +71,8 @@ Bucket: {
 			format:   "date-time"
 			readOnly: true
 		}
-		retentionRules: $ref: "./RetentionRules.yml"
-		labels: $ref: "./Labels.yml"
+		retentionRules: RetentionRules.#Ref
+		labels: Labels.#Ref
 	}
 	required: ["name", "retentionRules"]
 }

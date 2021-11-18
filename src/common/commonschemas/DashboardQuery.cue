@@ -7,8 +7,8 @@ DashboardQuery: {
 			type:        "string"
 			description: "The text of the Flux query."
 		}
-		editMode: $ref: "./QueryEditMode.yml"
+		editMode: QueryEditMode.#Ref
 		name: type: "string"
-		builderConfig: $ref: "./BuilderConfig.yml"
+		builderConfig: BuilderConfig.#Ref
 	}
 }

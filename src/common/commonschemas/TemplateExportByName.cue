@@ -19,7 +19,7 @@ TemplateExportByName: {
 							}
 							byResourceKind: {
 								type: "array"
-								items: $ref: "./TemplateKind.yml"
+								items: TemplateKind.#Ref
 							}
 						}
 					}
@@ -31,7 +31,7 @@ TemplateExportByName: {
 			items: {
 				type: "object"
 				properties: {
-					kind: $ref: "./TemplateKind.yml"
+					kind: TemplateKind.#Ref
 					name: type: "string"
 				}
 				required: ["name", "kind"]

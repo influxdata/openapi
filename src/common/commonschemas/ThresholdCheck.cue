@@ -1,7 +1,7 @@
 package commonschemas
 
 ThresholdCheck: allOf: [{
-	$ref: "./CheckBase.yml"
+	CheckBase.#Ref
 }, {
 	type: "object"
 	required: ["type"]
@@ -12,7 +12,7 @@ ThresholdCheck: allOf: [{
 		}
 		thresholds: {
 			type: "array"
-			items: $ref: "./Threshold.yml"
+			items: Threshold.#Ref
 		}
 		every: {
 			description: "Check repetition interval."

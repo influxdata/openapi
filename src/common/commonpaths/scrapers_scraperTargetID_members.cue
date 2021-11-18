@@ -1,12 +1,16 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 scrapers_scraperTargetID_members: {
 	get: {
 		operationId: "GetScrapersIDMembers"
 		tags: ["Scraper Targets"]
 		summary: "List all users with member privileges for a scraper target"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "scraperTargetID"
@@ -17,11 +21,11 @@ scrapers_scraperTargetID_members: {
 		responses: {
 			"200": {
 				description: "A list of scraper target members"
-				content: "application/json": schema: $ref: "../schemas/ResourceMembers.yml"
+				content: "application/json": schema: commonschemas.ResourceMembers.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -30,7 +34,7 @@ scrapers_scraperTargetID_members: {
 		tags: ["Scraper Targets"]
 		summary: "Add a member to a scraper target"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "scraperTargetID"
@@ -41,16 +45,16 @@ scrapers_scraperTargetID_members: {
 		requestBody: {
 			description: "User to add as member"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/AddResourceMemberRequestBody.yml"
+			content: "application/json": schema: commonschemas.AddResourceMemberRequestBody.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Member added to scraper targets"
-				content: "application/json": schema: $ref: "../schemas/ResourceMember.yml"
+				content: "application/json": schema: commonschemas.ResourceMember.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

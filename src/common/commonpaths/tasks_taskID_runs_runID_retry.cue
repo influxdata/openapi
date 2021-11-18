@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 tasks_taskID_runs_runID_retry: post: {
 	operationId: "PostTasksIDRunsIDRetry"
 	tags: [
@@ -8,7 +12,7 @@ tasks_taskID_runs_runID_retry: post: {
 	summary: "Retry a task run"
 	requestBody: content: "application/json; charset=utf-8": schema: type: "object"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "taskID"
@@ -25,11 +29,11 @@ tasks_taskID_runs_runID_retry: post: {
 	responses: {
 		"200": {
 			description: "Run that has been queued"
-			content: "application/json": schema: $ref: "../schemas/Run.yml"
+			content: "application/json": schema: commonschemas.Run.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

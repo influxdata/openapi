@@ -37,8 +37,8 @@ Variable: {
 			type: "array"
 			items: type: "string"
 		}
-		labels: $ref: "./Labels.yml"
-		arguments: $ref: "./VariableProperties.yml"
+		labels: Labels.#Ref
+		arguments: VariableProperties.#Ref
 		createdAt: {
 			type:   "string"
 			format: "date-time"

@@ -1,7 +1,7 @@
 package commonschemas
 
 LesserThreshold: allOf: [{
-	$ref: "./ThresholdBase.yml"
+	ThresholdBase.#Ref
 }, {
 	type: "object"
 	required: ["type", "value"]

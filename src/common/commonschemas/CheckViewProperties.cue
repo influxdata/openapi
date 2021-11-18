@@ -19,15 +19,15 @@ CheckViewProperties: {
 			enum: ["chronograf-v2"]
 		}
 		checkID: type: "string"
-		check: $ref: "./Check.yml"
+		check: Check.#Ref
 		queries: {
 			type: "array"
-			items: $ref: "./DashboardQuery.yml"
+			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 		legendColorizeRows: type: "boolean"
 		legendHide: type: "boolean"

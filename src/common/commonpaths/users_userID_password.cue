@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 users_userID_password: post: {
 	operationId: "PostUsersIDPassword"
 	tags: [
@@ -11,7 +15,7 @@ users_userID_password: post: {
 
 		]}]
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "userID"
@@ -22,13 +26,13 @@ users_userID_password: post: {
 	requestBody: {
 		description: "New password"
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/PasswordResetBody.yml"
+		content: "application/json": schema: commonschemas.PasswordResetBody.#Ref
 	}
 	responses: {
 		"204": description: "Password successfully updated"
 		default: {
 			description: "Unsuccessful authentication"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

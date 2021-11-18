@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 delete: post: {
 	operationId: "PostDelete"
 	tags: [
@@ -9,10 +13,10 @@ delete: post: {
 	requestBody: {
 		description: "Deletes data from an InfluxDB bucket."
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/DeletePredicateRequest.yml"
+		content: "application/json": schema: commonschemas.DeletePredicateRequest.#Ref
 	}
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:          "query"
 		name:        "org"
@@ -47,19 +51,19 @@ delete: post: {
 		"204": description: "delete has been accepted"
 		"400": {
 			description: "Invalid request."
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		"404": {
 			description: "the bucket or organization is not found."
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		"403": {
 			description: "no token was sent or does not have sufficient permissions."
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "internal server error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

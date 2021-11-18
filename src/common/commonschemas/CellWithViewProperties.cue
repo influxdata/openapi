@@ -3,12 +3,12 @@ package commonschemas
 CellWithViewProperties: {
 	type: "object"
 	allOf: [{
-		$ref: "./Cell.yml"
+		Cell.#Ref
 	}, {
 		type: "object"
 		properties: {
 			name: type: "string"
-			properties: $ref: "./ViewProperties.yml"
+			properties: ViewProperties.#Ref
 		}
 	}]
 }

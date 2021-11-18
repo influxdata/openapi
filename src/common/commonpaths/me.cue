@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 me: get: {
 	operationId: "GetMe"
 	tags: [
@@ -7,16 +11,16 @@ me: get: {
 	]
 	summary: "Retrieve the currently authenticated user"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {
 			description: "The currently authenticated user."
-			content: "application/json": schema: $ref: "../schemas/UserResponse.yml"
+			content: "application/json": schema: commonschemas.UserResponse.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

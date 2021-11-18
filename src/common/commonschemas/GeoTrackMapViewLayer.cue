@@ -2,7 +2,7 @@ package commonschemas
 
 GeoTrackMapViewLayer: {
 	allOf: [{
-		$ref: "./GeoViewLayerProperties.yml"
+		GeoViewLayerProperties.#Ref
 	}, {
 		type: "object"
 		required: ["trackWidth", "speed", "randomColors", "trackPointVisualization"]
@@ -23,7 +23,7 @@ GeoTrackMapViewLayer: {
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: $ref: "./DashboardColor.yml"
+			items: DashboardColor.#Ref
 		}
 	}
 }

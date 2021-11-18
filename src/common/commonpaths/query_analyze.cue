@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 query_analyze: post: {
 	operationId: "PostQueryAnalyze"
 	tags: [
@@ -7,7 +11,7 @@ query_analyze: post: {
 	]
 	summary: "Analyze a Flux query"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "header"
 		name: "Content-Type"
@@ -20,12 +24,12 @@ query_analyze: post: {
 	}]
 	requestBody: {
 		description: "Flux query to analyze"
-		content: "application/json": schema: $ref: "../schemas/Query.yml"
+		content: "application/json": schema: commonschemas.Query.#Ref
 	}
 	responses: {
 		"200": {
 			description: "Query analyze results. Errors will be empty if the query is valid."
-			content: "application/json": schema: $ref: "../schemas/AnalyzeQueryResponse.yml"
+			content: "application/json": schema: commonschemas.AnalyzeQueryResponse.#Ref
 		}
 		default: {
 			description: "Internal server error"
@@ -39,7 +43,7 @@ query_analyze: post: {
 					schema: type: "integer"
 				}
 			}
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

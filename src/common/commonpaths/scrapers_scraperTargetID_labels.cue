@@ -1,12 +1,16 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 scrapers_scraperTargetID_labels: {
 	get: {
 		operationId: "GetScrapersIDLabels"
 		tags: ["Scraper Targets"]
 		summary: "List all labels for a scraper target"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "scraperTargetID"
@@ -17,11 +21,11 @@ scrapers_scraperTargetID_labels: {
 		responses: {
 			"200": {
 				description: "A list of labels for a scraper target."
-				content: "application/json": schema: $ref: "../schemas/LabelsResponse.yml"
+				content: "application/json": schema: commonschemas.LabelsResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -30,7 +34,7 @@ scrapers_scraperTargetID_labels: {
 		tags: ["Scraper Targets"]
 		summary: "Add a label to a scraper target"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "scraperTargetID"
@@ -41,16 +45,16 @@ scrapers_scraperTargetID_labels: {
 		requestBody: {
 			description: "Label to add"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/LabelMapping.yml"
+			content: "application/json": schema: commonschemas.LabelMapping.#Ref
 		}
 		responses: {
 			"201": {
 				description: "The newly added label"
-				content: "application/json": schema: $ref: "../schemas/LabelResponse.yml"
+				content: "application/json": schema: commonschemas.LabelResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

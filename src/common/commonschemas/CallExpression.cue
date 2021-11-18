@@ -4,12 +4,12 @@ CallExpression: {
 	description: "Represents a function call"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		callee: $ref: "./Expression.yml"
+		type: NodeType.#Ref
+		callee: Expression.#Ref
 		arguments: {
 			description: "Function arguments"
 			type:        "array"
-			items: $ref: "./Expression.yml"
+			items: Expression.#Ref
 		}
 	}
 }

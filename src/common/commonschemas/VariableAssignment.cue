@@ -4,8 +4,8 @@ VariableAssignment: {
 	description: "Represents the declaration of a variable"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		id: $ref: "./Identifier.yml"
-		init: $ref: "./Expression.yml"
+		type: NodeType.#Ref
+		id: Identifier.#Ref
+		init: Expression.#Ref
 	}
 }

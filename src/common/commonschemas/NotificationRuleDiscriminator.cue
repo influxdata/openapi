@@ -2,15 +2,15 @@ package commonschemas
 
 NotificationRuleDiscriminator: {
 	oneOf: [{
-		$ref: "./SlackNotificationRule.yml"
+		SlackNotificationRule.#Ref
 	}, {
-		$ref: "./SMTPNotificationRule.yml"
+		SMTPNotificationRule.#Ref
 	}, {
-		$ref: "./PagerDutyNotificationRule.yml"
+		PagerDutyNotificationRule.#Ref
 	}, {
-		$ref: "./HTTPNotificationRule.yml"
+		HTTPNotificationRule.#Ref
 	}, {
-		$ref: "./TelegramNotificationRule.yml"
+		TelegramNotificationRule.#Ref
 	}]
 	discriminator: {
 		propertyName: "type"

@@ -1,31 +1,31 @@
 package commonschemas
 
 ViewProperties: oneOf: [{
-	$ref: "./LinePlusSingleStatProperties.yml"
+	LinePlusSingleStatProperties.#Ref
 }, {
-	$ref: "./XYViewProperties.yml"
+	XYViewProperties.#Ref
 }, {
-	$ref: "./SingleStatViewProperties.yml"
+	SingleStatViewProperties.#Ref
 }, {
-	$ref: "./HistogramViewProperties.yml"
+	HistogramViewProperties.#Ref
 }, {
-	$ref: "./GaugeViewProperties.yml"
+	GaugeViewProperties.#Ref
 }, {
-	$ref: "./TableViewProperties.yml"
+	TableViewProperties.#Ref
 }, {
-	$ref: "./SimpleTableViewProperties.yml"
+	SimpleTableViewProperties.#Ref
 }, {
-	$ref: "./MarkdownViewProperties.yml"
+	MarkdownViewProperties.#Ref
 }, {
-	$ref: "./CheckViewProperties.yml"
+	CheckViewProperties.#Ref
 }, {
-	$ref: "./ScatterViewProperties.yml"
+	ScatterViewProperties.#Ref
 }, {
-	$ref: "./HeatmapViewProperties.yml"
+	HeatmapViewProperties.#Ref
 }, {
-	$ref: "./MosaicViewProperties.yml"
+	MosaicViewProperties.#Ref
 }, {
-	$ref: "./BandViewProperties.yml"
+	BandViewProperties.#Ref
 }, {
-	$ref: "./GeoViewProperties.yml"
+	GeoViewProperties.#Ref
 }]

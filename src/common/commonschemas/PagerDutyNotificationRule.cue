@@ -1,7 +1,7 @@
 package commonschemas
 
 PagerDutyNotificationRule: allOf: [{
-	$ref: "./NotificationRuleBase.yml"
+	NotificationRuleBase.#Ref
 }, {
-	$ref: "./PagerDutyNotificationRuleBase.yml"
+	PagerDutyNotificationRuleBase.#Ref
 }]

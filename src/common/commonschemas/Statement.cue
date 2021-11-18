@@ -1,19 +1,19 @@
 package commonschemas
 
 Statement: oneOf: [{
-	$ref: "./BadStatement.yml"
+	BadStatement.#Ref
 }, {
-	$ref: "./VariableAssignment.yml"
+	VariableAssignment.#Ref
 }, {
-	$ref: "./MemberAssignment.yml"
+	MemberAssignment.#Ref
 }, {
-	$ref: "./ExpressionStatement.yml"
+	ExpressionStatement.#Ref
 }, {
-	$ref: "./ReturnStatement.yml"
+	ReturnStatement.#Ref
 }, {
-	$ref: "./OptionStatement.yml"
+	OptionStatement.#Ref
 }, {
-	$ref: "./BuiltinStatement.yml"
+	BuiltinStatement.#Ref
 }, {
-	$ref: "./TestStatement.yml"
+	TestStatement.#Ref
 }]

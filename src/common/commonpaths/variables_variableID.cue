@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 variables_variableID: {
 	get: {
 		operationId: "GetVariablesID"
@@ -8,7 +12,7 @@ variables_variableID: {
 		]
 		summary: "Retrieve a variable"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -19,7 +23,7 @@ variables_variableID: {
 		responses: {
 			"200": {
 				description: "Variable found"
-				content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+				content: "application/json": schema: commonschemas.Variable.#Ref
 			}
 			"404": {
 				description: "Variable not found"
@@ -38,7 +42,7 @@ variables_variableID: {
 		]
 		summary: "Delete a variable"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -61,7 +65,7 @@ variables_variableID: {
 			"Variables",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -72,12 +76,12 @@ variables_variableID: {
 		requestBody: {
 			description: "Variable update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+			content: "application/json": schema: commonschemas.Variable.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Variable updated"
-				content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+				content: "application/json": schema: commonschemas.Variable.#Ref
 			}
 			default: {
 				description: "Internal server error"
@@ -92,7 +96,7 @@ variables_variableID: {
 			"Variables",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -103,12 +107,12 @@ variables_variableID: {
 		requestBody: {
 			description: "Variable to replace"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+			content: "application/json": schema: commonschemas.Variable.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Variable updated"
-				content: "application/json": schema: $ref: "../../common/schemas/Variable.yml"
+				content: "application/json": schema: commonschemas.Variable.#Ref
 			}
 			default: {
 				description: "Internal server error"

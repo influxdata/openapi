@@ -3,7 +3,7 @@ package commonschemas
 NotificationRules: properties: {
 	notificationRules: {
 		type: "array"
-		items: $ref: "./NotificationRule.yml"
+		items: NotificationRule.#Ref
 	}
-	links: $ref: "./Links.yml"
+	links: Links.#Ref
 }

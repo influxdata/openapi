@@ -4,8 +4,8 @@ ImportDeclaration: {
 	description: "Declares a package import"
 	type:        "object"
 	properties: {
-		type: $ref: "./NodeType.yml"
-		as: $ref: "./Identifier.yml"
-		path: $ref: "./StringLiteral.yml"
+		type: NodeType.#Ref
+		as: Identifier.#Ref
+		path: StringLiteral.#Ref
 	}
 }

@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 telegrafs_telegrafID: {
 	get: {
 		operationId: "GetTelegrafsID"
@@ -8,7 +12,7 @@ telegrafs_telegrafID: {
 		]
 		summary: "Retrieve a Telegraf configuration"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "telegrafID"
@@ -40,7 +44,7 @@ telegrafs_telegrafID: {
 		"""
 						schema: type: "string"
 					}
-					"application/json": schema: $ref: "../schemas/Telegraf.yml"
+					"application/json": schema: commonschemas.Telegraf.#Ref
 					"application/octet-stream": {
 						example: """
 		[agent]
@@ -52,7 +56,7 @@ telegrafs_telegrafID: {
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -63,7 +67,7 @@ telegrafs_telegrafID: {
 		]
 		summary: "Update a Telegraf configuration"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "telegrafID"
@@ -74,16 +78,16 @@ telegrafs_telegrafID: {
 		requestBody: {
 			description: "Telegraf configuration update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/TelegrafRequest.yml"
+			content: "application/json": schema: commonschemas.TelegrafRequest.#Ref
 		}
 		responses: {
 			"200": {
 				description: "An updated Telegraf configurations"
-				content: "application/json": schema: $ref: "../schemas/Telegraf.yml"
+				content: "application/json": schema: commonschemas.Telegraf.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -94,7 +98,7 @@ telegrafs_telegrafID: {
 		]
 		summary: "Delete a Telegraf configuration"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "telegrafID"
@@ -106,7 +110,7 @@ telegrafs_telegrafID: {
 			"204": description: "Delete has been accepted"
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

@@ -3,10 +3,10 @@ package commonschemas
 Runs: {
 	type: "object"
 	properties: {
-		links: $ref: "./Links.yml"
+		links: Links.#Ref
 		runs: {
 			type: "array"
-			items: $ref: "./Run.yml"
+			items: Run.#Ref
 		}
 	}
 }

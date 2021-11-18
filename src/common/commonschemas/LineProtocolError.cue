@@ -2,7 +2,7 @@ package commonschemas
 
 LineProtocolError: {
 	properties: {
-		code: $ref: "./LineProtocolErrorCode.yml"
+		code: LineProtocolErrorCode.#Ref
 		message: {
 			readOnly:    true
 			description: "Message is a human-readable message."

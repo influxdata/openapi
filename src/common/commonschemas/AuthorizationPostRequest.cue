@@ -3,7 +3,7 @@ package commonschemas
 AuthorizationPostRequest: {
 	required: ["orgID", "permissions"]
 	allOf: [{
-		$ref: "./AuthorizationUpdateRequest.yml"
+		AuthorizationUpdateRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -19,7 +19,7 @@ AuthorizationPostRequest: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: $ref: "./Permission.yml"
+				items: Permission.#Ref
 			}
 		}
 	}]

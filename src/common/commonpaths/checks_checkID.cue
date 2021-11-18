@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 checks_checkID: {
 	get: {
 		operationId: "GetChecksID"
@@ -8,7 +12,7 @@ checks_checkID: {
 		]
 		summary: "Retrieve a check"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "checkID"
@@ -19,11 +23,11 @@ checks_checkID: {
 		responses: {
 			"200": {
 				description: "The check requested"
-				content: "application/json": schema: $ref: "../schemas/Check.yml"
+				content: "application/json": schema: commonschemas.Check.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -36,10 +40,10 @@ checks_checkID: {
 		requestBody: {
 			description: "Check update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Check.yml"
+			content: "application/json": schema: commonschemas.Check.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "checkID"
@@ -50,15 +54,15 @@ checks_checkID: {
 		responses: {
 			"200": {
 				description: "An updated check"
-				content: "application/json": schema: $ref: "../schemas/Check.yml"
+				content: "application/json": schema: commonschemas.Check.#Ref
 			}
 			"404": {
 				description: "The check was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -71,10 +75,10 @@ checks_checkID: {
 		requestBody: {
 			description: "Check update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/CheckPatch.yml"
+			content: "application/json": schema: commonschemas.CheckPatch.#Ref
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "checkID"
@@ -85,15 +89,15 @@ checks_checkID: {
 		responses: {
 			"200": {
 				description: "An updated check"
-				content: "application/json": schema: $ref: "../schemas/Check.yml"
+				content: "application/json": schema: commonschemas.Check.#Ref
 			}
 			"404": {
 				description: "The check was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -104,7 +108,7 @@ checks_checkID: {
 		]
 		summary: "Delete a check"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "checkID"
@@ -116,11 +120,11 @@ checks_checkID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "The check was not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

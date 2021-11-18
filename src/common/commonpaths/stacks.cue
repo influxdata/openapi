@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 stacks: {
 	get: {
 		operationId: "ListStacks"
@@ -31,13 +33,13 @@ stacks: {
 					type: "object"
 					properties: stacks: {
 						type: "array"
-						items: $ref: "../schemas/Stack.yml"
+						items: commonschemas.Stack.#Ref
 					}
 				}
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -67,11 +69,11 @@ stacks: {
 		responses: {
 			"201": {
 				description: "Success. Returns the newly created stack."
-				content: "application/json": schema: $ref: "../schemas/Stack.yml"
+				content: "application/json": schema: commonschemas.Stack.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

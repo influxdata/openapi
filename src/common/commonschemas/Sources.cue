@@ -12,7 +12,7 @@ Sources: {
 		}
 		sources: {
 			type: "array"
-			items: $ref: "./Source.yml"
+			items: Source.#Ref
 		}
 	}
 }

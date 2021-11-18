@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 flags: get: {
 	operationId: "GetFlags"
 	tags: [
@@ -7,16 +11,16 @@ flags: get: {
 	]
 	summary: "Return the feature flags for the currently authenticated user"
 	parameters: [{
-		$ref: "../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {
 			description: "Feature flags for the currently authenticated user"
-			content: "application/json": schema: $ref: "../schemas/Flags.yml"
+			content: "application/json": schema: commonschemas.Flags.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			content: "application/json": schema: $ref: "../schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }

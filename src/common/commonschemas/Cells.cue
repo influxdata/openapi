@@ -2,5 +2,5 @@ package commonschemas
 
 Cells: {
 	type: "array"
-	items: $ref: "./Cell.yml"
+	items: Cell.#Ref
 }

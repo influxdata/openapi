@@ -3,7 +3,7 @@ package commonschemas
 NotificationEndpoints: properties: {
 	notificationEndpoints: {
 		type: "array"
-		items: $ref: "./NotificationEndpoint.yml"
+		items: NotificationEndpoint.#Ref
 	}
-	links: $ref: "./Links.yml"
+	links: Links.#Ref
 }

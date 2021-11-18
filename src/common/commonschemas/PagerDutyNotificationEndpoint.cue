@@ -3,7 +3,7 @@ package commonschemas
 PagerDutyNotificationEndpoint: {
 	type: "object"
 	allOf: [{
-		$ref: "./NotificationEndpointBase.yml"
+		NotificationEndpointBase.#Ref
 	}, {
 		type: "object"
 		required: ["routingKey"]

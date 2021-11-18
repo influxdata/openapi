@@ -30,8 +30,8 @@ CheckBase: {
 			format:   "date-time"
 			readOnly: true
 		}
-		query: $ref: "./DashboardQuery.yml"
-		status: $ref: "./TaskStatusType.yml"
+		query: DashboardQuery.#Ref
+		status: TaskStatusType.#Ref
 		description: {
 			description: "An optional description of the check."
 			type:        "string"
@@ -55,7 +55,7 @@ CheckBase: {
 			readOnly: true
 			type:     "string"
 		}
-		labels: $ref: "./Labels.yml"
+		labels: Labels.#Ref
 		links: {
 			type:     "object"
 			readOnly: true
@@ -69,23 +69,23 @@ CheckBase: {
 			properties: {
 				self: {
 					description: "URL for this check"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				labels: {
 					description: "URL to retrieve labels for this check"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				members: {
 					description: "URL to retrieve members for this check"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				owners: {
 					description: "URL to retrieve owners for this check"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 				query: {
 					description: "URL to retrieve flux script for this check"
-					$ref:        "./Link.yml"
+					Link.#Ref
 				}
 			}
 		}

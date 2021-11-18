@@ -3,9 +3,9 @@ package commonschemas
 OnboardingResponse: {
 	type: "object"
 	properties: {
-		user: $ref: "./UserResponse.yml"
-		org: $ref: "./Organization.yml"
-		bucket: $ref: "./Bucket.yml"
-		auth: $ref: "./Authorization.yml"
+		user: UserResponse.#Ref
+		org: Organization.#Ref
+		bucket: Bucket.#Ref
+		auth: Authorization.#Ref
 	}
 }

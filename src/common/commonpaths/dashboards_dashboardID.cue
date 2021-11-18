@@ -1,5 +1,9 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 dashboards_dashboardID: {
 	get: {
 		operationId: "GetDashboardsID"
@@ -8,7 +12,7 @@ dashboards_dashboardID: {
 		]
 		summary: "Retrieve a Dashboard"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -31,18 +35,18 @@ dashboards_dashboardID: {
 			"200": {
 				description: "Retrieve a single dashboard"
 				content: "application/json": schema: oneOf: [{
-					$ref: "../schemas/Dashboard.yml"
+					commonschemas.Dashboard.#Ref
 				}, {
-					$ref: "../schemas/DashboardWithViewProperties.yml"
+					commonschemas.DashboardWithViewProperties.#Ref
 				}]
 			}
 			"404": {
 				description: "Dashboard not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -69,13 +73,13 @@ dashboards_dashboardID: {
 					}
 					cells: {
 						description: "optional, when provided will replace all existing cells with the cells provided"
-						$ref:        "../schemas/CellWithViewProperties.yml"
+						commonschemas.CellWithViewProperties.#Ref
 					}
 				}
 			}
 		}
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -86,15 +90,15 @@ dashboards_dashboardID: {
 		responses: {
 			"200": {
 				description: "Updated dashboard"
-				content: "application/json": schema: $ref: "../schemas/Dashboard.yml"
+				content: "application/json": schema: commonschemas.Dashboard.#Ref
 			}
 			"404": {
 				description: "Dashboard not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -105,7 +109,7 @@ dashboards_dashboardID: {
 		]
 		summary: "Delete a dashboard"
 		parameters: [{
-			$ref: "../parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "dashboardID"
@@ -117,11 +121,11 @@ dashboards_dashboardID: {
 			"204": description: "Delete has been accepted"
 			"404": {
 				description: "Dashboard not found"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
