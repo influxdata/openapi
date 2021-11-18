@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 remotes_remoteID: {
 	get: {
 		operationId: "GetRemoteConnectionByID"
@@ -20,8 +22,8 @@ remotes_remoteID: {
 				description: "Remote connection"
 				content: "application/json": schema: $ref: "../schemas/RemoteConnection.yml"
 			}
-			"404": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 
@@ -57,9 +59,9 @@ remotes_remoteID: {
 				description: "Updated information saved"
 				content: "application/json": schema: $ref: "../schemas/RemoteConnection.yml"
 			}
-			"404": $ref: "../../common/responses/ServerError.yml"
-			"400": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			"400": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 
@@ -79,8 +81,8 @@ remotes_remoteID: {
 		}]
 		responses: {
 			"204": description: "Remote connection info deleted."
-			"404": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 }

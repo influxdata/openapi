@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 restore_shards_shardID: post: {
 	operationId: "PostRestoreShardId"
 	tags: [
@@ -60,7 +62,7 @@ restore_shards_shardID: post: {
 		"204": description: "TSM snapshot successfully restored."
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

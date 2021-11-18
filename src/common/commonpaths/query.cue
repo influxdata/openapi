@@ -1,6 +1,9 @@
 package commonpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonparameters"
+)
 
 query: post: {
 	operationId: "PostQuery"
@@ -23,8 +26,7 @@ query: post: {
 		"""
 
 	parameters: [{
-		$ref:
-			"../parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:
 			"header", name:

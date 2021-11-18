@@ -13,8 +13,8 @@ RetentionPolicyManifest: {
 			type:   "integer"
 			format: "int64"
 		}
-		shardGroups: $ref: "./ShardGroupManifests.yml"
-		subscriptions: $ref: "./SubscriptionManifests.yml"
+		shardGroups: ShardGroupManifests.#Ref
+		subscriptions: SubscriptionManifests.#Ref
 	}
 	required: ["name", "replicaN", "duration", "shardGroupDuration", "shardGroups", "subscriptions"]
 }

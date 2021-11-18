@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 backup_metadata: get: {
 	operationId: "GetBackupMetadata"
 	tags: [
@@ -45,7 +47,7 @@ backup_metadata: get: {
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

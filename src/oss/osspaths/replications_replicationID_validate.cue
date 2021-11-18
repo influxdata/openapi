@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 replications_replicationID_validate: post: {
 	operationId: "PostValidateReplicationByID"
 	tags: [
@@ -18,8 +20,8 @@ replications_replicationID_validate: post: {
 		"204": description: "Replication is valid"
 		"400": {
 			description: "Replication failed validation"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
-		default: $ref: "../../common/responses/ServerError.yml"
+		default: commonresponses.ServerError.#Ref
 	}
 }

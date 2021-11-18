@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 legacy_authorizations: {
 	get: {
 		operationId: "GetLegacyAuthorizations"
@@ -47,7 +49,7 @@ legacy_authorizations: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -72,11 +74,11 @@ legacy_authorizations: {
 			}
 			"400": {
 				description: "Invalid request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

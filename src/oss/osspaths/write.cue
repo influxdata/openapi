@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 write: post: {
 	operationId: "PostWrite"
 	tags: [
@@ -32,8 +34,7 @@ write: post: {
 			format: "byte"
 		}
 	}, parameters: [{
-		$ref:
-			"../../common/parameters/TraceSpan.yml"
+		$ref: "../../common/parameters/TraceSpan.yml"
 	}, {
 		in:
 			"header", name:
@@ -45,7 +46,6 @@ write: post: {
 				"""
 
 		schema: {
-
 			type:        "string"
 			description: "The header value specifies that the line protocol in the request body is encoded with gzip or not encoded with identity."
 			default:     "identity"
@@ -139,9 +139,9 @@ write: post: {
 				}
 			}
 		}
-		"401": $ref:
-			"../../common/responses/AuthorizationError.yml", "404": $ref:
-			"../../common/responses/ResourceNotFoundError.yml", "413": {
+		"401": commonresponses.AuthorizationError.#Ref
+		"404": commonresponses.ResourceNotFoundError.#Ref
+		"413": {
 			description:
 				"""
 					All request data was rejected and not written. InfluxDB OSS only returns this error if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
@@ -149,8 +149,9 @@ write: post: {
 					"""
 
 			content: "application/json": schema: $ref: "../../common/schemas/LineProtocolLengthError.yml"
-		}, "500": $ref:
-			"../../common/responses/InternalServerError.yml", "503": {
+		}
+		"500": commonresponses.InternalServerError.#Ref
+		"503": {
 			description:
 				"The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.", headers: "Retry-After": {
 				description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
@@ -159,7 +160,7 @@ write: post: {
 					format: "int32"
 				}
 			}
-		}, default: $ref:
-			"../../common/responses/ServerError.yml"
+		}
+		default: commonresponses.ServerError.#Ref
 	}
 }

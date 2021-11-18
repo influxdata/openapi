@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 restore_kv: post: {
 	operationId: "PostRestoreKV"
 	tags: [
@@ -59,7 +61,7 @@ restore_kv: post: {
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

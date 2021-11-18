@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 legacy_authorizations_authID_password: post: {
 	operationId: "PostLegacyAuthorizationsIDPassword"
 	tags: [
@@ -24,7 +26,7 @@ legacy_authorizations_authID_password: post: {
 		"204": description: "Legacy authorization password set"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

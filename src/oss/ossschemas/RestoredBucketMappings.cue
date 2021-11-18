@@ -8,7 +8,7 @@ RestoredBucketMappings: {
 			type:        "string"
 		}
 		name: type: "string"
-		shardMappings: $ref: "./BucketShardMappings.yml"
+		shardMappings: BucketShardMappings.#Ref
 	}
 	required: ["id", "name", "shardMappings"]
 }

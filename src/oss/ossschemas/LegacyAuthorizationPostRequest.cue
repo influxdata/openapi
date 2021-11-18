@@ -1,9 +1,11 @@
 package ossschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 LegacyAuthorizationPostRequest: {
 	required: ["orgID", "permissions"]
 	allOf: [{
-		$ref: "../../common/schemas/AuthorizationUpdateRequest.yml"
+		commonschemas.AuthorizationUpdateRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -23,7 +25,7 @@ LegacyAuthorizationPostRequest: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: $ref: "../../common/schemas/Permission.yml"
+				items: commonschemas.Permission.#Ref
 			}
 		}
 	}]

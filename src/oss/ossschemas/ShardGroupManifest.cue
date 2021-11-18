@@ -23,7 +23,7 @@ ShardGroupManifest: {
 			type:   "string"
 			format: "date-time"
 		}
-		shards: $ref: "./ShardManifests.yml"
+		shards: ShardManifests.#Ref
 	}
 	required: ["id", "startTime", "endTime", "shards"]
 }

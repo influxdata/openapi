@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 replications_replicationID: {
 	get: {
 		operationId: "GetReplicationByID"
@@ -20,8 +22,8 @@ replications_replicationID: {
 				description: "Replication"
 				content: "application/json": schema: $ref: "../schemas/Replication.yml"
 			}
-			"404": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 
@@ -57,9 +59,9 @@ replications_replicationID: {
 				description: "Updated information saved"
 				content: "application/json": schema: $ref: "../schemas/Replication.yml"
 			}
-			"404": $ref: "../../common/responses/ServerError.yml"
-			"400": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			"400": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 
@@ -79,8 +81,8 @@ replications_replicationID: {
 		}]
 		responses: {
 			"204": description: "Replication deleted."
-			"404": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 }

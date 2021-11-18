@@ -16,7 +16,7 @@ BucketMetadataManifest: {
 		defaultRetentionPolicy: {
 			type: "string"
 		}
-		retentionPolicies: $ref: "./RetentionPolicyManifests.yml"
+		retentionPolicies: RetentionPolicyManifests.#Ref
 	}
 	required: [
 		"organizationID",

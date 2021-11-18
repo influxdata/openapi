@@ -11,7 +11,7 @@ MetadataBackup: {
 			type:   "string"
 			format: "binary"
 		}
-		buckets: $ref: "./BucketMetadataManifests.yml"
+		buckets: BucketMetadataManifests.#Ref
 	}
 	required: ["kv", "sql", "buckets"]
 }

@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 backup_shards_shardID: get: {
 	operationId: "GetBackupShardId"
 	tags: [
@@ -69,7 +71,7 @@ backup_shards_shardID: get: {
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

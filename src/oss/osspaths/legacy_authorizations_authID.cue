@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 legacy_authorizations_authID: {
 	get: {
 		operationId: "GetLegacyAuthorizationsID"
@@ -23,7 +25,7 @@ legacy_authorizations_authID: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -54,7 +56,7 @@ legacy_authorizations_authID: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -77,7 +79,7 @@ legacy_authorizations_authID: {
 			"204": description: "Legacy authorization deleted"
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

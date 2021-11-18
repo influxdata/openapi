@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 restore_bucketMetadata: post: {
 	operationId: "PostRestoreBucketMetadata"
 	tags: [
@@ -21,7 +23,7 @@ restore_bucketMetadata: post: {
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

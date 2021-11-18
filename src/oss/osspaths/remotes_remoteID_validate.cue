@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 remotes_remoteID_validate: post: {
 	operationId: "PostValidateRemoteConnectionByID"
 	tags: [
@@ -18,8 +20,8 @@ remotes_remoteID_validate: post: {
 		"204": description: "Remote connection is valid"
 		"400": {
 			description: "Remote connection failed validation"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
-		default: $ref: "../../common/responses/ServerError.yml"
+		default: commonresponses.ServerError.#Ref
 	}
 }

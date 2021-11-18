@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 remotes: {
 	get: {
 		operationId: "GetRemoteConnections"
@@ -32,8 +34,8 @@ remotes: {
 				description: "List of remote connections"
 				content: "application/json": schema: $ref: "../schemas/RemoteConnections.yml"
 			}
-			"404": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"404": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 
@@ -64,8 +66,8 @@ remotes: {
 				description: "Remote connection saved"
 				content: "application/json": schema: $ref: "../schemas/RemoteConnection.yml"
 			}
-			"400": $ref: "../../common/responses/ServerError.yml"
-			default: $ref: "../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			default: commonresponses.ServerError.#Ref
 		}
 	}
 }

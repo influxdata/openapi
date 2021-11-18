@@ -7,7 +7,7 @@ ShardManifest: {
 			type:   "integer"
 			format: "int64"
 		}
-		shardOwners: $ref: "./ShardOwners.yml"
+		shardOwners: ShardOwners.#Ref
 	}
 	required: ["id", "shardOwners"]
 }

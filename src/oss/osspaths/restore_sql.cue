@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 restore_sql: post: {
 	operationId: "PostRestoreSQL"
 	tags: [
@@ -54,7 +56,7 @@ restore_sql: post: {
 		"204": description: "SQL store successfully overwritten."
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }
