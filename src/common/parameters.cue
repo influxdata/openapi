@@ -1,6 +1,7 @@
 package common
 
-"_parameters": {
+#Parameters: {
+	...
 	TraceSpan: $ref: "./common/parameters/TraceSpan.yml"
 	Offset: $ref: "./common/parameters/Offset.yml"
 	Limit: $ref: "./common/parameters/Limit.yml"

@@ -1,5 +1,7 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/common"
+
 cloud: {
 	openapi: "3.0.0"
 	info: {
@@ -134,7 +136,7 @@ cloud: {
 		]
 	}]
 	paths: {
-		REF_COMMON_PATHS: "TODO"
+		common.#Paths
 		"/users": $ref: "./cloud/paths/users.yml"
 		"/users/{userID}": $ref: "./cloud/paths/users_userID.yml"
 		"/setup": $ref: "./cloud/paths/setup.yml"
@@ -154,9 +156,9 @@ cloud: {
 		"/write": $ref: "./cloud/paths/write.yml"
 	}
 	components: {
-		parameters: REF_COMMON_PARAMETERS: "TODO"
+		parameters: common.#Parameters
 		schemas: {
-			REF_COMMON_SCHEMAS: "TODO"
+			common.#Schemas
 			DemoDataBucket: $ref: "./cloud/schemas/DemoDataBucket.yml"
 			DemoDataBuckets: $ref: "./cloud/schemas/DemoDataBuckets.yml"
 			Resource: $ref: "./cloud/schemas/Resource.yml"

@@ -1,5 +1,7 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/common"
+
 oss: {
 	openapi: "3.0.0"
 	info: {
@@ -137,7 +139,7 @@ oss: {
 		]
 	}]
 	paths: {
-		REF_COMMON_PATHS: "TODO"
+		common.#Paths
 		"/health": $ref: "./oss/paths/health.yml"
 		"/ready": $ref: "./oss/paths/ready.yml"
 		"/users": $ref: "./common/paths/users.yml"
@@ -205,9 +207,9 @@ oss: {
 		"/write": $ref: "./oss/paths/write.yml"
 	}
 	components: {
-		parameters: REF_COMMON_PARAMETERS: "TODO"
+		parameters: common.#Parameters
 		schemas: {
-			REF_COMMON_SCHEMAS: "TODO"
+			common.#Schemas
 			Authorization: $ref: "./common/schemas/Authorization.yml"
 			AuthorizationPostRequest: $ref: "./common/schemas/AuthorizationPostRequest.yml"
 			LegacyAuthorizationPostRequest: $ref: "./oss/schemas/LegacyAuthorizationPostRequest.yml"

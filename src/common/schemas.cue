@@ -1,6 +1,7 @@
 package common
 
-"_schemas": {
+#Schemas: {
+	...
 	LanguageRequest: $ref: "./common/schemas/LanguageRequest.yml"
 	Query: $ref: "./common/schemas/Query.yml"
 	Package: $ref: "./common/schemas/Package.yml"

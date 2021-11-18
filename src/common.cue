@@ -1,6 +1,8 @@
 package contracts
 
-common: {
+import "github.com/influxdata/openapi/src/common"
+
+"common": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Influx Common API"
@@ -9,10 +11,10 @@ common: {
 	servers: [{
 		url: "/api/v2"
 	}]
-	paths: REF_COMMON_PATHS: "TODO"
+	paths: common.#Paths
 	components: {
-		parameters: REF_COMMON_PARAMETERS: "TODO"
-		schemas: REF_COMMON_SCHEMAS: "TODO"
+		parameters: common.#Parameters
+		schemas: common.#Schemas
 		responses: ServerError: $ref: "./common/responses/ServerError.yml"
 	}
 }
