@@ -1,10 +1,11 @@
 package osspaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
-
-import "github.com/influxdata/openapi/src/common/commonparameters"
-
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/oss/ossschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+)
 
 legacy_authorizations: {
 	get: {
@@ -69,7 +70,7 @@ legacy_authorizations: {
 		requestBody: {
 			description: "Legacy authorization to create"
 			required:    true
-			content: "application/json": schema: $ref: "../../oss/schemas/LegacyAuthorizationPostRequest.yml"
+			content: "application/json": schema: ossschemas.LegacyAuthorizationPostRequest.#Ref
 		}
 		responses: {
 			"201": {

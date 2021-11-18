@@ -1,5 +1,5 @@
 package commonresponses
-
+import "github.com/influxdata/openapi/src/common/commonschemas"
 AuthorizationError: {
 	// This represents the body of a 401 error from the server.
 	description: """
@@ -11,7 +11,7 @@ AuthorizationError: {
 		"""
 
 	content: "application/json": {
-		schema: $ref: "../schemas/Error.yml"
+		schema: commonschemas.Error.#Ref
 		examples: tokenNotAuthorized: {
 			summary: "Token is not authorized to access the organization or resource"
 			value: {code: "unauthorized", message: "unauthorized access"}
