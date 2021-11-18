@@ -16,7 +16,7 @@ resources: get: {
 	responses: {
 		"200": {
 			description: "All resources targets"
-			content: "application/json": schema: commonschemas.Resources.#Ref
+			content: "application/json": schema: commonschemas.Resources
 		}
 		default: {
 			description: "Internal server error"

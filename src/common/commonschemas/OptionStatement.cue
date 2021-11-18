@@ -5,6 +5,6 @@ OptionStatement: {
 	type:        "object"
 	properties: {
 		type: NodeType.#Ref
-		assignment: VariableOrMemberAssignment.#Ref
+		assignment: VariableOrMemberAssignment
 	}
 }

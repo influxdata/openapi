@@ -61,7 +61,7 @@ restore_kv: post: {
 		"200": {
 			// when application/json is specified, we get json back
 			description: "KV store successfully overwritten."
-			content: "application/json": schema: ossschemas.PostRestoreKVResponse.#Ref
+			content: "application/json": schema: ossschemas.PostRestoreKVResponse
 		}
 		default: {
 			description: "Unexpected error"

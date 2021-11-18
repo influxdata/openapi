@@ -2,7 +2,7 @@ package commonschemas
 
 Error: {
 	properties: {
-		code: ErrorCode.#Ref
+		code: ErrorCode
 		message: {
 			readOnly:    true
 			description: "message is a human-readable message."

@@ -13,7 +13,7 @@ HealthCheck: {
 			type: "array"
 			items: HealthCheck.#Ref
 		}
-		status: HealthCheckStatus.#Ref
+		status: HealthCheckStatus
 		version: type: "string"
 		commit: type: "string"
 	}

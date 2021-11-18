@@ -2,7 +2,7 @@ package commonschemas
 
 LineProtocolLengthError: {
 	properties: {
-		code: LineProtocolLengthErrorCode.#Ref
+		code: LineProtocolLengthErrorCode
 		message: {
 			readOnly:    true
 			description: "Message is a human-readable message."

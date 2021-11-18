@@ -9,7 +9,10 @@ import (
 	"github.com/influxdata/openapi/src/oss/ossschemas"
 )
 
-oss: {
+oss: #OSS
+oss: #OldOSS
+
+#OSS: {
 	openapi: "3.0.0"
 	info: {
 		title:   "Influx OSS API Service"

@@ -143,8 +143,8 @@ write: post: {
 				}
 			}
 		}
-		"401": commonresponses.AuthorizationError.#Ref
-		"404": commonresponses.ResourceNotFoundError.#Ref
+		"401": commonresponses.AuthorizationError
+		"404": commonresponses.ResourceNotFoundError
 		"413": {
 			description:
 				"""
@@ -154,7 +154,7 @@ write: post: {
 
 			content: "application/json": schema: commonschemas.LineProtocolLengthError.#Ref
 		}
-		"500": commonresponses.InternalServerError.#Ref
+		"500": commonresponses.InternalServerError
 		"503": {
 			description:
 				"The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.", headers: "Retry-After": {
