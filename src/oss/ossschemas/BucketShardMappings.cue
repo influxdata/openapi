@@ -1,4 +1,4 @@
-package schemas
+package ossschemas
 
 BucketShardMappings: {
 	type: "array"

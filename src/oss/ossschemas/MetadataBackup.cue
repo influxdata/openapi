@@ -1,4 +1,4 @@
-package schemas
+package ossschemas
 
 MetadataBackup: {
 	type: "object"

@@ -1,19 +1,28 @@
-package schemas
+package ossschemas
 
-RemoteConnectionUpdateRequest: {
+RemoteConnection: {
 	type: "object"
 	properties: {
+		id: type: "string"
 		name: type: "string"
+		orgID: type: "string"
 		description: type: "string"
 		remoteURL: {
 			type:   "string"
 			format: "uri"
 		}
-		remoteAPIToken: type: "string"
 		remoteOrgID: type: "string"
 		allowInsecureTLS: {
 			type:    "boolean"
 			default: false
 		}
 	}
+	required: [
+		"id",
+		"name",
+		"orgID",
+		"remoteURL",
+		"remoteOrgID",
+		"allowInsecureTLS",
+	]
 }

@@ -1,4 +1,4 @@
-package schemas
+package ossschemas
 
 Replication: {
 	type: "object"

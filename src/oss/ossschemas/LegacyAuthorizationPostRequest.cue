@@ -1,4 +1,4 @@
-package schemas
+package ossschemas
 
 LegacyAuthorizationPostRequest: {
 	required: ["orgID", "permissions"]
