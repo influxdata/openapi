@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
@@ -35,7 +37,7 @@ users: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -60,7 +62,7 @@ users: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
 
@@ -28,7 +30,7 @@ orgs_orgID_secrets_secretID: delete: {
 		"204": description: "Keys successfully deleted"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

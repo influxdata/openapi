@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
@@ -41,7 +43,7 @@ authorizations: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -66,11 +68,11 @@ authorizations: {
 			}
 			"400": {
 				description: "Invalid request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

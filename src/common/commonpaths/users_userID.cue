@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
@@ -28,7 +30,7 @@ users_userID: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -59,7 +61,7 @@ users_userID: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -82,7 +84,7 @@ users_userID: {
 			"204": description: "User deleted"
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

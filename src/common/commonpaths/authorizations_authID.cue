@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
@@ -27,7 +29,7 @@ authorizations_authID: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -58,7 +60,7 @@ authorizations_authID: {
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -81,7 +83,7 @@ authorizations_authID: {
 			"204": description: "Authorization deleted"
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

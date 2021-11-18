@@ -1,5 +1,7 @@
 package commonpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
@@ -27,11 +29,11 @@ variables_variableID: {
 			}
 			"404": {
 				description: "Variable not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -54,7 +56,7 @@ variables_variableID: {
 			"204": description: "Variable deleted"
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -85,7 +87,7 @@ variables_variableID: {
 			}
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -116,7 +118,7 @@ variables_variableID: {
 			}
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
