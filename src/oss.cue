@@ -29,13 +29,9 @@ oss: {
 
 		"x-traitTag": true
 	}, {
-		name:         "Quick start"
-		$ref:         "./common/_quick-start.yml"
-		"x-traitTag": true
+		common.#QuickStart
 	}, {
-		name:         "Response codes"
-		$ref:         "./common/_response-codes.yml"
-		"x-traitTag": true
+		common.#ResponseCodes
 	}, {
 		name: "Query"
 		description: """

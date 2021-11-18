@@ -1,9 +1,12 @@
 package common
 
-"_responses": {
-	"401": $ref: "./common/responses/AuthorizationError.yml"
-	"404": $ref: "./common/responses/ResourceNotFoundError.yml"
-	"500": $ref: "./common/responses/InternalServerError.yml"
-	ServerError: $ref: "./common/responses/ServerError.yml"
-	default: $ref: "./common/responses/ServerError.yml"
+import "github.com/influxdata/openapi/src/common/responses"
+
+#Responses: {
+	...
+	"401": responses.AuthorizationError
+	"404": responses.ResourceNotFoundError
+	"500": responses.InternalServerError
+	ServerError: responses.ServerError
+	default: responses.ServerError
 }
