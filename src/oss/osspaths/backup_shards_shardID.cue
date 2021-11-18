@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 backup_shards_shardID: get: {
@@ -9,7 +13,7 @@ backup_shards_shardID: get: {
 	]
 	summary: "Download snapshot of all TSM data in a shard"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:          "header"
 		name:        "Accept-Encoding"
@@ -67,7 +71,7 @@ backup_shards_shardID: get: {
 		}
 		"404": {
 			description: "Shard not found."
-			content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 		default: {
 			description: "Unexpected error"

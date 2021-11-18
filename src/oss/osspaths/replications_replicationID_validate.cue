@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 replications_replicationID_validate: post: {
@@ -9,7 +11,7 @@ replications_replicationID_validate: post: {
 	]
 	summary: "Validate a replication"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "replicationID"

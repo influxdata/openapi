@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 legacy_authorizations_authID_password: post: {
@@ -9,7 +13,7 @@ legacy_authorizations_authID_password: post: {
 	]
 	summary: "Set a legacy authorization password"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "authID"
@@ -20,7 +24,7 @@ legacy_authorizations_authID_password: post: {
 	requestBody: {
 		description: "New password"
 		required:    true
-		content: "application/json": schema: $ref: "../../common/schemas/PasswordResetBody.yml"
+		content: "application/json": schema: commonschemas.PasswordResetBody.#Ref
 	}
 	responses: {
 		"204": description: "Legacy authorization password set"

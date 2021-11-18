@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 backup_kv: get: {
@@ -11,7 +13,7 @@ backup_kv: get: {
 
 	deprecated: true
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {

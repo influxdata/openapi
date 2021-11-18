@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 legacy_authorizations_authID: {
@@ -10,7 +14,7 @@ legacy_authorizations_authID: {
 		]
 		summary: "Retrieve a legacy authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -21,7 +25,7 @@ legacy_authorizations_authID: {
 		responses: {
 			"200": {
 				description: "Legacy authorization details"
-				content: "application/json": schema: $ref: "../../common/schemas/Authorization.yml"
+				content: "application/json": schema: commonschemas.Authorization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
@@ -38,10 +42,10 @@ legacy_authorizations_authID: {
 		requestBody: {
 			description: "Legacy authorization to update"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/AuthorizationUpdateRequest.yml"
+			content: "application/json": schema: commonschemas.AuthorizationUpdateRequest.#Ref
 		}
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -52,7 +56,7 @@ legacy_authorizations_authID: {
 		responses: {
 			"200": {
 				description: "The active or inactive legacy authorization"
-				content: "application/json": schema: $ref: "../../common/schemas/Authorization.yml"
+				content: "application/json": schema: commonschemas.Authorization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
@@ -67,7 +71,7 @@ legacy_authorizations_authID: {
 		]
 		summary: "Delete a legacy authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"

@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 replications: {
@@ -10,7 +14,7 @@ replications: {
 		]
 		summary: "List all replications"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -33,7 +37,7 @@ replications: {
 		responses: {
 			"200": {
 				description: "List of replications"
-				content: "application/json": schema: $ref: "../schemas/Replications.yml"
+				content: "application/json": schema: ossschemas.Replications.#Ref
 			}
 			"404": commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
@@ -47,7 +51,7 @@ replications: {
 		]
 		summary: "Register a new replication"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "validate"
@@ -59,13 +63,13 @@ replications: {
 		}]
 		requestBody: {
 			required: true
-			content: "application/json": schema: $ref: "../schemas/ReplicationCreationRequest.yml"
+			content: "application/json": schema: ossschemas.ReplicationCreationRequest.#Ref
 		}
 		responses: {
 			"204": description: "Replication validated, but not saved"
 			"201": {
 				description: "Replication saved"
-				content: "application/json": schema: $ref: "../schemas/Replication.yml"
+				content: "application/json": schema: ossschemas.Replication.#Ref
 			}
 			"400": commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref

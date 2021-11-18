@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 restore_sql: post: {
@@ -9,7 +11,7 @@ restore_sql: post: {
 	]
 	summary: "Overwrite the embedded SQL store on the server with a backed-up snapshot."
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "header"
 		name: "Content-Encoding"

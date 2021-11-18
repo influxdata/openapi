@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 restore_bucket_bucketID: post: {
@@ -10,7 +12,7 @@ restore_bucket_bucketID: post: {
 	summary:    "Overwrite storage metadata for a bucket with shard info from a backup."
 	deprecated: true
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "bucketID"

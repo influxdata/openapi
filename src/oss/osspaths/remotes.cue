@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 remotes: {
@@ -10,7 +14,7 @@ remotes: {
 		]
 		summary: "List all remote connections"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "orgID"
@@ -32,7 +36,7 @@ remotes: {
 		responses: {
 			"200": {
 				description: "List of remote connections"
-				content: "application/json": schema: $ref: "../schemas/RemoteConnections.yml"
+				content: "application/json": schema: ossschemas.RemoteConnections.#Ref
 			}
 			"404": commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
@@ -46,7 +50,7 @@ remotes: {
 		]
 		summary: "Register a new remote connection"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "validate"
@@ -58,13 +62,13 @@ remotes: {
 		}]
 		requestBody: {
 			required: true
-			content: "application/json": schema: $ref: "../schemas/RemoteConnectionCreationRequest.yml"
+			content: "application/json": schema: ossschemas.RemoteConnectionCreationRequest.#Ref
 		}
 		responses: {
 			"204": description: "Remote connection validated, but not saved"
 			"201": {
 				description: "Remote connection saved"
-				content: "application/json": schema: $ref: "../schemas/RemoteConnection.yml"
+				content: "application/json": schema: ossschemas.RemoteConnection.#Ref
 			}
 			"400": commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref

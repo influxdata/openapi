@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 health: get: {
@@ -12,16 +16,16 @@ health: get: {
 		url: ""
 	}]
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {
 			description: "The instance is healthy"
-			content: "application/json": schema: $ref: "../../common/schemas/HealthCheck.yml"
+			content: "application/json": schema: commonschemas.HealthCheck.#Ref
 		}
 		"503": {
 			description: "The instance is unhealthy"
-			content: "application/json": schema: $ref: "../../common/schemas/HealthCheck.yml"
+			content: "application/json": schema: commonschemas.HealthCheck.#Ref
 		}
 		default: {
 			description: "Unexpected error"

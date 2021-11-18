@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 replications_replicationID: {
@@ -10,7 +14,7 @@ replications_replicationID: {
 		]
 		summary: "Retrieve a replication"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "replicationID"
@@ -20,7 +24,7 @@ replications_replicationID: {
 		responses: {
 			"200": {
 				description: "Replication"
-				content: "application/json": schema: $ref: "../schemas/Replication.yml"
+				content: "application/json": schema: ossschemas.Replication.#Ref
 			}
 			"404": commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
@@ -34,7 +38,7 @@ replications_replicationID: {
 		]
 		summary: "Update a replication"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "replicationID"
@@ -51,13 +55,13 @@ replications_replicationID: {
 		}]
 		requestBody: {
 			required: true
-			content: "application/json": schema: $ref: "../schemas/ReplicationUpdateRequest.yml"
+			content: "application/json": schema: ossschemas.ReplicationUpdateRequest.#Ref
 		}
 		responses: {
 			"204": description: "Updated replication validated, but not saved"
 			"200": {
 				description: "Updated information saved"
-				content: "application/json": schema: $ref: "../schemas/Replication.yml"
+				content: "application/json": schema: ossschemas.Replication.#Ref
 			}
 			"404": commonresponses.ServerError.#Ref
 			"400": commonresponses.ServerError.#Ref
@@ -72,7 +76,7 @@ replications_replicationID: {
 		]
 		summary: "Delete a replication"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "replicationID"

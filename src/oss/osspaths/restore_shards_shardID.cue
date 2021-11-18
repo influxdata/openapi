@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 restore_shards_shardID: post: {
@@ -9,7 +11,7 @@ restore_shards_shardID: post: {
 	]
 	summary: "Restore a TSM snapshot into a shard."
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "header"
 		name: "Content-Encoding"

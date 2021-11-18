@@ -1,5 +1,7 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 remotes_remoteID_validate: post: {
@@ -9,7 +11,7 @@ remotes_remoteID_validate: post: {
 	]
 	summary: "Validate a remote connection"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "remoteID"

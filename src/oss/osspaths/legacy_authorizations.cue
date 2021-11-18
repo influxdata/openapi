@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 legacy_authorizations: {
@@ -10,7 +14,7 @@ legacy_authorizations: {
 		]
 		summary: "List all legacy authorizations"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "query"
 			name: "userID"
@@ -45,7 +49,7 @@ legacy_authorizations: {
 		responses: {
 			"200": {
 				description: "A list of legacy authorizations"
-				content: "application/json": schema: $ref: "../../common/schemas/Authorizations.yml"
+				content: "application/json": schema: commonschemas.Authorizations.#Ref
 			}
 			default: {
 				description: "Unexpected error"
@@ -60,7 +64,7 @@ legacy_authorizations: {
 		]
 		summary: "Create a legacy authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Legacy authorization to create"
@@ -70,7 +74,7 @@ legacy_authorizations: {
 		responses: {
 			"201": {
 				description: "Legacy authorization created"
-				content: "application/json": schema: $ref: "../../common/schemas/Authorization.yml"
+				content: "application/json": schema: commonschemas.Authorization.#Ref
 			}
 			"400": {
 				description: "Invalid request"

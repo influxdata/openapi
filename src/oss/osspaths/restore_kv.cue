@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 restore_kv: post: {
@@ -9,7 +13,7 @@ restore_kv: post: {
 	]
 	summary: "Overwrite the embedded KV store on the server with a backed-up snapshot."
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "header"
 		name: "Content-Encoding"
@@ -57,7 +61,7 @@ restore_kv: post: {
 		"200": {
 			// when application/json is specified, we get json back
 			description: "KV store successfully overwritten."
-			content: "application/json": schema: $ref: "../schemas/PostRestoreKVResponse.yml"
+			content: "application/json": schema: ossschemas.PostRestoreKVResponse.#Ref
 		}
 		default: {
 			description: "Unexpected error"

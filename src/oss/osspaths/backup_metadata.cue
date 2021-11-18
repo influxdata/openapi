@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 backup_metadata: get: {
@@ -9,7 +13,7 @@ backup_metadata: get: {
 	]
 	summary: "Download snapshot of all metadata in the server"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:          "header"
 		name:        "Accept-Encoding"
@@ -43,7 +47,7 @@ backup_metadata: get: {
 					]
 				}
 			}
-			content: "multipart/mixed": schema: $ref: "../schemas/MetadataBackup.yml"
+			content: "multipart/mixed": schema: ossschemas.MetadataBackup.#Ref
 		}
 		default: {
 			description: "Unexpected error"

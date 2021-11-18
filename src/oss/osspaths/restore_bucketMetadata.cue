@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 restore_bucketMetadata: post: {
@@ -9,17 +13,17 @@ restore_bucketMetadata: post: {
 	]
 	summary: "Create a new bucket pre-seeded with shard info from a backup."
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	requestBody: {
 		description: "Metadata manifest for a bucket."
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/BucketMetadataManifest.yml"
+		content: "application/json": schema: ossschemas.BucketMetadataManifest.#Ref
 	}
 	responses: {
 		"201": {
 			description: "ID mappings for shards in new bucket."
-			content: "application/json": schema: $ref: "../schemas/RestoredBucketMappings.yml"
+			content: "application/json": schema: ossschemas.RestoredBucketMappings.#Ref
 		}
 		default: {
 			description: "Unexpected error"

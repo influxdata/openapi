@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/oss/ossschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 remotes_remoteID: {
@@ -10,7 +14,7 @@ remotes_remoteID: {
 		]
 		summary: "Retrieve a remote connection"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "remoteID"
@@ -20,7 +24,7 @@ remotes_remoteID: {
 		responses: {
 			"200": {
 				description: "Remote connection"
-				content: "application/json": schema: $ref: "../schemas/RemoteConnection.yml"
+				content: "application/json": schema: ossschemas.RemoteConnection.#Ref
 			}
 			"404": commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
@@ -34,7 +38,7 @@ remotes_remoteID: {
 		]
 		summary: "Update a remote connection"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "remoteID"
@@ -51,13 +55,13 @@ remotes_remoteID: {
 		}]
 		requestBody: {
 			required: true
-			content: "application/json": schema: $ref: "../schemas/RemoteConnectionUpdateRequest.yml"
+			content: "application/json": schema: ossschemas.RemoteConnectionUpdateRequest.#Ref
 		}
 		responses: {
 			"204": description: "Updated connection validated, but not saved"
 			"200": {
 				description: "Updated information saved"
-				content: "application/json": schema: $ref: "../schemas/RemoteConnection.yml"
+				content: "application/json": schema: ossschemas.RemoteConnection.#Ref
 			}
 			"404": commonresponses.ServerError.#Ref
 			"400": commonresponses.ServerError.#Ref
@@ -72,7 +76,7 @@ remotes_remoteID: {
 		]
 		summary: "Delete a remote connection"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "remoteID"

@@ -1,5 +1,9 @@
 package osspaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
 ready: get: {
@@ -12,12 +16,12 @@ ready: get: {
 		url: ""
 	}]
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}]
 	responses: {
 		"200": {
 			description: "The instance is ready"
-			content: "application/json": schema: $ref: "../../common/schemas/Ready.yml"
+			content: "application/json": schema: commonschemas.Ready.#Ref
 		}
 		default: {
 			description: "Unexpected error"
