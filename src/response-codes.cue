@@ -1,6 +1,6 @@
-package common
+package contracts
 
-#ResponseCodes: {
+#responseCodes: {
 	name: "Response codes"
 	"x-traitTag": true
 	description: """

@@ -39,9 +39,9 @@ oss: #OldOSS
 
 		"x-traitTag": true
 	}, {
-		common.#QuickStart
+		#quickStart
 	}, {
-		common.#ResponseCodes
+		#responseCodes
 	}, {
 		name: "Query"
 		description: """

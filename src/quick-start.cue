@@ -1,6 +1,6 @@
-package common
+package contracts
 
-#QuickStart: {
+#quickStart: {
 	name: "Quick start"
 	"x-traitTag": true
 	description: """
