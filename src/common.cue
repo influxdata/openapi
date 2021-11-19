@@ -1,6 +1,10 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/common"
+import commonpkg "github.com/influxdata/openapi/src/common"
+
+let common = commonpkg & {
+	#DocsURL: #CommonDocsURL
+}
 
 "common": {
 	openapi: "3.0.0"

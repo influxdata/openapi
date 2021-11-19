@@ -1,6 +1,10 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/common"
+import commonpkg "github.com/influxdata/openapi/src/common"
+
+let common = commonpkg & {
+	#DocsURL: #CloudDocsURL
+}
 
 cloud: {
 	openapi: "3.0.0"
@@ -29,9 +33,9 @@ cloud: {
 
 		"x-traitTag": true
 	}, {
-		#quickStart
+		common.#QuickStart
 	}, {
-		#responseCodes
+		common.#ResponseCodes
 	}, {
 		name: "Query"
 		description: """
@@ -50,9 +54,9 @@ cloud: {
 			Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. Optionally, you can restrict an authorization and its token to a specific user.
 
 			For more information and examples, see the following:
-			  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-			  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-			  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+			  - [Authorize API requests](\(#CloudDocsURL)/api-guide/api_intro/#authentication).
+			  - [Manage API tokens](\(#CloudDocsURL)/security/tokens).
+			  - [Assign a token to a specific user](\(#CloudDocsURL)/security/tokens/create-token).
 
 			"""
 	}]
@@ -194,13 +198,13 @@ cloud: {
 					`curl https://us-east-1-1.aws.cloud2.influxdata.com/
 					   --header \"Authorization: Token INFLUX_API_TOKEN\"`
 
-					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
+					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token](\(#CloudDocsURL)/reference/glossary/#token).
 
 					For more information and examples, see the following:
 					  - [`/authorizations`](#tag/Authorizations) endpoint.
-					  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-					  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-					  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+					  - [Authorize API requests](\(#CloudDocsURL)/api-guide/api_intro/#authentication).
+					  - [Manage API tokens](\(#CloudDocsURL)/security/tokens).
+					  - [Assign a token to a specific user](\(#CloudDocsURL)/security/tokens/create-token).
 
 					"""
 			}
@@ -222,9 +226,9 @@ cloud: {
 
 					Replace the following:
 					- *`exampleuser@influxdata.com`*: the email address that you signed up with
-					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](\(#CloudDocsURL)/reference/glossary/#token)
 
-					For more information and examples, see how to [authenticate with a username and password]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/).
+					For more information and examples, see how to [authenticate with a username and password](\(#CloudDocsURL)/reference/api/influxdb-1x/).
 
 					"""
 			}
@@ -250,9 +254,9 @@ cloud: {
 
 					Replace the following:
 					- *`exampleuser@influxdata.com`*: the email address that you signed up with
-					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](\(#CloudDocsURL)/reference/glossary/#token)
 
-					For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/).
+					For more information and examples, see how to [authenticate with a username and password scheme](\(#CloudDocsURL)/reference/api/influxdb-1x/).
 
 					"""
 			}

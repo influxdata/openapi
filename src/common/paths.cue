@@ -1,6 +1,11 @@
 package common
 
-import "github.com/influxdata/openapi/src/common/commonpaths"
+import commonpathspkg"github.com/influxdata/openapi/src/common/commonpaths"
+
+let docsURL = #DocsURL
+let commonpaths = commonpathspkg & {
+	#DocsURL: docsURL
+}
 
 #Paths: {
 	...

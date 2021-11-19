@@ -1,14 +1,25 @@
 package contracts
 
 import (
-	"github.com/influxdata/openapi/src/common/commonpaths"
+	commonpathspkg "github.com/influxdata/openapi/src/common/commonpaths"
 	"github.com/influxdata/openapi/src/common/commonresponses"
 	"github.com/influxdata/openapi/src/common/commonschemas"
-	"github.com/influxdata/openapi/src/common"
-	"github.com/influxdata/openapi/src/oss/osspaths"
+	commonpkg "github.com/influxdata/openapi/src/common"
+	osspathspkg "github.com/influxdata/openapi/src/oss/osspaths"
 	"github.com/influxdata/openapi/src/oss/ossschemas"
 )
 
+let common = commonpkg & {
+	#DocsURL: #OSSDocsURL
+}
+
+let commonpaths = commonpathspkg & {
+	#DocsURL: #OSSDocsURL
+}
+
+let osspaths = osspathspkg & {
+	#DocsURL: #OSSDocsURL
+}
 oss: #OSS
 oss: #OldOSS
 
@@ -39,9 +50,9 @@ oss: #OldOSS
 
 		"x-traitTag": true
 	}, {
-		#quickStart
+		common.#QuickStart
 	}, {
-		#responseCodes
+		common.#ResponseCodes
 	}, {
 		name: "Query"
 		description: """
@@ -60,9 +71,9 @@ oss: #OldOSS
 			Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. Optionally, you can restrict an authorization and its token to a specific user.
 
 			For more information and examples, see the following:
-			  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-			  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-			  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+			  - [Authorize API requests](\(#OSSDocsURL)/api-guide/api_intro/#authentication).
+			  - [Manage API tokens](\(#OSSDocsURL)/security/tokens).
+			  - [Assign a token to a specific user](\(#OSSDocsURL)/security/tokens/create-token).
 
 			"""
 	}]
@@ -288,13 +299,13 @@ oss: #OldOSS
 					  `curl http://localhost:8086/ping
 					     --header \"Authorization: Token INFLUX_API_TOKEN\"`
 
-					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
+					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token](\(#OSSDocsURL)/reference/glossary/#token).
 
 					For more information and examples, see the following:
 					  - [`/authorizations`](#tag/Authorizations) endpoint.
-					  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-					  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-					  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+					  - [Authorize API requests](\(#OSSDocsURL)/api-guide/api_intro/#authentication).
+					  - [Manage API tokens](\(#OSSDocsURL)/security/tokens).
+					  - [Assign a token to a specific user](\(#OSSDocsURL)/security/tokens/create-token).
 
 					"""
 			}
@@ -324,9 +335,9 @@ oss: #OldOSS
 					Replace the following:
 					- *`1.x_USERNAME`*: your InfluxDB v1.x username
 					- *`1.x_PASSWORD`*: your InfluxDB v1.x password
-					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](\(#OSSDocsURL)/reference/glossary/#token)
 
-					For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
+					For more information and examples, see how to [authenticate with a username and password scheme](\(#OSSDocsURL)/reference/api/influxdb-1x/)
 
 					"""
 			}
@@ -359,9 +370,9 @@ oss: #OldOSS
 					Replace the following:
 					- *`1.x_USERNAME`*: your InfluxDB v1.x username
 					- *`1.x_PASSWORD`*: your InfluxDB v1.x password
-					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](\(#OSSDocsURL)/reference/glossary/#token)
 
-					For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
+					For more information and examples, see how to [authenticate with a username and password scheme](\(#OSSDocsURL)/reference/api/influxdb-1x/)
 
 					"""
 			}

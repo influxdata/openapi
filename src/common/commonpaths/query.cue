@@ -15,13 +15,13 @@ query: post: {
 		Retrieves data from InfluxDB buckets.
 
 		To query data, you need the following:
-		- **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
-		- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+		- **organization** – _See [View organizations](\(#DocsURL)/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+		- **API token** – _See [View tokens](\(#DocsURL)/security/tokens/view-tokens/)
 		 for instructions on viewing your API token._
-		- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
+		- **InfluxDB URL** – _See [InfluxDB URLs](\(#DocsURL)/reference/urls/)_.
 		- **Flux query** – _See [Flux](https://docs.influxdata.com/flux/v0.x/)._
 
-		For more information and examples, see [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).
+		For more information and examples, see [Query with the InfluxDB API](\(#DocsURL)/query-data/execute-queries/influx-api/).
 
 		"""
 
