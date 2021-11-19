@@ -1,4 +1,5 @@
 .PHONY: generate
+PWD=$(shell pwd)
 generate:
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagger-cli sh /openapi/scripts/generate.sh
 	docker run --rm -v ${PWD}:/openapi quay.io/influxdb/swagrag-ci:0.2.0 sh /openapi/scripts/reference.sh
