@@ -21,16 +21,16 @@ CheckViewProperties: {
 		checkID: type: "string"
 		check: Check.#Ref
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		legendColorizeRows: type: "boolean"
-		legendHide: type: "boolean"
+		legendHide: type:         "boolean"
 		legendOpacity: {
 			type:   "number"
 			format: "float"

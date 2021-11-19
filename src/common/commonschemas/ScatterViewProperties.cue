@@ -29,7 +29,7 @@ ScatterViewProperties: {
 			enum: ["scatter"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
@@ -92,14 +92,14 @@ ScatterViewProperties: {
 			items: type: "number"
 			maxItems: 2
 		}
-		xAxisLabel: type: "string"
-		yAxisLabel: type: "string"
-		xPrefix: type: "string"
-		xSuffix: type: "string"
-		yPrefix: type: "string"
-		ySuffix: type: "string"
+		xAxisLabel: type:         "string"
+		yAxisLabel: type:         "string"
+		xPrefix: type:            "string"
+		xSuffix: type:            "string"
+		yPrefix: type:            "string"
+		ySuffix: type:            "string"
 		legendColorizeRows: type: "boolean"
-		legendHide: type: "boolean"
+		legendHide: type:         "boolean"
 		legendOpacity: {
 			type:   "number"
 			format: "float"

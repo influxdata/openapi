@@ -8,7 +8,7 @@ FunctionExpression: {
 		params: {
 			description: "Function parameters"
 			type:        "array"
-			items: Property.#Ref
+			items:       Property.#Ref
 		}
 		body: Node.#Ref
 	}

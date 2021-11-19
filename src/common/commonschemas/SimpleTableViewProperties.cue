@@ -17,7 +17,7 @@ SimpleTableViewProperties: {
 		}
 		showAll: type: "boolean"
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		shape: {

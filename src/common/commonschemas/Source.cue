@@ -6,16 +6,16 @@ Source: {
 		links: {
 			type: "object"
 			properties: {
-				self: type: "string"
-				query: type: "string"
-				health: type: "string"
+				self: type:    "string"
+				query: type:   "string"
+				health: type:  "string"
 				buckets: type: "string"
 			}
 		}
-		id: type: "string"
-		orgID: type: "string"
+		id: type:      "string"
+		orgID: type:   "string"
 		default: type: "boolean"
-		name: type: "string"
+		name: type:    "string"
 		type: {
 			type: "string"
 			enum: ["v1", "v2", "self"]
@@ -25,11 +25,11 @@ Source: {
 			format: "uri"
 		}
 		insecureSkipVerify: type: "boolean"
-		telegraf: type: "string"
-		token: type: "string"
-		username: type: "string"
-		password: type: "string"
-		sharedSecret: type: "string"
+		telegraf: type:           "string"
+		token: type:              "string"
+		username: type:           "string"
+		password: type:           "string"
+		sharedSecret: type:       "string"
 		metaUrl: {
 			type:   "string"
 			format: "uri"

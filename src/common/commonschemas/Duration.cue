@@ -6,6 +6,6 @@ Duration: {
 	properties: {
 		type: NodeType.#Ref
 		magnitude: type: "integer"
-		unit: type: "string"
+		unit: type:      "string"
 	}
 }

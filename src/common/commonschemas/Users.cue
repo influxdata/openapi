@@ -11,7 +11,7 @@ Users: {
 			}
 		}
 		users: {
-			type: "array"
+			type:  "array"
 			items: UserResponse.#Ref
 		}
 	}

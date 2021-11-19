@@ -1,9 +1,9 @@
 package common
 
 #ResponseCodes: {
-	name: "Response codes"
+	name:         "Response codes"
 	"x-traitTag": true
-	description: """
+	description:  """
 		The InfluxDB API uses standard HTTP status codes for success and failure responses.
 		The response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.
 

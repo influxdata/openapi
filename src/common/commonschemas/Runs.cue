@@ -5,7 +5,7 @@ Runs: {
 	properties: {
 		links: Links.#Ref
 		runs: {
-			type: "array"
+			type:  "array"
 			items: Run.#Ref
 		}
 	}

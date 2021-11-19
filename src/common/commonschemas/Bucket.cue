@@ -53,10 +53,10 @@ Bucket: {
 				"system",
 			]
 		}
-		name: type: "string"
+		name: type:        "string"
 		description: type: "string"
-		orgID: type: "string"
-		rp: type: "string"
+		orgID: type:       "string"
+		rp: type:          "string"
 		schemaType: {
 			SchemaType.#Ref
 			default: "implicit"
@@ -72,7 +72,7 @@ Bucket: {
 			readOnly: true
 		}
 		retentionRules: RetentionRules.#Ref
-		labels: Labels.#Ref
+		labels:         Labels.#Ref
 	}
 	required: ["name", "retentionRules"]
 }

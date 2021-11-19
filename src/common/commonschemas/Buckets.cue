@@ -8,7 +8,7 @@ Buckets: {
 			Links.#Ref
 		}
 		buckets: {
-			type: "array"
+			type:  "array"
 			items: Bucket.#Ref
 		}
 	}

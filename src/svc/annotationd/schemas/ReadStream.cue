@@ -3,8 +3,8 @@ package schemas
 ReadStream: {
 	type: "object"
 	properties: {
-		id: type: "string"
-		stream: type: "string"
+		id: type:          "string"
+		stream: type:      "string"
 		description: type: "string"
 		createdAt: {
 			type:   "string"

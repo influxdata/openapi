@@ -8,17 +8,17 @@ BuilderConfig: {
 			items: type: "string"
 		}
 		tags: {
-			type: "array"
+			type:  "array"
 			items: BuilderTagsType.#Ref
 		}
 		functions: {
-			type: "array"
+			type:  "array"
 			items: BuilderFunctionsType.#Ref
 		}
 		aggregateWindow: {
 			type: "object"
 			properties: {
-				period: type: "string"
+				period: type:     "string"
 				fillValues: type: "boolean"
 			}
 		}

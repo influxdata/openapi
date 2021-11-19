@@ -25,7 +25,7 @@ Authorization: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: Permission.#Ref
+				items:       Permission.#Ref
 			}
 			id: {
 				readOnly: true

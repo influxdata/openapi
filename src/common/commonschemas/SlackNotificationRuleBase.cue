@@ -8,7 +8,7 @@ SlackNotificationRuleBase: {
 			type: "string"
 			enum: ["slack"]
 		}
-		channel: type: "string"
+		channel: type:         "string"
 		messageTemplate: type: "string"
 	}
 }

@@ -4,7 +4,6 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
-
 orgs_orgID_secrets_secretID: delete: {
 	operationId: "DeleteOrgsIDSecretsID"
 	tags: [

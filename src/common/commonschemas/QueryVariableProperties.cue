@@ -8,7 +8,7 @@ QueryVariableProperties: properties: {
 	values: {
 		type: "object"
 		properties: {
-			query: type: "string"
+			query: type:    "string"
 			language: type: "string"
 		}
 	}

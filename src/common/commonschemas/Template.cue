@@ -1,6 +1,6 @@
 package commonschemas
 
 Template: {
-	type: "array"
+	type:  "array"
 	items: TemplateEntry
 }

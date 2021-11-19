@@ -1,6 +1,6 @@
 package ossschemas
 
 BucketShardMappings: {
-	type: "array"
+	type:  "array"
 	items: BucketShardMapping.#Ref
 }

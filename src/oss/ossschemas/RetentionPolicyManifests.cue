@@ -1,6 +1,6 @@
 package ossschemas
 
 RetentionPolicyManifests: {
-	type: "array"
+	type:  "array"
 	items: RetentionPolicyManifest.#Ref
 }

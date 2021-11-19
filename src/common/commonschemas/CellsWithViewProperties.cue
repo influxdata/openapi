@@ -1,6 +1,6 @@
 package commonschemas
 
 CellsWithViewProperties: {
-	type: "array"
+	type:  "array"
 	items: CellWithViewProperties.#Ref
 }

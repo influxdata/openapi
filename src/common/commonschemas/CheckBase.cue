@@ -30,7 +30,7 @@ CheckBase: {
 			format:   "date-time"
 			readOnly: true
 		}
-		query: DashboardQuery.#Ref
+		query:  DashboardQuery.#Ref
 		status: TaskStatusType.#Ref
 		description: {
 			description: "An optional description of the check."

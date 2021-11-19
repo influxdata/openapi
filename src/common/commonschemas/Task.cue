@@ -94,12 +94,12 @@ Task: {
 				logs:    "/api/v2/tasks/1/logs"
 			}
 			properties: {
-				self: Link.#Ref
-				owners: Link.#Ref
+				self:    Link.#Ref
+				owners:  Link.#Ref
 				members: Link.#Ref
-				runs: Link.#Ref
-				logs: Link.#Ref
-				labels: Link.#Ref
+				runs:    Link.#Ref
+				logs:    Link.#Ref
+				labels:  Link.#Ref
 			}
 		}
 	}

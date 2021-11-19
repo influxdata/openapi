@@ -4,8 +4,8 @@ NotificationEndpointBase: {
 	type: "object"
 	required: ["type", "name"]
 	properties: {
-		id: type: "string"
-		orgID: type: "string"
+		id: type:     "string"
+		orgID: type:  "string"
 		userID: type: "string"
 		createdAt: {
 			type:     "string"

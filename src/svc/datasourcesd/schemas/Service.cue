@@ -5,9 +5,9 @@ Service: {
 	type:        "object"
 	description: "describes a telegraf instance we want to be running, maps 1:1 with k8s services, which should typically be backed by one pod. "
 	properties: {
-		id: type: "integer"
-		name: type: "string"
-		orgID: type: "string"
+		id: type:           "integer"
+		name: type:         "string"
+		orgID: type:        "string"
 		datasourceID: type: "integer"
 		nextFreePort: {
 			type:        "integer"

@@ -8,7 +8,7 @@ DurationLiteral: {
 		values: {
 			description: "Duration values"
 			type:        "array"
-			items: Duration.#Ref
+			items:       Duration.#Ref
 		}
 	}
 }

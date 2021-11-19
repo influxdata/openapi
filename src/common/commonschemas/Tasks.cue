@@ -8,7 +8,7 @@ Tasks: {
 			Links.#Ref
 		}
 		tasks: {
-			type: "array"
+			type:  "array"
 			items: Task.#Ref
 		}
 	}

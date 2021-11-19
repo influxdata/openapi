@@ -9,8 +9,8 @@ MeasurementSchemaColumn: {
 	type: "object"
 	required: ["name", "type"]
 	properties: {
-		name: type: "string"
-		type: $ref: "./ColumnSemanticType.yml"
+		name: type:     "string"
+		type: $ref:     "./ColumnSemanticType.yml"
 		dataType: $ref: "./ColumnDataType.yml"
 	}
 }

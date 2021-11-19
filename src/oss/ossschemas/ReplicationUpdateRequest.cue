@@ -3,9 +3,9 @@ package ossschemas
 ReplicationUpdateRequest: {
 	type: "object"
 	properties: {
-		name: type: "string"
-		description: type: "string"
-		remoteID: type: "string"
+		name: type:           "string"
+		description: type:    "string"
+		remoteID: type:       "string"
 		remoteBucketID: type: "string"
 		maxQueueSizeBytes: {
 			type:    "integer"

@@ -3,7 +3,7 @@ package schemas
 AnnotationResponse: {
 	type: "object"
 	properties: {
-		id: type: "string"
+		id: type:      "string"
 		summary: type: "string"
 		message: type: "string"
 		stickers: {

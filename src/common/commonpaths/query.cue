@@ -10,7 +10,7 @@ query: post: {
 	tags: [
 		"Query",
 	]
-	summary: "Query data"
+	summary:     "Query data"
 	description: """
 		Retrieves data from InfluxDB buckets.
 

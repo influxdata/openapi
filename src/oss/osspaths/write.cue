@@ -11,7 +11,7 @@ write: post: {
 	tags: [
 		"Write",
 	]
-	summary: "Write data"
+	summary:     "Write data"
 	description: """
 		Writes data to a bucket.
 

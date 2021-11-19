@@ -30,10 +30,10 @@ ScraperTargetResponse: {
 					organization: "/api/v2/orgs/1"
 				}
 				properties: {
-					self: Link.#Ref
-					members: Link.#Ref
-					owners: Link.#Ref
-					bucket: Link.#Ref
+					self:         Link.#Ref
+					members:      Link.#Ref
+					owners:       Link.#Ref
+					bucket:       Link.#Ref
 					organization: Link.#Ref
 				}
 			}

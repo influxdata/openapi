@@ -21,10 +21,10 @@ Telegraf: {
 					members: "/api/v2/telegrafs/1/members"
 				}
 				properties: {
-					self: Link.#Ref
-					labels: Link.#Ref
+					self:    Link.#Ref
+					labels:  Link.#Ref
 					members: Link.#Ref
-					owners: Link.#Ref
+					owners:  Link.#Ref
 				}
 			}
 			labels: {

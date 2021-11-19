@@ -5,6 +5,6 @@ Logs: {
 	properties: events: {
 		readOnly: true
 		type:     "array"
-		items: LogEvent.#Ref
+		items:    LogEvent.#Ref
 	}
 }

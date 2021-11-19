@@ -38,7 +38,7 @@ remotes: {
 				description: "List of remote connections"
 				content: "application/json": schema: ossschemas.RemoteConnections.#Ref
 			}
-			"404": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}
@@ -70,7 +70,7 @@ remotes: {
 				description: "Remote connection saved"
 				content: "application/json": schema: ossschemas.RemoteConnection.#Ref
 			}
-			"400": commonresponses.ServerError.#Ref
+			"400":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}

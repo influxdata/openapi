@@ -29,7 +29,7 @@ Run: properties: {
 		description: "An array of logs associated with the run."
 		type:        "array"
 		readOnly:    true
-		items: LogEvent.#Ref
+		items:       LogEvent.#Ref
 	}
 	startedAt: {
 		readOnly:    true

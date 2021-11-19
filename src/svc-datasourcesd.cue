@@ -10,13 +10,13 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/datasources": $ref: "./svc/datasourcesd/paths/datasources.yml"
+		"/datasources": $ref:                "./svc/datasourcesd/paths/datasources.yml"
 		"/datasources/{datasourceID}": $ref: "./svc/datasourcesd/paths/datasources-id.yml"
-		"/webhooks/{token}": $ref: "./svc/datasourcesd/paths/webhooks.yml"
+		"/webhooks/{token}": $ref:           "./svc/datasourcesd/paths/webhooks.yml"
 	}
 	components: schemas: {
-		Datasource: $ref: "./svc/datasourcesd/schemas/Datasource.yml"
+		Datasource: $ref:       "./svc/datasourcesd/schemas/Datasource.yml"
 		ListenerEndpoint: $ref: "./svc/datasourcesd/schemas/ListenerEndpoint.yml"
-		Service: $ref: "./svc/datasourcesd/schemas/Service.yml"
+		Service: $ref:          "./svc/datasourcesd/schemas/Service.yml"
 	}
 }

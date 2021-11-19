@@ -8,7 +8,7 @@ Views: {
 			properties: self: type: "string"
 		}
 		views: {
-			type: "array"
+			type:  "array"
 			items: View.#Ref
 		}
 	}

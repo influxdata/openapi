@@ -5,7 +5,7 @@ DictItem: {
 	type:        "object"
 	properties: {
 		type: NodeType.#Ref
-		key: Expression.#Ref
-		val: Expression.#Ref
+		key:  Expression.#Ref
+		val:  Expression.#Ref
 	}
 }

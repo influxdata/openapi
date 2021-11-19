@@ -12,7 +12,7 @@ AnnotationDeleteFilter: {
 			type: "object"
 			additionalProperties: type: "string"
 		}
-		stream: type: "string"
+		stream: type:   "string"
 		streamID: type: "string"
 		startTime: {
 			type:   "string"

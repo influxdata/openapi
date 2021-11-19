@@ -6,7 +6,6 @@ import "github.com/influxdata/openapi/src/common/commonparameters"
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
 
-
 users_userID: {
 	get: {
 		operationId: "GetUsersID"

@@ -14,7 +14,7 @@ GeoPointMapViewLayer: allOf: [{
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		isClustered: {
 			description: "Cluster close markers together"

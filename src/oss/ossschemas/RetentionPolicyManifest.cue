@@ -3,7 +3,7 @@ package ossschemas
 RetentionPolicyManifest: {
 	type: "object"
 	properties: {
-		name: type: "string"
+		name: type:     "string"
 		replicaN: type: "integer"
 		duration: {
 			type:   "integer"
@@ -13,7 +13,7 @@ RetentionPolicyManifest: {
 			type:   "integer"
 			format: "int64"
 		}
-		shardGroups: ShardGroupManifests.#Ref
+		shardGroups:   ShardGroupManifests.#Ref
 		subscriptions: SubscriptionManifests.#Ref
 	}
 	required: ["name", "replicaN", "duration", "shardGroupDuration", "shardGroups", "subscriptions"]

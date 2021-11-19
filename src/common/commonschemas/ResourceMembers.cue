@@ -11,7 +11,7 @@ ResourceMembers: {
 			}
 		}
 		users: {
-			type: "array"
+			type:  "array"
 			items: ResourceMember.#Ref
 		}
 	}

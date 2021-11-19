@@ -18,7 +18,7 @@ TemplateExportByName: {
 								items: type: "string"
 							}
 							byResourceKind: {
-								type: "array"
+								type:  "array"
 								items: TemplateKind.#Ref
 							}
 						}

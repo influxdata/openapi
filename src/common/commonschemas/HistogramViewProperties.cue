@@ -22,13 +22,13 @@ HistogramViewProperties: {
 			enum: ["histogram"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -56,9 +56,9 @@ HistogramViewProperties: {
 			type: "string"
 			enum: ["overlaid", "stacked"]
 		}
-		binCount: type: "integer"
+		binCount: type:           "integer"
 		legendColorizeRows: type: "boolean"
-		legendHide: type: "boolean"
+		legendHide: type:         "boolean"
 		legendOpacity: {
 			type:   "number"
 			format: "float"

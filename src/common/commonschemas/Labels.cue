@@ -1,6 +1,6 @@
 package commonschemas
 
 Labels: {
-	type: "array"
+	type:  "array"
 	items: Label.#Ref
 }

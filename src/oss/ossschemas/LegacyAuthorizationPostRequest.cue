@@ -25,7 +25,7 @@ LegacyAuthorizationPostRequest: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: commonschemas.Permission.#Ref
+				items:       commonschemas.Permission.#Ref
 			}
 		}
 	}]

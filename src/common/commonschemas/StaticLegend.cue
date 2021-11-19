@@ -15,7 +15,7 @@ StaticLegend: {
 			format: "float"
 		}
 		orientationThreshold: type: "integer"
-		valueAxis: type: "string"
+		valueAxis: type:            "string"
 		widthRatio: {
 			type:   "number"
 			format: "float"

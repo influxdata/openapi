@@ -4,6 +4,6 @@ LabelsResponse: {
 	type: "object"
 	properties: {
 		labels: Labels.#Ref
-		links: Links.#Ref
+		links:  Links.#Ref
 	}
 }

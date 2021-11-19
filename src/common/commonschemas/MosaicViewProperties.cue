@@ -28,7 +28,7 @@ MosaicViewProperties: {
 			enum: ["mosaic"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
@@ -84,16 +84,16 @@ MosaicViewProperties: {
 		}
 		xAxisLabel: type: "string"
 		yAxisLabel: type: "string"
-		xPrefix: type: "string"
-		xSuffix: type: "string"
-		yPrefix: type: "string"
-		ySuffix: type: "string"
+		xPrefix: type:    "string"
+		xSuffix: type:    "string"
+		yPrefix: type:    "string"
+		ySuffix: type:    "string"
 		hoverDimension: {
 			type: "string"
 			enum: ["auto", "x", "y", "xy"]
 		}
 		legendColorizeRows: type: "boolean"
-		legendHide: type: "boolean"
+		legendHide: type:         "boolean"
 		legendOpacity: {
 			type:   "number"
 			format: "float"

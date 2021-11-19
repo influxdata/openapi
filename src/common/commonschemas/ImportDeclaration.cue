@@ -5,7 +5,7 @@ ImportDeclaration: {
 	type:        "object"
 	properties: {
 		type: NodeType.#Ref
-		as: Identifier.#Ref
+		as:   Identifier.#Ref
 		path: StringLiteral.#Ref
 	}
 }

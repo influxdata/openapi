@@ -5,7 +5,7 @@ Organizations: {
 	properties: {
 		links: Links.#Ref
 		orgs: {
-			type: "array"
+			type:  "array"
 			items: Organization.#Ref
 		}
 	}

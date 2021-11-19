@@ -16,13 +16,13 @@ Organization: {
 				dashboards: "/api/v2/dashboards?org=myorg"
 			}
 			properties: {
-				self: Link.#Ref
-				members: Link.#Ref
-				owners: Link.#Ref
-				labels: Link.#Ref
-				secrets: Link.#Ref
-				buckets: Link.#Ref
-				tasks: Link.#Ref
+				self:       Link.#Ref
+				members:    Link.#Ref
+				owners:     Link.#Ref
+				labels:     Link.#Ref
+				secrets:    Link.#Ref
+				buckets:    Link.#Ref
+				tasks:      Link.#Ref
 				dashboards: Link.#Ref
 			}
 		}
@@ -30,7 +30,7 @@ Organization: {
 			readOnly: true
 			type:     "string"
 		}
-		name: type: "string"
+		name: type:        "string"
 		description: type: "string"
 		createdAt: {
 			type:     "string"

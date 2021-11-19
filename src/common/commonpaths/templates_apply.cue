@@ -12,9 +12,9 @@ templates_apply: post: {
 	requestBody: {
 		required: true
 		content: {
-			"application/json": schema: commonschemas.TemplateApply.#Ref
+			"application/json": schema:      commonschemas.TemplateApply.#Ref
 			"application/x-jsonnet": schema: commonschemas.TemplateApply.#Ref
-			"text/yml": schema: commonschemas.TemplateApply.#Ref
+			"text/yml": schema:              commonschemas.TemplateApply.#Ref
 		}
 	}
 	responses: {

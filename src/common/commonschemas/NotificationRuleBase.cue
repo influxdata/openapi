@@ -83,7 +83,7 @@ NotificationRuleBase: {
 		tagRules: {
 			description: "List of tag rules the notification rule attempts to match."
 			type:        "array"
-			items: TagRule.#Ref
+			items:       TagRule.#Ref
 		}
 		description: {
 			description: "An optional description of the notification rule."
@@ -93,7 +93,7 @@ NotificationRuleBase: {
 			description: "List of status rules the notification rule attempts to match."
 			type:        "array"
 			minItems:    1
-			items: StatusRule.#Ref
+			items:       StatusRule.#Ref
 		}
 		labels: Labels.#Ref
 		links: {

@@ -6,6 +6,6 @@ AnnotationEvent: allOf: [{
 	type: "object"
 	properties: {
 		stream: type: "string"
-		id: type: "string"
+		id: type:     "string"
 	}
 }]

@@ -4,12 +4,12 @@ CallExpression: {
 	description: "Represents a function call"
 	type:        "object"
 	properties: {
-		type: NodeType.#Ref
+		type:   NodeType.#Ref
 		callee: Expression.#Ref
 		arguments: {
 			description: "Function arguments"
 			type:        "array"
-			items: Expression.#Ref
+			items:       Expression.#Ref
 		}
 	}
 }

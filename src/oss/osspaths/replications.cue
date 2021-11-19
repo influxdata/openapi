@@ -39,7 +39,7 @@ replications: {
 				description: "List of replications"
 				content: "application/json": schema: ossschemas.Replications.#Ref
 			}
-			"404": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}
@@ -71,7 +71,7 @@ replications: {
 				description: "Replication saved"
 				content: "application/json": schema: ossschemas.Replication.#Ref
 			}
-			"400": commonresponses.ServerError.#Ref
+			"400":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}

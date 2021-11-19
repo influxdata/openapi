@@ -1,6 +1,6 @@
 package commonschemas
 
 DBRPs: properties: content: {
-	type: "array"
+	type:  "array"
 	items: DBRP.#Ref
 }

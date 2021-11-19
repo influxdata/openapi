@@ -5,8 +5,8 @@ OnboardingRequest: {
 	properties: {
 		username: type: "string"
 		password: type: "string"
-		org: type: "string"
-		bucket: type: "string"
+		org: type:      "string"
+		bucket: type:   "string"
 		retentionPeriodSeconds: {
 			type:   "integer"
 			format: "int64"

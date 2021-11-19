@@ -7,10 +7,10 @@ AnalyzeQueryResponse: {
 		items: {
 			type: "object"
 			properties: {
-				line: type: "integer"
-				column: type: "integer"
+				line: type:      "integer"
+				column: type:    "integer"
 				character: type: "integer"
-				message: type: "string"
+				message: type:   "string"
 			}
 		}
 	}

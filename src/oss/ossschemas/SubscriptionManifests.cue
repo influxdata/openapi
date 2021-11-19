@@ -1,6 +1,6 @@
 package ossschemas
 
 SubscriptionManifests: {
-	type: "array"
+	type:  "array"
 	items: SubscriptionManifest.#Ref
 }

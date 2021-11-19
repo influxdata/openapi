@@ -3,7 +3,7 @@ package commonschemas
 TagRule: {
 	type: "object"
 	properties: {
-		key: type: "string"
+		key: type:   "string"
 		value: type: "string"
 		operator: {
 			type: "string"

@@ -30,14 +30,14 @@ Variable: {
 			readOnly: true
 			type:     "string"
 		}
-		orgID: type: "string"
-		name: type: "string"
+		orgID: type:       "string"
+		name: type:        "string"
 		description: type: "string"
 		selected: {
 			type: "array"
 			items: type: "string"
 		}
-		labels: Labels.#Ref
+		labels:    Labels.#Ref
 		arguments: VariableProperties.#Ref
 		createdAt: {
 			type:   "string"

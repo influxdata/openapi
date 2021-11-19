@@ -1,6 +1,6 @@
 package commonschemas
 
 Cells: {
-	type: "array"
+	type:  "array"
 	items: Cell.#Ref
 }

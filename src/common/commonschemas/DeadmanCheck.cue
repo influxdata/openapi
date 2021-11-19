@@ -37,7 +37,7 @@ DeadmanCheck: allOf: [{
 			items: {
 				type: "object"
 				properties: {
-					key: type: "string"
+					key: type:   "string"
 					value: type: "string"
 				}
 			}

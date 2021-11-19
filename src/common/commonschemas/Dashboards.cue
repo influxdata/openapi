@@ -5,7 +5,7 @@ Dashboards: {
 	properties: {
 		links: Links.#Ref
 		dashboards: {
-			type: "array"
+			type:  "array"
 			items: Dashboard.#Ref
 		}
 	}

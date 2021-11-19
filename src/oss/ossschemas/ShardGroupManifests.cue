@@ -1,6 +1,6 @@
 package ossschemas
 
 ShardGroupManifests: {
-	type: "array"
+	type:  "array"
 	items: ShardGroupManifest.#Ref
 }

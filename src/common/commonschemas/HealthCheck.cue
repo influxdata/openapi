@@ -7,14 +7,14 @@ HealthCheck: {
 		"status",
 	]
 	properties: {
-		name: type: "string"
+		name: type:    "string"
 		message: type: "string"
 		checks: {
-			type: "array"
+			type:  "array"
 			items: HealthCheck.#Ref
 		}
 		status: HealthCheckStatus
 		version: type: "string"
-		commit: type: "string"
+		commit: type:  "string"
 	}
 }

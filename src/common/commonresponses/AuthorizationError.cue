@@ -1,5 +1,7 @@
 package commonresponses
+
 import "github.com/influxdata/openapi/src/common/commonschemas"
+
 AuthorizationError: {
 	// This represents the body of a 401 error from the server.
 	description: """

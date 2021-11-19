@@ -16,15 +16,15 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							id: type: "string"
+							id: type:    "string"
 							orgID: type: "string"
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
-							name: type: "string"
-							description: type: "string"
-							retentionPeriod: type: "integer"
+							name: type:             "string"
+							description: type:      "string"
+							retentionPeriod: type:  "integer"
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -41,7 +41,7 @@ TemplateSummary: {
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -53,18 +53,18 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							id: type: "string"
+							id: type:    "string"
 							orgID: type: "string"
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
-							name: type: "string"
-							description: type: "string"
+							name: type:             "string"
+							description: type:      "string"
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							charts: {
-								type: "array"
+								type:  "array"
 								items: TemplateChart.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -72,7 +72,7 @@ TemplateSummary: {
 					}
 				}
 				labels: {
-					type: "array"
+					type:  "array"
 					items: TemplateSummaryLabel.#Ref
 				}
 				labelMappings: {
@@ -80,14 +80,14 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							status: type: "string"
+							status: type:                   "string"
 							resourceTemplateMetaName: type: "string"
-							resourceName: type: "string"
-							resourceID: type: "string"
-							resourceType: type: "string"
-							labelTemplateMetaName: type: "string"
-							labelName: type: "string"
-							labelID: type: "string"
+							resourceName: type:             "string"
+							resourceID: type:               "string"
+							resourceType: type:             "string"
+							labelTemplateMetaName: type:    "string"
+							labelName: type:                "string"
+							labelID: type:                  "string"
 						}
 					}
 				}
@@ -109,7 +109,7 @@ TemplateSummary: {
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -122,22 +122,22 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							templateMetaName: type: "string"
-							name: type: "string"
-							description: type: "string"
+							templateMetaName: type:         "string"
+							name: type:                     "string"
+							description: type:              "string"
 							endpointTemplateMetaName: type: "string"
-							endpointID: type: "string"
-							endpointType: type: "string"
-							every: type: "string"
-							offset: type: "string"
-							messageTemplate: type: "string"
-							status: type: "string"
+							endpointID: type:               "string"
+							endpointType: type:             "string"
+							every: type:                    "string"
+							offset: type:                   "string"
+							messageTemplate: type:          "string"
+							status: type:                   "string"
 							statusRules: {
 								type: "array"
 								items: {
 									type: "object"
 									properties: {
-										currentLevel: type: "string"
+										currentLevel: type:  "string"
 										previousLevel: type: "string"
 									}
 								}
@@ -147,14 +147,14 @@ TemplateSummary: {
 								items: {
 									type: "object"
 									properties: {
-										key: type: "string"
-										value: type: "string"
+										key: type:      "string"
+										value: type:    "string"
 										operator: type: "string"
 									}
 								}
 							}
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -168,14 +168,14 @@ TemplateSummary: {
 						properties: {
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
-							id: type: "string"
-							name: type: "string"
-							cron: type: "string"
-							description: type: "string"
-							every: type: "string"
-							offset: type: "string"
-							query: type: "string"
-							status: type: "string"
+							id: type:               "string"
+							name: type:             "string"
+							cron: type:             "string"
+							description: type:      "string"
+							every: type:            "string"
+							offset: type:           "string"
+							query: type:            "string"
+							status: type:           "string"
 							envReferences: TemplateEnvReferences.#Ref
 						}
 					}
@@ -190,7 +190,7 @@ TemplateSummary: {
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -204,13 +204,13 @@ TemplateSummary: {
 						properties: {
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
-							id: type: "string"
-							orgID: type: "string"
-							name: type: "string"
-							description: type: "string"
+							id: type:               "string"
+							orgID: type:            "string"
+							name: type:             "string"
+							description: type:      "string"
 							arguments: VariableProperties.#Ref
 							labelAssociations: {
-								type: "array"
+								type:  "array"
 								items: TemplateSummaryLabel.#Ref
 							}
 							envReferences: TemplateEnvReferences.#Ref
@@ -228,13 +228,13 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
 								properties: {
-									name: type: "string"
+									name: type:        "string"
 									description: type: "string"
 									retentionRules: RetentionRules.#Ref
 								}
@@ -242,7 +242,7 @@ TemplateSummary: {
 							old: {
 								type: "object"
 								properties: {
-									name: type: "string"
+									name: type:        "string"
 									description: type: "string"
 									retentionRules: RetentionRules.#Ref
 								}
@@ -256,8 +256,8 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: CheckDiscriminator.#Ref
 							old: CheckDiscriminator.#Ref
@@ -270,16 +270,16 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							stateStatus: type: "string"
-							id: type: "string"
+							id: type:          "string"
 							kind: TemplateKind.#Ref
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
 								properties: {
-									name: type: "string"
+									name: type:        "string"
 									description: type: "string"
 									charts: {
-										type: "array"
+										type:  "array"
 										items: TemplateChart.#Ref
 									}
 								}
@@ -287,10 +287,10 @@ TemplateSummary: {
 							old: {
 								type: "object"
 								properties: {
-									name: type: "string"
+									name: type:        "string"
 									description: type: "string"
 									charts: {
-										type: "array"
+										type:  "array"
 										items: TemplateChart.#Ref
 									}
 								}
@@ -305,21 +305,21 @@ TemplateSummary: {
 						properties: {
 							stateStatus: type: "string"
 							kind: TemplateKind.#Ref
-							id: type: "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
 								properties: {
-									name: type: "string"
-									color: type: "string"
+									name: type:        "string"
+									color: type:       "string"
 									description: type: "string"
 								}
 							}
 							old: {
 								type: "object"
 								properties: {
-									name: type: "string"
-									color: type: "string"
+									name: type:        "string"
+									color: type:       "string"
 									description: type: "string"
 								}
 							}
@@ -331,14 +331,14 @@ TemplateSummary: {
 					items: {
 						type: "object"
 						properties: {
-							status: type: "string"
-							resourceType: type: "string"
-							resourceID: type: "string"
+							status: type:                   "string"
+							resourceType: type:             "string"
+							resourceID: type:               "string"
 							resourceTemplateMetaName: type: "string"
-							resourceName: type: "string"
-							labelID: type: "string"
-							labelTemplateMetaName: type: "string"
-							labelName: type: "string"
+							resourceName: type:             "string"
+							labelID: type:                  "string"
+							labelTemplateMetaName: type:    "string"
+							labelName: type:                "string"
 						}
 					}
 				}
@@ -348,8 +348,8 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: NotificationEndpointDiscriminator.#Ref
 							old: NotificationEndpointDiscriminator.#Ref
@@ -362,27 +362,27 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
 								properties: {
-									name: type: "string"
-									description: type: "string"
-									endpointName: type: "string"
-									endpointID: type: "string"
-									endpointType: type: "string"
-									every: type: "string"
-									offset: type: "string"
+									name: type:            "string"
+									description: type:     "string"
+									endpointName: type:    "string"
+									endpointID: type:      "string"
+									endpointType: type:    "string"
+									every: type:           "string"
+									offset: type:          "string"
 									messageTemplate: type: "string"
-									status: type: "string"
+									status: type:          "string"
 									statusRules: {
 										type: "array"
 										items: {
 											type: "object"
 											properties: {
-												currentLevel: type: "string"
+												currentLevel: type:  "string"
 												previousLevel: type: "string"
 											}
 										}
@@ -392,8 +392,8 @@ TemplateSummary: {
 										items: {
 											type: "object"
 											properties: {
-												key: type: "string"
-												value: type: "string"
+												key: type:      "string"
+												value: type:    "string"
 												operator: type: "string"
 											}
 										}
@@ -403,21 +403,21 @@ TemplateSummary: {
 							old: {
 								type: "object"
 								properties: {
-									name: type: "string"
-									description: type: "string"
-									endpointName: type: "string"
-									endpointID: type: "string"
-									endpointType: type: "string"
-									every: type: "string"
-									offset: type: "string"
+									name: type:            "string"
+									description: type:     "string"
+									endpointName: type:    "string"
+									endpointID: type:      "string"
+									endpointType: type:    "string"
+									every: type:           "string"
+									offset: type:          "string"
 									messageTemplate: type: "string"
-									status: type: "string"
+									status: type:          "string"
 									statusRules: {
 										type: "array"
 										items: {
 											type: "object"
 											properties: {
-												currentLevel: type: "string"
+												currentLevel: type:  "string"
 												previousLevel: type: "string"
 											}
 										}
@@ -427,8 +427,8 @@ TemplateSummary: {
 										items: {
 											type: "object"
 											properties: {
-												key: type: "string"
-												value: type: "string"
+												key: type:      "string"
+												value: type:    "string"
 												operator: type: "string"
 											}
 										}
@@ -444,31 +444,31 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
 								properties: {
-									name: type: "string"
-									cron: type: "string"
+									name: type:        "string"
+									cron: type:        "string"
 									description: type: "string"
-									every: type: "string"
-									offset: type: "string"
-									query: type: "string"
-									status: type: "string"
+									every: type:       "string"
+									offset: type:      "string"
+									query: type:       "string"
+									status: type:      "string"
 								}
 							}
 							old: {
 								type: "object"
 								properties: {
-									name: type: "string"
-									cron: type: "string"
+									name: type:        "string"
+									cron: type:        "string"
 									description: type: "string"
-									every: type: "string"
-									offset: type: "string"
-									query: type: "string"
-									status: type: "string"
+									every: type:       "string"
+									offset: type:      "string"
+									query: type:       "string"
+									status: type:      "string"
 								}
 							}
 						}
@@ -480,8 +480,8 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: TelegrafRequest.#Ref
 							old: TelegrafRequest.#Ref
@@ -494,13 +494,13 @@ TemplateSummary: {
 						type: "object"
 						properties: {
 							kind: TemplateKind.#Ref
-							stateStatus: type: "string"
-							id: type: "string"
+							stateStatus: type:      "string"
+							id: type:               "string"
 							templateMetaName: type: "string"
 							new: {
 								type: "object"
 								properties: {
-									name: type: "string"
+									name: type:        "string"
 									description: type: "string"
 									args: VariableProperties.#Ref
 								}
@@ -508,7 +508,7 @@ TemplateSummary: {
 							old: {
 								type: "object"
 								properties: {
-									name: type: "string"
+									name: type:        "string"
 									description: type: "string"
 									args: VariableProperties.#Ref
 								}

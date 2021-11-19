@@ -21,7 +21,15 @@ let osspaths = osspathspkg & {
 	#DocsURL: #OSSDocsURL
 }
 oss: #OSS
-oss: #OldOSS
+
+// To verify that the output is identical to the old output,
+// import the old openAPI spec:
+//  cue import -p contracts -o oss-old.cue -l '"oldOSS"' yaml: ../contracts/oss.yml
+// Then verify with:
+//       cue vet -c -t docsurl=https://docs.influxdata.com/influxdb
+oldOSS:  _ | *{} // placeholder for imported old OSS file.
+#OldOSS: oldOSS  // make it closed to fully verify equality.
+oss:     #OldOSS
 
 #OSS: {
 	openapi: "3.0.0"
@@ -66,7 +74,7 @@ oss: #OldOSS
 
 			"""
 	}, {
-		name: "Authorizations"
+		name:        "Authorizations"
 		description: """
 			Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. Optionally, you can restrict an authorization and its token to a specific user.
 
@@ -157,12 +165,12 @@ oss: #OldOSS
 	}]
 	paths: {
 		common.#Paths
-		"/health": osspaths.health
-		"/ready": osspaths.ready
-		"/users": commonpaths.users
-		"/users/{userID}": commonpaths.users_userID
-		"/setup": commonpaths.setup
-		"/authorizations": commonpaths.authorizations
+		"/health":                  osspaths.health
+		"/ready":                   osspaths.ready
+		"/users":                   commonpaths.users
+		"/users/{userID}":          commonpaths.users_userID
+		"/setup":                   commonpaths.setup
+		"/authorizations":          commonpaths.authorizations
 		"/authorizations/{authID}": commonpaths.authorizations_authID
 		"/legacy/authorizations": {
 			servers: [{
@@ -182,28 +190,28 @@ oss: #OldOSS
 			}]
 			osspaths.legacy_authorizations_authID_password
 		}
-		"/variables": commonpaths.variables
-		"/variables/{variableID}": commonpaths.variables_variableID
-		"/sources": commonpaths.sources
-		"/sources/{sourceID}": commonpaths.sources_sourceID
-		"/sources/{sourceID}/health": commonpaths.sources_sourceID_health
-		"/sources/{sourceID}/buckets": commonpaths.sources_sourceID_buckets
-		"/scrapers": commonpaths.scrapers
-		"/scrapers/{scraperTargetID}": commonpaths.scrapers_scraperTargetID
-		"/scrapers/{scraperTargetID}/labels": commonpaths.scrapers_scraperTargetID_labels
+		"/variables":                                   commonpaths.variables
+		"/variables/{variableID}":                      commonpaths.variables_variableID
+		"/sources":                                     commonpaths.sources
+		"/sources/{sourceID}":                          commonpaths.sources_sourceID
+		"/sources/{sourceID}/health":                   commonpaths.sources_sourceID_health
+		"/sources/{sourceID}/buckets":                  commonpaths.sources_sourceID_buckets
+		"/scrapers":                                    commonpaths.scrapers
+		"/scrapers/{scraperTargetID}":                  commonpaths.scrapers_scraperTargetID
+		"/scrapers/{scraperTargetID}/labels":           commonpaths.scrapers_scraperTargetID_labels
 		"/scrapers/{scraperTargetID}/labels/{labelID}": commonpaths.scrapers_scraperTargetID_labels_labelID
-		"/scrapers/{scraperTargetID}/members": commonpaths.scrapers_scraperTargetID_members
+		"/scrapers/{scraperTargetID}/members":          commonpaths.scrapers_scraperTargetID_members
 		"/scrapers/{scraperTargetID}/members/{userID}": commonpaths.scrapers_scraperTargetID_members_userID
-		"/scrapers/{scraperTargetID}/owners": commonpaths.scrapers_scraperTargetID_owners
-		"/scrapers/{scraperTargetID}/owners/{userID}": commonpaths.scrapers_scraperTargetID_owners_userID
-		"/backup/kv": osspaths.backup_kv
-		"/backup/metadata": osspaths.backup_metadata
-		"/backup/shards/{shardID}": osspaths.backup_shards_shardID
-		"/restore/kv": osspaths.restore_kv
-		"/restore/sql": osspaths.restore_sql
-		"/restore/bucket/{bucketID}": osspaths.restore_bucket_bucketID
-		"/restore/bucketMetadata": osspaths.restore_bucketMetadata
-		"/restore/shards/{shardID}": osspaths.restore_shards_shardID
+		"/scrapers/{scraperTargetID}/owners":           commonpaths.scrapers_scraperTargetID_owners
+		"/scrapers/{scraperTargetID}/owners/{userID}":  commonpaths.scrapers_scraperTargetID_owners_userID
+		"/backup/kv":                                   osspaths.backup_kv
+		"/backup/metadata":                             osspaths.backup_metadata
+		"/backup/shards/{shardID}":                     osspaths.backup_shards_shardID
+		"/restore/kv":                                  osspaths.restore_kv
+		"/restore/sql":                                 osspaths.restore_sql
+		"/restore/bucket/{bucketID}":                   osspaths.restore_bucket_bucketID
+		"/restore/bucketMetadata":                      osspaths.restore_bucketMetadata
+		"/restore/shards/{shardID}":                    osspaths.restore_shards_shardID
 		// TODO: Uncomment when replications is on by default in OSS
 		//  /remotes:
 		//    osspaths.remotes
@@ -227,39 +235,39 @@ oss: #OldOSS
 		parameters: common.#Parameters
 		schemas: {
 			common.#Schemas
-			Authorization: commonschemas.Authorization
-			AuthorizationPostRequest: commonschemas.AuthorizationPostRequest
+			Authorization:                  commonschemas.Authorization
+			AuthorizationPostRequest:       commonschemas.AuthorizationPostRequest
 			LegacyAuthorizationPostRequest: ossschemas.LegacyAuthorizationPostRequest
-			Authorizations: commonschemas.Authorizations
-			Permission: commonschemas.Permission
-			Resource: commonschemas.Resource
-			User: commonschemas.User
-			Users: commonschemas.Users
-			OnboardingRequest: commonschemas.OnboardingRequest
-			OnboardingResponse: commonschemas.OnboardingResponse
-			Variable: commonschemas.Variable
-			Variables: commonschemas.Variables
-			Source: commonschemas.Source
-			Sources: commonschemas.Sources
-			ScraperTargetRequest: commonschemas.ScraperTargetRequest
-			ScraperTargetResponse: commonschemas.ScraperTargetResponse
-			ScraperTargetResponses: commonschemas.ScraperTargetResponses
-			MetadataBackup: ossschemas.MetadataBackup
-			BucketMetadataManifests: ossschemas.BucketMetadataManifests
-			BucketMetadataManifest: ossschemas.BucketMetadataManifest
-			RetentionPolicyManifests: ossschemas.RetentionPolicyManifests
-			RetentionPolicyManifest: ossschemas.RetentionPolicyManifest
-			ShardGroupManifests: ossschemas.ShardGroupManifests
-			ShardGroupManifest: ossschemas.ShardGroupManifest
-			ShardManifests: ossschemas.ShardManifests
-			ShardManifest: ossschemas.ShardManifest
-			ShardOwners: ossschemas.ShardOwners
-			ShardOwner: ossschemas.ShardOwner
-			SubscriptionManifests: ossschemas.SubscriptionManifests
-			SubscriptionManifest: ossschemas.SubscriptionManifest
-			RestoredBucketMappings: ossschemas.RestoredBucketMappings
-			BucketShardMappings: ossschemas.BucketShardMappings
-			BucketShardMapping: ossschemas.BucketShardMapping
+			Authorizations:                 commonschemas.Authorizations
+			Permission:                     commonschemas.Permission
+			Resource:                       commonschemas.Resource
+			User:                           commonschemas.User
+			Users:                          commonschemas.Users
+			OnboardingRequest:              commonschemas.OnboardingRequest
+			OnboardingResponse:             commonschemas.OnboardingResponse
+			Variable:                       commonschemas.Variable
+			Variables:                      commonschemas.Variables
+			Source:                         commonschemas.Source
+			Sources:                        commonschemas.Sources
+			ScraperTargetRequest:           commonschemas.ScraperTargetRequest
+			ScraperTargetResponse:          commonschemas.ScraperTargetResponse
+			ScraperTargetResponses:         commonschemas.ScraperTargetResponses
+			MetadataBackup:                 ossschemas.MetadataBackup
+			BucketMetadataManifests:        ossschemas.BucketMetadataManifests
+			BucketMetadataManifest:         ossschemas.BucketMetadataManifest
+			RetentionPolicyManifests:       ossschemas.RetentionPolicyManifests
+			RetentionPolicyManifest:        ossschemas.RetentionPolicyManifest
+			ShardGroupManifests:            ossschemas.ShardGroupManifests
+			ShardGroupManifest:             ossschemas.ShardGroupManifest
+			ShardManifests:                 ossschemas.ShardManifests
+			ShardManifest:                  ossschemas.ShardManifest
+			ShardOwners:                    ossschemas.ShardOwners
+			ShardOwner:                     ossschemas.ShardOwner
+			SubscriptionManifests:          ossschemas.SubscriptionManifests
+			SubscriptionManifest:           ossschemas.SubscriptionManifest
+			RestoredBucketMappings:         ossschemas.RestoredBucketMappings
+			BucketShardMappings:            ossschemas.BucketShardMappings
+			BucketShardMapping:             ossschemas.BucketShardMapping
 		}
 		// TODO: Uncomment when replications is on by default in OSS
 		//    RemoteConnection:
@@ -286,7 +294,7 @@ oss: #OldOSS
 				type:         "http"
 				scheme:       "token"
 				bearerFormat: "InfluxDB Token String"
-				description: """
+				description:  """
 					### Token authentication scheme
 
 					InfluxDB API tokens enable authentication and authorization of API clients.
@@ -311,8 +319,8 @@ oss: #OldOSS
 			}
 
 			BasicAuthentication: {
-				type:   "http"
-				scheme: "basic"
+				type:        "http"
+				scheme:      "basic"
 				description: """
 					### Basic authentication scheme
 
@@ -343,9 +351,9 @@ oss: #OldOSS
 			}
 
 			QuerystringAuthentication: {
-				type: "apiKey"
-				in:   "query"
-				name: "u=&p="
+				type:        "apiKey"
+				in:          "query"
+				name:        "u=&p="
 				description: """
 					### Querystring authentication scheme
 

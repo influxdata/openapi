@@ -8,7 +8,7 @@ DictExpression: {
 		elements: {
 			description: "Elements of the dictionary"
 			type:        "array"
-			items: DictItem.#Ref
+			items:       DictItem.#Ref
 		}
 	}
 }

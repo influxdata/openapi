@@ -29,7 +29,7 @@ Field: {
 		args: {
 			description: "Args are the arguments to the function"
 			type:        "array"
-			items: Field.#Ref
+			items:       Field.#Ref
 		}
 	}
 }

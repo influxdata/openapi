@@ -3,7 +3,7 @@ package commonschemas
 Stack: {
 	type: "object"
 	properties: {
-		id: type: "string"
+		id: type:    "string"
 		orgID: type: "string"
 		createdAt: {
 			type:     "string"
@@ -15,8 +15,8 @@ Stack: {
 			items: {
 				type: "object"
 				properties: {
-					eventType: type: "string"
-					name: type: "string"
+					eventType: type:   "string"
+					name: type:        "string"
 					description: type: "string"
 					sources: {
 						type: "array"

@@ -8,7 +8,7 @@ ArrayExpression: {
 		elements: {
 			description: "Elements of the array"
 			type:        "array"
-			items: Expression.#Ref
+			items:       Expression.#Ref
 		}
 	}
 }

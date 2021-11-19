@@ -11,7 +11,7 @@ ResourceOwners: {
 			}
 		}
 		users: {
-			type: "array"
+			type:  "array"
 			items: ResourceOwner.#Ref
 		}
 	}

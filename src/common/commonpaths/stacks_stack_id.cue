@@ -65,8 +65,8 @@ stacks_stack_id: {
 						items: {
 							type: "object"
 							properties: {
-								resourceID: type: "string"
-								kind: type: "string"
+								resourceID: type:       "string"
+								kind: type:             "string"
 								templateMetaName: type: "string"
 							}
 							required: ["kind", "resourceID"]

@@ -20,13 +20,13 @@ TableViewProperties: {
 			enum: ["table"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -65,7 +65,7 @@ TableViewProperties: {
 		fieldOptions: {
 			description: "fieldOptions represent the fields retrieved by the query with customization options"
 
-			type: "array"
+			type:  "array"
 			items: RenamableField.#Ref
 		}
 		timeFormat: {

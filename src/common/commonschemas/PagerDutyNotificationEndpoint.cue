@@ -8,7 +8,7 @@ PagerDutyNotificationEndpoint: {
 		type: "object"
 		required: ["routingKey"]
 		properties: {
-			clientURL: type: "string"
+			clientURL: type:  "string"
 			routingKey: type: "string"
 		}
 	}]

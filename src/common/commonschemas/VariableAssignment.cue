@@ -5,7 +5,7 @@ VariableAssignment: {
 	type:        "object"
 	properties: {
 		type: NodeType.#Ref
-		id: Identifier.#Ref
+		id:   Identifier.#Ref
 		init: Expression.#Ref
 	}
 }

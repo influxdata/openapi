@@ -28,7 +28,7 @@ HeatmapViewProperties: {
 			enum: ["heatmap"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
@@ -83,15 +83,15 @@ HeatmapViewProperties: {
 			items: type: "number"
 			maxItems: 2
 		}
-		xAxisLabel: type: "string"
-		yAxisLabel: type: "string"
-		xPrefix: type: "string"
-		xSuffix: type: "string"
-		yPrefix: type: "string"
-		ySuffix: type: "string"
-		binSize: type: "number"
+		xAxisLabel: type:         "string"
+		yAxisLabel: type:         "string"
+		xPrefix: type:            "string"
+		xSuffix: type:            "string"
+		yPrefix: type:            "string"
+		ySuffix: type:            "string"
+		binSize: type:            "number"
 		legendColorizeRows: type: "boolean"
-		legendHide: type: "boolean"
+		legendHide: type:         "boolean"
 		legendOpacity: {
 			type:   "number"
 			format: "float"

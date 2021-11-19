@@ -4,7 +4,7 @@ OptionStatement: {
 	description: "A single variable declaration"
 	type:        "object"
 	properties: {
-		type: NodeType.#Ref
+		type:       NodeType.#Ref
 		assignment: VariableOrMemberAssignment
 	}
 }

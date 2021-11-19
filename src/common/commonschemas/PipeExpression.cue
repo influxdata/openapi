@@ -4,8 +4,8 @@ PipeExpression: {
 	description: "Call expression with pipe argument"
 	type:        "object"
 	properties: {
-		type: NodeType.#Ref
+		type:     NodeType.#Ref
 		argument: Expression.#Ref
-		call: CallExpression.#Ref
+		call:     CallExpression.#Ref
 	}
 }

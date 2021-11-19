@@ -49,7 +49,7 @@ cloud: {
 
 			"""
 	}, {
-		name: "Authorizations"
+		name:        "Authorizations"
 		description: """
 			Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. Optionally, you can restrict an authorization and its token to a specific user.
 
@@ -137,47 +137,47 @@ cloud: {
 	}]
 	paths: {
 		common.#Paths
-		"/users": $ref: "./cloud/paths/users.yml"
-		"/users/{userID}": $ref: "./cloud/paths/users_userID.yml"
-		"/setup": $ref: "./cloud/paths/setup.yml"
-		"/setup/user": $ref: "./cloud/paths/setup_user.yml"
-		"/authorizations": $ref: "./cloud/paths/authorizations.yml"
-		"/experimental/sampledata/buckets": $ref: "./cloud/paths/experimental_sampledata_buckets.yml"
-		"/experimental/sampledata/buckets/{bucketID}/members": $ref: "./cloud/paths/experimental_sampledata_buckets_members.yml"
-		"/authorizations/{authID}": $ref: "./cloud/paths/authorizations_authID.yml"
-		"/variables": $ref: "./cloud/paths/variables.yml"
-		"/variables/{variableID}": $ref: "./cloud/paths/variables_variableID.yml"
-		"/buckets/{bucketID}/schema/measurements": $ref: "./cloud/paths/measurements.yml"
+		"/users": $ref:                                                  "./cloud/paths/users.yml"
+		"/users/{userID}": $ref:                                         "./cloud/paths/users_userID.yml"
+		"/setup": $ref:                                                  "./cloud/paths/setup.yml"
+		"/setup/user": $ref:                                             "./cloud/paths/setup_user.yml"
+		"/authorizations": $ref:                                         "./cloud/paths/authorizations.yml"
+		"/experimental/sampledata/buckets": $ref:                        "./cloud/paths/experimental_sampledata_buckets.yml"
+		"/experimental/sampledata/buckets/{bucketID}/members": $ref:     "./cloud/paths/experimental_sampledata_buckets_members.yml"
+		"/authorizations/{authID}": $ref:                                "./cloud/paths/authorizations_authID.yml"
+		"/variables": $ref:                                              "./cloud/paths/variables.yml"
+		"/variables/{variableID}": $ref:                                 "./cloud/paths/variables_variableID.yml"
+		"/buckets/{bucketID}/schema/measurements": $ref:                 "./cloud/paths/measurements.yml"
 		"/buckets/{bucketID}/schema/measurements/{measurementID}": $ref: "./cloud/paths/measurements_measurementID.yml"
-		"/orgs/{orgID}/limits": $ref: "./cloud/paths/orgs_orgID_limits_get.yml"
-		"/orgs/{orgID}/usage": $ref: "./cloud/paths/orgs_orgID_usage.yml"
-		"/dashboards": $ref: "./cloud/paths/dashboards.yml"
-		"/tasks": $ref: "./cloud/paths/tasks.yml"
-		"/write": $ref: "./cloud/paths/write.yml"
+		"/orgs/{orgID}/limits": $ref:                                    "./cloud/paths/orgs_orgID_limits_get.yml"
+		"/orgs/{orgID}/usage": $ref:                                     "./cloud/paths/orgs_orgID_usage.yml"
+		"/dashboards": $ref:                                             "./cloud/paths/dashboards.yml"
+		"/tasks": $ref:                                                  "./cloud/paths/tasks.yml"
+		"/write": $ref:                                                  "./cloud/paths/write.yml"
 	}
 	components: {
 		parameters: common.#Parameters
 		schemas: {
 			common.#Schemas
-			DemoDataBucket: $ref: "./cloud/schemas/DemoDataBucket.yml"
-			DemoDataBuckets: $ref: "./cloud/schemas/DemoDataBuckets.yml"
-			Resource: $ref: "./cloud/schemas/Resource.yml"
-			Permission: $ref: "./cloud/schemas/Permission.yml"
-			Authorization: $ref: "./cloud/schemas/Authorization.yml"
-			Authorizations: $ref: "./cloud/schemas/Authorizations.yml"
-			User: $ref: "./cloud/schemas/User.yml"
-			Users: $ref: "./cloud/schemas/Users.yml"
-			OnboardingRequest: $ref: "./cloud/schemas/OnboardingRequest.yml"
-			OnboardingResponse: $ref: "./cloud/schemas/OnboardingResponse.yml"
-			Limit: $ref: "./cloud/schemas/Limit.yml"
-			Variable: $ref: "./cloud/schemas/Variable.yml"
-			Variables: $ref: "./cloud/schemas/Variables.yml"
-			ColumnDataType: $ref: "./cloud/schemas/ColumnDataType.yml"
-			ColumnSemanticType: $ref: "./cloud/schemas/ColumnSemanticType.yml"
-			MeasurementSchema: $ref: "./cloud/schemas/MeasurementSchema.yml"
-			MeasurementSchemaColumn: $ref: "./cloud/schemas/MeasurementSchemaColumn.yml"
+			DemoDataBucket: $ref:                 "./cloud/schemas/DemoDataBucket.yml"
+			DemoDataBuckets: $ref:                "./cloud/schemas/DemoDataBuckets.yml"
+			Resource: $ref:                       "./cloud/schemas/Resource.yml"
+			Permission: $ref:                     "./cloud/schemas/Permission.yml"
+			Authorization: $ref:                  "./cloud/schemas/Authorization.yml"
+			Authorizations: $ref:                 "./cloud/schemas/Authorizations.yml"
+			User: $ref:                           "./cloud/schemas/User.yml"
+			Users: $ref:                          "./cloud/schemas/Users.yml"
+			OnboardingRequest: $ref:              "./cloud/schemas/OnboardingRequest.yml"
+			OnboardingResponse: $ref:             "./cloud/schemas/OnboardingResponse.yml"
+			Limit: $ref:                          "./cloud/schemas/Limit.yml"
+			Variable: $ref:                       "./cloud/schemas/Variable.yml"
+			Variables: $ref:                      "./cloud/schemas/Variables.yml"
+			ColumnDataType: $ref:                 "./cloud/schemas/ColumnDataType.yml"
+			ColumnSemanticType: $ref:             "./cloud/schemas/ColumnSemanticType.yml"
+			MeasurementSchema: $ref:              "./cloud/schemas/MeasurementSchema.yml"
+			MeasurementSchemaColumn: $ref:        "./cloud/schemas/MeasurementSchemaColumn.yml"
 			MeasurementSchemaCreateRequest: $ref: "./cloud/schemas/MeasurementSchemaCreateRequest.yml"
-			MeasurementSchemaList: $ref: "./cloud/schemas/MeasurementSchemaList.yml"
+			MeasurementSchemaList: $ref:          "./cloud/schemas/MeasurementSchemaList.yml"
 			MeasurementSchemaUpdateRequest: $ref: "./cloud/schemas/MeasurementSchemaUpdateRequest.yml"
 		}
 		responses: ServerError: $ref: "./common/responses/ServerError.yml"
@@ -186,7 +186,7 @@ cloud: {
 				type:         "http"
 				scheme:       "token"
 				bearerFormat: "InfluxDB token string"
-				description: """
+				description:  """
 					### Token authentication scheme
 
 					InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.
@@ -210,8 +210,8 @@ cloud: {
 			}
 
 			BasicAuthentication: {
-				type:   "http"
-				scheme: "basic"
+				type:        "http"
+				scheme:      "basic"
 				description: """
 					### Basic authentication scheme
 
@@ -234,9 +234,9 @@ cloud: {
 			}
 
 			QuerystringAuthentication: {
-				type: "apiKey"
-				in:   "query"
-				name: "u=&p="
+				type:        "apiKey"
+				in:          "query"
+				name:        "u=&p="
 				description: """
 					### Querystring authentication scheme
 

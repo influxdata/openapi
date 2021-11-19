@@ -11,7 +11,7 @@ ThresholdCheck: allOf: [{
 			enum: ["threshold"]
 		}
 		thresholds: {
-			type: "array"
+			type:  "array"
 			items: Threshold.#Ref
 		}
 		every: {
@@ -28,7 +28,7 @@ ThresholdCheck: allOf: [{
 			items: {
 				type: "object"
 				properties: {
-					key: type: "string"
+					key: type:   "string"
 					value: type: "string"
 				}
 			}

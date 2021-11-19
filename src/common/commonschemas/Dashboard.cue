@@ -18,12 +18,12 @@ Dashboard: {
 					org:     "/api/v2/labels/1"
 				}
 				properties: {
-					self: Link.#Ref
-					cells: Link.#Ref
+					self:    Link.#Ref
+					cells:   Link.#Ref
 					members: Link.#Ref
-					owners: Link.#Ref
-					labels: Link.#Ref
-					org: Link.#Ref
+					owners:  Link.#Ref
+					labels:  Link.#Ref
+					org:     Link.#Ref
 				}
 			}
 			id: {
@@ -43,7 +43,7 @@ Dashboard: {
 					}
 				}
 			}
-			cells: Cells.#Ref
+			cells:  Cells.#Ref
 			labels: Labels.#Ref
 		}
 	}]

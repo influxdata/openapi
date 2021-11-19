@@ -3,8 +3,8 @@ package commonschemas
 TemplateApply: {
 	type: "object"
 	properties: {
-		dryRun: type: "boolean"
-		orgID: type: "string"
+		dryRun: type:  "boolean"
+		orgID: type:   "string"
 		stackID: type: "string"
 		template: {
 			type: "object"
@@ -52,7 +52,7 @@ TemplateApply: {
 			items: {
 				type: "object"
 				properties: {
-					url: type: "string"
+					url: type:         "string"
 					contentType: type: "string"
 				}
 				required: ["url"]

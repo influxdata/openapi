@@ -13,12 +13,12 @@ File: {
 		imports: {
 			description: "A list of package imports"
 			type:        "array"
-			items: ImportDeclaration.#Ref
+			items:       ImportDeclaration.#Ref
 		}
 		body: {
 			description: "List of Flux statements"
 			type:        "array"
-			items: Statement.#Ref
+			items:       Statement.#Ref
 		}
 	}
 }

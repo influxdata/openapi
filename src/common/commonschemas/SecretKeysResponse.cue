@@ -9,7 +9,7 @@ SecretKeysResponse: allOf: [{
 		type:     "object"
 		properties: {
 			self: type: "string"
-			org: type: "string"
+			org: type:  "string"
 		}
 	}
 }]

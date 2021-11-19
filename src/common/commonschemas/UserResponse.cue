@@ -7,7 +7,7 @@ UserResponse: {
 			type:     "string"
 		}
 		oauthID: type: "string"
-		name: type: "string"
+		name: type:    "string"
 		status: {
 			description: "If inactive the user is inactive."
 			default:     "active"

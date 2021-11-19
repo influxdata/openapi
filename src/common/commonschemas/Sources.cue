@@ -11,7 +11,7 @@ Sources: {
 			}
 		}
 		sources: {
-			type: "array"
+			type:  "array"
 			items: Source.#Ref
 		}
 	}

@@ -8,7 +8,7 @@ Block: {
 		body: {
 			description: "Block body"
 			type:        "array"
-			items: Statement.#Ref
+			items:       Statement.#Ref
 		}
 	}
 }

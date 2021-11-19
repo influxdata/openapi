@@ -1,6 +1,6 @@
 package ossschemas
 
 BucketMetadataManifests: {
-	type: "array"
+	type:  "array"
 	items: BucketMetadataManifest.#Ref
 }

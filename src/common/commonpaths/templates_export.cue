@@ -21,7 +21,7 @@ templates_export: post: {
 		"200": {
 			description: "The template was created successfully. Returns the newly created template."
 			content: {
-				"application/json": schema: commonschemas.Template.#Ref
+				"application/json": schema:   commonschemas.Template.#Ref
 				"application/x-yaml": schema: commonschemas.Template.#Ref
 			}
 		}

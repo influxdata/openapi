@@ -5,6 +5,6 @@ BuiltinStatement: {
 	type:        "object"
 	properties: {
 		type: NodeType.#Ref
-		id: Identifier.#Ref
+		id:   Identifier.#Ref
 	}
 }

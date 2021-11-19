@@ -6,7 +6,7 @@ LogicalExpression: {
 	properties: {
 		type: NodeType.#Ref
 		operator: type: "string"
-		left: Expression.#Ref
+		left:  Expression.#Ref
 		right: Expression.#Ref
 	}
 }

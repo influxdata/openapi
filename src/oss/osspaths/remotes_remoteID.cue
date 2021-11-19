@@ -26,7 +26,7 @@ remotes_remoteID: {
 				description: "Remote connection"
 				content: "application/json": schema: ossschemas.RemoteConnection.#Ref
 			}
-			"404": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}
@@ -63,8 +63,8 @@ remotes_remoteID: {
 				description: "Updated information saved"
 				content: "application/json": schema: ossschemas.RemoteConnection.#Ref
 			}
-			"404": commonresponses.ServerError.#Ref
-			"400": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
+			"400":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}
@@ -85,7 +85,7 @@ remotes_remoteID: {
 		}]
 		responses: {
 			"204": description: "Remote connection info deleted."
-			"404": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}

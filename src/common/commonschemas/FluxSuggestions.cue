@@ -3,7 +3,7 @@ package commonschemas
 FluxSuggestions: {
 	type: "object"
 	properties: funcs: {
-		type: "array"
+		type:  "array"
 		items: FluxSuggestion.#Ref
 	}
 }

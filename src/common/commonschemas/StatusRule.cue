@@ -3,9 +3,9 @@ package commonschemas
 StatusRule: {
 	type: "object"
 	properties: {
-		currentLevel: RuleStatusLevel.#Ref
+		currentLevel:  RuleStatusLevel.#Ref
 		previousLevel: RuleStatusLevel.#Ref
-		count: type: "integer"
+		count: type:  "integer"
 		period: type: "string"
 	}
 }

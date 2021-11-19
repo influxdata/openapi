@@ -16,7 +16,7 @@ Package: {
 		files: {
 			description: "Package files"
 			type:        "array"
-			items: File.#Ref
+			items:       File.#Ref
 		}
 	}
 }

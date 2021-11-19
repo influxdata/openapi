@@ -8,9 +8,9 @@ BucketMetadataManifest: {
 			type: "string"
 		}
 		organizationName: type: "string"
-		bucketID: type: "string"
-		bucketName: type: "string"
-		description: type: "string"
+		bucketID: type:         "string"
+		bucketName: type:       "string"
+		description: type:      "string"
 
 		// 1.x / storage-engine fields
 		defaultRetentionPolicy: {

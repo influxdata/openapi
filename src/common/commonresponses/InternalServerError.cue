@@ -1,5 +1,7 @@
 package commonresponses
+
 import "github.com/influxdata/openapi/src/common/commonschemas"
+
 InternalServerError: {
 	// This represents the body of a 500 error.
 	description: "Internal server error."

@@ -3,7 +3,7 @@ package commonschemas
 Telegrafs: {
 	type: "object"
 	properties: configurations: {
-		type: "array"
+		type:  "array"
 		items: Telegraf.#Ref
 	}
 }

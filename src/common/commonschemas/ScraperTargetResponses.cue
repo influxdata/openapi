@@ -3,7 +3,7 @@ package commonschemas
 ScraperTargetResponses: {
 	type: "object"
 	properties: configurations: {
-		type: "array"
+		type:  "array"
 		items: ScraperTargetResponse.#Ref
 	}
 }

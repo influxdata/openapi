@@ -3,7 +3,7 @@ package schemas
 Stream: {
 	type: "object"
 	properties: {
-		stream: type: "string"
+		stream: type:      "string"
 		description: type: "string"
 	}
 }

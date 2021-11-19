@@ -26,7 +26,7 @@ replications_replicationID: {
 				description: "Replication"
 				content: "application/json": schema: ossschemas.Replication.#Ref
 			}
-			"404": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}
@@ -63,8 +63,8 @@ replications_replicationID: {
 				description: "Updated information saved"
 				content: "application/json": schema: ossschemas.Replication.#Ref
 			}
-			"404": commonresponses.ServerError.#Ref
-			"400": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
+			"400":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}
@@ -85,7 +85,7 @@ replications_replicationID: {
 		}]
 		responses: {
 			"204": description: "Replication deleted."
-			"404": commonresponses.ServerError.#Ref
+			"404":   commonresponses.ServerError.#Ref
 			default: commonresponses.ServerError.#Ref
 		}
 	}

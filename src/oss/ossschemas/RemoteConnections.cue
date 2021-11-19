@@ -5,7 +5,7 @@ RemoteConnections: {
 	properties: {
 		// TODO(danmoran): Add pagination / links?
 		remotes: {
-			type: "array"
+			type:  "array"
 			items: RemoteConnection.#Ref
 		}
 	}

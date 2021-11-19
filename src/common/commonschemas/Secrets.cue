@@ -2,5 +2,5 @@ package commonschemas
 
 Secrets: {
 	additionalProperties: type: "string"
-	example: apikey: "abc123xyz"
+	example: apikey:            "abc123xyz"
 }

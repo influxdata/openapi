@@ -20,13 +20,13 @@ XYViewProperties: {
 			enum: ["xy"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -37,7 +37,7 @@ XYViewProperties: {
 			description: "If true, will display note when empty"
 			type:        "boolean"
 		}
-		axes: Axes.#Ref
+		axes:         Axes.#Ref
 		staticLegend: StaticLegend.#Ref
 		xColumn: type: "string"
 		generateXAxisTicks: {
@@ -78,7 +78,7 @@ XYViewProperties: {
 		}
 		geom: XYGeom.#Ref
 		legendColorizeRows: type: "boolean"
-		legendHide: type: "boolean"
+		legendHide: type:         "boolean"
 		legendOpacity: {
 			type:   "number"
 			format: "float"

@@ -22,13 +22,13 @@ GaugeViewProperties: {
 			enum: ["gauge"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		shape: {
 			type: "string"
@@ -39,9 +39,9 @@ GaugeViewProperties: {
 			description: "If true, will display note when empty"
 			type:        "boolean"
 		}
-		prefix: type: "string"
+		prefix: type:     "string"
 		tickPrefix: type: "string"
-		suffix: type: "string"
+		suffix: type:     "string"
 		tickSuffix: type: "string"
 		decimalPlaces: DecimalPlaces.#Ref
 	}

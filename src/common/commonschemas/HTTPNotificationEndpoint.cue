@@ -8,10 +8,10 @@ HTTPNotificationEndpoint: {
 		type: "object"
 		required: ["url", "authMethod", "method"]
 		properties: {
-			url: type: "string"
+			url: type:      "string"
 			username: type: "string"
 			password: type: "string"
-			token: type: "string"
+			token: type:    "string"
 			method: {
 				type: "string"
 				enum: ["POST", "GET", "PUT"]

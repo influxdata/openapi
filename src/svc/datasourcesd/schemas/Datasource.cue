@@ -10,7 +10,7 @@ Datasource: {
 			readOnly: true
 		}
 		orgID: type: "string"
-		name: type: "string"
+		name: type:  "string"
 		config: {
 			type:        "object"
 			description: "an object containing the configuration for the plugin"

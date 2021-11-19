@@ -3,7 +3,7 @@ package commonschemas
 TelegrafRequest: {
 	type: "object"
 	properties: {
-		name: type: "string"
+		name: type:        "string"
 		description: type: "string"
 		metadata: {
 			type: "object"
@@ -13,6 +13,6 @@ TelegrafRequest: {
 			}
 		}
 		config: type: "string"
-		orgID: type: "string"
+		orgID: type:  "string"
 	}
 }

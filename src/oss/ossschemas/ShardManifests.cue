@@ -1,6 +1,6 @@
 package ossschemas
 
 ShardManifests: {
-	type: "array"
+	type:  "array"
 	items: ShardManifest.#Ref
 }

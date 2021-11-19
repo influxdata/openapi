@@ -3,9 +3,9 @@ package ossschemas
 RemoteConnection: {
 	type: "object"
 	properties: {
-		id: type: "string"
-		name: type: "string"
-		orgID: type: "string"
+		id: type:          "string"
+		name: type:        "string"
+		orgID: type:       "string"
 		description: type: "string"
 		remoteURL: {
 			type:   "string"

@@ -9,7 +9,7 @@ GeoViewProperties: {
 			enum: ["geo"]
 		}
 		queries: {
-			type: "array"
+			type:  "array"
 			items: DashboardQuery.#Ref
 		}
 		shape: {
@@ -71,12 +71,12 @@ GeoViewProperties: {
 		colors: {
 			description: "Colors define color encoding of data into a visualization"
 			type:        "array"
-			items: DashboardColor.#Ref
+			items:       DashboardColor.#Ref
 		}
 		layers: {
 			description: "List of individual layers shown in the map"
 			type:        "array"
-			items: GeoViewLayer.#Ref
+			items:       GeoViewLayer.#Ref
 		}
 	}
 }

@@ -5,7 +5,7 @@ LabelCreateRequest: {
 	required: ["orgID", "name"]
 	properties: {
 		orgID: type: "string"
-		name: type: "string"
+		name: type:  "string"
 		properties: {
 			type: "object"
 			additionalProperties: type: "string"

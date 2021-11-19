@@ -30,16 +30,16 @@ Variable: {
 			readOnly: true
 			type:     "string"
 		}
-		orgID: type: "string"
-		name: type: "string"
+		orgID: type:       "string"
+		name: type:        "string"
 		description: type: "string"
 		selected: {
 			type: "array"
 			items: type: "string"
 		}
 		sort_order: type: "integer"
-		labels: $ref: "../../common/schemas/Labels.yml"
-		arguments: $ref: "../../common/schemas/VariableProperties.yml"
+		labels: $ref:     "../../common/schemas/Labels.yml"
+		arguments: $ref:  "../../common/schemas/VariableProperties.yml"
 		createdAt: {
 			type:   "string"
 			format: "date-time"

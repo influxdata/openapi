@@ -19,7 +19,7 @@ datasources: {
 			content: "application/json": schema: {
 				type: "object"
 				properties: {
-					id: type: "string"
+					id: type:       "string"
 					endpoint: $ref: "../schemas/ListenerEndpoint.yml"
 				}
 			}
@@ -28,7 +28,7 @@ datasources: {
 		requestBody: content: "application/json": schema: {
 			type: "object"
 			properties: {
-				name: type: "string"
+				name: type:   "string"
 				config: type: "object"
 			}
 		}

@@ -1,6 +1,6 @@
 package ossschemas
 
 ShardOwners: {
-	type: "array"
+	type:  "array"
 	items: ShardOwner.#Ref
 }

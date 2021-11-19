@@ -49,10 +49,10 @@ DemoDataBucket: {
 			type:     "string"
 			default:  "demodata"
 		}
-		name: type: "string"
+		name: type:        "string"
 		description: type: "string"
-		orgID: type: "string"
-		rp: type: "string"
+		orgID: type:       "string"
+		rp: type:          "string"
 		schemaType: {
 			$ref:    "../../common/schemas/SchemaType.yml"
 			default: "implicit"
@@ -68,7 +68,7 @@ DemoDataBucket: {
 			readOnly: true
 		}
 		retentionRules: $ref: "../../common/schemas/RetentionRules.yml"
-		labels: $ref: "../../common/schemas/Labels.yml"
+		labels: $ref:         "../../common/schemas/Labels.yml"
 	}
 	required: ["name", "retentionRules"]
 }

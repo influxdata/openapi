@@ -18,7 +18,7 @@ let common = commonpkg & {
 	paths: common.#Paths
 	components: {
 		parameters: common.#Parameters
-		schemas: common.#Schemas
+		schemas:    common.#Schemas
 		responses: ServerError: $ref: "./common/responses/ServerError.yml"
 	}
 }

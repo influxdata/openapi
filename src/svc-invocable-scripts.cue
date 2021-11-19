@@ -24,21 +24,21 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/scripts": $ref: "./svc/invocable-scripts/paths/scripts.yml"
-		"/scripts/{scriptID}": $ref: "./svc/invocable-scripts/paths/scripts_scriptID.yml"
+		"/scripts": $ref:                   "./svc/invocable-scripts/paths/scripts.yml"
+		"/scripts/{scriptID}": $ref:        "./svc/invocable-scripts/paths/scripts_scriptID.yml"
 		"/scripts/{scriptID}/invoke": $ref: "./svc/invocable-scripts/paths/scripts_scriptID_invoke.yml"
 	}
 	components: {
 		responses: ServerError: $ref: "./common/responses/ServerError.yml"
 		schemas: {
-			Error: $ref: "./common/schemas/Error.yml"
-			Script: $ref: "./svc/invocable-scripts/schemas/Script.yml"
-			Scripts: $ref: "./svc/invocable-scripts/schemas/Scripts.yml"
-			ScriptCreateRequest: $ref: "./svc/invocable-scripts/schemas/ScriptCreateRequest.yml"
-			ScriptUpdateRequest: $ref: "./svc/invocable-scripts/schemas/ScriptUpdateRequest.yml"
+			Error: $ref:                  "./common/schemas/Error.yml"
+			Script: $ref:                 "./svc/invocable-scripts/schemas/Script.yml"
+			Scripts: $ref:                "./svc/invocable-scripts/schemas/Scripts.yml"
+			ScriptCreateRequest: $ref:    "./svc/invocable-scripts/schemas/ScriptCreateRequest.yml"
+			ScriptUpdateRequest: $ref:    "./svc/invocable-scripts/schemas/ScriptUpdateRequest.yml"
 			ScriptHTTPResponseData: $ref: "./svc/invocable-scripts/schemas/ScriptHTTPResponseData.yml"
 			ScriptInvocationParams: $ref: "./svc/invocable-scripts/schemas/ScriptInvocationParams.yml"
-			ScriptLanguage: $ref: "./svc/invocable-scripts/schemas/ScriptLanguage.yml"
+			ScriptLanguage: $ref:         "./svc/invocable-scripts/schemas/ScriptLanguage.yml"
 		}
 	}
 }

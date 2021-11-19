@@ -32,7 +32,7 @@ stacks: {
 				content: "application/json": schema: {
 					type: "object"
 					properties: stacks: {
-						type: "array"
+						type:  "array"
 						items: commonschemas.Stack.#Ref
 					}
 				}
@@ -56,8 +56,8 @@ stacks: {
 				type:  "object"
 				title: "PostStackRequest"
 				properties: {
-					orgID: type: "string"
-					name: type: "string"
+					orgID: type:       "string"
+					name: type:        "string"
 					description: type: "string"
 					urls: {
 						type: "array"

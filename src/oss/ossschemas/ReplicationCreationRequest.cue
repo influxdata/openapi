@@ -3,11 +3,11 @@ package ossschemas
 ReplicationCreationRequest: {
 	type: "object"
 	properties: {
-		name: type: "string"
-		description: type: "string"
-		orgID: type: "string"
-		remoteID: type: "string"
-		localBucketID: type: "string"
+		name: type:           "string"
+		description: type:    "string"
+		orgID: type:          "string"
+		remoteID: type:       "string"
+		localBucketID: type:  "string"
 		remoteBucketID: type: "string"
 		maxQueueSizeBytes: {
 			type:    "integer"

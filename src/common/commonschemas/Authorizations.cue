@@ -8,7 +8,7 @@ Authorizations: {
 			Links.#Ref
 		}
 		authorizations: {
-			type: "array"
+			type:  "array"
 			items: Authorization.#Ref
 		}
 	}

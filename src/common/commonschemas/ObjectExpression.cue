@@ -8,7 +8,7 @@ ObjectExpression: {
 		properties: {
 			description: "Object properties"
 			type:        "array"
-			items: Property.#Ref
+			items:       Property.#Ref
 		}
 	}
 }

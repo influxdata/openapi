@@ -2,7 +2,7 @@ package commonschemas
 
 NotificationEndpoints: properties: {
 	notificationEndpoints: {
-		type: "array"
+		type:  "array"
 		items: NotificationEndpoint.#Ref
 	}
 	links: Links.#Ref

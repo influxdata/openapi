@@ -4,9 +4,9 @@ TelegrafPlugins: {
 	type: "object"
 	properties: {
 		version: type: "string"
-		os: type: "string"
+		os: type:      "string"
 		plugins: {
-			type: "array"
+			type:  "array"
 			items: TelegrafPlugin.#Ref
 		}
 	}
