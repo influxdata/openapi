@@ -1,5 +1,11 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 orgs_orgId_invites: {
 	get: {
 		operationId: "GetInvites"
@@ -7,7 +13,7 @@ orgs_orgId_invites: {
 			"Invites",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "path"
 			name:        "orgId"
@@ -18,19 +24,19 @@ orgs_orgId_invites: {
 		responses: {
 			"200": {
 				description: "A list of cloud invites"
-				content: "application/json": schema: $ref: "../schemas/Invites.yml"
+				content: "application/json": schema: unityschemas.Invites.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Session user not owner or Org not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -42,7 +48,7 @@ orgs_orgId_invites: {
 		]
 		summary: "Creates an invite to an organization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "orgId"
@@ -53,36 +59,36 @@ orgs_orgId_invites: {
 		requestBody: {
 			description: "Invite to be sent"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Invite.yml"
+			content: "application/json": schema: unityschemas.Invite.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Invite sent"
-				content: "application/json": schema: $ref: "../schemas/Invite.yml"
+				content: "application/json": schema: unityschemas.Invite.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Session user not owner or Org not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"409": {
 				description: "Conflict with invite email"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"422": {
 				description: "Missing information"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"429": {
 				description: "Too many requests"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

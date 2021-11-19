@@ -8,7 +8,7 @@ Invite: {
 			type:        "number"
 		}
 		email: type: "string"
-		role: $ref: "./Role.yml"
+		role: Role.#Ref
 		expiresAt: {
 			description: "when the invite will expire"
 			readOnly:    true

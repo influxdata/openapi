@@ -2,5 +2,5 @@ package annotationdschemas
 
 StreamList: {
 	type: "array"
-	items: $ref: "../schemas/ReadStream.yml"
+	items: ReadStream.#Ref
 }

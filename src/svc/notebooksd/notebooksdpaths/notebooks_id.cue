@@ -1,5 +1,11 @@
 package notebooksdpaths
 
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 notebooks_id: {
 	get: {
 		summary:     "get single Notebook by its ID"
@@ -16,11 +22,11 @@ notebooks_id: {
 		responses: {
 			"200": {
 				description: "returns the Notebook record"
-				content: "application/json": schema: $ref: "../schemas/Notebook.yml"
+				content: "application/json": schema: notebooksdschemas.Notebook.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	delete: {
@@ -36,11 +42,11 @@ notebooks_id: {
 			required: true
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"404": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"404": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	put: {
@@ -55,15 +61,15 @@ notebooks_id: {
 			schema: type: "string"
 			required: true
 		}]
-		requestBody: $ref: "../requestBodies/NotebookParams.yml"
+		requestBody: notebooksdrequestBodies.NotebookParams.#Ref
 		responses: {
 			"200": {
 				description: "returns the Notebook record"
-				content: "application/json": schema: $ref: "../schemas/Notebook.yml"
+				content: "application/json": schema: notebooksdschemas.Notebook.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	patch: {
@@ -78,15 +84,15 @@ notebooks_id: {
 			schema: type: "string"
 			required: true
 		}]
-		requestBody: $ref: "../requestBodies/NotebookParams.yml"
+		requestBody: notebooksdrequestBodies.NotebookParams.#Ref
 		responses: {
 			"200": {
 				description: "returns the Notebook record"
-				content: "application/json": schema: $ref: "../schemas/Notebook.yml"
+				content: "application/json": schema: notebooksdschemas.Notebook.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

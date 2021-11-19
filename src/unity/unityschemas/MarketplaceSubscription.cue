@@ -2,7 +2,7 @@ package unityschemas
 
 MarketplaceSubscription: {
 	properties: {
-		marketplace: $ref: "./MarketplaceType.yml"
+		marketplace: MarketplaceType.#Ref
 		status: {
 			type: "string"
 			enum: [

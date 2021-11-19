@@ -1,5 +1,11 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 operator_orgs_orgId: get: {
 	operationId: "GetOrganizationById"
 	tags: [
@@ -8,7 +14,7 @@ operator_orgs_orgId: get: {
 	]
 	summary: "Get organization by id"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "orgId"
@@ -20,20 +26,20 @@ operator_orgs_orgId: get: {
 		"200": {
 			description: "Organization"
 			content: "application/json": schema: allOf: [{
-				$ref: "../schemas/Organization.yml"
+				unityschemas.Organization.#Ref
 			}]
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Org not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

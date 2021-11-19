@@ -1,5 +1,17 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/unity/unitypaths"
+
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 unity: {
 	openapi: "3.0.0"
 	info: {
@@ -10,91 +22,91 @@ unity: {
 		url: "/api/v2/quartz"
 	}]
 	paths: {
-		"/me": $ref:                                           "./unity/paths/me.yml"
-		"/account": $ref:                                      "./unity/paths/account.yml"
-		"/accounts": $ref:                                     "./unity/paths/accounts.yml"
-		"/accounts/default": $ref:                             "./unity/paths/accounts_default.yml"
-		"/billing": $ref:                                      "./unity/paths/billing.yml"
-		"/marketplace": $ref:                                  "./unity/paths/marketplace.yml"
-		"/billing/start_date": $ref:                           "./unity/paths/billing_start_date.yml"
-		"/usage/vectors": $ref:                                "./unity/paths/usage_vectors.yml"
-		"/usage/{vector_name}": $ref:                          "./unity/paths/usage_vector_name.yml"
-		"/usage/billing_stats": $ref:                          "./unity/paths/usage_billing_stats.yml"
-		"/usage/rate_limits": $ref:                            "./unity/paths/usage_rate_limits.yml"
-		"/settings/notifications": $ref:                       "./unity/paths/settings_notifications.yml"
-		"/billing/contact": $ref:                              "./unity/paths/billing_contact.yml"
-		"/payment_form/{form}": $ref:                          "./unity/paths/payment_form.yml"
-		"/billing/payment_method": $ref:                       "./unity/paths/billing_payment_method.yml"
-		"/billing/invoices": $ref:                             "./unity/paths/billing_invoices.yml"
-		"/billing/invoices/{invoiceId}": $ref:                 "./unity/paths/billing_invoices_invoiceId.yml"
-		"/orgs/{orgId}/invites": $ref:                         "./unity/paths/orgs_orgId_invites.yml"
-		"/orgs/{orgId}/invites/{inviteId}": $ref:              "./unity/paths/orgs_orgId_invites_inviteId.yml"
-		"/orgs/{orgId}/invites/{inviteId}/resend": $ref:       "./unity/paths/orgs_orgId_invites_inviteId_resend.yml"
-		"/orgs/{orgId}/users": $ref:                           "./unity/paths/orgs_orgId_users.yml"
-		"/orgs/{orgId}/users/{userId}": $ref:                  "./unity/paths/orgs_orgId_users_userId.yml"
-		"/orgs/{orgId}/limits": $ref:                          "./unity/paths/orgs_orgId_limits.yml"
-		"/checkout": $ref:                                     "./unity/paths/checkout.yml"
-		"/cancel": $ref:                                       "./unity/paths/cancel.yml"
-		"/operator/accounts": $ref:                            "./unity/paths/operator_accounts.yml"
-		"/operator/accounts/{accountId}": $ref:                "./unity/paths/operator_accounts_accountId.yml"
-		"/operator/accounts/{accountId}/users/{userId}": $ref: "./unity/paths/operator_accounts_accountId_users_userId.yml"
-		"/operator/orgs": $ref:                                "./unity/paths/operator_orgs.yml"
-		"/operator/orgs/{orgId}": $ref:                        "./unity/paths/operator_orgs_orgId.yml"
-		"/operator/orgs/{orgId}/limits": $ref:                 "./unity/paths/operator_orgs_orgId_limits.yml"
-		"/auth/connection": $ref:                              "./unity/paths/sso.yml"
+		"/me": unitypaths.me.#Ref
+		"/account": unitypaths.account.#Ref
+		"/accounts": unitypaths.accounts.#Ref
+		"/accounts/default": unitypaths.accounts_default.#Ref
+		"/billing": unitypaths.billing.#Ref
+		"/marketplace": unitypaths.marketplace.#Ref
+		"/billing/start_date": unitypaths.billing_start_date.#Ref
+		"/usage/vectors": unitypaths.usage_vectors.#Ref
+		"/usage/{vector_name}": unitypaths.usage_vector_name.#Ref
+		"/usage/billing_stats": unitypaths.usage_billing_stats.#Ref
+		"/usage/rate_limits": unitypaths.usage_rate_limits.#Ref
+		"/settings/notifications": unitypaths.settings_notifications.#Ref
+		"/billing/contact": unitypaths.billing_contact.#Ref
+		"/payment_form/{form}": unitypaths.payment_form.#Ref
+		"/billing/payment_method": unitypaths.billing_payment_method.#Ref
+		"/billing/invoices": unitypaths.billing_invoices.#Ref
+		"/billing/invoices/{invoiceId}": unitypaths.billing_invoices_invoiceId.#Ref
+		"/orgs/{orgId}/invites": unitypaths.orgs_orgId_invites.#Ref
+		"/orgs/{orgId}/invites/{inviteId}": unitypaths.orgs_orgId_invites_inviteId.#Ref
+		"/orgs/{orgId}/invites/{inviteId}/resend": unitypaths.orgs_orgId_invites_inviteId_resend.#Ref
+		"/orgs/{orgId}/users": unitypaths.orgs_orgId_users.#Ref
+		"/orgs/{orgId}/users/{userId}": unitypaths.orgs_orgId_users_userId.#Ref
+		"/orgs/{orgId}/limits": unitypaths.orgs_orgId_limits.#Ref
+		"/checkout": unitypaths.checkout.#Ref
+		"/cancel": unitypaths.cancel.#Ref
+		"/operator/accounts": unitypaths.operator_accounts.#Ref
+		"/operator/accounts/{accountId}": unitypaths.operator_accounts_accountId.#Ref
+		"/operator/accounts/{accountId}/users/{userId}": unitypaths.operator_accounts_accountId_users_userId.#Ref
+		"/operator/orgs": unitypaths.operator_orgs.#Ref
+		"/operator/orgs/{orgId}": unitypaths.operator_orgs_orgId.#Ref
+		"/operator/orgs/{orgId}/limits": unitypaths.operator_orgs_orgId_limits.#Ref
+		"/auth/connection": unitypaths.sso.#Ref
 	}
 	components: {
-		parameters: TraceSpan: $ref: "./common/parameters/TraceSpan.yml"
+		parameters: TraceSpan: commonparameters.TraceSpan.#Ref
 		schemas: {
-			Error: $ref:                   "./common/schemas/Error.yml"
-			Marketplace: $ref:             "./unity/schemas/Marketplace.yml"
-			OperatorAccount: $ref:         "./unity/schemas/OperatorAccount.yml"
-			OperatorAccounts: $ref:        "./unity/schemas/OperatorAccounts.yml"
-			MarketplaceSubscription: $ref: "./unity/schemas/MarketplaceSubscription.yml"
-			User: $ref:                    "./unity/schemas/User.yml"
-			Users: $ref:                   "./unity/schemas/Users.yml"
-			MarketplaceType: $ref:         "./unity/schemas/MarketplaceType.yml"
-			TimeRange: $ref:               "./unity/schemas/TimeRange.yml"
-			VectorName: $ref:              "./unity/schemas/VectorName.yml"
-			Role: $ref:                    "./unity/schemas/Role.yml"
-			PaymentFormType: $ref:         "./unity/schemas/PaymentFormType.yml"
-			AccountType: $ref:             "./unity/schemas/AccountType.yml"
-			BillingInfo: $ref:             "./unity/schemas/BillingInfo.yml"
-			Region: $ref:                  "./unity/schemas/Region.yml"
-			BillingDate: $ref:             "./unity/schemas/BillingDate.yml"
-			BillingContact: $ref:          "./unity/schemas/BillingContact.yml"
-			BillingNotifySettings: $ref:   "./unity/schemas/BillingNotifySettings.yml"
-			CheckoutRequest: $ref:         "./unity/schemas/CheckoutRequest.yml"
-			Invite: $ref:                  "./unity/schemas/Invite.yml"
-			Invites: $ref:                 "./unity/schemas/Invites.yml"
-			PaymentMethodPut: $ref:        "./unity/schemas/PaymentMethodPut.yml"
-			CreditCardParams: $ref:        "./unity/schemas/CreditCardParams.yml"
-			PaymentMethod: $ref:           "./unity/schemas/PaymentMethod.yml"
-			UsageVectors: $ref:            "./unity/schemas/UsageVectors.yml"
-			UsageVector: $ref:             "./unity/schemas/UsageVector.yml"
-			Invoice: $ref:                 "./unity/schemas/Invoice.yml"
-			Invoices: $ref:                "./unity/schemas/Invoices.yml"
-			OrgUser: $ref:                 "./unity/schemas/OrgUser.yml"
-			Me: $ref:                      "./unity/schemas/Me.yml"
-			OrgUsers: $ref:                "./unity/schemas/OrgUsers.yml"
-			Organization: $ref:            "./unity/schemas/Organization.yml"
-			Organizations: $ref:           "./unity/schemas/Organizations.yml"
-			RelatedAccount: $ref:          "./unity/schemas/RelatedAccount.yml"
+			Error: commonschemas.Error.#Ref
+			Marketplace: unityschemas.Marketplace.#Ref
+			OperatorAccount: unityschemas.OperatorAccount.#Ref
+			OperatorAccounts: unityschemas.OperatorAccounts.#Ref
+			MarketplaceSubscription: unityschemas.MarketplaceSubscription.#Ref
+			User: unityschemas.User.#Ref
+			Users: unityschemas.Users.#Ref
+			MarketplaceType: unityschemas.MarketplaceType.#Ref
+			TimeRange: unityschemas.TimeRange.#Ref
+			VectorName: unityschemas.VectorName.#Ref
+			Role: unityschemas.Role.#Ref
+			PaymentFormType: unityschemas.PaymentFormType.#Ref
+			AccountType: unityschemas.AccountType.#Ref
+			BillingInfo: unityschemas.BillingInfo.#Ref
+			Region: unityschemas.Region.#Ref
+			BillingDate: unityschemas.BillingDate.#Ref
+			BillingContact: unityschemas.BillingContact.#Ref
+			BillingNotifySettings: unityschemas.BillingNotifySettings.#Ref
+			CheckoutRequest: unityschemas.CheckoutRequest.#Ref
+			Invite: unityschemas.Invite.#Ref
+			Invites: unityschemas.Invites.#Ref
+			PaymentMethodPut: unityschemas.PaymentMethodPut.#Ref
+			CreditCardParams: unityschemas.CreditCardParams.#Ref
+			PaymentMethod: unityschemas.PaymentMethod.#Ref
+			UsageVectors: unityschemas.UsageVectors.#Ref
+			UsageVector: unityschemas.UsageVector.#Ref
+			Invoice: unityschemas.Invoice.#Ref
+			Invoices: unityschemas.Invoices.#Ref
+			OrgUser: unityschemas.OrgUser.#Ref
+			Me: unityschemas.Me.#Ref
+			OrgUsers: unityschemas.OrgUsers.#Ref
+			Organization: unityschemas.Organization.#Ref
+			Organizations: unityschemas.Organizations.#Ref
+			RelatedAccount: unityschemas.RelatedAccount.#Ref
 			// quartz shared limits
 			OrgLimits: {
-				$ref: "./quartz/schemas/OrgLimits.yml"
+				quartzschemas.OrgLimits.#Ref
 			}
-			RateLimits: $ref:                 "./quartz/schemas/RateLimits.yml"
-			Limit: $ref:                      "./quartz/schemas/Limit.yml"
-			BucketLimits: $ref:               "./quartz/schemas/BucketLimits.yml"
-			TaskLimits: $ref:                 "./quartz/schemas/TaskLimits.yml"
-			DashboardLimits: $ref:            "./quartz/schemas/DashboardLimits.yml"
-			CheckLimits: $ref:                "./quartz/schemas/CheckLimits.yml"
-			NotificationRuleLimits: $ref:     "./quartz/schemas/NotificationRuleLimits.yml"
-			NotificationEndpointLimits: $ref: "./quartz/schemas/NotificationEndpointLimits.yml"
-			RestrictedLimit: $ref:            "./quartz/schemas/RestrictedLimit.yml"
-			Unlimited: $ref:                  "./quartz/schemas/Unlimited.yml"
+			RateLimits: quartzschemas.RateLimits.#Ref
+			Limit: quartzschemas.Limit.#Ref
+			BucketLimits: quartzschemas.BucketLimits.#Ref
+			TaskLimits: quartzschemas.TaskLimits.#Ref
+			DashboardLimits: quartzschemas.DashboardLimits.#Ref
+			CheckLimits: quartzschemas.CheckLimits.#Ref
+			NotificationRuleLimits: quartzschemas.NotificationRuleLimits.#Ref
+			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits.#Ref
+			RestrictedLimit: quartzschemas.RestrictedLimit.#Ref
+			Unlimited: quartzschemas.Unlimited.#Ref
 		}
-		responses: ServerError: $ref: "./common/responses/ServerError.yml"
+		responses: ServerError: commonresponses.ServerError.#Ref
 	}
 }

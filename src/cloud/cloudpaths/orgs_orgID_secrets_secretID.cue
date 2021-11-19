@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 orgs_orgID_secrets_secretID: delete: {
 	operationId: "DeleteOrgsIDSecretsID"
 	tags: [
@@ -7,7 +11,7 @@ orgs_orgID_secrets_secretID: delete: {
 	]
 	summary: "Delete a secret from an organization"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "orgID"
@@ -25,7 +29,7 @@ orgs_orgID_secrets_secretID: delete: {
 		"204": description: "Keys successfully deleted"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

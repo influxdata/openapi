@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 usage_vectors: get: {
 	operationId: "GetUsageVectors"
 	tags: [
@@ -8,19 +12,19 @@ usage_vectors: get: {
 	responses: {
 		"200": {
 			description: "List of usage vectors for the account"
-			content: "application/json": schema: $ref: "../schemas/UsageVectors.yml"
+			content: "application/json": schema: unityschemas.UsageVectors.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Pricing version not 4 or User/Org not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

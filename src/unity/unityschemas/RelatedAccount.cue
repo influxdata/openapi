@@ -8,13 +8,13 @@ RelatedAccount: {
 			type:        "number"
 			description: "account id in quartz"
 		}
-		type: $ref: "./AccountType.yml"
+		type: AccountType.#Ref
 		balance: {
 			type:        "number"
 			description: "remaining balance on the account, nil if none"
 		}
 		billingContact: {
-			$ref:        "./BillingContact.yml"
+			BillingContact.#Ref
 			description: "billing contact for the account"
 		}
 		updatedAt: {

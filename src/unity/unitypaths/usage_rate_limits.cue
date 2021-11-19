@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 usage_rate_limits: get: {
 	operationId: "GetUsageLimits"
 	tags: [
@@ -8,7 +12,7 @@ usage_rate_limits: get: {
 	parameters: [{
 		in:   "query"
 		name: "range"
-		schema: $ref: "../schemas/TimeRange.yml"
+		schema: unityschemas.TimeRange.#Ref
 	}]
 	responses: {
 		"200": {
@@ -28,19 +32,19 @@ usage_rate_limits: get: {
 
 		"400": {
 			description: "Invalid query param name - Bad request"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Invalid vector_name or start or User/Org not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

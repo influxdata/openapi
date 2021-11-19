@@ -1,7 +1,7 @@
 package annotationdschemas
 
 StreamListFilter: allOf: [{
-	$ref: "../schemas/BasicFilter.yml"
+	BasicFilter.#Ref
 }, {
 	type: "object"
 	properties: {

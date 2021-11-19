@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 measurements_measurementID: {
 	summary: "Bucket Schema"
 	get: {
@@ -38,7 +42,7 @@ measurements_measurementID: {
 				schema: type: "string"
 			}
 
-			content: "application/json": schema: $ref: "../schemas/MeasurementSchema.yml"
+			content: "application/json": schema: cloudschemas.MeasurementSchema.#Ref
 		}
 	}
 	patch: {
@@ -70,11 +74,11 @@ measurements_measurementID: {
 		tags: [
 			"Bucket Schemas",
 		]
-		requestBody: content: "application/json": schema: $ref: "../schemas/MeasurementSchemaUpdateRequest.yml"
+		requestBody: content: "application/json": schema: cloudschemas.MeasurementSchemaUpdateRequest.#Ref
 		responses: {
 			"200": {
 				description: "The updated measurement schema"
-				content: "application/json": schema: $ref: "../schemas/MeasurementSchema.yml"
+				content: "application/json": schema: cloudschemas.MeasurementSchema.#Ref
 			}
 			"400": {
 				description: "Client error updating measurement schema"
@@ -88,7 +92,7 @@ measurements_measurementID: {
 							message: "Unable to delete columns from schema"
 						}
 					}
-					schema: $ref: "../../common/schemas/Error.yml"
+					schema: commonschemas.Error.#Ref
 				}
 			}
 		}

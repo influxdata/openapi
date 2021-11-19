@@ -1,5 +1,7 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 Variable: {
 	type: "object"
 	required: [
@@ -38,8 +40,8 @@ Variable: {
 			items: type: "string"
 		}
 		sort_order: type: "integer"
-		labels: $ref:     "../../common/schemas/Labels.yml"
-		arguments: $ref:  "../../common/schemas/VariableProperties.yml"
+		labels: commonschemas.Labels.#Ref
+		arguments: commonschemas.VariableProperties.#Ref
 		createdAt: {
 			type:   "string"
 			format: "date-time"

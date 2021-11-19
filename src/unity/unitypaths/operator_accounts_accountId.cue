@@ -1,5 +1,11 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 operator_accounts_accountId: {
 	// Oats is making this incredibly annoying with naming conflicts
 	get: {
@@ -9,7 +15,7 @@ operator_accounts_accountId: {
 			"Operators",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "accountId"
@@ -21,12 +27,12 @@ operator_accounts_accountId: {
 			"200": {
 				description: "the account"
 				content: "application/json": schema: allOf: [{
-					$ref: "../schemas/OperatorAccount.yml"
+					unityschemas.OperatorAccount.#Ref
 				}, {
 					properties: organizations: {
 						type:        "array"
 						description: "organizations in the account"
-						$ref:        "../schemas/Organizations.yml"
+						unityschemas.Organizations.#Ref
 					}
 				}, {
 					required: ["organizations"]
@@ -34,15 +40,15 @@ operator_accounts_accountId: {
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Account not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -54,7 +60,7 @@ operator_accounts_accountId: {
 			"Operators",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "accountId"
@@ -66,15 +72,15 @@ operator_accounts_accountId: {
 			"204": description: "Account deleted"
 			"400": {
 				description: "Account is not deletable"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

@@ -6,7 +6,7 @@ OperatorAccount: {
 			type:        "number"
 			description: "account id in quartz"
 		}
-		type: $ref: "./AccountType.yml"
+		type: AccountType.#Ref
 		zuoraAccountId: {
 			type:        "string"
 			description: "Zuora ID associated with the account"
@@ -20,15 +20,15 @@ OperatorAccount: {
 			description: "remaining balance on the account, nil if none"
 		}
 		billingContact: {
-			$ref:        "./BillingContact.yml"
+			BillingContact.#Ref
 			description: "billing contact for the account"
 		}
 		users: {
 			type: "array"
-			$ref: "./Users.yml"
+			Users.#Ref
 		}
 		marketplaceSubscription: {
-			$ref:        "./MarketplaceSubscription.yml"
+			MarketplaceSubscription.#Ref
 			description: "which marketplace, nil if none"
 		}
 	}

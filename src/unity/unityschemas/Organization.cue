@@ -27,7 +27,7 @@ Organization: {
 			type:        "string"
 			description: "date org was created"
 		}
-		account: $ref: "./RelatedAccount.yml"
+		account: RelatedAccount.#Ref
 	}
 	required: ["account", "id", "idpeId", "region", "provider", "date"]
 }

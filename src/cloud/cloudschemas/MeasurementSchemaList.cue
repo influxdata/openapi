@@ -28,6 +28,6 @@ MeasurementSchemaList: {
 	required: ["measurementSchemas"]
 	properties: measurementSchemas: {
 		type: "array"
-		items: $ref: "./MeasurementSchema.yml"
+		items: MeasurementSchema.#Ref
 	}
 }

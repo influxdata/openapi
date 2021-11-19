@@ -3,9 +3,9 @@ package cloudschemas
 LimitStatuses: {
 	type: "object"
 	properties: {
-		read: $ref:        "./LimitStatus.yml"
-		write: $ref:       "./LimitStatus.yml"
-		cardinality: $ref: "./LimitStatus.yml"
+		read: LimitStatus.#Ref
+		write: LimitStatus.#Ref
+		cardinality: LimitStatus.#Ref
 	}
 	required: ["read", "write", "cardinality"]
 }

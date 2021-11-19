@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 accounts_default: put: {
 	operationId: "PutDefaultAccount"
 	tags: [
@@ -8,13 +12,13 @@ accounts_default: put: {
 	requestBody: {
 		description: "The account to set as the user's default account"
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/AccountsDefaultRequest.yml"
+		content: "application/json": schema: unityschemas.AccountsDefaultRequest.#Ref
 	}
 	responses: {
 		"204": description: "default account set"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

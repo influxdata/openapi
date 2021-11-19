@@ -1,5 +1,7 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 Users: {
 	type: "object"
 	properties: {
@@ -12,7 +14,7 @@ Users: {
 		}
 		users: {
 			type: "array"
-			items: $ref: "../../common/schemas/UserResponse.yml"
+			items: commonschemas.UserResponse.#Ref
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 DemoDataBucket: {
 	properties: {
 		links: {
@@ -16,27 +18,27 @@ DemoDataBucket: {
 			properties: {
 				labels: {
 					description: "URL to retrieve labels for this bucket"
-					$ref:        "../../common/schemas/Link.yml"
+					commonschemas.Link.#Ref
 				}
 				members: {
 					description: "URL to retrieve members that can read this bucket"
-					$ref:        "../../common/schemas/Link.yml"
+					commonschemas.Link.#Ref
 				}
 				org: {
 					description: "URL to retrieve parent organization for this bucket"
-					$ref:        "../../common/schemas/Link.yml"
+					commonschemas.Link.#Ref
 				}
 				owners: {
 					description: "URL to retrieve owners that can read and write to this bucket."
-					$ref:        "../../common/schemas/Link.yml"
+					commonschemas.Link.#Ref
 				}
 				self: {
 					description: "URL for this bucket"
-					$ref:        "../../common/schemas/Link.yml"
+					commonschemas.Link.#Ref
 				}
 				write: {
 					description: "URL to write line protocol for this bucket"
-					$ref:        "../../common/schemas/Link.yml"
+					commonschemas.Link.#Ref
 				}
 			}
 		}
@@ -54,7 +56,7 @@ DemoDataBucket: {
 		orgID: type:       "string"
 		rp: type:          "string"
 		schemaType: {
-			$ref:    "../../common/schemas/SchemaType.yml"
+			commonschemas.SchemaType.#Ref
 			default: "implicit"
 		}
 		createdAt: {
@@ -67,8 +69,8 @@ DemoDataBucket: {
 			format:   "date-time"
 			readOnly: true
 		}
-		retentionRules: $ref: "../../common/schemas/RetentionRules.yml"
-		labels: $ref:         "../../common/schemas/Labels.yml"
+		retentionRules: commonschemas.RetentionRules.#Ref
+		labels: commonschemas.Labels.#Ref
 	}
 	required: ["name", "retentionRules"]
 }

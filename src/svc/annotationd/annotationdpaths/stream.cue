@@ -1,5 +1,9 @@
 package annotationdpaths
 
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 stream: {
 	put: {
 		tags: [
@@ -16,17 +20,17 @@ stream: {
 		}]
 		requestBody: {
 			description: "Stream to update"
-			content: "application/json": schema: $ref: "../schemas/Stream.yml"
+			content: "application/json": schema: annotationdschemas.Stream.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Stream as updated"
-				content: "application/json": schema: $ref: "../schemas/ReadStream.yml"
+				content: "application/json": schema: annotationdschemas.ReadStream.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"404": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"404": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	delete: {
@@ -43,10 +47,10 @@ stream: {
 			schema: type: "string"
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

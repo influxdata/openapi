@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 orgs_orgID_limits: {
 	get: {
 		tags: [
@@ -16,11 +20,11 @@ orgs_orgID_limits: {
 		responses: {
 			"200": {
 				description: "A limit"
-				content: "application/json": schema: $ref: "../schemas/Limit.yml"
+				content: "application/json": schema: cloudschemas.Limit.#Ref
 			}
 			default: {
 				description: "unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -39,16 +43,16 @@ orgs_orgID_limits: {
 		requestBody: {
 			description: "limit that will be updated"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Limit.yml"
+			content: "application/json": schema: cloudschemas.Limit.#Ref
 		}
 		responses: {
 			"200": {
 				description: "The updated or created limit"
-				content: "application/json": schema: $ref: "../schemas/Limit.yml"
+				content: "application/json": schema: cloudschemas.Limit.#Ref
 			}
 			default: {
 				description: "unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

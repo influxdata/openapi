@@ -1,5 +1,7 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 usage_billing_stats: get: {
 	operationId: "GetUsageBilling"
 	tags: [
@@ -23,11 +25,11 @@ usage_billing_stats: get: {
 
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

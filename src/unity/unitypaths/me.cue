@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 me: get: {
 	operationId: "GetMe"
 	tags: [
@@ -11,19 +15,19 @@ me: get: {
 	responses: {
 		"200": {
 			description: "congregated meta data for an individual account and org"
-			content: "application/json": schema: $ref: "../schemas/Me.yml"
+			content: "application/json": schema: unityschemas.Me.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Cannot get account or organization for user"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

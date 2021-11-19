@@ -1,12 +1,16 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 billing_invoices_invoiceId: get: {
 	operationId: "GetInvoicesId"
 	tags: [
 		"Billing",
 	]
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "invoiceId"
@@ -24,15 +28,15 @@ billing_invoices_invoiceId: get: {
 		}
 		"401": {
 			description: "Not Authorized or Invalid Session"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Invoice not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

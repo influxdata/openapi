@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 billing: get: {
 	operationId: "GetBilling"
 	tags: [
@@ -8,11 +12,11 @@ billing: get: {
 	responses: {
 		"200": {
 			description: "Billing information for account"
-			content: "application/json": schema: $ref: "../schemas/BillingInfo.yml"
+			content: "application/json": schema: unityschemas.BillingInfo.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

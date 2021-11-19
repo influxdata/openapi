@@ -10,6 +10,6 @@ Permission: {
 				"write",
 			]
 		}
-		resource: $ref: "./Resource.yml"
+		resource: Resource.#Ref
 	}
 }

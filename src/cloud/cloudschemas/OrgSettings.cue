@@ -9,7 +9,7 @@ OrgSettings: {
 		}
 		settings: {
 			type: "array"
-			items: $ref: "./OrgSetting.yml"
+			items: OrgSetting.#Ref
 		}
 	}
 }

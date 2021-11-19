@@ -1,15 +1,17 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 Authorizations: {
 	type: "object"
 	properties: {
 		links: {
 			readOnly: true
-			$ref:     "../../common/schemas/Links.yml"
+			commonschemas.Links.#Ref
 		}
 		authorizations: {
 			type: "array"
-			items: $ref: "./Authorization.yml"
+			items: Authorization.#Ref
 		}
 	}
 }

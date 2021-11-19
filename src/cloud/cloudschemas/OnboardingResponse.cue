@@ -1,11 +1,13 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 OnboardingResponse: {
 	type: "object"
 	properties: {
-		user: $ref:   "../../common/schemas/UserResponse.yml"
-		org: $ref:    "../../common/schemas/Organization.yml"
-		bucket: $ref: "../../common/schemas/Bucket.yml"
-		auth: $ref:   "./Authorization.yml"
+		user: commonschemas.UserResponse.#Ref
+		org: commonschemas.Organization.#Ref
+		bucket: commonschemas.Bucket.#Ref
+		auth: Authorization.#Ref
 	}
 }

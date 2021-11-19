@@ -13,7 +13,7 @@ Script: {
 			description: "script to be executed"
 			type:        "string"
 		}
-		language: $ref: "./ScriptLanguage.yml"
+		language: ScriptLanguage.#Ref
 		url: {
 			type:        "string"
 			description: "invocation endpoint address"

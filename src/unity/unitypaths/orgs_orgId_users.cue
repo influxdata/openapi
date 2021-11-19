@@ -1,12 +1,18 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 orgs_orgId_users: get: {
 	operationId: "GetUsers"
 	tags: [
 		"Users",
 	]
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:          "path"
 		name:        "orgId"
@@ -17,19 +23,19 @@ orgs_orgId_users: get: {
 	responses: {
 		"200": {
 			description: "A list of users"
-			content: "application/json": schema: $ref: "../schemas/OrgUsers.yml"
+			content: "application/json": schema: unityschemas.OrgUsers.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Org or Users not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

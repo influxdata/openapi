@@ -1,5 +1,7 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 cancel: post: {
 	operationId: "PostCancel"
 	description: "Cancel an account"
@@ -11,7 +13,7 @@ cancel: post: {
 		"204": description: "Account cancelled"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

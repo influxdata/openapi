@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 billing_payment_method: put: {
 	operationId: "PutPaymentMethod"
 	tags: [
@@ -8,16 +12,16 @@ billing_payment_method: put: {
 	requestBody: {
 		description: "PaymentMethod to update"
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/PaymentMethodPut.yml"
+		content: "application/json": schema: unityschemas.PaymentMethodPut.#Ref
 	}
 	responses: {
 		"200": {
 			description: "Payment method updated"
-			content: "application/json": schema: $ref: "../schemas/PaymentMethod.yml"
+			content: "application/json": schema: unityschemas.PaymentMethod.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

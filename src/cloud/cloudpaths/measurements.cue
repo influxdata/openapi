@@ -1,5 +1,11 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 measurements: {
 	summary: "Bucket schemas"
 	get: {
@@ -37,11 +43,11 @@ measurements: {
 					description: "The current version of the bucket schema"
 					schema: type: "string"
 				}
-				content: "application/json": schema: $ref: "../schemas/MeasurementSchemaList.yml"
+				content: "application/json": schema: cloudschemas.MeasurementSchemaList.#Ref
 			}
 			"404": {
 				description: "Bucket not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -68,7 +74,7 @@ measurements: {
 		tags: [
 			"Bucket Schemas",
 		]
-		requestBody: content: "application/json": schema: $ref: "../schemas/MeasurementSchemaCreateRequest.yml"
+		requestBody: content: "application/json": schema: cloudschemas.MeasurementSchemaCreateRequest.#Ref
 		responses: {
 			"201": {
 				description: "The created measurement schema."
@@ -76,7 +82,7 @@ measurements: {
 					description: "The current version of the measurement schema"
 					schema: type: "string"
 				}
-				content: "application/json": schema: $ref: "../schemas/MeasurementSchema.yml"
+				content: "application/json": schema: cloudschemas.MeasurementSchema.#Ref
 			}
 			"400": {
 				description: "Client error with create request"
@@ -128,7 +134,7 @@ measurements: {
 							}
 						}
 					}
-					schema: $ref: "../../common/schemas/Error.yml"
+					schema: commonschemas.Error.#Ref
 				}
 			}
 		}

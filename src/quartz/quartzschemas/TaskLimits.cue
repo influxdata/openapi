@@ -7,11 +7,11 @@ TaskLimits: {
 		description: "Number of tasks allowed"
 		example:     5
 		oneOf: [{
-			$ref: "./RestrictedLimit.yml"
+			RestrictedLimit.#Ref
 		}, {
-			$ref: "./Unlimited.yml"
+			Unlimited.#Ref
 		}, {
-			$ref: "./Limit.yml"
+			Limit.#Ref
 		}]
 	}
 }

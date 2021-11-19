@@ -8,9 +8,9 @@ RateLimits: {
 			description: "KB of data query'd per second"
 			example:     1000
 			oneOf: [{
-				$ref: "./RestrictedLimit.yml"
+				RestrictedLimit.#Ref
 			}, {
-				$ref:    "./Limit.yml"
+				Limit.#Ref
 				maximum: 10000
 			}]
 		}
@@ -18,9 +18,9 @@ RateLimits: {
 			description: "KB of data written per second"
 			example:     17
 			oneOf: [{
-				$ref: "./RestrictedLimit.yml"
+				RestrictedLimit.#Ref
 			}, {
-				$ref:    "./Limit.yml"
+				Limit.#Ref
 				maximum: 10000
 			}]
 		}
@@ -28,9 +28,9 @@ RateLimits: {
 			description: "Max cardinality of data"
 			example:     10000
 			oneOf: [{
-				$ref: "./RestrictedLimit.yml"
+				RestrictedLimit.#Ref
 			}, {
-				$ref:    "./Limit.yml"
+				Limit.#Ref
 				maximum: 1000000
 			}]
 		}

@@ -1,5 +1,13 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/quartz/quartzpaths"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 "quartz-oem": {
 	openapi: "3.0.0"
 	info: {
@@ -14,9 +22,9 @@ package contracts
 
 		]}]
 	paths: {
-		"/orgs": $ref:                "./quartz/paths/orgs.yml"
-		"/orgs/{orgID}": $ref:        "./quartz/paths/org.yml"
-		"/orgs/{orgID}/limits": $ref: "./quartz/paths/orgLimits.yml"
+		"/orgs": quartzpaths.orgs.#Ref
+		"/orgs/{orgID}": quartzpaths.org.#Ref
+		"/orgs/{orgID}/limits": quartzpaths.orgLimits.#Ref
 	}
 	components: {
 		securitySchemes: bearerAuth: {
@@ -24,26 +32,26 @@ package contracts
 			scheme: "bearer"
 		}
 		schemas: {
-			BucketLimits: $ref:               "./quartz/schemas/BucketLimits.yml"
-			CheckLimits: $ref:                "./quartz/schemas/CheckLimits.yml"
-			DashboardLimits: $ref:            "./quartz/schemas/DashboardLimits.yml"
-			Error: $ref:                      "./common/schemas/Error.yml"
-			Limit: $ref:                      "./quartz/schemas/Limit.yml"
-			NotificationEndpointLimits: $ref: "./quartz/schemas/NotificationEndpointLimits.yml"
-			NotificationRuleLimits: $ref:     "./quartz/schemas/NotificationRuleLimits.yml"
-			OrganizationRequest: $ref:        "./quartz/schemas/OrganizationRequest.yml"
-			OrganizationWithToken: $ref:      "./quartz/schemas/OrganizationWithToken.yml"
-			Organization: $ref:               "./quartz/schemas/Organization.yml"
-			Organizations: $ref:              "./quartz/schemas/Organizations.yml"
-			OrgLimits: $ref:                  "./quartz/schemas/OrgLimits.yml"
-			RateLimits: $ref:                 "./quartz/schemas/RateLimits.yml"
-			RestrictedLimit: $ref:            "./quartz/schemas/RestrictedLimit.yml"
-			TaskLimits: $ref:                 "./quartz/schemas/TaskLimits.yml"
-			Unlimited: $ref:                  "./quartz/schemas/Unlimited.yml"
+			BucketLimits: quartzschemas.BucketLimits.#Ref
+			CheckLimits: quartzschemas.CheckLimits.#Ref
+			DashboardLimits: quartzschemas.DashboardLimits.#Ref
+			Error: commonschemas.Error.#Ref
+			Limit: quartzschemas.Limit.#Ref
+			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits.#Ref
+			NotificationRuleLimits: quartzschemas.NotificationRuleLimits.#Ref
+			OrganizationRequest: quartzschemas.OrganizationRequest.#Ref
+			OrganizationWithToken: quartzschemas.OrganizationWithToken.#Ref
+			Organization: quartzschemas.Organization.#Ref
+			Organizations: quartzschemas.Organizations.#Ref
+			OrgLimits: quartzschemas.OrgLimits.#Ref
+			RateLimits: quartzschemas.RateLimits.#Ref
+			RestrictedLimit: quartzschemas.RestrictedLimit.#Ref
+			TaskLimits: quartzschemas.TaskLimits.#Ref
+			Unlimited: quartzschemas.Unlimited.#Ref
 		}
 		responses: {
-			NoContent: $ref:   "./common/responses/NoContent.yml"
-			ServerError: $ref: "./common/responses/ServerError.yml"
+			NoContent: commonresponses.NoContent.#Ref
+			ServerError: commonresponses.ServerError.#Ref
 		}
 	}
 }

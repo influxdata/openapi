@@ -51,7 +51,7 @@ MeasurementSchema: {
 			description: "An ordered collection of column definitions"
 
 			type: "array"
-			items: $ref: "./MeasurementSchemaColumn.yml"
+			items: MeasurementSchemaColumn.#Ref
 		}
 		createdAt: {
 			type:     "string"

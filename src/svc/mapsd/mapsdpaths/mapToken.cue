@@ -1,14 +1,18 @@
 package mapsdpaths
 
+import "github.com/influxdata/openapi/src/svc/mapsd/mapsdschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 mapToken: get: {
 	operationId: "getMapboxToken"
 	responses: {
 		"200": {
 			description: "A temp token for Mapbox"
-			content: "application/json": schema: $ref: "../schemas/Token.yml"
+			content: "application/json": schema: mapsdschemas.Token.#Ref
 		}
-		"401": $ref: "../../../common/responses/ServerError.yml"
-		"500": $ref: "../../../common/responses/ServerError.yml"
-		default: $ref: "../../../common/responses/ServerError.yml"
+		"401": commonresponses.ServerError.#Ref
+		"500": commonresponses.ServerError.#Ref
+		default: commonresponses.ServerError.#Ref
 	}
 }

@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 orgs_orgID_limits_status: get: {
 	tags: [
 		"Limits",
@@ -15,11 +19,11 @@ orgs_orgID_limits_status: get: {
 	responses: {
 		"200": {
 			description: "Current limit status"
-			content: "application/json": schema: $ref: "../schemas/LimitStatuses.yml"
+			content: "application/json": schema: cloudschemas.LimitStatuses.#Ref
 		}
 		default: {
 			description: "unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

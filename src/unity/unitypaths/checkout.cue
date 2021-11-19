@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 checkout: post: {
 	operationId: "PostCheckout"
 	tags: [
@@ -8,25 +12,25 @@ checkout: post: {
 	requestBody: {
 		description: "Information for Upgrading Account"
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/CheckoutRequest.yml"
+		content: "application/json": schema: unityschemas.CheckoutRequest.#Ref
 	}
 	responses: {
 		"201": description: "Created"
 		"400": {
 			description: "Bad Request"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Org/User not found or Beta region"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

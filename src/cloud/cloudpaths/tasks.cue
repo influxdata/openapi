@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 tasks: {
 	get: {
 		operationId: "GetTasks"
@@ -8,7 +12,7 @@ tasks: {
 		]
 		summary: "List all tasks"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:          "query"
 			name:        "name"
@@ -72,11 +76,11 @@ tasks: {
 		responses: {
 			"200": {
 				description: "A list of tasks"
-				content: "application/json": schema: $ref: "../../common/schemas/Tasks.yml"
+				content: "application/json": schema: commonschemas.Tasks.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -87,21 +91,21 @@ tasks: {
 		]
 		summary: "Create a new task"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Task to create"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/TaskCreateRequest.yml"
+			content: "application/json": schema: commonschemas.TaskCreateRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Task created"
-				content: "application/json": schema: $ref: "../../common/schemas/Task.yml"
+				content: "application/json": schema: commonschemas.Task.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

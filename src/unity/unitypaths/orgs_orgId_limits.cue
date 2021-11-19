@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 orgs_orgId_limits: {
 	get: {
 		operationId: "GetOrgsIdLimits"
@@ -18,11 +22,11 @@ orgs_orgId_limits: {
 		responses: {
 			"200": {
 				description: "Organization limits"
-				content: "application/json": schema: $ref: "../../quartz/schemas/OrgLimits.yml"
+				content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -44,11 +48,11 @@ orgs_orgId_limits: {
 		responses: {
 			"200": {
 				description: "Organization limits"
-				content: "application/json": schema: $ref: "../../quartz/schemas/OrgLimits.yml"
+				content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

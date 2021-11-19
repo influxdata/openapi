@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 orgs_orgId_users_userId: delete: {
 	operationId: "DeleteOrgsIdUserId"
 	tags: [
@@ -9,7 +13,7 @@ orgs_orgId_users_userId: delete: {
 	summary: "Removes a user from an organization and account"
 	requestBody: content: "application/json; charset=utf-8": schema: type: "object"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "userId"
@@ -27,19 +31,19 @@ orgs_orgId_users_userId: delete: {
 		"204": description: "User removed"
 		"400": {
 			description: "User trying to remove self"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Session user not owner or User/Org not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

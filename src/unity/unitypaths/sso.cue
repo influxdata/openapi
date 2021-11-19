@@ -1,12 +1,16 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 sso: get: {
 	operationId: "GetConnection"
 	tags: [
 		"Connection",
 	]
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "query"
 		name: "email"
@@ -28,7 +32,7 @@ sso: get: {
 		"204": description: "No connection for the specified email"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 	summary: "Get connection  for the specified email"

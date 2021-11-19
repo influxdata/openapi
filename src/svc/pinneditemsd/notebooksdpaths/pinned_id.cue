@@ -1,5 +1,9 @@
 package notebooksdpaths
 
+import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 pinned_id: {
 	delete: {
 		summary:     "deletes a single Pinned Item by its ID"
@@ -14,11 +18,11 @@ pinned_id: {
 			required: true
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"404": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"404": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	put: {
@@ -33,12 +37,12 @@ pinned_id: {
 			schema: type: "string"
 			required: true
 		}]
-		requestBody: $ref: "../requestBodies/PinnedItemParams.yml"
+		requestBody: pinneditemsdrequestBodies.PinnedItemParams.#Ref
 		responses: {
-			"200": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"200": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

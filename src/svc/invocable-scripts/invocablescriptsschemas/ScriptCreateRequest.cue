@@ -12,7 +12,7 @@ ScriptCreateRequest: {
 			description: "The script to execute."
 			type:        "string"
 		}
-		language: $ref: "./ScriptLanguage.yml"
+		language: ScriptLanguage.#Ref
 	}
 	required: ["name", "script", "language", "description"]
 }

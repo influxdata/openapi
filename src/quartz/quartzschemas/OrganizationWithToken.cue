@@ -1,7 +1,7 @@
 package quartzschemas
 
 OrganizationWithToken: allOf: [{
-	$ref: "./Organization.yml"
+	Organization.#Ref
 }, {
 	type: "object"
 	properties: {

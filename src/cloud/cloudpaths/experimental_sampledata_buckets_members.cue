@@ -1,5 +1,7 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 experimental_sampledata_buckets_members: {
 	post: {
 		operationId: "GetDemoDataBucketMembers"
@@ -19,7 +21,7 @@ experimental_sampledata_buckets_members: {
 			"200": description: "if sampledata route is not available gateway responds with 200"
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -41,7 +43,7 @@ experimental_sampledata_buckets_members: {
 			"200": description: "if sampledata route is not available gateway responds with 200"
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

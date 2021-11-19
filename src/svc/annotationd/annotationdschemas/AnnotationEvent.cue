@@ -1,7 +1,7 @@
 package annotationdschemas
 
 AnnotationEvent: allOf: [{
-	$ref: "../schemas/Annotation.yml"
+	Annotation.#Ref
 }, {
 	type: "object"
 	properties: {

@@ -12,7 +12,7 @@ OnboardingRequest: {
 			deprecated: true
 		}
 		retentionPeriodSeconds: type: "integer"
-		limit: $ref:                  "./Limit.yml"
+		limit: Limit.#Ref
 	}
 	required: [
 		"username",

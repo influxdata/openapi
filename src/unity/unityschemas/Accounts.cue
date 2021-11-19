@@ -2,5 +2,5 @@ package unityschemas
 
 Accounts: {
 	type: "array"
-	items: $ref: "./Account.yml"
+	items: Account.#Ref
 }

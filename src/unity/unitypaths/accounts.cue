@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 accounts: get: {
 	operationId: "GetAccounts"
 	tags: [
@@ -9,15 +13,15 @@ accounts: get: {
 	responses: {
 		"200": {
 			description: "Accounts"
-			content: "application/json": schema: $ref: "../schemas/Accounts.yml"
+			content: "application/json": schema: unityschemas.Accounts.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

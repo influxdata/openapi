@@ -1,5 +1,11 @@
 package annotationdosspaths
 
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 annotations: {
 	post: {
 		tags: [
@@ -14,17 +20,17 @@ annotations: {
 		}]
 		requestBody: {
 			description: "Annotations to create"
-			content: "application/json": schema: $ref: "../../annotationd/schemas/AnnotationCreateList.yml"
+			content: "application/json": schema: annotationdschemas.AnnotationCreateList.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Annotations created"
-				content: "application/json": schema: $ref: "../../annotationd/schemas/AnnotationEventList.yml"
+				content: "application/json": schema: annotationdschemas.AnnotationEventList.#Ref
 			}
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	get: {
@@ -34,7 +40,7 @@ annotations: {
 		operationId: "listAnnotations"
 		summary:     "List annotations"
 		parameters: [{
-			$ref: "../../annotationd/parameters/AnnotationListFilter.yml"
+			annotationdparameters.AnnotationListFilter.#Ref
 		}, {
 			name: "orgID"
 			in:   "query"
@@ -43,11 +49,11 @@ annotations: {
 		responses: {
 			"200": {
 				description: "Optionally filtered list of annotations"
-				content: "application/json": schema: $ref: "../../annotationd/schemas/AnnotationList.yml"
+				content: "application/json": schema: annotationdschemas.AnnotationList.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	delete: {
@@ -57,17 +63,17 @@ annotations: {
 		operationId: "deleteAnnotations"
 		summary:     "Delete annotation"
 		parameters: [{
-			$ref: "../../annotationd/parameters/AnnotationDeleteFilter.yml"
+			annotationdparameters.AnnotationDeleteFilter.#Ref
 		}, {
 			name: "orgID"
 			in:   "query"
 			schema: type: "string"
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

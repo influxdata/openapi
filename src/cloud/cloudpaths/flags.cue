@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 flags: get: {
 	tags: [
 		"Public Flags",
@@ -8,11 +12,11 @@ flags: get: {
 	responses: {
 		"200": {
 			description: "Pre-authentication exposed feature flags"
-			content: "application/json": schema: $ref: "../../common/schemas/Flags.yml"
+			content: "application/json": schema: commonschemas.Flags.#Ref
 		}
 		default: {
 			description: "unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

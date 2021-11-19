@@ -1,5 +1,9 @@
 package invocablescriptspaths
 
+import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 scripts_scriptID_invoke: post: {
 	operationId: "PostScriptsIDInvoke"
 	tags: [
@@ -13,15 +17,15 @@ scripts_scriptID_invoke: post: {
 		schema: type: "string"
 		required: true
 	}]
-	requestBody: content: "application/json": schema: $ref: "../schemas/ScriptInvocationParams.yml"
+	requestBody: content: "application/json": schema: invocablescriptsschemas.ScriptInvocationParams.#Ref
 	responses: {
 		"200": {
 			description: "The result of the script execution."
-			content: "application/json": schema: $ref: "../schemas/ScriptHTTPResponseData.yml"
+			content: "application/json": schema: invocablescriptsschemas.ScriptHTTPResponseData.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

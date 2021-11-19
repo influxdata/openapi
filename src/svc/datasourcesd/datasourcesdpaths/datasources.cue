@@ -1,5 +1,7 @@
 package datasourcesdpaths
 
+import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+
 datasources: {
 	get: {
 		operationId: "get-datasources"
@@ -7,7 +9,7 @@ datasources: {
 			description: "OK"
 			content: "application/json": schema: {
 				type: "array"
-				items: $ref: "../schemas/Datasource.yml"
+				items: datasourcesdschemas.Datasource.#Ref
 			}
 		}
 		description: "Get a list of datasources for this organization"
@@ -20,7 +22,7 @@ datasources: {
 				type: "object"
 				properties: {
 					id: type:       "string"
-					endpoint: $ref: "../schemas/ListenerEndpoint.yml"
+					endpoint: datasourcesdschemas.ListenerEndpoint.#Ref
 				}
 			}
 		}

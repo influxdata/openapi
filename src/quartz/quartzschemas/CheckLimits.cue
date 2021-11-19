@@ -7,11 +7,11 @@ CheckLimits: {
 		description: "Number of checks allowed"
 		example:     2
 		oneOf: [{
-			$ref: "./RestrictedLimit.yml"
+			RestrictedLimit.#Ref
 		}, {
-			$ref: "./Unlimited.yml"
+			Unlimited.#Ref
 		}, {
-			$ref: "./Limit.yml"
+			Limit.#Ref
 		}]
 	}
 }

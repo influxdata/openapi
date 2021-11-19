@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 billing_contact: put: {
 	operationId: "PutBillingContact"
 	tags: [
@@ -8,16 +12,16 @@ billing_contact: put: {
 	requestBody: {
 		description: "BillingContact to update"
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/BillingContact.yml"
+		content: "application/json": schema: unityschemas.BillingContact.#Ref
 	}
 	responses: {
 		"200": {
 			description: "billing contact updated"
-			content: "application/json": schema: $ref: "../schemas/BillingContact.yml"
+			content: "application/json": schema: unityschemas.BillingContact.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

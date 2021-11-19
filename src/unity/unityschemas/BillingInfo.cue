@@ -7,12 +7,12 @@ BillingInfo: {
 			description: "account balance"
 		}
 		region: type: "string"
-		paymentMethod: $ref: "./PaymentMethod.yml"
+		paymentMethod: PaymentMethod.#Ref
 		balanceUpdatedAt: {
 			type:        "string"
 			description: "date of last update to account"
 		}
-		contact: $ref: "./BillingContact.yml"
+		contact: BillingContact.#Ref
 	}
 	required: ["balance", "balanceUpdatedAt", "contact"]
 }

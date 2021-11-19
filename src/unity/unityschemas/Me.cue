@@ -10,7 +10,7 @@ Me: {
 			type:        "string"
 			description: "the email associated with the user"
 		}
-		accountType: $ref: "./AccountType.yml"
+		accountType: AccountType.#Ref
 		billingProvider: {
 			type:        "string"
 			description: "the billing provider for the account, nil if none"

@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 oauth_clientConfig: get: {
 	tags: [
 		"OAuth",
@@ -15,11 +19,11 @@ oauth_clientConfig: get: {
 	responses: {
 		"200": {
 			description: "Required OAuth client variables"
-			content: "application/json": schema: $ref: "../schemas/OAuthClientConfig.yml"
+			content: "application/json": schema: cloudschemas.OAuthClientConfig.#Ref
 		}
 		default: {
 			description: "unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

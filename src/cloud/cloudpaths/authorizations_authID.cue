@@ -1,5 +1,13 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 authorizations_authID: {
 	get: {
 		operationId: "GetAuthorizationsID"
@@ -8,7 +16,7 @@ authorizations_authID: {
 		]
 		summary: "Retrieve an authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -19,11 +27,11 @@ authorizations_authID: {
 		responses: {
 			"200": {
 				description: "Authorization details"
-				content: "application/json": schema: $ref: "../schemas/Authorization.yml"
+				content: "application/json": schema: cloudschemas.Authorization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -37,10 +45,10 @@ authorizations_authID: {
 		requestBody: {
 			description: "The updated Authorization object."
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/AuthorizationUpdateRequest.yml"
+			content: "application/json": schema: commonschemas.AuthorizationUpdateRequest.#Ref
 		}
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -51,11 +59,11 @@ authorizations_authID: {
 		responses: {
 			"200": {
 				description: "The updated authorization."
-				content: "application/json": schema: $ref: "../schemas/Authorization.yml"
+				content: "application/json": schema: cloudschemas.Authorization.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -66,7 +74,7 @@ authorizations_authID: {
 		]
 		summary: "Delete an authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "authID"
@@ -78,7 +86,7 @@ authorizations_authID: {
 			"204": description: "Authorization deleted"
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

@@ -12,7 +12,7 @@ OrganizationRequest: {
 			type:        "string"
 			description: "the name of the organization to be added"
 		}
-		limit: $ref: "./Limit.yml"
+		limit: Limit.#Ref
 		retentionSeconds: {
 			type:        "integer"
 			description: "length of time to retain data in seconds"

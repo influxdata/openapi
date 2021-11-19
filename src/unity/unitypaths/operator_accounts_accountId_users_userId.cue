@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 operator_accounts_accountId_users_userId: delete: {
 	operationId: "RemoveUserFromAccount"
 	tags: [
@@ -10,7 +14,7 @@ operator_accounts_accountId_users_userId: delete: {
 	summary: "Removes a user from an account"
 	requestBody: content: "application/json; charset=utf-8": schema: type: "object"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "accountId"
@@ -28,11 +32,11 @@ operator_accounts_accountId_users_userId: delete: {
 		"204": description: "User removed from account"
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

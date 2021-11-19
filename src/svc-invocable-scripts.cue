@@ -1,5 +1,13 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
+
+import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptspaths"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 "svc-invocable-scripts": {
 	openapi: "3.0.0"
 	info: {
@@ -24,21 +32,21 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/scripts": $ref:                   "./svc/invocable-scripts/paths/scripts.yml"
-		"/scripts/{scriptID}": $ref:        "./svc/invocable-scripts/paths/scripts_scriptID.yml"
-		"/scripts/{scriptID}/invoke": $ref: "./svc/invocable-scripts/paths/scripts_scriptID_invoke.yml"
+		"/scripts": invocablescriptspaths.scripts.#Ref
+		"/scripts/{scriptID}": invocablescriptspaths.scripts_scriptID.#Ref
+		"/scripts/{scriptID}/invoke": invocablescriptspaths.scripts_scriptID_invoke.#Ref
 	}
 	components: {
-		responses: ServerError: $ref: "./common/responses/ServerError.yml"
+		responses: ServerError: commonresponses.ServerError.#Ref
 		schemas: {
-			Error: $ref:                  "./common/schemas/Error.yml"
-			Script: $ref:                 "./svc/invocable-scripts/schemas/Script.yml"
-			Scripts: $ref:                "./svc/invocable-scripts/schemas/Scripts.yml"
-			ScriptCreateRequest: $ref:    "./svc/invocable-scripts/schemas/ScriptCreateRequest.yml"
-			ScriptUpdateRequest: $ref:    "./svc/invocable-scripts/schemas/ScriptUpdateRequest.yml"
-			ScriptHTTPResponseData: $ref: "./svc/invocable-scripts/schemas/ScriptHTTPResponseData.yml"
-			ScriptInvocationParams: $ref: "./svc/invocable-scripts/schemas/ScriptInvocationParams.yml"
-			ScriptLanguage: $ref:         "./svc/invocable-scripts/schemas/ScriptLanguage.yml"
+			Error: commonschemas.Error.#Ref
+			Script: invocablescriptsschemas.Script.#Ref
+			Scripts: invocablescriptsschemas.Scripts.#Ref
+			ScriptCreateRequest: invocablescriptsschemas.ScriptCreateRequest.#Ref
+			ScriptUpdateRequest: invocablescriptsschemas.ScriptUpdateRequest.#Ref
+			ScriptHTTPResponseData: invocablescriptsschemas.ScriptHTTPResponseData.#Ref
+			ScriptInvocationParams: invocablescriptsschemas.ScriptInvocationParams.#Ref
+			ScriptLanguage: invocablescriptsschemas.ScriptLanguage.#Ref
 		}
 	}
 }

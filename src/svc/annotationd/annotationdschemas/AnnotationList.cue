@@ -8,7 +8,7 @@ AnnotationList: {
 			stream: type: "string"
 			annotations: {
 				type: "array"
-				items: $ref: "../schemas/AnnotationResponse.yml"
+				items: AnnotationResponse.#Ref
 			}
 		}
 	}

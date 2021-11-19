@@ -1,5 +1,13 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/svc/mapsd/mapsdschemas"
+
+import "github.com/influxdata/openapi/src/svc/mapsd/mapsdpaths"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 "svc-mapsd": {
 	openapi: "3.0.0"
 	info: {
@@ -9,12 +17,12 @@ package contracts
 	servers: [{
 		url: "/api/v1"
 	}]
-	paths: "/mapToken": $ref: "./svc/mapsd/paths/mapToken.yml"
+	paths: "/mapToken": mapsdpaths.mapToken.#Ref
 	components: {
 		schemas: {
-			Token: $ref: "./svc/mapsd/schemas/Token.yml"
-			Error: $ref: "./common/schemas/Error.yml"
+			Token: mapsdschemas.Token.#Ref
+			Error: commonschemas.Error.#Ref
 		}
-		responses: ServerError: $ref: "./common/responses/ServerError.yml"
+		responses: ServerError: commonresponses.ServerError.#Ref
 	}
 }

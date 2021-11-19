@@ -2,5 +2,5 @@ package unityschemas
 
 Invites: {
 	type: "array"
-	items: $ref: "./Invite.yml"
+	items: Invite.#Ref
 }

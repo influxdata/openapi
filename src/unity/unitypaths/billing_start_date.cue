@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 billing_start_date: get: {
 	operationId: "GetBillingStartDate"
 	tags: [
@@ -8,11 +12,11 @@ billing_start_date: get: {
 	responses: {
 		"200": {
 			description: "Start of the current billing period for the Account"
-			content: "application/json": schema: $ref: "../schemas/BillingDate.yml"
+			content: "application/json": schema: unityschemas.BillingDate.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

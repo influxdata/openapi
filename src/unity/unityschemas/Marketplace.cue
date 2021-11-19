@@ -9,7 +9,7 @@ Marketplace: {
 		}
 		shortName: {
 			description: "marketplace acronyms"
-			$ref:        "./MarketplaceType.yml"
+			MarketplaceType.#Ref
 			example:     "gcm"
 		}
 		url: {

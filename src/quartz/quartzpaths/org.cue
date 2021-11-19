@@ -1,5 +1,9 @@
 package quartzpaths
 
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 org: {
 	get: {
 		operationId: "GetOrgsID"
@@ -17,19 +21,19 @@ org: {
 		responses: {
 			"200": {
 				description: "The found organization"
-				content: "application/json": schema: $ref: "../schemas/Organization.yml"
+				content: "application/json": schema: quartzschemas.Organization.#Ref
 			}
 			"401": {
 				description: "Unauthorized bearer token"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Organization not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -49,19 +53,19 @@ org: {
 		responses: {
 			"204": {
 				description: "The organization was deleted"
-				content: "application/json": schema: $ref: "../schemas/Organization.yml"
+				content: "application/json": schema: quartzschemas.Organization.#Ref
 			}
 			"401": {
 				description: "Unauthorized bearer token"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"503": {
 				description: "Service Unavailable"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

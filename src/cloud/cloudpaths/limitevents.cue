@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 limitevents: get: {
 	tags: [
 		"Limits",
@@ -47,11 +51,11 @@ limitevents: get: {
 	responses: {
 		"200": {
 			description: "A list of limit events"
-			content: "application/json": schema: $ref: "../schemas/LimitEvents.yml"
+			content: "application/json": schema: cloudschemas.LimitEvents.#Ref
 		}
 		default: {
 			description: "unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

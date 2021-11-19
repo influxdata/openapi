@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 payment_form: get: {
 	operationId: "GetPaymentForm"
 	tags: [
@@ -9,33 +13,33 @@ payment_form: get: {
 		in:       "path"
 		name:     "form"
 		required: true
-		schema: $ref: "../schemas/PaymentFormType.yml"
+		schema: unityschemas.PaymentFormType.#Ref
 		example: "checkout"
 	}]
 	responses: {
 		"200": {
 			description: "A CreditCard Form parameter object"
-			content: "application/json": schema: $ref: "../schemas/CreditCardParams.yml"
+			content: "application/json": schema: unityschemas.CreditCardParams.#Ref
 		}
 		"400": {
 			description: "Bad Request"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "User or Form not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"406": {
 			description: "Not Acceptable"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

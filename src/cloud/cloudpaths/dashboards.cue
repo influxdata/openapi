@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 dashboards: {
 	post: {
 		operationId: "PostDashboards"
@@ -8,25 +12,25 @@ dashboards: {
 		]
 		summary: "Create a dashboard"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Dashboard to create"
 			required:    true
-			content: "application/json": schema: $ref: "../../common/schemas/CreateDashboardRequest.yml"
+			content: "application/json": schema: commonschemas.CreateDashboardRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Added dashboard"
 				content: "application/json": schema: oneOf: [{
-					$ref: "../../common/schemas/Dashboard.yml"
+					commonschemas.Dashboard.#Ref
 				}, {
-					$ref: "../../common/schemas/DashboardWithViewProperties.yml"
+					commonschemas.DashboardWithViewProperties.#Ref
 				}]
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}
@@ -37,11 +41,11 @@ dashboards: {
 		]
 		summary: "List all dashboards"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
-			$ref: "../../common/parameters/Offset.yml"
+			commonparameters.Offset.#Ref
 		}, {
-			$ref: "../../common/parameters/Descending.yml"
+			commonparameters.Descending.#Ref
 		}, {
 			in:   "query"
 			name: "limit"
@@ -91,11 +95,11 @@ dashboards: {
 		responses: {
 			"200": {
 				description: "All dashboards"
-				content: "application/json": schema: $ref: "../../common/schemas/Dashboards.yml"
+				content: "application/json": schema: commonschemas.Dashboards.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				content: "application/json": schema: $ref: "../../common/schemas/Error.yml"
+				content: "application/json": schema: commonschemas.Error.#Ref
 			}
 		}
 	}

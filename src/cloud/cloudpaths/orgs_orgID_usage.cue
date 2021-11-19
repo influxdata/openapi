@@ -1,5 +1,7 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 orgs_orgID_usage: get: {
 	tags: [
 		"Usage",
@@ -59,7 +61,7 @@ orgs_orgID_usage: get: {
 
 		default: {
 			description: "unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

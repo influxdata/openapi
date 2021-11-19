@@ -1,5 +1,9 @@
 package invocablescriptspaths
 
+import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 scripts: {
 	get: {
 		operationId: "GetScripts"
@@ -23,11 +27,11 @@ scripts: {
 		responses: {
 			"200": {
 				description: "The list of scripts."
-				content: "application/json": schema: $ref: "../schemas/Scripts.yml"
+				content: "application/json": schema: invocablescriptsschemas.Scripts.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -40,16 +44,16 @@ scripts: {
 		requestBody: {
 			description: "The script to create."
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/ScriptCreateRequest.yml"
+			content: "application/json": schema: invocablescriptsschemas.ScriptCreateRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "The created script."
-				content: "application/json": schema: $ref: "../schemas/Script.yml"
+				content: "application/json": schema: invocablescriptsschemas.Script.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

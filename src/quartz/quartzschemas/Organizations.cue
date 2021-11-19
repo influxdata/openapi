@@ -2,5 +2,5 @@ package quartzschemas
 
 Organizations: {
 	type: "array"
-	items: $ref: "./Organization.yml"
+	items: Organization.#Ref
 }

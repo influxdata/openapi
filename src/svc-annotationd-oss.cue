@@ -1,5 +1,17 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdpaths"
+
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
+
+import "github.com/influxdata/openapi/src/svc/annotationd-oss/annotationdosspaths"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 "svc-annotationd-oss": {
 	openapi: "3.0.0"
 	info: {
@@ -10,38 +22,38 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/annotations": $ref:                "./svc/annotationd-oss/paths/annotations.yml"
-		"/annotations/{annotationID}": $ref: "./svc/annotationd/paths/annotation.yml"
-		"/streams": $ref:                    "./svc/annotationd-oss/paths/streams.yml"
-		"/streams/{streamID}": $ref:         "./svc/annotationd/paths/stream.yml"
+		"/annotations": annotationdosspaths.annotations.#Ref
+		"/annotations/{annotationID}": annotationdpaths.annotation.#Ref
+		"/streams": annotationdosspaths.streams.#Ref
+		"/streams/{streamID}": annotationdpaths.stream.#Ref
 	}
 	components: {
 		parameters: {
-			AnnotationListFilter: $ref:   "./svc/annotationd/parameters/AnnotationListFilter.yml"
-			AnnotationDeleteFilter: $ref: "./svc/annotationd/parameters/AnnotationDeleteFilter.yml"
-			StreamListFilter: $ref:       "./svc/annotationd/parameters/StreamListFilter.yml"
-			StreamDeleteFilter: $ref:     "./svc/annotationd/parameters/StreamDeleteFilter.yml"
+			AnnotationListFilter: annotationdparameters.AnnotationListFilter.#Ref
+			AnnotationDeleteFilter: annotationdparameters.AnnotationDeleteFilter.#Ref
+			StreamListFilter: annotationdparameters.StreamListFilter.#Ref
+			StreamDeleteFilter: annotationdparameters.StreamDeleteFilter.#Ref
 		}
 		schemas: {
-			AnnotationListFilter: $ref:   "./svc/annotationd/schemas/AnnotationListFilter.yml"
-			AnnotationDeleteFilter: $ref: "./svc/annotationd/schemas/AnnotationDeleteFilter.yml"
-			BasicFilter: $ref:            "./svc/annotationd/schemas/BasicFilter.yml"
-			AnnotationList: $ref:         "./svc/annotationd/schemas/AnnotationList.yml"
-			AnnotationEventList: $ref:    "./svc/annotationd/schemas/AnnotationEventList.yml"
-			AnnotationEvent: $ref:        "./svc/annotationd/schemas/AnnotationEvent.yml"
-			AnnotationCreateList: $ref:   "./svc/annotationd/schemas/AnnotationCreateList.yml"
-			AnnotationCreate: $ref:       "./svc/annotationd/schemas/AnnotationCreate.yml"
-			Annotation: $ref:             "./svc/annotationd/schemas/Annotation.yml"
-			StreamListFilter: $ref:       "./svc/annotationd/schemas/StreamListFilter.yml"
-			StreamDeleteFilter: $ref:     "./svc/annotationd/schemas/StreamDeleteFilter.yml"
-			StreamList: $ref:             "./svc/annotationd/schemas/StreamList.yml"
-			Stream: $ref:                 "./svc/annotationd/schemas/Stream.yml"
-			ReadStream: $ref:             "./svc/annotationd/schemas/ReadStream.yml"
-			Error: $ref:                  "./common/schemas/Error.yml"
+			AnnotationListFilter: annotationdschemas.AnnotationListFilter.#Ref
+			AnnotationDeleteFilter: annotationdschemas.AnnotationDeleteFilter.#Ref
+			BasicFilter: annotationdschemas.BasicFilter.#Ref
+			AnnotationList: annotationdschemas.AnnotationList.#Ref
+			AnnotationEventList: annotationdschemas.AnnotationEventList.#Ref
+			AnnotationEvent: annotationdschemas.AnnotationEvent.#Ref
+			AnnotationCreateList: annotationdschemas.AnnotationCreateList.#Ref
+			AnnotationCreate: annotationdschemas.AnnotationCreate.#Ref
+			Annotation: annotationdschemas.Annotation.#Ref
+			StreamListFilter: annotationdschemas.StreamListFilter.#Ref
+			StreamDeleteFilter: annotationdschemas.StreamDeleteFilter.#Ref
+			StreamList: annotationdschemas.StreamList.#Ref
+			Stream: annotationdschemas.Stream.#Ref
+			ReadStream: annotationdschemas.ReadStream.#Ref
+			Error: commonschemas.Error.#Ref
 		}
 		responses: {
-			NoContent: $ref:   "./common/responses/NoContent.yml"
-			ServerError: $ref: "./common/responses/ServerError.yml"
+			NoContent: commonresponses.NoContent.#Ref
+			ServerError: commonresponses.ServerError.#Ref
 		}
 	}
 }

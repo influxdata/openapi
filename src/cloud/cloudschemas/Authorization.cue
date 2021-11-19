@@ -1,9 +1,11 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 Authorization: {
 	required: ["orgID", "permissions"]
 	allOf: [{
-		$ref: "../../common/schemas/AuthorizationUpdateRequest.yml"
+		commonschemas.AuthorizationUpdateRequest.#Ref
 	}, {
 		type: "object"
 		properties: {
@@ -25,7 +27,7 @@ Authorization: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: $ref: "./Permission.yml"
+				items: Permission.#Ref
 			}
 			id: {
 				readOnly: true
@@ -61,11 +63,11 @@ Authorization: {
 				properties: {
 					self: {
 						readOnly: true
-						$ref:     "../../common/schemas/Link.yml"
+						commonschemas.Link.#Ref
 					}
 					user: {
 						readOnly: true
-						$ref:     "../../common/schemas/Link.yml"
+						commonschemas.Link.#Ref
 					}
 				}
 			}

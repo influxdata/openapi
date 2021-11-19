@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 billing_invoices: get: {
 	operationId: "GetInvoices"
 	tags: [
@@ -8,15 +12,15 @@ billing_invoices: get: {
 	responses: {
 		"200": {
 			description: "A list of invoices"
-			content: "application/json": schema: $ref: "../schemas/Invoices.yml"
+			content: "application/json": schema: unityschemas.Invoices.#Ref
 		}
 		"401": {
 			description: "Unauthorized"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

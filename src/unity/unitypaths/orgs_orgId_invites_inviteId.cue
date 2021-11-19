@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 orgs_orgId_invites_inviteId: delete: {
 	operationId: "DeleteOrgsIdInviteId"
 	tags: [
@@ -9,7 +13,7 @@ orgs_orgId_invites_inviteId: delete: {
 	summary: "Remove an invite to an organization"
 	requestBody: content: "application/json; charset=utf-8": schema: type: "object"
 	parameters: [{
-		$ref: "../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:   "path"
 		name: "inviteId"
@@ -27,7 +31,7 @@ orgs_orgId_invites_inviteId: delete: {
 		"204": description: "Invite removed"
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

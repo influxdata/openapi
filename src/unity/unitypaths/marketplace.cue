@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 marketplace: get: {
 	operationId: "GetMarketplace"
 	tags: [
@@ -8,19 +12,19 @@ marketplace: get: {
 	responses: {
 		"200": {
 			description: "Marketplace information for account"
-			content: "application/json": schema: $ref: "../schemas/Marketplace.yml"
+			content: "application/json": schema: unityschemas.Marketplace.#Ref
 		}
 		"401": {
 			description: "Not Authorized or Invalid Session"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"404": {
 			description: "Marketplace not found"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

@@ -1,5 +1,11 @@
 package notebooksdpaths
 
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 notebooks_share: {
 	get: {
 		summary:     "get all Share records in org"
@@ -21,10 +27,10 @@ notebooks_share: {
 		responses: {
 			"200": {
 				description: "returns all Share records in org"
-				content: "application/json": schema: $ref: "../schemas/Shares.yml"
+				content: "application/json": schema: notebooksdschemas.Shares.#Ref
 			}
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	post: {
@@ -33,15 +39,15 @@ notebooks_share: {
 		tags: [
 			"Share",
 		]
-		requestBody: $ref: "../requestBodies/ShareParams.yml"
+		requestBody: notebooksdrequestBodies.ShareParams.#Ref
 		responses: {
 			"200": {
 				description: "Share created"
-				content: "application/json": schema: $ref: "../schemas/Share.yml"
+				content: "application/json": schema: notebooksdschemas.Share.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

@@ -1,5 +1,9 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+
+import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
+
 "svc-datasourcesd": {
 	openapi: "3.0.0"
 	info: {
@@ -10,13 +14,13 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/datasources": $ref:                "./svc/datasourcesd/paths/datasources.yml"
-		"/datasources/{datasourceID}": $ref: "./svc/datasourcesd/paths/datasources-id.yml"
-		"/webhooks/{token}": $ref:           "./svc/datasourcesd/paths/webhooks.yml"
+		"/datasources": datasourcesdpaths.datasources.#Ref
+		"/datasources/{datasourceID}": datasourcesdpaths."datasources-id".#Ref
+		"/webhooks/{token}": datasourcesdpaths.webhooks.#Ref
 	}
 	components: schemas: {
-		Datasource: $ref:       "./svc/datasourcesd/schemas/Datasource.yml"
-		ListenerEndpoint: $ref: "./svc/datasourcesd/schemas/ListenerEndpoint.yml"
-		Service: $ref:          "./svc/datasourcesd/schemas/Service.yml"
+		Datasource: datasourcesdschemas.Datasource.#Ref
+		ListenerEndpoint: datasourcesdschemas.ListenerEndpoint.#Ref
+		Service: datasourcesdschemas.Service.#Ref
 	}
 }

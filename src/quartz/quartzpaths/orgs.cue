@@ -1,5 +1,9 @@
 package quartzpaths
 
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 orgs: {
 	get: {
 		operationId: "GetOrgs"
@@ -10,15 +14,15 @@ orgs: {
 		responses: {
 			"200": {
 				description: "A list of organizations"
-				content: "application/json": schema: $ref: "../schemas/Organizations.yml"
+				content: "application/json": schema: quartzschemas.Organizations.#Ref
 			}
 			"401": {
 				description: "Unauthorized bearer token"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -31,28 +35,28 @@ orgs: {
 		requestBody: {
 			description: "Information for provisioning an organization"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/OrganizationRequest.yml"
+			content: "application/json": schema: quartzschemas.OrganizationRequest.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Organization created"
-				content: "application/json": schema: $ref: "../schemas/OrganizationWithToken.yml"
+				content: "application/json": schema: quartzschemas.OrganizationWithToken.#Ref
 			}
 			"400": {
 				description: "Invalid request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"401": {
 				description: "Unauthorized bearer token"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"409": {
 				description: "Organization name taken"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

@@ -10,7 +10,7 @@ OrgUser: {
 		firstName: type: "string"
 		lastName: type: "string"
 		email: type: "string"
-		role: $ref: "./Role.yml"
+		role: Role.#Ref
 	}
 	required: ["id", "firstName", "lastName", "email", "role"]
 }

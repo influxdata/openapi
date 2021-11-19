@@ -1,5 +1,7 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 import commonpkg "github.com/influxdata/openapi/src/common"
 
 let common = commonpkg & {
@@ -19,6 +21,6 @@ let common = commonpkg & {
 	components: {
 		parameters: common.#Parameters
 		schemas:    common.#Schemas
-		responses: ServerError: $ref: "./common/responses/ServerError.yml"
+		responses: ServerError: commonresponses.ServerError.#Ref
 	}
 }

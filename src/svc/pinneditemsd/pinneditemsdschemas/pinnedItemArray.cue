@@ -2,5 +2,5 @@ package pinneditemsdschemas
 
 pinnedItemArray: {
 	type: "array"
-	items: $ref: "./pinnedItem.yml"
+	items: pinnedItem.#Ref
 }

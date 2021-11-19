@@ -1,5 +1,11 @@
 package notebooksdpaths
 
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 notebooks: {
 	get: {
 		summary:     "get all Notebook records in org"
@@ -16,10 +22,10 @@ notebooks: {
 		responses: {
 			"200": {
 				description: "returns all Notebook records in org"
-				content: "application/json": schema: $ref: "../schemas/Notebooks.yml"
+				content: "application/json": schema: notebooksdschemas.Notebooks.#Ref
 			}
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	post: {
@@ -28,15 +34,15 @@ notebooks: {
 		tags: [
 			"Notebooks",
 		]
-		requestBody: $ref: "../requestBodies/NotebookParams.yml"
+		requestBody: notebooksdrequestBodies.NotebookParams.#Ref
 		responses: {
 			"200": {
 				description: "Notebook created"
-				content: "application/json": schema: $ref: "../schemas/Notebook.yml"
+				content: "application/json": schema: notebooksdschemas.Notebook.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

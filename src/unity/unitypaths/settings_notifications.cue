@@ -1,5 +1,9 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/unity/unityschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 settings_notifications: {
 	get: {
 		operationId: "GetSettingsNotifications"
@@ -9,23 +13,23 @@ settings_notifications: {
 		responses: {
 			"200": {
 				description: "Settings for billing notifications"
-				content: "application/json": schema: $ref: "../schemas/BillingNotifySettings.yml"
+				content: "application/json": schema: unityschemas.BillingNotifySettings.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Notification Settings nil or User/Org not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"406": {
 				description: "Not Acceptable"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -37,24 +41,24 @@ settings_notifications: {
 		requestBody: {
 			description: "Update to notify setting"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/BillingNotifySettings.yml"
+			content: "application/json": schema: unityschemas.BillingNotifySettings.#Ref
 		}
 		responses: {
 			"200": {
 				description: "billing notification settings updated"
-				content: "application/json": schema: $ref: "../schemas/BillingNotifySettings.yml"
+				content: "application/json": schema: unityschemas.BillingNotifySettings.#Ref
 			}
 			"400": {
 				description: "Bad Request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

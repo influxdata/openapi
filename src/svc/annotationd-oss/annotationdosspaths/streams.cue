@@ -1,5 +1,11 @@
 package annotationdosspaths
 
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 streams: {
 	put: {
 		tags: [
@@ -14,16 +20,16 @@ streams: {
 		}]
 		requestBody: {
 			description: "Stream to create or update"
-			content: "application/json": schema: $ref: "../../annotationd/schemas/Stream.yml"
+			content: "application/json": schema: annotationdschemas.Stream.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Stream as created/updated"
-				content: "application/json": schema: $ref: "../../annotationd/schemas/ReadStream.yml"
+				content: "application/json": schema: annotationdschemas.ReadStream.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	get: {
@@ -33,7 +39,7 @@ streams: {
 		operationId: "getStreams"
 		summary:     "Get streams"
 		parameters: [{
-			$ref: "../../annotationd/parameters/StreamListFilter.yml"
+			annotationdparameters.StreamListFilter.#Ref
 		}, {
 			name: "orgID"
 			in:   "query"
@@ -42,11 +48,11 @@ streams: {
 		responses: {
 			"200": {
 				description: "Optionally filtered list of streams"
-				content: "application/json": schema: $ref: "../../annotationd/schemas/StreamList.yml"
+				content: "application/json": schema: annotationdschemas.StreamList.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	delete: {
@@ -56,17 +62,17 @@ streams: {
 		operationId: "deleteStream"
 		summary:     "Delete stream"
 		parameters: [{
-			$ref: "../../annotationd/parameters/StreamDeleteFilter.yml"
+			annotationdparameters.StreamDeleteFilter.#Ref
 		}, {
 			name: "orgID"
 			in:   "query"
 			schema: type: "string"
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

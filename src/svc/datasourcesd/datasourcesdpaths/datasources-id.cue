@@ -1,5 +1,7 @@
 package datasourcesdpaths
 
+import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+
 "datasources-id": {
 	delete: {
 		operationId: "delete-orgs-orgID-datasources-datasourceID"
@@ -10,7 +12,7 @@ package datasourcesdpaths
 		operationId: "get-orgs-orgID-datasources-datasourceID"
 		responses: "200": {
 			description: "OK"
-			content: "application/json": schema: $ref: "../schemas/Datasource.yml"
+			content: "application/json": schema: datasourcesdschemas.Datasource.#Ref
 		}
 		description: "Get a datasource for this organization"
 	}

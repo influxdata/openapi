@@ -20,6 +20,6 @@ OrganizationRequest: {
 			description: "name of the region within the cloud provider"
 			type:        "string"
 		}
-		rateLimits: $ref: "./OrgLimits.yml"
+		rateLimits: OrgLimits.#Ref
 	}
 }

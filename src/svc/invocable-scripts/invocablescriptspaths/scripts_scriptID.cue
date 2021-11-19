@@ -1,5 +1,9 @@
 package invocablescriptspaths
 
+import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 scripts_scriptID: {
 	get: {
 		operationId: "GetScriptsID"
@@ -18,11 +22,11 @@ scripts_scriptID: {
 		responses: {
 			"200": {
 				description: "The requested script object."
-				content: "application/json": schema: $ref: "../schemas/Script.yml"
+				content: "application/json": schema: invocablescriptsschemas.Script.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -40,7 +44,7 @@ scripts_scriptID: {
 		requestBody: {
 			description: "Script update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/ScriptUpdateRequest.yml"
+			content: "application/json": schema: invocablescriptsschemas.ScriptUpdateRequest.#Ref
 		}
 		parameters: [{
 			in:   "path"
@@ -52,11 +56,11 @@ scripts_scriptID: {
 		responses: {
 			"200": {
 				description: "The updated script."
-				content: "application/json": schema: $ref: "../schemas/Script.yml"
+				content: "application/json": schema: invocablescriptsschemas.Script.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -78,7 +82,7 @@ scripts_scriptID: {
 			"204": description: "The script is deleted."
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

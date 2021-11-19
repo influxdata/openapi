@@ -1,15 +1,17 @@
 package cloudschemas
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 DemoDataBuckets: {
 	type: "object"
 	properties: {
 		links: {
 			readOnly: true
-			$ref:     "../../common/schemas/Links.yml"
+			commonschemas.Links.#Ref
 		}
 		buckets: {
 			type: "array"
-			items: $ref: "./DemoDataBucket.yml"
+			items: DemoDataBucket.#Ref
 		}
 	}
 }

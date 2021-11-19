@@ -1,5 +1,15 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
+
+import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
+
+import "github.com/influxdata/openapi/src/svc/pinneditemsd/notebooksdpaths"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 "svc-pinneditemsd": {
 	openapi: "3.0.0"
 	info: {
@@ -10,19 +20,19 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/pinned": $ref:      "./svc/pinneditemsd/paths/pinned.yml"
-		"/pinned/{id}": $ref: "./svc/pinneditemsd/paths/pinned_id.yml"
+		"/pinned": notebooksdpaths.pinned.#Ref
+		"/pinned/{id}": notebooksdpaths.pinned_id.#Ref
 	}
 	components: {
-		requestBodies: PinnedItemParams: $ref: "./svc/pinneditemsd/requestBodies/PinnedItemParams.yml"
+		requestBodies: PinnedItemParams: pinneditemsdrequestBodies.PinnedItemParams.#Ref
 		schemas: {
-			PinnedItem: $ref:      "./svc/pinneditemsd/schemas/pinnedItem.yml"
-			PinnedItemArray: $ref: "./svc/pinneditemsd/schemas/pinnedItemArray.yml"
-			Error: $ref:           "./common/schemas/Error.yml"
+			PinnedItem: pinneditemsdschemas.pinnedItem.#Ref
+			PinnedItemArray: pinneditemsdschemas.pinnedItemArray.#Ref
+			Error: commonschemas.Error.#Ref
 		}
 		responses: {
-			NoContent: $ref:   "./common/responses/NoContent.yml"
-			ServerError: $ref: "./common/responses/ServerError.yml"
+			NoContent: commonresponses.NoContent.#Ref
+			ServerError: commonresponses.ServerError.#Ref
 		}
 	}
 }

@@ -1,5 +1,11 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
+import "github.com/influxdata/openapi/src/cloud/cloudpaths"
+
 import commonpkg "github.com/influxdata/openapi/src/common"
 
 let common = commonpkg & {
@@ -137,50 +143,50 @@ cloud: {
 	}]
 	paths: {
 		common.#Paths
-		"/users": $ref:                                                  "./cloud/paths/users.yml"
-		"/users/{userID}": $ref:                                         "./cloud/paths/users_userID.yml"
-		"/setup": $ref:                                                  "./cloud/paths/setup.yml"
-		"/setup/user": $ref:                                             "./cloud/paths/setup_user.yml"
-		"/authorizations": $ref:                                         "./cloud/paths/authorizations.yml"
-		"/experimental/sampledata/buckets": $ref:                        "./cloud/paths/experimental_sampledata_buckets.yml"
-		"/experimental/sampledata/buckets/{bucketID}/members": $ref:     "./cloud/paths/experimental_sampledata_buckets_members.yml"
-		"/authorizations/{authID}": $ref:                                "./cloud/paths/authorizations_authID.yml"
-		"/variables": $ref:                                              "./cloud/paths/variables.yml"
-		"/variables/{variableID}": $ref:                                 "./cloud/paths/variables_variableID.yml"
-		"/buckets/{bucketID}/schema/measurements": $ref:                 "./cloud/paths/measurements.yml"
-		"/buckets/{bucketID}/schema/measurements/{measurementID}": $ref: "./cloud/paths/measurements_measurementID.yml"
-		"/orgs/{orgID}/limits": $ref:                                    "./cloud/paths/orgs_orgID_limits_get.yml"
-		"/orgs/{orgID}/usage": $ref:                                     "./cloud/paths/orgs_orgID_usage.yml"
-		"/dashboards": $ref:                                             "./cloud/paths/dashboards.yml"
-		"/tasks": $ref:                                                  "./cloud/paths/tasks.yml"
-		"/write": $ref:                                                  "./cloud/paths/write.yml"
+		"/users": cloudpaths.users.#Ref
+		"/users/{userID}": cloudpaths.users_userID.#Ref
+		"/setup": cloudpaths.setup.#Ref
+		"/setup/user": cloudpaths.setup_user.#Ref
+		"/authorizations": cloudpaths.authorizations.#Ref
+		"/experimental/sampledata/buckets": cloudpaths.experimental_sampledata_buckets.#Ref
+		"/experimental/sampledata/buckets/{bucketID}/members": cloudpaths.experimental_sampledata_buckets_members.#Ref
+		"/authorizations/{authID}": cloudpaths.authorizations_authID.#Ref
+		"/variables": cloudpaths.variables.#Ref
+		"/variables/{variableID}": cloudpaths.variables_variableID.#Ref
+		"/buckets/{bucketID}/schema/measurements": cloudpaths.measurements.#Ref
+		"/buckets/{bucketID}/schema/measurements/{measurementID}": cloudpaths.measurements_measurementID.#Ref
+		"/orgs/{orgID}/limits": cloudpaths.orgs_orgID_limits_get.#Ref
+		"/orgs/{orgID}/usage": cloudpaths.orgs_orgID_usage.#Ref
+		"/dashboards": cloudpaths.dashboards.#Ref
+		"/tasks": cloudpaths.tasks.#Ref
+		"/write": cloudpaths.write.#Ref
 	}
 	components: {
 		parameters: common.#Parameters
 		schemas: {
 			common.#Schemas
-			DemoDataBucket: $ref:                 "./cloud/schemas/DemoDataBucket.yml"
-			DemoDataBuckets: $ref:                "./cloud/schemas/DemoDataBuckets.yml"
-			Resource: $ref:                       "./cloud/schemas/Resource.yml"
-			Permission: $ref:                     "./cloud/schemas/Permission.yml"
-			Authorization: $ref:                  "./cloud/schemas/Authorization.yml"
-			Authorizations: $ref:                 "./cloud/schemas/Authorizations.yml"
-			User: $ref:                           "./cloud/schemas/User.yml"
-			Users: $ref:                          "./cloud/schemas/Users.yml"
-			OnboardingRequest: $ref:              "./cloud/schemas/OnboardingRequest.yml"
-			OnboardingResponse: $ref:             "./cloud/schemas/OnboardingResponse.yml"
-			Limit: $ref:                          "./cloud/schemas/Limit.yml"
-			Variable: $ref:                       "./cloud/schemas/Variable.yml"
-			Variables: $ref:                      "./cloud/schemas/Variables.yml"
-			ColumnDataType: $ref:                 "./cloud/schemas/ColumnDataType.yml"
-			ColumnSemanticType: $ref:             "./cloud/schemas/ColumnSemanticType.yml"
-			MeasurementSchema: $ref:              "./cloud/schemas/MeasurementSchema.yml"
-			MeasurementSchemaColumn: $ref:        "./cloud/schemas/MeasurementSchemaColumn.yml"
-			MeasurementSchemaCreateRequest: $ref: "./cloud/schemas/MeasurementSchemaCreateRequest.yml"
-			MeasurementSchemaList: $ref:          "./cloud/schemas/MeasurementSchemaList.yml"
-			MeasurementSchemaUpdateRequest: $ref: "./cloud/schemas/MeasurementSchemaUpdateRequest.yml"
+			DemoDataBucket: cloudschemas.DemoDataBucket.#Ref
+			DemoDataBuckets: cloudschemas.DemoDataBuckets.#Ref
+			Resource: cloudschemas.Resource.#Ref
+			Permission: cloudschemas.Permission.#Ref
+			Authorization: cloudschemas.Authorization.#Ref
+			Authorizations: cloudschemas.Authorizations.#Ref
+			User: cloudschemas.User.#Ref
+			Users: cloudschemas.Users.#Ref
+			OnboardingRequest: cloudschemas.OnboardingRequest.#Ref
+			OnboardingResponse: cloudschemas.OnboardingResponse.#Ref
+			Limit: cloudschemas.Limit.#Ref
+			Variable: cloudschemas.Variable.#Ref
+			Variables: cloudschemas.Variables.#Ref
+			ColumnDataType: cloudschemas.ColumnDataType.#Ref
+			ColumnSemanticType: cloudschemas.ColumnSemanticType.#Ref
+			MeasurementSchema: cloudschemas.MeasurementSchema.#Ref
+			MeasurementSchemaColumn: cloudschemas.MeasurementSchemaColumn.#Ref
+			MeasurementSchemaCreateRequest: cloudschemas.MeasurementSchemaCreateRequest.#Ref
+			MeasurementSchemaList: cloudschemas.MeasurementSchemaList.#Ref
+			MeasurementSchemaUpdateRequest: cloudschemas.MeasurementSchemaUpdateRequest.#Ref
 		}
-		responses: ServerError: $ref: "./common/responses/ServerError.yml"
+		responses: ServerError: commonresponses.ServerError.#Ref
 		securitySchemes: {
 			TokenAuthentication: {
 				type:         "http"

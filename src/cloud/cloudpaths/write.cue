@@ -1,5 +1,7 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
 write: post: {
 	operationId: "PostWrite"
 	tags: [
@@ -123,14 +125,14 @@ write: post: {
 		in:
 			"query", name:
 			"precision", description:
-			"The precision for the unix timestamps within the body line-protocol.", schema: $ref: "../../common/schemas/WritePrecision.yml"
+			"The precision for the unix timestamps within the body line-protocol.", schema: commonschemas.WritePrecision.#Ref
 	}], responses: {
 		"204": description:
 			"InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
 		"400": {
 			description:
 				"Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.", content: "application/json": {
-				schema: $ref: "../../common/schemas/LineProtocolError.yml"
+				schema: commonschemas.LineProtocolError.#Ref
 				examples: measurementSchemaFieldTypeConflict: {
 					summary: "Field type conflict thrown by an explicit bucket schema"
 					value: {

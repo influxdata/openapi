@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 experimental_sampledata_buckets: get: {
 	operationId: "GetDemoDataBuckets"
 	tags: [
@@ -9,11 +13,11 @@ experimental_sampledata_buckets: get: {
 	responses: {
 		"200": {
 			description: "A list of demo data buckets"
-			content: "application/json": schema: $ref: "../schemas/DemoDataBuckets.yml"
+			content: "application/json": schema: cloudschemas.DemoDataBuckets.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

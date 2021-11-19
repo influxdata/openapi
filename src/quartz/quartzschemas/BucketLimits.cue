@@ -8,22 +8,22 @@ BucketLimits: {
 			example:     2
 			description: "Number of buckets allowed"
 			oneOf: [{
-				$ref: "./RestrictedLimit.yml"
+				RestrictedLimit.#Ref
 			}, {
-				$ref: "./Unlimited.yml"
+				Unlimited.#Ref
 			}, {
-				$ref: "./Limit.yml"
+				Limit.#Ref
 			}]
 		}
 		maxRetentionDuration: {
 			description: "Retention duration limits in nanoseconds"
 			example:     2592000000000000
 			oneOf: [{
-				$ref: "./RestrictedLimit.yml"
+				RestrictedLimit.#Ref
 			}, {
-				$ref: "./Unlimited.yml"
+				Unlimited.#Ref
 			}, {
-				$ref: "./Limit.yml"
+				Limit.#Ref
 			}]
 		}
 	}

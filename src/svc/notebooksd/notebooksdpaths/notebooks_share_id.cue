@@ -1,5 +1,11 @@
 package notebooksdpaths
 
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 notebooks_share_id: {
 	delete: {
 		summary:     "deletes a single Share by its ID"
@@ -14,11 +20,11 @@ notebooks_share_id: {
 			required: true
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/ServerError.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"404": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.ServerError.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"404": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	put: {
@@ -33,15 +39,15 @@ notebooks_share_id: {
 			schema: type: "string"
 			required: true
 		}]
-		requestBody: $ref: "../requestBodies/ShareParams.yml"
+		requestBody: notebooksdrequestBodies.ShareParams.#Ref
 		responses: {
 			"200": {
 				description: "returns the Share record"
-				content: "application/json": schema: $ref: "../schemas/Share.yml"
+				content: "application/json": schema: notebooksdschemas.Share.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

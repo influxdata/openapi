@@ -1,5 +1,11 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 operator_orgs_orgId_limits: {
 	get: {
 		operationId: "GetOrganizationLimitsById"
@@ -9,7 +15,7 @@ operator_orgs_orgId_limits: {
 		]
 		summary: "Get the org's limits"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "orgId"
@@ -20,19 +26,19 @@ operator_orgs_orgId_limits: {
 		responses: {
 			"200": {
 				description: "Organization Limits"
-				content: "application/json": schema: $ref: "../../quartz/schemas/OrgLimits.yml"
+				content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Org not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -44,7 +50,7 @@ operator_orgs_orgId_limits: {
 		]
 		summary: "Update the org's limits"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "orgId"
@@ -55,28 +61,28 @@ operator_orgs_orgId_limits: {
 		requestBody: {
 			description: "Updated limits for an organization"
 			required:    true
-			content: "application/json": schema: $ref: "../../quartz/schemas/OrgLimits.yml"
+			content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Organization Limits"
-				content: "application/json": schema: $ref: "../../quartz/schemas/OrgLimits.yml"
+				content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 			}
 			"400": {
 				description: "Invalid request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"401": {
 				description: "Unauthorized"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Org not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

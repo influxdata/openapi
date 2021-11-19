@@ -1,5 +1,13 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 users_userID: {
 	get: {
 		operationId: "GetUsersID"
@@ -8,7 +16,7 @@ users_userID: {
 		]
 		summary: "Retrieve a user"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "userID"
@@ -19,11 +27,11 @@ users_userID: {
 		responses: {
 			"200": {
 				description: "User details"
-				content: "application/json": schema: $ref: "../../common/schemas/UserResponse.yml"
+				content: "application/json": schema: commonschemas.UserResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -36,10 +44,10 @@ users_userID: {
 		requestBody: {
 			description: "User update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/User.yml"
+			content: "application/json": schema: cloudschemas.User.#Ref
 		}
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "userID"
@@ -50,11 +58,11 @@ users_userID: {
 		responses: {
 			"200": {
 				description: "User updated"
-				content: "application/json": schema: $ref: "../../common/schemas/UserResponse.yml"
+				content: "application/json": schema: commonschemas.UserResponse.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -65,7 +73,7 @@ users_userID: {
 		]
 		summary: "Delete a user"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "path"
 			name: "userID"
@@ -77,7 +85,7 @@ users_userID: {
 			"204": description: "User deleted"
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

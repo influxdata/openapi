@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 setup_user: post: {
 	operationId: "PostSetupUser"
 	tags: [
@@ -10,16 +14,16 @@ setup_user: post: {
 	requestBody: {
 		description: "Source to create"
 		required:    true
-		content: "application/json": schema: $ref: "../schemas/OnboardingRequest.yml"
+		content: "application/json": schema: cloudschemas.OnboardingRequest.#Ref
 	}
 	responses: {
 		"201": {
 			description: "The created default user, bucket, and organization."
-			content: "application/json": schema: $ref: "../schemas/OnboardingResponse.yml"
+			content: "application/json": schema: cloudschemas.OnboardingResponse.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }

@@ -1,5 +1,11 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 authorizations: {
 	get: {
 		operationId: "GetAuthorizations"
@@ -8,7 +14,7 @@ authorizations: {
 		]
 		summary: "List all authorizations"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:   "query"
 			name: "userID"
@@ -38,11 +44,11 @@ authorizations: {
 		responses: {
 			"200": {
 				description: "A list of authorizations"
-				content: "application/json": schema: $ref: "../schemas/Authorizations.yml"
+				content: "application/json": schema: cloudschemas.Authorizations.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -53,25 +59,25 @@ authorizations: {
 		]
 		summary: "Create an authorization"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}]
 		requestBody: {
 			description: "Authorization to create"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Authorization.yml"
+			content: "application/json": schema: cloudschemas.Authorization.#Ref
 		}
 		responses: {
 			"201": {
 				description: "Authorization created"
-				content: "application/json": schema: $ref: "../schemas/Authorization.yml"
+				content: "application/json": schema: cloudschemas.Authorization.#Ref
 			}
 			"400": {
 				description: "Invalid request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

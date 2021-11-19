@@ -1,5 +1,15 @@
 package contracts
 
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+
+import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdpaths"
+
+import "github.com/influxdata/openapi/src/common/commonschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 "svc-notebooksd": {
 	openapi: "3.0.0"
 	info: {
@@ -10,31 +20,31 @@ package contracts
 		url: "/"
 	}]
 	paths: {
-		"/notebooks": $ref:                     "./svc/notebooksd/paths/notebooks.yml"
-		"/notebooks/{id}": $ref:                "./svc/notebooksd/paths/notebooks_id.yml"
-		"/notebooks/share": $ref:               "./svc/notebooksd/paths/notebooks_share.yml"
-		"/notebooks/share/{id}": $ref:          "./svc/notebooksd/paths/notebooks_share_id.yml"
-		"/api/share/{id}/query/{pipeID}": $ref: "./svc/notebooksd/paths/api_share_id_query_pipeid.yml"
-		"/api/share/{id}": $ref:                "./svc/notebooksd/paths/api_share_id.yml"
+		"/notebooks": notebooksdpaths.notebooks.#Ref
+		"/notebooks/{id}": notebooksdpaths.notebooks_id.#Ref
+		"/notebooks/share": notebooksdpaths.notebooks_share.#Ref
+		"/notebooks/share/{id}": notebooksdpaths.notebooks_share_id.#Ref
+		"/api/share/{id}/query/{pipeID}": notebooksdpaths.api_share_id_query_pipeid.#Ref
+		"/api/share/{id}": notebooksdpaths.api_share_id.#Ref
 	}
 	components: {
 		requestBodies: {
-			NotebookParams: $ref: "./svc/notebooksd/requestBodies/NotebookParams.yml"
-			ShareParams: $ref:    "./svc/notebooksd/requestBodies/ShareParams.yml"
+			NotebookParams: notebooksdrequestBodies.NotebookParams.#Ref
+			ShareParams: notebooksdrequestBodies.ShareParams.#Ref
 		}
 		schemas: {
-			NotebookParams: $ref: "./svc/notebooksd/schemas/NotebookParams.yml"
-			Notebook: $ref:       "./svc/notebooksd/schemas/Notebook.yml"
-			NotebookArray: $ref:  "./svc/notebooksd/schemas/NotebookArray.yml"
-			Notebooks: $ref:      "./svc/notebooksd/schemas/Notebooks.yml"
-			ShareParams: $ref:    "./svc/notebooksd/schemas/ShareParams.yml"
-			Share: $ref:          "./svc/notebooksd/schemas/Share.yml"
-			Shares: $ref:         "./svc/notebooksd/schemas/Shares.yml"
-			Error: $ref:          "./common/schemas/Error.yml"
+			NotebookParams: notebooksdschemas.NotebookParams.#Ref
+			Notebook: notebooksdschemas.Notebook.#Ref
+			NotebookArray: notebooksdschemas.NotebookArray.#Ref
+			Notebooks: notebooksdschemas.Notebooks.#Ref
+			ShareParams: notebooksdschemas.ShareParams.#Ref
+			Share: notebooksdschemas.Share.#Ref
+			Shares: notebooksdschemas.Shares.#Ref
+			Error: commonschemas.Error.#Ref
 		}
 		responses: {
-			NoContent: $ref:   "./common/responses/NoContent.yml"
-			ServerError: $ref: "./common/responses/ServerError.yml"
+			NoContent: commonresponses.NoContent.#Ref
+			ServerError: commonresponses.ServerError.#Ref
 		}
 	}
 }

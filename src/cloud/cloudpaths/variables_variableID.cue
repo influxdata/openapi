@@ -1,5 +1,11 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 variables_variableID: {
 	get: {
 		operationId: "GetVariablesID"
@@ -8,7 +14,7 @@ variables_variableID: {
 		]
 		summary: "Retrieve a variable"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -19,15 +25,15 @@ variables_variableID: {
 		responses: {
 			"200": {
 				description: "Variable found"
-				content: "application/json": schema: $ref: "../schemas/Variable.yml"
+				content: "application/json": schema: cloudschemas.Variable.#Ref
 			}
 			"404": {
 				description: "Variable not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -38,7 +44,7 @@ variables_variableID: {
 		]
 		summary: "Delete a variable"
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -50,7 +56,7 @@ variables_variableID: {
 			"204": description: "Variable deleted"
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -61,7 +67,7 @@ variables_variableID: {
 			"Variables",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -72,16 +78,16 @@ variables_variableID: {
 		requestBody: {
 			description: "Variable update to apply"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Variable.yml"
+			content: "application/json": schema: cloudschemas.Variable.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Variable updated"
-				content: "application/json": schema: $ref: "../schemas/Variable.yml"
+				content: "application/json": schema: cloudschemas.Variable.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -92,7 +98,7 @@ variables_variableID: {
 			"Variables",
 		]
 		parameters: [{
-			$ref: "../../common/parameters/TraceSpan.yml"
+			commonparameters.TraceSpan.#Ref
 		}, {
 			in:       "path"
 			name:     "variableID"
@@ -103,16 +109,16 @@ variables_variableID: {
 		requestBody: {
 			description: "Variable to replace"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/Variable.yml"
+			content: "application/json": schema: cloudschemas.Variable.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Variable updated"
-				content: "application/json": schema: $ref: "../schemas/Variable.yml"
+				content: "application/json": schema: cloudschemas.Variable.#Ref
 			}
 			default: {
 				description: "Internal server error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

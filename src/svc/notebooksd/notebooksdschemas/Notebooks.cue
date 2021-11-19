@@ -2,5 +2,5 @@ package notebooksdschemas
 
 Notebooks: properties: flows: {
 	type: "array"
-	items: $ref: "./Notebook.yml"
+	items: Notebook.#Ref
 }

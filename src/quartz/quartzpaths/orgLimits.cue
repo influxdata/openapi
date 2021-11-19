@@ -1,5 +1,9 @@
 package quartzpaths
 
+import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 orgLimits: {
 	get: {
 		operationId: "GetOrgsIDLimits"
@@ -17,19 +21,19 @@ orgLimits: {
 		responses: {
 			"200": {
 				description: "Organization limits"
-				content: "application/json": schema: $ref: "../schemas/OrgLimits.yml"
+				content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 			}
 			"401": {
 				description: "Unauthorized bearer token"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Organization not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -49,28 +53,28 @@ orgLimits: {
 		requestBody: {
 			description: "Updated limits for an organization"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/OrgLimits.yml"
+			content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 		}
 		responses: {
 			"200": {
 				description: "Organization limits"
-				content: "application/json": schema: $ref: "../schemas/OrgLimits.yml"
+				content: "application/json": schema: quartzschemas.OrgLimits.#Ref
 			}
 			"400": {
 				description: "Invalid request"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"401": {
 				description: "Unauthorized bearer token"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			"404": {
 				description: "Organization not found"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 			default: {
 				description: "Unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

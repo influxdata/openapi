@@ -1,5 +1,9 @@
 package annotationdpaths
 
+import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 annotation: {
 	get: {
 		tags: [
@@ -16,12 +20,12 @@ annotation: {
 		responses: {
 			"200": {
 				description: "The annotation details"
-				content: "application/json": schema: $ref: "../schemas/AnnotationEvent.yml"
+				content: "application/json": schema: annotationdschemas.AnnotationEvent.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"404": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"404": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	put: {
@@ -39,17 +43,17 @@ annotation: {
 		}]
 		requestBody: {
 			description: "Annotation to store"
-			content: "application/json": schema: $ref: "../schemas/AnnotationCreate.yml"
+			content: "application/json": schema: annotationdschemas.AnnotationCreate.#Ref
 		}
 		responses: {
 			"200": {
 				description: "The updated annotation"
-				content: "application/json": schema: $ref: "../schemas/AnnotationEvent.yml"
+				content: "application/json": schema: annotationdschemas.AnnotationEvent.#Ref
 			}
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"404": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"404": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 	delete: {
@@ -66,10 +70,10 @@ annotation: {
 			schema: type: "string"
 		}]
 		responses: {
-			"204": $ref: "../../../common/responses/NoContent.yml"
-			"400": $ref: "../../../common/responses/ServerError.yml"
-			"401": $ref: "../../../common/responses/ServerError.yml"
-			"500": $ref: "../../../common/responses/ServerError.yml"
+			"204": commonresponses.NoContent.#Ref
+			"400": commonresponses.ServerError.#Ref
+			"401": commonresponses.ServerError.#Ref
+			"500": commonresponses.ServerError.#Ref
 		}
 	}
 }

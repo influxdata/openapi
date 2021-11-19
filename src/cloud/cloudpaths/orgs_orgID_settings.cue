@@ -1,5 +1,9 @@
 package cloudpaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+
 orgs_orgID_settings: {
 	get: {
 		summary: "Get settings for an org"
@@ -13,11 +17,11 @@ orgs_orgID_settings: {
 		responses: {
 			"200": {
 				description: "Current settings for org"
-				content: "application/json": schema: $ref: "../schemas/OrgSettings.yml"
+				content: "application/json": schema: cloudschemas.OrgSettings.#Ref
 			}
 			default: {
 				description: "unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}
@@ -33,16 +37,16 @@ orgs_orgID_settings: {
 		requestBody: {
 			description: "Org settings that will be updated"
 			required:    true
-			content: "application/json": schema: $ref: "../schemas/OrgSettings.yml"
+			content: "application/json": schema: cloudschemas.OrgSettings.#Ref
 		}
 		responses: {
 			"200": {
 				description: "The updated or created settings"
-				content: "application/json": schema: $ref: "../schemas/OrgSettings.yml"
+				content: "application/json": schema: cloudschemas.OrgSettings.#Ref
 			}
 			default: {
 				description: "unexpected error"
-				$ref:        "../../common/responses/ServerError.yml"
+				commonresponses.ServerError.#Ref
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package unitypaths
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
 account: delete: {
 	operationId: "DeleteAccount"
 	summary:     "Self-delete account"
@@ -8,15 +10,15 @@ account: delete: {
 		"204": description: "Account deleted"
 		"401": {
 			description: "Unauthorized/Account doesn't exist"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		"405": {
 			description: "Account is not deletable"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 		default: {
 			description: "Unexpected error"
-			$ref:        "../../common/responses/ServerError.yml"
+			commonresponses.ServerError.#Ref
 		}
 	}
 }
