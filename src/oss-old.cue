@@ -28,9 +28,9 @@ package contracts
 		name:         "Quick start"
 		"x-traitTag": true
 		description: """
-			See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
+			See the [**API Quick Start**](https://docs.influxdata.com/influxdb/v2.1/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
 
-			[**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
+			[**InfluxDB API client libraries**](https://docs.influxdata.com/influxdb/v2.1/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
 
 			"""
 	}, {
@@ -47,7 +47,7 @@ package contracts
 			| `200`       | Success                  |                       |
 			| `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
 			| `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
-			| `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)</li> |
+			| `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens/)</li> |
 			| `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
 			| `413`       | Request entity too large | Request payload exceeds the size limit. |
 			| `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
@@ -74,9 +74,9 @@ package contracts
 			Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. Optionally, you can restrict an authorization and its token to a specific user.
 
 			For more information and examples, see the following:
-			  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-			  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-			  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+			  - [Authorize API requests](https://docs.influxdata.com/influxdb/v2.1/api-guide/api_intro/#authentication).
+			  - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens).
+			  - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.1/security/tokens/create-token).
 
 			"""
 	}]
@@ -1810,13 +1810,13 @@ package contracts
 				Retrieves data from InfluxDB buckets.
 
 				To query data, you need the following:
-				- **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
-				- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+				- **organization** – _See [View organizations](https://docs.influxdata.com/influxdb/v2.1/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+				- **API token** – _See [View tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens/view-tokens/)
 				 for instructions on viewing your API token._
-				- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
+				- **InfluxDB URL** – _See [InfluxDB URLs](https://docs.influxdata.com/influxdb/v2.1/reference/urls/)_.
 				- **Flux query** – _See [Flux](https://docs.influxdata.com/flux/v0.x/)._
 
-				For more information and examples, see [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).
+				For more information and examples, see [Query with the InfluxDB API](https://docs.influxdata.com/influxdb/v2.1/query-data/execute-queries/influx-api/).
 
 				"""
 			parameters: [{
@@ -6335,17 +6335,17 @@ package contracts
 				Writes data to a bucket.
 
 				To write data into InfluxDB, you need the following:
-				- **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
-				- **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for
+				- **organization** – _See [View organizations](https://docs.influxdata.com/influxdb/v2.1/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+				- **bucket** – _See [View buckets](https://docs.influxdata.com/influxdb/v2.1/organizations/buckets/view-buckets/) for
 				 instructions on viewing your bucket ID._
-				- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+				- **API token** – _See [View tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens/view-tokens/)
 				 for instructions on viewing your API token._
-				- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
-				- data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.
+				- **InfluxDB URL** – _See [InfluxDB URLs](https://docs.influxdata.com/influxdb/v2.1/reference/urls/)_.
+				- data in [line protocol](https://docs.influxdata.com/influxdb/v2.1/reference/syntax/line-protocol) format.
 
 				For more information and examples, see the following:
-				- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).
-				- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).
+				- [Write data with the InfluxDB API](https://docs.influxdata.com/influxdb/v2.1/write-data/developer-tools/api).
+				- [Optimize writes to InfluxDB](https://docs.influxdata.com/influxdb/v2.1/write-data/best-practices/optimize-writes/).
 
 				"""
 			requestBody: {
@@ -6433,7 +6433,7 @@ package contracts
 				schema: $ref: "#/components/schemas/WritePrecision"
 			}]
 			responses: {
-				"204": description: "InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
+				"204": description: "InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors](https://docs.influxdata.com/influxdb/v2.1/write-data/troubleshoot)."
 				"400": {
 					description: "Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data."
 					content: "application/json": {
@@ -12134,13 +12134,13 @@ package contracts
 					  `curl http://localhost:8086/ping
 					     --header "Authorization: Token INFLUX_API_TOKEN"`
 
-					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
+					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token](https://docs.influxdata.com/influxdb/v2.1/reference/glossary/#token).
 
 					For more information and examples, see the following:
 					  - [`/authorizations`](#tag/Authorizations) endpoint.
-					  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-					  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-					  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+					  - [Authorize API requests](https://docs.influxdata.com/influxdb/v2.1/api-guide/api_intro/#authentication).
+					  - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens).
+					  - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.1/security/tokens/create-token).
 
 					"""
 			}
@@ -12169,9 +12169,9 @@ package contracts
 					Replace the following:
 					- *`1.x_USERNAME`*: your InfluxDB v1.x username
 					- *`1.x_PASSWORD`*: your InfluxDB v1.x password
-					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/v2.1/reference/glossary/#token)
 
-					For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
+					For more information and examples, see how to [authenticate with a username and password scheme](https://docs.influxdata.com/influxdb/v2.1/reference/api/influxdb-1x/)
 
 					"""
 			}
@@ -12203,9 +12203,9 @@ package contracts
 					Replace the following:
 					- *`1.x_USERNAME`*: your InfluxDB v1.x username
 					- *`1.x_PASSWORD`*: your InfluxDB v1.x password
-					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/v2.1/reference/glossary/#token)
 
-					For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
+					For more information and examples, see how to [authenticate with a username and password scheme](https://docs.influxdata.com/influxdb/v2.1/reference/api/influxdb-1x/)
 
 					"""
 			}
