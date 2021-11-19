@@ -20,38 +20,38 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		url: "/"
 	}]
 	paths: {
-		"/annotations": annotationdpaths.annotations.#Ref
+		"/annotations":                annotationdpaths.annotations.#Ref
 		"/annotations/{annotationID}": annotationdpaths.annotation.#Ref
-		"/streams": annotationdpaths.streams.#Ref
-		"/streams/{streamID}": annotationdpaths.stream.#Ref
+		"/streams":                    annotationdpaths.streams.#Ref
+		"/streams/{streamID}":         annotationdpaths.stream.#Ref
 	}
 	components: {
 		parameters: {
-			AnnotationListFilter: annotationdparameters.AnnotationListFilter
+			AnnotationListFilter:   annotationdparameters.AnnotationListFilter
 			AnnotationDeleteFilter: annotationdparameters.AnnotationDeleteFilter
-			StreamListFilter: annotationdparameters.StreamListFilter
-			StreamDeleteFilter: annotationdparameters.StreamDeleteFilter
+			StreamListFilter:       annotationdparameters.StreamListFilter
+			StreamDeleteFilter:     annotationdparameters.StreamDeleteFilter
 		}
 		schemas: {
-			AnnotationListFilter: annotationdschemas.AnnotationListFilter
+			AnnotationListFilter:   annotationdschemas.AnnotationListFilter
 			AnnotationDeleteFilter: annotationdschemas.AnnotationDeleteFilter
-			BasicFilter: annotationdschemas.BasicFilter
-			AnnotationList: annotationdschemas.AnnotationList
-			AnnotationEventList: annotationdschemas.AnnotationEventList
-			AnnotationEvent: annotationdschemas.AnnotationEvent
-			AnnotationCreateList: annotationdschemas.AnnotationCreateList
-			AnnotationCreate: annotationdschemas.AnnotationCreate
-			Annotation: annotationdschemas.Annotation
-			AnnotationResponse: annotationdschemas.AnnotationResponse
-			StreamListFilter: annotationdschemas.StreamListFilter
-			StreamDeleteFilter: annotationdschemas.StreamDeleteFilter
-			StreamList: annotationdschemas.StreamList
-			Stream: annotationdschemas.Stream
-			ReadStream: annotationdschemas.ReadStream
-			Error: commonschemas.Error
+			BasicFilter:            annotationdschemas.BasicFilter
+			AnnotationList:         annotationdschemas.AnnotationList
+			AnnotationEventList:    annotationdschemas.AnnotationEventList
+			AnnotationEvent:        annotationdschemas.AnnotationEvent
+			AnnotationCreateList:   annotationdschemas.AnnotationCreateList
+			AnnotationCreate:       annotationdschemas.AnnotationCreate
+			Annotation:             annotationdschemas.Annotation
+			AnnotationResponse:     annotationdschemas.AnnotationResponse
+			StreamListFilter:       annotationdschemas.StreamListFilter
+			StreamDeleteFilter:     annotationdschemas.StreamDeleteFilter
+			StreamList:             annotationdschemas.StreamList
+			Stream:                 annotationdschemas.Stream
+			ReadStream:             annotationdschemas.ReadStream
+			Error:                  commonschemas.Error
 		}
 		responses: {
-			NoContent: commonresponses.NoContent
+			NoContent:   commonresponses.NoContent
 			ServerError: commonresponses.ServerError
 		}
 	}

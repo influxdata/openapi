@@ -32,21 +32,21 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		url: "/"
 	}]
 	paths: {
-		"/scripts": invocablescriptspaths.scripts.#Ref
-		"/scripts/{scriptID}": invocablescriptspaths.scripts_scriptID.#Ref
+		"/scripts":                   invocablescriptspaths.scripts.#Ref
+		"/scripts/{scriptID}":        invocablescriptspaths.scripts_scriptID.#Ref
 		"/scripts/{scriptID}/invoke": invocablescriptspaths.scripts_scriptID_invoke.#Ref
 	}
 	components: {
 		responses: ServerError: commonresponses.ServerError.#Ref
 		schemas: {
-			Error: commonschemas.Error.#Ref
-			Script: invocablescriptsschemas.Script.#Ref
-			Scripts: invocablescriptsschemas.Scripts.#Ref
-			ScriptCreateRequest: invocablescriptsschemas.ScriptCreateRequest.#Ref
-			ScriptUpdateRequest: invocablescriptsschemas.ScriptUpdateRequest.#Ref
+			Error:                  commonschemas.Error.#Ref
+			Script:                 invocablescriptsschemas.Script.#Ref
+			Scripts:                invocablescriptsschemas.Scripts.#Ref
+			ScriptCreateRequest:    invocablescriptsschemas.ScriptCreateRequest.#Ref
+			ScriptUpdateRequest:    invocablescriptsschemas.ScriptUpdateRequest.#Ref
 			ScriptHTTPResponseData: invocablescriptsschemas.ScriptHTTPResponseData.#Ref
 			ScriptInvocationParams: invocablescriptsschemas.ScriptInvocationParams.#Ref
-			ScriptLanguage: invocablescriptsschemas.ScriptLanguage.#Ref
+			ScriptLanguage:         invocablescriptsschemas.ScriptLanguage.#Ref
 		}
 	}
 }

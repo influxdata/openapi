@@ -14,13 +14,13 @@ import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
 		url: "/"
 	}]
 	paths: {
-		"/datasources": datasourcesdpaths.datasources.#Ref
+		"/datasources":                datasourcesdpaths.datasources.#Ref
 		"/datasources/{datasourceID}": datasourcesdpaths."datasources-id".#Ref
-		"/webhooks/{token}": datasourcesdpaths.webhooks.#Ref
+		"/webhooks/{token}":           datasourcesdpaths.webhooks.#Ref
 	}
 	components: schemas: {
-		Datasource: datasourcesdschemas.Datasource.#Ref
+		Datasource:       datasourcesdschemas.Datasource.#Ref
 		ListenerEndpoint: datasourcesdschemas.ListenerEndpoint.#Ref
-		Service: datasourcesdschemas.Service.#Ref
+		Service:          datasourcesdschemas.Service.#Ref
 	}
 }

@@ -22,8 +22,8 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 
 		]}]
 	paths: {
-		"/orgs": quartzpaths.orgs.#Ref
-		"/orgs/{orgID}": quartzpaths.org.#Ref
+		"/orgs":                quartzpaths.orgs.#Ref
+		"/orgs/{orgID}":        quartzpaths.org.#Ref
 		"/orgs/{orgID}/limits": quartzpaths.orgLimits.#Ref
 	}
 	components: {
@@ -32,25 +32,25 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 			scheme: "bearer"
 		}
 		schemas: {
-			BucketLimits: quartzschemas.BucketLimits.#Ref
-			CheckLimits: quartzschemas.CheckLimits.#Ref
-			DashboardLimits: quartzschemas.DashboardLimits.#Ref
-			Error: commonschemas.Error.#Ref
-			Limit: quartzschemas.Limit.#Ref
+			BucketLimits:               quartzschemas.BucketLimits.#Ref
+			CheckLimits:                quartzschemas.CheckLimits.#Ref
+			DashboardLimits:            quartzschemas.DashboardLimits.#Ref
+			Error:                      commonschemas.Error.#Ref
+			Limit:                      quartzschemas.Limit.#Ref
 			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits.#Ref
-			NotificationRuleLimits: quartzschemas.NotificationRuleLimits.#Ref
-			OrganizationRequest: quartzschemas.OrganizationRequest.#Ref
-			OrganizationWithToken: quartzschemas.OrganizationWithToken.#Ref
-			Organization: quartzschemas.Organization.#Ref
-			Organizations: quartzschemas.Organizations.#Ref
-			OrgLimits: quartzschemas.OrgLimits.#Ref
-			RateLimits: quartzschemas.RateLimits.#Ref
-			RestrictedLimit: quartzschemas.RestrictedLimit.#Ref
-			TaskLimits: quartzschemas.TaskLimits.#Ref
-			Unlimited: quartzschemas.Unlimited.#Ref
+			NotificationRuleLimits:     quartzschemas.NotificationRuleLimits.#Ref
+			OrganizationRequest:        quartzschemas.OrganizationRequest.#Ref
+			OrganizationWithToken:      quartzschemas.OrganizationWithToken.#Ref
+			Organization:               quartzschemas.Organization.#Ref
+			Organizations:              quartzschemas.Organizations.#Ref
+			OrgLimits:                  quartzschemas.OrgLimits.#Ref
+			RateLimits:                 quartzschemas.RateLimits.#Ref
+			RestrictedLimit:            quartzschemas.RestrictedLimit.#Ref
+			TaskLimits:                 quartzschemas.TaskLimits.#Ref
+			Unlimited:                  quartzschemas.Unlimited.#Ref
 		}
 		responses: {
-			NoContent: commonresponses.NoContent.#Ref
+			NoContent:   commonresponses.NoContent.#Ref
 			ServerError: commonresponses.ServerError.#Ref
 		}
 	}

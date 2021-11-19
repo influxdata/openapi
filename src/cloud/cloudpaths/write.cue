@@ -2,6 +2,10 @@ package cloudpaths
 
 import "github.com/influxdata/openapi/src/common/commonschemas"
 
+import "github.com/influxdata/openapi/src/common/commonresponses"
+
+import "github.com/influxdata/openapi/src/common/commonparameters"
+
 write: post: {
 	operationId: "PostWrite"
 	tags: [
@@ -35,8 +39,7 @@ write: post: {
 			format: "byte"
 		}
 	}, parameters: [{
-		$ref:
-			"../../common/parameters/TraceSpan.yml"
+		commonparameters.TraceSpan.#Ref
 	}, {
 		in:
 			"header", name:
@@ -58,10 +61,10 @@ write: post: {
 			]
 		}
 	}, {
-		in:
-			"header", name:
-			"Content-Type", description:
-			"The header value indicates the format of the data in the request body.", schema: {
+		in:          "header"
+		name:        "Content-Type"
+		description: "The header value indicates the format of the data in the request body."
+		schema: {
 
 			type: "string"
 			description: """
@@ -113,20 +116,21 @@ write: post: {
 			"The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.", schema: type: "string"
 	}, {
 		in:
-			"query", name:
-			"bucket", description:
-			"The destination bucket for writes.", required:
-			true, schema: {
+				"query", name:
+				"bucket", description:
+				"The destination bucket for writes."
+		required: true
+		schema: {
 
 			type:        "string"
 			description: "All points within batch are written to this bucket."
 		}
 	}, {
-		in:
-			"query", name:
-			"precision", description:
-			"The precision for the unix timestamps within the body line-protocol.", schema: commonschemas.WritePrecision.#Ref
-	}], responses: {
+		in:          "query"
+		name:        "precision"
+		description: "The precision for the unix timestamps within the body line-protocol.", schema: commonschemas.WritePrecision.#Ref
+	}]
+	responses: {
 		"204": description:
 			"InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
 		"400": {
@@ -142,9 +146,9 @@ write: post: {
 				}
 			}
 		}
-		"401": $ref:
-			"../../common/responses/AuthorizationError.yml", "404": $ref:
-			"../../common/responses/ResourceNotFoundError.yml", "413": {
+		"401": $ref: "../../common/responses/AuthorizationError.yml"
+		"404": $ref: "../../common/responses/ResourceNotFoundError.yml"
+		"413": {
 			description:
 				"Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.", content: "text/html": {
 				schema: type: "string"
@@ -174,8 +178,9 @@ write: post: {
 					format: "int32"
 				}
 			}
-		}, "500": $ref:
-			"../../common/responses/InternalServerError.yml", "503": {
+		}
+		"500": commonresponses.InternalServerError.#Ref
+		"503": {
 			description:
 				"The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.", headers: "Retry-After": {
 				description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
@@ -184,7 +189,7 @@ write: post: {
 					format: "int32"
 				}
 			}
-		}, default: $ref:
-			"../../common/responses/ServerError.yml"
+		}
+		default: commonresponses.InternalServerError.#Ref
 	}
 }

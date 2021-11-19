@@ -20,18 +20,18 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		url: "/"
 	}]
 	paths: {
-		"/pinned": notebooksdpaths.pinned.#Ref
+		"/pinned":      notebooksdpaths.pinned.#Ref
 		"/pinned/{id}": notebooksdpaths.pinned_id.#Ref
 	}
 	components: {
 		requestBodies: PinnedItemParams: pinneditemsdrequestBodies.PinnedItemParams
 		schemas: {
-			PinnedItem: pinneditemsdschemas.pinnedItem
+			PinnedItem:      pinneditemsdschemas.pinnedItem
 			PinnedItemArray: pinneditemsdschemas.pinnedItemArray
-			Error: commonschemas.Error
+			Error:           commonschemas.Error
 		}
 		responses: {
-			NoContent: commonresponses.NoContent
+			NoContent:   commonresponses.NoContent
 			ServerError: commonresponses.ServerError
 		}
 	}
