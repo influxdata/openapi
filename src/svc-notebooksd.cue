@@ -20,31 +20,31 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		url: "/"
 	}]
 	paths: {
-		"/notebooks": notebooksdpaths.notebooks.#Ref
-		"/notebooks/{id}": notebooksdpaths.notebooks_id.#Ref
-		"/notebooks/share": notebooksdpaths.notebooks_share.#Ref
-		"/notebooks/share/{id}": notebooksdpaths.notebooks_share_id.#Ref
-		"/api/share/{id}/query/{pipeID}": notebooksdpaths.api_share_id_query_pipeid.#Ref
-		"/api/share/{id}": notebooksdpaths.api_share_id.#Ref
+		"/notebooks": notebooksdpaths.notebooks
+		"/notebooks/{id}": notebooksdpaths.notebooks_id
+		"/notebooks/share": notebooksdpaths.notebooks_share
+		"/notebooks/share/{id}": notebooksdpaths.notebooks_share_id
+		"/api/share/{id}/query/{pipeID}": notebooksdpaths.api_share_id_query_pipeid
+		"/api/share/{id}": notebooksdpaths.api_share_id
 	}
 	components: {
 		requestBodies: {
-			NotebookParams: notebooksdrequestBodies.NotebookParams.#Ref
-			ShareParams: notebooksdrequestBodies.ShareParams.#Ref
+			NotebookParams: notebooksdrequestBodies.NotebookParams
+			ShareParams: notebooksdrequestBodies.ShareParams
 		}
 		schemas: {
-			NotebookParams: notebooksdschemas.NotebookParams.#Ref
-			Notebook: notebooksdschemas.Notebook.#Ref
-			NotebookArray: notebooksdschemas.NotebookArray.#Ref
-			Notebooks: notebooksdschemas.Notebooks.#Ref
-			ShareParams: notebooksdschemas.ShareParams.#Ref
-			Share: notebooksdschemas.Share.#Ref
-			Shares: notebooksdschemas.Shares.#Ref
-			Error: commonschemas.Error.#Ref
+			NotebookParams: notebooksdschemas.NotebookParams
+			Notebook: notebooksdschemas.Notebook
+			NotebookArray: notebooksdschemas.NotebookArray
+			Notebooks: notebooksdschemas.Notebooks
+			ShareParams: notebooksdschemas.ShareParams
+			Share: notebooksdschemas.Share
+			Shares: notebooksdschemas.Shares
+			Error: commonschemas.Error
 		}
 		responses: {
-			NoContent: commonresponses.NoContent.#Ref
-			ServerError: commonresponses.ServerError.#Ref
+			NoContent: commonresponses.NoContent
+			ServerError: commonresponses.ServerError
 		}
 	}
 }

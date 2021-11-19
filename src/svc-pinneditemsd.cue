@@ -24,15 +24,15 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		"/pinned/{id}": notebooksdpaths.pinned_id.#Ref
 	}
 	components: {
-		requestBodies: PinnedItemParams: pinneditemsdrequestBodies.PinnedItemParams.#Ref
+		requestBodies: PinnedItemParams: pinneditemsdrequestBodies.PinnedItemParams
 		schemas: {
-			PinnedItem: pinneditemsdschemas.pinnedItem.#Ref
-			PinnedItemArray: pinneditemsdschemas.pinnedItemArray.#Ref
-			Error: commonschemas.Error.#Ref
+			PinnedItem: pinneditemsdschemas.pinnedItem
+			PinnedItemArray: pinneditemsdschemas.pinnedItemArray
+			Error: commonschemas.Error
 		}
 		responses: {
-			NoContent: commonresponses.NoContent.#Ref
-			ServerError: commonresponses.ServerError.#Ref
+			NoContent: commonresponses.NoContent
+			ServerError: commonresponses.ServerError
 		}
 	}
 }
