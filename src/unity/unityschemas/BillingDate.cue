@@ -1,0 +1,9 @@
+package unityschemas
+
+BillingDate: {
+	properties: dateTime: {
+		type:        "string"
+		description: "UTC datetime representing the start of the billing period for the account"
+	}
+	required: ["dateTime"]
+}

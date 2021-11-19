@@ -1,0 +1,18 @@
+package cloudschemas
+
+OAuthClientConfig: {
+	type: "object"
+	properties: {
+		clientID: type: "string"
+		domain: {
+			type:   "string"
+			format: "uri"
+		}
+		redirectURL: {
+			type:   "string"
+			format: "uri"
+		}
+		state: type: "string"
+	}
+	required: ["clientID", "domain", "redirectURL", "state"]
+}

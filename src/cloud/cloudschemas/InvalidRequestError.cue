@@ -1,0 +1,17 @@
+package cloudschemas
+
+InvalidRequestError: properties: {
+	code: {
+		description: "returns error code 400"
+		readOnly:    true
+		type:        "string"
+		enum: [
+			"invalid",
+		]
+	}
+	message: {
+		readOnly:    true
+		description: "message is a human-readable message."
+		type:        "string"
+	}
+}

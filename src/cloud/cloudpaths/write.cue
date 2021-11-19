@@ -1,0 +1,188 @@
+package cloudpaths
+
+write: post: {
+	operationId: "PostWrite"
+	tags: [
+		"Write",
+	]
+	summary: "Write data"
+	description: """
+		Writes data to a bucket.
+
+		To write data into InfluxDB, you need the following:
+
+		- **organization name or ID** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+		- **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for
+		 instructions on viewing your bucket ID._
+		- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+		 for instructions on viewing your API token._
+		- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
+		- data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.
+
+		For more information and examples, see the following:
+		- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).
+		- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).
+
+		"""
+
+	requestBody: {
+		description:
+			"Data in line protocol format.", required:
+			true, content: "text/plain": schema: {
+			type:   "string"
+			format: "byte"
+		}
+	}, parameters: [{
+		$ref:
+			"../../common/parameters/TraceSpan.yml"
+	}, {
+		in:
+			"header", name:
+			"Content-Encoding", description:
+			"""
+				The value tells InfluxDB what compression is applied to the line protocol in the request payload.
+				To make an API request with a GZIP payload, send `Content-Encoding: gzip` as a request header.
+
+				"""
+
+		schema: {
+
+			type:        "string"
+			description: "The content coding. Use `gzip` for compressed data or `identity` for unmodified, uncompressed data."
+			default:     "identity"
+			enum: [
+				"gzip",
+				"identity",
+			]
+		}
+	}, {
+		in:
+			"header", name:
+			"Content-Type", description:
+			"The header value indicates the format of the data in the request body.", schema: {
+
+			type: "string"
+			description: """
+				`text/plain` specifies line protocol. `UTF-8` is the default character set.
+
+				"""
+
+			default: "text/plain; charset=utf-8"
+			enum: [
+				"text/plain",
+				"text/plain; charset=utf-8",
+				"application/vnd.influx.arrow",
+			]
+		}
+	}, {
+		in:
+			"header", name:
+			"Content-Length", description:
+			"The header value indicates the size of the entity-body, in bytes, sent to the database. If the length is greater than the database's `max body` configuration option, the server responds with status code `413`.", schema: {
+
+			type:        "integer"
+			description: "The length in decimal number of octets."
+		}
+	}, {
+		in:
+			"header", name:
+			"Accept", description:
+			"The header value specifies the response format.", schema: {
+
+			type:        "string"
+			description: "The response format for errors."
+			default:     "application/json"
+			enum: ["application/json"]
+		}
+	}, {
+		in:
+			"query", name:
+			"org", description:
+			"The parameter value specifies the destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence.", required:
+			true, schema: {
+
+			type:        "string"
+			description: "Organization name or ID."
+		}
+	}, {
+		in:
+			"query", name:
+			"orgID", description:
+			"The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.", schema: type: "string"
+	}, {
+		in:
+			"query", name:
+			"bucket", description:
+			"The destination bucket for writes.", required:
+			true, schema: {
+
+			type:        "string"
+			description: "All points within batch are written to this bucket."
+		}
+	}, {
+		in:
+			"query", name:
+			"precision", description:
+			"The precision for the unix timestamps within the body line-protocol.", schema: $ref: "../../common/schemas/WritePrecision.yml"
+	}], responses: {
+		"204": description:
+			"InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
+		"400": {
+			description:
+				"Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.", content: "application/json": {
+				schema: $ref: "../../common/schemas/LineProtocolError.yml"
+				examples: measurementSchemaFieldTypeConflict: {
+					summary: "Field type conflict thrown by an explicit bucket schema"
+					value: {
+						code:    "invalid"
+						message: "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
+					}
+				}
+			}
+		}
+		"401": $ref:
+			"../../common/responses/AuthorizationError.yml", "404": $ref:
+			"../../common/responses/ResourceNotFoundError.yml", "413": {
+			description:
+				"Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.", content: "text/html": {
+				schema: type: "string"
+				examples: dataExceedsSizeLimit: {
+					summary: "Cloud response"
+					value: """
+						<html>
+						  <head><title>413 Request Entity Too Large</title></head>
+						  <body>
+						    <center><h1>413 Request Entity Too Large</h1></center>
+						    <hr>
+						    <center>nginx</center>
+						  </body>
+						</html>
+
+						"""
+				}
+			}
+		}
+
+		"429": {
+			description:
+				"The token is temporarily over quota. The Retry-After header describes when to try the write again.", headers: "Retry-After": {
+				description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
+				schema: {
+					type:   "integer"
+					format: "int32"
+				}
+			}
+		}, "500": $ref:
+			"../../common/responses/InternalServerError.yml", "503": {
+			description:
+				"The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.", headers: "Retry-After": {
+				description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
+				schema: {
+					type:   "integer"
+					format: "int32"
+				}
+			}
+		}, default: $ref:
+			"../../common/responses/ServerError.yml"
+	}
+}

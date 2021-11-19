@@ -1,0 +1,36 @@
+package datasourcesdpaths
+
+datasources: {
+	get: {
+		operationId: "get-datasources"
+		responses: "200": {
+			description: "OK"
+			content: "application/json": schema: {
+				type: "array"
+				items: $ref: "../schemas/Datasource.yml"
+			}
+		}
+		description: "Get a list of datasources for this organization"
+	}
+	post: {
+		operationId: "post-datasources"
+		responses: "200": {
+			description: "OK"
+			content: "application/json": schema: {
+				type: "object"
+				properties: {
+					id: type:       "string"
+					endpoint: $ref: "../schemas/ListenerEndpoint.yml"
+				}
+			}
+		}
+		description: "Create a datasource with a specific plugin configuration"
+		requestBody: content: "application/json": schema: {
+			type: "object"
+			properties: {
+				name: type:   "string"
+				config: type: "object"
+			}
+		}
+	}
+}

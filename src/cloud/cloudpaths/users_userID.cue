@@ -1,0 +1,84 @@
+package cloudpaths
+
+users_userID: {
+	get: {
+		operationId: "GetUsersID"
+		tags: [
+			"Users",
+		]
+		summary: "Retrieve a user"
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "userID"
+			schema: type: "string"
+			required:    true
+			description: "The user ID."
+		}]
+		responses: {
+			"200": {
+				description: "User details"
+				content: "application/json": schema: $ref: "../../common/schemas/UserResponse.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+		}
+	}
+	patch: {
+		operationId: "PatchUsersID"
+		tags: [
+			"Users",
+		]
+		summary: "Update a user"
+		requestBody: {
+			description: "User update to apply"
+			required:    true
+			content: "application/json": schema: $ref: "../schemas/User.yml"
+		}
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "userID"
+			schema: type: "string"
+			required:    true
+			description: "The ID of the user to update."
+		}]
+		responses: {
+			"200": {
+				description: "User updated"
+				content: "application/json": schema: $ref: "../../common/schemas/UserResponse.yml"
+			}
+			default: {
+				description: "Unexpected error"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+		}
+	}
+	delete: {
+		operationId: "DeleteUsersID"
+		tags: [
+			"Users",
+		]
+		summary: "Delete a user"
+		parameters: [{
+			$ref: "../../common/parameters/TraceSpan.yml"
+		}, {
+			in:   "path"
+			name: "userID"
+			schema: type: "string"
+			required:    true
+			description: "The ID of the user to delete."
+		}]
+		responses: {
+			"204": description: "User deleted"
+			default: {
+				description: "Unexpected error"
+				$ref:        "../../common/responses/ServerError.yml"
+			}
+		}
+	}
+}

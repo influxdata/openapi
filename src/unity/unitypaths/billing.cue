@@ -1,0 +1,18 @@
+package unitypaths
+
+billing: get: {
+	operationId: "GetBilling"
+	tags: [
+		"Billing",
+	]
+	responses: {
+		"200": {
+			description: "Billing information for account"
+			content: "application/json": schema: $ref: "../schemas/BillingInfo.yml"
+		}
+		default: {
+			description: "Unexpected error"
+			$ref:        "../../common/responses/ServerError.yml"
+		}
+	}
+}

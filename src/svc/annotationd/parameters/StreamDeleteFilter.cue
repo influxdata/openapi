@@ -1,9 +1,0 @@
-package parameters
-
-StreamDeleteFilter: {
-	in:          "query"
-	name:        "StreamDeleteFilter"
-	required:    true
-	description: "Stream to delete"
-	schema: $ref: "../schemas/StreamDeleteFilter.yml"
-}

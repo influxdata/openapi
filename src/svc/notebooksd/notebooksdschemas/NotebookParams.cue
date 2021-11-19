@@ -1,0 +1,7 @@
+package notebooksdschemas
+
+NotebookParams: properties: {
+	name: type: "string"
+	orgID: type: "string"
+	spec: type: "object"
+}
