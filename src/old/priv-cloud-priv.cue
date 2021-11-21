@@ -1,0 +1,1069 @@
+package old
+
+"priv-cloud-priv": {
+	openapi: "3.0.0"
+	info: {
+		title:   "IDPE-exclusive API endpoints"
+		version: "2.3.3"
+	}
+	servers: [{
+		description: """
+			V2 Private is not necessarily private in the sense that the world cannot view it,
+			but defines routes that are of little use to the world (quartz-specific routes that
+			require a super token (`/setup/user`)), or routes that are not yet guaranteed to
+			not change.
+			"""
+
+		url: "/api/v2private"
+	}]
+	paths: {
+		"/oauth/clientConfig": get: {
+			tags: [
+				"OAuth",
+			]
+			summary: "Retrieve required OAuth client variables"
+			parameters: [{
+				in:   "query"
+				name: "redirectTo"
+				schema: type: "string"
+				description: "optional parameter to redirect the user to after a successful login."
+				required:    false
+			}]
+			responses: {
+				"200": {
+					description: "Required OAuth client variables"
+					content: "application/json": schema: $ref: "#/components/schemas/OAuthClientConfig"
+				}
+				default: {
+					description: "unexpected error"
+					$ref:        "#/components/responses/ServerError"
+				}
+			}
+		}
+		"/flags": get: {
+			tags: [
+				"Public Flags",
+			]
+			summary: "Retrieve public/preauth feature flags"
+			responses: {
+				"200": {
+					description: "Pre-authentication exposed feature flags"
+					content: "application/json": schema: {
+						type:                 "object"
+						additionalProperties: true
+					}
+				}
+				default: {
+					description: "unexpected error"
+					$ref:        "#/components/responses/ServerError"
+				}
+			}
+		}
+		"/limitevents": get: {
+			tags: [
+				"Limits",
+			]
+			summary: "List all limit events"
+			parameters: [{
+				in:          "query"
+				name:        "orgID"
+				required:    true
+				description: "only show events belonging to specified organization"
+				schema: type: "string"
+			}, {
+				in:          "query"
+				name:        "start"
+				description: "limit to only events at or after start time"
+				schema: {
+					type:   "string"
+					format: "date-time"
+				}
+			}, {
+				in:          "query"
+				name:        "stop"
+				description: "limit to only events before stop time"
+				schema: {
+					type:   "string"
+					format: "date-time"
+				}
+			}, {
+				in:   "query"
+				name: "limit"
+				schema: {
+					type:    "integer"
+					minimum: 1
+					default: 100
+					maximum: 100
+				}
+			}, {
+				in:   "query"
+				name: "offset"
+				schema: {
+					type:    "integer"
+					minimum: 0
+				}
+			}]
+			responses: {
+				"200": {
+					description: "A list of limit events"
+					content: "application/json": schema: $ref: "#/components/schemas/LimitEvents"
+				}
+				default: {
+					description: "unexpected error"
+					$ref:        "#/components/responses/ServerError"
+				}
+			}
+		}
+		"/orgs/{orgID}/limits": {
+			get: {
+				tags: [
+					"Limits",
+				]
+				summary: "Retrieve limits for an organization"
+				parameters: [{
+					in:          "path"
+					name:        "orgID"
+					description: "The identifier of the organization."
+					required:    true
+					schema: type: "string"
+				}]
+				responses: {
+					"200": {
+						description: "A limit"
+						content: "application/json": schema: $ref: "#/components/schemas/Limit"
+					}
+					default: {
+						description: "unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+			put: {
+				tags: [
+					"Limits",
+				]
+				summary: "Create or update limits for an organization"
+				parameters: [{
+					in:          "path"
+					name:        "orgID"
+					description: "The identifier of the organization."
+					required:    true
+					schema: type: "string"
+				}]
+				requestBody: {
+					description: "limit that will be updated"
+					required:    true
+					content: "application/json": schema: $ref: "#/components/schemas/Limit"
+				}
+				responses: {
+					"200": {
+						description: "The updated or created limit"
+						content: "application/json": schema: $ref: "#/components/schemas/Limit"
+					}
+					default: {
+						description: "unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+		}
+		"/orgs/{orgID}/limits/status": get: {
+			tags: [
+				"Limits",
+			]
+			summary: "Get current limit status for an org"
+			parameters: [{
+				in:   "path"
+				name: "orgID"
+				schema: type: "string"
+				required:    true
+				description: "The identifier of the organization."
+			}]
+			responses: {
+				"200": {
+					description: "Current limit status"
+					content: "application/json": schema: $ref: "#/components/schemas/LimitStatuses"
+				}
+				default: {
+					description: "unexpected error"
+					$ref:        "#/components/responses/ServerError"
+				}
+			}
+		}
+		"/orgs/{orgID}/settings": {
+			get: {
+				summary: "Get settings for an org"
+				parameters: [{
+					in:          "path"
+					name:        "orgID"
+					description: "org to get settings for"
+					required:    true
+					schema: type: "string"
+				}]
+				responses: {
+					"200": {
+						description: "Current settings for org"
+						content: "application/json": schema: $ref: "#/components/schemas/OrgSettings"
+					}
+					default: {
+						description: "unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+			put: {
+				summary: "Create or update settings for an org"
+				parameters: [{
+					in:          "path"
+					name:        "orgID"
+					description: "org to create settings for"
+					required:    true
+					schema: type: "string"
+				}]
+				requestBody: {
+					description: "Org settings that will be updated"
+					required:    true
+					content: "application/json": schema: $ref: "#/components/schemas/OrgSettings"
+				}
+				responses: {
+					"200": {
+						description: "The updated or created settings"
+						content: "application/json": schema: $ref: "#/components/schemas/OrgSettings"
+					}
+					default: {
+						description: "unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+		}
+		"/tenants": post: {
+			summary: "This is a temporary, experimental, soon to be depricated API for Quartz"
+			requestBody: {
+				description: "the parameters for the org to be created, including limits"
+				required:    true
+				content: "application/json": schema: $ref: "#/components/schemas/OrganizationRequest"
+			}
+			responses: {
+				"201": {
+					description: "The created organization and the initial bucket"
+					content: "application/json": schema: {
+						type: "object"
+						properties: {
+							orgID: {
+								type:        "string"
+								description: "the influxDB ID of the created organization"
+							}
+							userID: {
+								type:        "string"
+								description: "the influxDB ID of the created IDPE User"
+							}
+						}
+					}
+				}
+				"400": {
+					description: "The requested changes were invalid"
+					content: "application/json": schema: $ref: "#/components/schemas/InvalidRequestError"
+				}
+				"401": {
+					description: "Credentials not provided"
+					content: "application/json": schema: $ref: "#/components/schemas/UnauthorizedRequestError"
+				}
+				"403": {
+					description: "Insufficient credentials to create an organization"
+					content: "application/json": schema: $ref: "#/components/schemas/ForbiddenRequestError"
+				}
+				default: {
+					description: "unexpected error"
+					$ref:        "#/components/responses/ServerError"
+				}
+			}
+		}
+		"/setup/user": post: {
+			operationId: "PostSetupUser"
+			tags: [
+				"Setup",
+			]
+			summary:     "Create a new user, organization, and bucket"
+			description: "Post an onboarding request to create a new user, organization, and bucket."
+			requestBody: {
+				description: "Source to create"
+				required:    true
+				content: "application/json": schema: $ref: "#/components/schemas/OnboardingRequest"
+			}
+			responses: {
+				"201": {
+					description: "The created default user, bucket, and organization."
+					content: "application/json": schema: $ref: "#/components/schemas/OnboardingResponse"
+				}
+				default: {
+					description: "Unexpected error"
+					$ref:        "#/components/responses/ServerError"
+				}
+			}
+		}
+	}
+	components: {
+		schemas: {
+			OnboardingRequest: {
+				type: "object"
+				properties: {
+					username: type: "string"
+					password: type: "string"
+					org: type: "string"
+					bucket: type: "string"
+					retentionPeriodHrs: {
+						type:       "integer"
+						deprecated: true
+					}
+					retentionPeriodSeconds: type: "integer"
+					limit: $ref: "#/components/schemas/Limit"
+				}
+				required: [
+					"username",
+					"org",
+					"bucket",
+				]
+			}
+			OnboardingResponse: {
+				type: "object"
+				properties: {
+					user: {
+						properties: {
+							id: {
+								readOnly: true
+								type:     "string"
+							}
+							oauthID: type: "string"
+							name: type: "string"
+							status: {
+								description: "If inactive the user is inactive."
+								default:     "active"
+								type:        "string"
+								enum: [
+									"active",
+									"inactive",
+								]
+							}
+							links: {
+								type:     "object"
+								readOnly: true
+								example: self: "/api/v2/users/1"
+								properties: self: {
+									type:   "string"
+									format: "uri"
+								}
+							}
+						}
+						required: [
+							"name",
+						]
+					}
+					org: {
+						properties: {
+							links: {
+								type:     "object"
+								readOnly: true
+								example: {
+									self:       "/api/v2/orgs/1"
+									members:    "/api/v2/orgs/1/members"
+									owners:     "/api/v2/orgs/1/owners"
+									labels:     "/api/v2/orgs/1/labels"
+									secrets:    "/api/v2/orgs/1/secrets"
+									buckets:    "/api/v2/buckets?org=myorg"
+									tasks:      "/api/v2/tasks?org=myorg"
+									dashboards: "/api/v2/dashboards?org=myorg"
+								}
+								properties: {
+									self: $ref: "#/components/schemas/Link"
+									members: $ref: "#/components/schemas/Link"
+									owners: $ref: "#/components/schemas/Link"
+									labels: $ref: "#/components/schemas/Link"
+									secrets: $ref: "#/components/schemas/Link"
+									buckets: $ref: "#/components/schemas/Link"
+									tasks: $ref: "#/components/schemas/Link"
+									dashboards: $ref: "#/components/schemas/Link"
+								}
+							}
+							id: {
+								readOnly: true
+								type:     "string"
+							}
+							name: type: "string"
+							description: type: "string"
+							createdAt: {
+								type:     "string"
+								format:   "date-time"
+								readOnly: true
+							}
+							updatedAt: {
+								type:     "string"
+								format:   "date-time"
+								readOnly: true
+							}
+							status: {
+								description: "If inactive the organization is inactive."
+								default:     "active"
+								type:        "string"
+								enum: [
+									"active",
+									"inactive",
+								]
+							}
+						}
+						required: [
+							"name",
+						]
+					}
+					bucket: {
+						properties: {
+							links: {
+								type:     "object"
+								readOnly: true
+								example: {
+									labels:  "/api/v2/buckets/1/labels"
+									members: "/api/v2/buckets/1/members"
+									org:     "/api/v2/orgs/2"
+									owners:  "/api/v2/buckets/1/owners"
+									self:    "/api/v2/buckets/1"
+									write:   "/api/v2/write?org=2&bucket=1"
+								}
+								properties: {
+									labels: {
+										description: "URL to retrieve labels for this bucket"
+										$ref:        "#/components/schemas/Link"
+									}
+									members: {
+										description: "URL to retrieve members that can read this bucket"
+										$ref:        "#/components/schemas/Link"
+									}
+									org: {
+										description: "URL to retrieve parent organization for this bucket"
+										$ref:        "#/components/schemas/Link"
+									}
+									owners: {
+										description: "URL to retrieve owners that can read and write to this bucket."
+										$ref:        "#/components/schemas/Link"
+									}
+									self: {
+										description: "URL for this bucket"
+										$ref:        "#/components/schemas/Link"
+									}
+									write: {
+										description: "URL to write line protocol for this bucket"
+										$ref:        "#/components/schemas/Link"
+									}
+								}
+							}
+							id: {
+								readOnly: true
+								type:     "string"
+							}
+							type: {
+								readOnly: true
+								type:     "string"
+								default:  "user"
+								enum: [
+									"user",
+									"system",
+								]
+							}
+							name: type: "string"
+							description: type: "string"
+							orgID: type: "string"
+							rp: type: "string"
+							schemaType: {
+								default: "implicit"
+								type:    "string"
+								enum: [
+									"implicit",
+									"explicit",
+								]
+							}
+							createdAt: {
+								type:     "string"
+								format:   "date-time"
+								readOnly: true
+							}
+							updatedAt: {
+								type:     "string"
+								format:   "date-time"
+								readOnly: true
+							}
+							retentionRules: {
+								type:        "array"
+								description: "Rules to expire or retain data.  No rules means data never expires."
+								items: {
+									type: "object"
+									properties: {
+										type: {
+											type:    "string"
+											default: "expire"
+											enum: [
+												"expire",
+											]
+										}
+										everySeconds: {
+											type:        "integer"
+											format:      "int64"
+											description: "Duration in seconds for how long data will be kept in the database. 0 means infinite."
+											example:     86400
+											minimum:     0
+										}
+										shardGroupDurationSeconds: {
+											type:        "integer"
+											format:      "int64"
+											description: "Shard duration measured in seconds."
+										}
+									}
+									required: [
+										"type",
+										"everySeconds",
+									]
+								}
+							}
+							labels: {
+								type: "array"
+								items: {
+									type: "object"
+									properties: {
+										id: {
+											readOnly: true
+											type:     "string"
+										}
+										orgID: {
+											readOnly: true
+											type:     "string"
+										}
+										name: type: "string"
+										properties: {
+											type: "object"
+											additionalProperties: type: "string"
+											description: "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value."
+											example: {
+												color:       "ffb3b3"
+												description: "this is a description"
+											}
+										}
+									}
+								}
+							}
+						}
+						required: [
+							"name",
+							"retentionRules",
+						]
+					}
+					auth: {
+						required: [
+							"orgID",
+							"permissions",
+						]
+						allOf: [{
+							properties: {
+								status: {
+									description: "If inactive the token is inactive and requests using the token will be rejected."
+									default:     "active"
+									type:        "string"
+									enum: [
+										"active",
+										"inactive",
+									]
+								}
+								description: {
+									type:        "string"
+									description: "A description of the token."
+								}
+							}
+						}, {
+							type: "object"
+							properties: {
+								createdAt: {
+									type:     "string"
+									format:   "date-time"
+									readOnly: true
+								}
+								updatedAt: {
+									type:     "string"
+									format:   "date-time"
+									readOnly: true
+								}
+								orgID: {
+									type:        "string"
+									description: "ID of org that authorization is scoped to."
+								}
+								permissions: {
+									type:        "array"
+									minItems:    1
+									description: "List of permissions for an auth.  An auth must have at least one Permission."
+									items: {
+										required: [
+											"action",
+											"resource",
+										]
+										properties: {
+											action: {
+												type: "string"
+												enum: [
+													"read",
+													"write",
+												]
+											}
+											resource: {
+												type: "object"
+												required: [
+													"type",
+												]
+												properties: {
+													type: {
+														type: "string"
+														enum: [
+															"authorizations",
+															"buckets",
+															"dashboards",
+															"orgs",
+															"tasks",
+															"telegrafs",
+															"users",
+															"variables",
+															"secrets",
+															"labels",
+															"views",
+															"documents",
+															"notificationRules",
+															"notificationEndpoints",
+															"checks",
+															"dbrp",
+															"flows",
+															"annotations",
+															"functions",
+														]
+													}
+													id: {
+														type:        "string"
+														nullable:    true
+														description: "If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type."
+													}
+													name: {
+														type:        "string"
+														nullable:    true
+														description: "Optional name of the resource if the resource has a name field."
+													}
+													orgID: {
+														type:        "string"
+														nullable:    true
+														description: "If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type."
+													}
+													org: {
+														type:        "string"
+														nullable:    true
+														description: "Optional name of the organization of the organization with orgID."
+													}
+												}
+											}
+										}
+									}
+								}
+								id: {
+									readOnly: true
+									type:     "string"
+								}
+								token: {
+									readOnly:    true
+									type:        "string"
+									description: "Passed via the Authorization Header and Token Authentication type."
+								}
+								userID: {
+									readOnly:    true
+									type:        "string"
+									description: "ID of user that created and owns the token."
+								}
+								user: {
+									readOnly:    true
+									type:        "string"
+									description: "Name of user that created and owns the token."
+								}
+								org: {
+									readOnly:    true
+									type:        "string"
+									description: "Name of the org token is scoped to."
+								}
+								links: {
+									type:     "object"
+									readOnly: true
+									example: {
+										self: "/api/v2/authorizations/1"
+										user: "/api/v2/users/12"
+									}
+									properties: {
+										self: {
+											readOnly: true
+											$ref:     "#/components/schemas/Link"
+										}
+										user: {
+											readOnly: true
+											$ref:     "#/components/schemas/Link"
+										}
+									}
+								}
+							}
+						}]
+					}
+				}
+			}
+			InvalidRequestError: properties: {
+				code: {
+					description: "returns error code 400"
+					readOnly:    true
+					type:        "string"
+					enum: [
+						"invalid",
+					]
+				}
+				message: {
+					readOnly:    true
+					description: "message is a human-readable message."
+					type:        "string"
+				}
+			}
+			UnauthorizedRequestError: properties: {
+				code: {
+					description: "returns error code 401"
+					readOnly:    true
+					type:        "string"
+					enum: [
+						"unauthorized",
+					]
+				}
+				message: {
+					readOnly:    true
+					description: "message is a human-readable message."
+					type:        "string"
+				}
+			}
+			ForbiddenRequestError: properties: {
+				code: {
+					description: "returns error code 403"
+					readOnly:    true
+					type:        "string"
+					enum: [
+						"forbidden",
+					]
+				}
+				message: {
+					readOnly:    true
+					description: "message is a human-readable message."
+					type:        "string"
+				}
+			}
+			Error: {
+				properties: {
+					code: {
+						description: "code is the machine-readable error code."
+						readOnly:    true
+						type:        "string"
+						enum: [
+							"internal error",
+							"not found",
+							"conflict",
+							"invalid",
+							"unprocessable entity",
+							"empty value",
+							"unavailable",
+							"forbidden",
+							"too many requests",
+							"unauthorized",
+							"method not allowed",
+							"request too large",
+							"unsupported media type",
+						]
+					}
+					message: {
+						readOnly:    true
+						description: "message is a human-readable message."
+						type:        "string"
+					}
+					op: {
+						readOnly:    true
+						description: "op describes the logical code operation during error. Useful for debugging."
+						type:        "string"
+					}
+					err: {
+						readOnly:    true
+						description: "err is a stack of errors that occurred during processing of the request. Useful for debugging."
+						type:        "string"
+					}
+				}
+				required: [
+					"code",
+					"message",
+				]
+			}
+			OAuthClientConfig: {
+				type: "object"
+				properties: {
+					clientID: type: "string"
+					domain: {
+						type:   "string"
+						format: "uri"
+					}
+					redirectURL: {
+						type:   "string"
+						format: "uri"
+					}
+					state: type: "string"
+				}
+				required: [
+					"clientID",
+					"domain",
+					"redirectURL",
+					"state",
+				]
+			}
+			LimitEvent: {
+				type: "object"
+				properties: {
+					orgID: type: "string"
+					type: {
+						type: "string"
+						enum: [
+							"limited_quota",
+							"limited_write",
+							"limited_query",
+							"limited_cardinality",
+						]
+					}
+					timestamp: {
+						readOnly: true
+						type:     "string"
+						format:   "date-time"
+					}
+				}
+			}
+			LimitEvents: {
+				type: "object"
+				properties: {
+					links: $ref: "#/components/schemas/Links"
+					events: {
+						type: "array"
+						items: $ref: "#/components/schemas/LimitEvent"
+					}
+				}
+			}
+			LimitStatuses: {
+				type: "object"
+				properties: {
+					read: $ref: "#/components/schemas/LimitStatus"
+					write: $ref: "#/components/schemas/LimitStatus"
+					cardinality: $ref: "#/components/schemas/LimitStatus"
+				}
+				required: [
+					"read",
+					"write",
+					"cardinality",
+				]
+			}
+			LimitStatus: {
+				type: "object"
+				properties: status: {
+					type: "string"
+					enum: [
+						"ok",
+						"exceeded",
+					]
+				}
+				required: [
+					"status",
+				]
+			}
+			Limit: {
+				type:        "object"
+				description: "These are org limits similar to those configured in/by quartz."
+				properties: {
+					orgID: type: "string"
+					rate: {
+						type: "object"
+						properties: {
+							readKBs: {
+								type:        "integer"
+								description: "Query limit in kb/sec. 0 is unlimited."
+							}
+							concurrentReadRequests: {
+								type:        "integer"
+								description: "Allowed concurrent queries. 0 is unlimited."
+							}
+							writeKBs: {
+								type:        "integer"
+								description: "Write limit in kb/sec. 0 is unlimited."
+							}
+							concurrentWriteRequests: {
+								type:        "integer"
+								description: "Allowed concurrent writes. 0 is unlimited."
+							}
+							cardinality: {
+								type:        "integer"
+								description: "Allowed organization total cardinality. 0 is unlimited."
+							}
+							concurrentDeleteRequests: {
+								type:        "integer"
+								description: "Allowed organization concurrent outstanding delete requests."
+							}
+							deleteRequestsPerSecond: {
+								type:        "integer"
+								description: "Allowed organization delete request rate."
+							}
+						}
+						required: [
+							"readKBs",
+							"concurrentReadRequests",
+							"writeKBs",
+							"concurrentWriteRequests",
+							"cardinality",
+						]
+					}
+					bucket: {
+						type: "object"
+						properties: {
+							maxBuckets: type: "integer"
+							maxRetentionDuration: {
+								type:        "integer"
+								description: "Max bucket retention duration in nanoseconds. 0 is unlimited."
+							}
+						}
+						required: [
+							"maxBuckets",
+							"maxRetentionDuration",
+						]
+					}
+					task: {
+						type: "object"
+						properties: maxTasks: type: "integer"
+						required: [
+							"maxTasks",
+						]
+					}
+					dashboard: {
+						type: "object"
+						properties: maxDashboards: type: "integer"
+						required: [
+							"maxDashboards",
+						]
+					}
+					check: {
+						type: "object"
+						properties: maxChecks: type: "integer"
+						required: [
+							"maxChecks",
+						]
+					}
+					notificationRule: {
+						type: "object"
+						properties: {
+							maxNotifications: type: "integer"
+							blockedNotificationRules: {
+								type:        "string"
+								description: "comma separated list of notification rules"
+								example:     "http,pagerduty"
+							}
+						}
+						required: [
+							"maxNotifications",
+							"blockNotificationRules",
+						]
+					}
+					notificationEndpoint: {
+						type: "object"
+						properties: blockedNotificationEndpoints: {
+							type:        "string"
+							description: "comma separated list of notification endpoints"
+							example:     "http,pagerduty"
+						}
+						required: [
+							"blockNotificationEndpoints",
+						]
+					}
+					features: {
+						type: "object"
+						properties: allowDelete: {
+							type:        "boolean"
+							description: "allow delete predicate endpoint"
+						}
+					}
+				}
+				required: [
+					"rate",
+					"bucket",
+					"task",
+					"dashboard",
+					"check",
+					"notificationRule",
+					"notificationEndpoint",
+				]
+			}
+			OrgSettings: {
+				type: "object"
+				properties: {
+					orgID: {
+						type:        "string"
+						description: "the influxDB ID of the created organization"
+					}
+					settings: {
+						type: "array"
+						items: $ref: "#/components/schemas/OrgSetting"
+					}
+				}
+			}
+			OrgSetting: {
+				type: "object"
+				properties: {
+					key: type: "string"
+					value: type: "string"
+				}
+			}
+			Link: {
+				type:        "string"
+				format:      "uri"
+				readOnly:    true
+				description: "URI of resource."
+			}
+			Links: {
+				type: "object"
+				properties: {
+					next: $ref: "#/components/schemas/Link"
+					self: $ref: "#/components/schemas/Link"
+					prev: $ref: "#/components/schemas/Link"
+				}
+				required: [
+					"self",
+				]
+			}
+			OrganizationRequest: {
+				type: "object"
+				properties: {
+					username: {
+						type:        "string"
+						description: "username of the Quartz user to be added in IDPE"
+						example:     "user@email.com"
+					}
+					org: {
+						type:        "string"
+						description: "the name of the organization to be added"
+					}
+					limit: $ref: "#/components/schemas/Limit"
+					retentionSeconds: {
+						type:        "integer"
+						description: "length of time to retain data in seconds"
+					}
+					bucket: {
+						type:        "string"
+						description: "the name of the bucket to be created"
+					}
+				}
+			}
+		}
+		responses: ServerError: {
+			description: "Non 2XX error response from server."
+			content: "application/json": schema: $ref: "#/components/schemas/Error"
+		}
+	}
+}

@@ -1,0 +1,532 @@
+package old
+
+"priv-quartz-oem": {
+	openapi: "3.0.0"
+	info: {
+		title:   "QuartzPublicAPI"
+		version: "0.1.0"
+	}
+	servers: [{
+		url: "/api/v2"
+	}]
+	security: [{
+		bearerAuth: [
+
+		]}]
+	paths: {
+		"/orgs": {
+			get: {
+				operationId: "GetOrgs"
+				tags: [
+					"Organizations",
+				]
+				summary: "List all organizations"
+				responses: {
+					"200": {
+						description: "A list of organizations"
+						content: "application/json": schema: $ref: "#/components/schemas/Organizations"
+					}
+					"401": {
+						description: "Unauthorized bearer token"
+						$ref:        "#/components/responses/ServerError"
+					}
+					default: {
+						description: "Unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+			post: {
+				operationId: "PostOrgs"
+				tags: [
+					"Organizations",
+				]
+				summary: "Creates an organization"
+				requestBody: {
+					description: "Information for provisioning an organization"
+					required:    true
+					content: "application/json": schema: $ref: "#/components/schemas/OrganizationRequest"
+				}
+				responses: {
+					"201": {
+						description: "Organization created"
+						content: "application/json": schema: $ref: "#/components/schemas/OrganizationWithToken"
+					}
+					"400": {
+						description: "Invalid request"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"401": {
+						description: "Unauthorized bearer token"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"409": {
+						description: "Organization name taken"
+						$ref:        "#/components/responses/ServerError"
+					}
+					default: {
+						description: "Unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+		}
+		"/orgs/{orgID}": {
+			get: {
+				operationId: "GetOrgsID"
+				tags: [
+					"Organizations",
+				]
+				summary: "Retrieve a single organization"
+				parameters: [{
+					in:   "path"
+					name: "orgID"
+					schema: type: "string"
+					required:    true
+					description: "The ID of the organization"
+				}]
+				responses: {
+					"200": {
+						description: "The found organization"
+						content: "application/json": schema: $ref: "#/components/schemas/Organization"
+					}
+					"401": {
+						description: "Unauthorized bearer token"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"404": {
+						description: "Organization not found"
+						$ref:        "#/components/responses/ServerError"
+					}
+					default: {
+						description: "Unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+			delete: {
+				operationId: "DeleteOrgsID"
+				tags: [
+					"Organizations",
+				]
+				summary: "Delete a single organization"
+				parameters: [{
+					in:   "path"
+					name: "orgID"
+					schema: type: "string"
+					required:    true
+					description: "The ID of the organization"
+				}]
+				responses: {
+					"204": {
+						description: "The organization was deleted"
+						content: "application/json": schema: $ref: "#/components/schemas/Organization"
+					}
+					"401": {
+						description: "Unauthorized bearer token"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"503": {
+						description: "Service Unavailable"
+						$ref:        "#/components/responses/ServerError"
+					}
+					default: {
+						description: "Unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+		}
+		"/orgs/{orgID}/limits": {
+			get: {
+				operationId: "GetOrgsIDLimits"
+				tags: [
+					"Limits",
+				]
+				summary: "Get the limits of an organization"
+				parameters: [{
+					in:   "path"
+					name: "orgID"
+					schema: type: "string"
+					required:    true
+					description: "The ID of the organization"
+				}]
+				responses: {
+					"200": {
+						description: "Organization limits"
+						content: "application/json": schema: $ref: "#/components/schemas/OrgLimits"
+					}
+					"401": {
+						description: "Unauthorized bearer token"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"404": {
+						description: "Organization not found"
+						$ref:        "#/components/responses/ServerError"
+					}
+					default: {
+						description: "Unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+			put: {
+				operationId: "PatchOrgsIDLimits"
+				tags: [
+					"Limits",
+				]
+				summary: "Update the limits of an organization"
+				parameters: [{
+					in:   "path"
+					name: "orgID"
+					schema: type: "string"
+					required:    true
+					description: "The ID of the organization"
+				}]
+				requestBody: {
+					description: "Updated limits for an organization"
+					required:    true
+					content: "application/json": schema: $ref: "#/components/schemas/OrgLimits"
+				}
+				responses: {
+					"200": {
+						description: "Organization limits"
+						content: "application/json": schema: $ref: "#/components/schemas/OrgLimits"
+					}
+					"400": {
+						description: "Invalid request"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"401": {
+						description: "Unauthorized bearer token"
+						$ref:        "#/components/responses/ServerError"
+					}
+					"404": {
+						description: "Organization not found"
+						$ref:        "#/components/responses/ServerError"
+					}
+					default: {
+						description: "Unexpected error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+		}
+	}
+	components: {
+		securitySchemes: bearerAuth: {
+			type:   "http"
+			scheme: "bearer"
+		}
+		schemas: {
+			BucketLimits: {
+				description: "Bucket limits"
+				type:        "object"
+				properties: {
+					maxBuckets: {
+						example:     2
+						description: "Number of buckets allowed"
+						oneOf: [{
+							$ref: "#/components/schemas/RestrictedLimit"
+						}, {
+							$ref: "#/components/schemas/Unlimited"
+						}, {
+							$ref: "#/components/schemas/Limit"
+						}]
+					}
+					maxRetentionDuration: {
+						description: "Retention duration limits in nanoseconds"
+						example:     2592000000000000
+						oneOf: [{
+							$ref: "#/components/schemas/RestrictedLimit"
+						}, {
+							$ref: "#/components/schemas/Unlimited"
+						}, {
+							$ref: "#/components/schemas/Limit"
+						}]
+					}
+				}
+			}
+			CheckLimits: {
+				description: "Check limits"
+				type:        "object"
+				properties: maxChecks: {
+					description: "Number of checks allowed"
+					example:     2
+					oneOf: [{
+						$ref: "#/components/schemas/RestrictedLimit"
+					}, {
+						$ref: "#/components/schemas/Unlimited"
+					}, {
+						$ref: "#/components/schemas/Limit"
+					}]
+				}
+			}
+			DashboardLimits: {
+				description: "Dashboard limits"
+				type:        "object"
+				properties: maxDashboards: {
+					description: "Number of dashboards allowed"
+					example:     5
+					oneOf: [{
+						$ref: "#/components/schemas/RestrictedLimit"
+					}, {
+						$ref: "#/components/schemas/Unlimited"
+					}, {
+						$ref: "#/components/schemas/Limit"
+					}]
+				}
+			}
+			Error: {
+				properties: {
+					code: {
+						description: "code is the machine-readable error code."
+						readOnly:    true
+						type:        "string"
+						enum: [
+							"internal error",
+							"not found",
+							"conflict",
+							"invalid",
+							"unprocessable entity",
+							"empty value",
+							"unavailable",
+							"forbidden",
+							"too many requests",
+							"unauthorized",
+							"method not allowed",
+							"request too large",
+							"unsupported media type",
+						]
+					}
+					message: {
+						readOnly:    true
+						description: "message is a human-readable message."
+						type:        "string"
+					}
+					op: {
+						readOnly:    true
+						description: "op describes the logical code operation during error. Useful for debugging."
+						type:        "string"
+					}
+					err: {
+						readOnly:    true
+						description: "err is a stack of errors that occurred during processing of the request. Useful for debugging."
+						type:        "string"
+					}
+				}
+				required: [
+					"code",
+					"message",
+				]
+			}
+			Limit: {
+				description: "Limit of at least 1"
+				type:        "integer"
+				minimum:     1
+			}
+			NotificationEndpointLimits: {
+				description: "Notification endpoint limits"
+				type:        "object"
+				properties: blockedNotificationEndpoints: {
+					description: "Notification endpoints not allowed CSV"
+					example:     "http,pagerduty"
+					type:        "string"
+				}
+			}
+			NotificationRuleLimits: {
+				description: "Notification rule limits"
+				type:        "object"
+				properties: {
+					maxNotifications: {
+						description: "Number of notifications allowed"
+						example:     2
+						oneOf: [{
+							$ref: "#/components/schemas/RestrictedLimit"
+						}, {
+							$ref: "#/components/schemas/Unlimited"
+						}, {
+							$ref: "#/components/schemas/Limit"
+						}]
+					}
+					blockedNotificationRules: {
+						description: "Notification rules not allowed CSV"
+						example:     "http,pagerduty"
+						type:        "string"
+					}
+				}
+			}
+			OrganizationRequest: {
+				type: "object"
+				properties: {
+					orgName: {
+						description: "name of the organization"
+						type:        "string"
+					}
+					provider: {
+						description: "name of the cloud provider"
+						type:        "string"
+						enum: [
+							"AWS",
+							"GCP",
+							"Azure",
+						]
+					}
+					region: {
+						description: "name of the region within the cloud provider"
+						type:        "string"
+					}
+					rateLimits: $ref: "#/components/schemas/OrgLimits"
+				}
+			}
+			OrganizationWithToken: allOf: [{
+				$ref: "#/components/schemas/Organization"
+			}, {
+				type: "object"
+				properties: {
+					token: {
+						description: "Authentication token to manage the organization and its resources in IDPE"
+						readOnly:    true
+						type:        "string"
+					}
+					links: {
+						description: "Links to the IDPE resources for this organization"
+						readOnly:    true
+						type:        "object"
+						example: resource: "path/to/resource"
+					}
+				}
+			}]
+			Organization: {
+				type: "object"
+				properties: {
+					id: {
+						description: "the IDPE organization ID"
+						readOnly:    true
+						type:        "string"
+					}
+					apiUrl: {
+						description: "URL for talking to a specific cluster"
+						readOnly:    true
+						type:        "string"
+					}
+					region: {
+						description: "name of the region within the cloud provider"
+						type:        "string"
+					}
+					provider: {
+						description: "name of the cloud provider"
+						type:        "string"
+						enum: [
+							"AWS",
+							"GCP",
+							"Azure",
+						]
+					}
+				}
+			}
+			Organizations: {
+				type: "array"
+				items: $ref: "#/components/schemas/Organization"
+			}
+			OrgLimits: {
+				type: "object"
+				properties: {
+					orgID: {
+						type:        "string"
+						readOnly:    true
+						description: "ID of the org for which these rates apply"
+					}
+					rate: $ref: "#/components/schemas/RateLimits"
+					bucket: $ref: "#/components/schemas/BucketLimits"
+					task: $ref: "#/components/schemas/TaskLimits"
+					dashboard: $ref: "#/components/schemas/DashboardLimits"
+					check: $ref: "#/components/schemas/CheckLimits"
+					notificationRule: $ref: "#/components/schemas/NotificationRuleLimits"
+					notificationEndpoint: $ref: "#/components/schemas/NotificationEndpointLimits"
+				}
+				required: [
+					"orgID",
+					"rate",
+					"bucket",
+					"task",
+					"dashboard",
+					"check",
+					"notificationRule",
+					"notificationEndpoint",
+				]
+			}
+			RateLimits: {
+				description: "Usage rate limits"
+				type:        "object"
+				properties: {
+					readKBs: {
+						description: "KB of data query'd per second"
+						example:     1000
+						oneOf: [{
+							$ref: "#/components/schemas/RestrictedLimit"
+						}, {
+							$ref:    "#/components/schemas/Limit"
+							maximum: 10000
+						}]
+					}
+					writeKBs: {
+						description: "KB of data written per second"
+						example:     17
+						oneOf: [{
+							$ref: "#/components/schemas/RestrictedLimit"
+						}, {
+							$ref:    "#/components/schemas/Limit"
+							maximum: 10000
+						}]
+					}
+					cardinality: {
+						description: "Max cardinality of data"
+						example:     10000
+						oneOf: [{
+							$ref: "#/components/schemas/RestrictedLimit"
+						}, {
+							$ref:    "#/components/schemas/Limit"
+							maximum: 1000000
+						}]
+					}
+				}
+			}
+			RestrictedLimit: {
+				description: "Restrict access entirely"
+				type:        "integer"
+				enum: [-1,
+				]
+			}
+			TaskLimits: {
+				description: "Task limits"
+				type:        "object"
+				properties: maxTasks: {
+					description: "Number of tasks allowed"
+					example:     5
+					oneOf: [{
+						$ref: "#/components/schemas/RestrictedLimit"
+					}, {
+						$ref: "#/components/schemas/Unlimited"
+					}, {
+						$ref: "#/components/schemas/Limit"
+					}]
+				}
+			}
+			Unlimited: {
+				description: "Unbounded limit"
+				type:        "integer"
+				enum: [
+					0,
+				]
+			}
+		}
+		responses: {
+			NoContent: description: "No content"
+			ServerError: {
+				description: "Non 2XX error response from server."
+				content: "application/json": schema: $ref: "#/components/schemas/Error"
+			}
+		}
+	}
+}
