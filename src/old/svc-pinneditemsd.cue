@@ -1,6 +1,6 @@
 package old
 
-"priv-pinneditemsd": {
+"svc-pinneditemsd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "pinneditemsd"

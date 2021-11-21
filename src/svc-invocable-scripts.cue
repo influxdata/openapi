@@ -8,7 +8,7 @@ import "github.com/influxdata/openapi/src/common/commonschemas"
 
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
-"svc-invocable-scripts": {
+all: "svc-invocable-scripts": {
 	openapi: "3.0.0"
 	info: {
 		title:   "InfluxData Invocable Scripts API"

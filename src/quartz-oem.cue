@@ -8,7 +8,7 @@ import "github.com/influxdata/openapi/src/common/commonschemas"
 
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
-"quartz-oem": {
+all: "quartz-oem": {
 	openapi: "3.0.0"
 	info: {
 		title:   "QuartzPublicAPI"

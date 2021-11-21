@@ -10,7 +10,7 @@ import "github.com/influxdata/openapi/src/common/commonschemas"
 
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
-"svc-notebooksd": {
+all: "svc-notebooksd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "notebooksd"

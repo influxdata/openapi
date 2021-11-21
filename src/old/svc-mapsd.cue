@@ -1,6 +1,6 @@
 package old
 
-mapsd: {
+"svc-mapsd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Maps service"

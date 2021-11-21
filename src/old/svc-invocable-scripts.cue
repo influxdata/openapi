@@ -1,6 +1,6 @@
 package old
 
-"invocable-scripts": {
+"svc-invocable-scripts": {
 	openapi: "3.0.0"
 	info: {
 		title:   "InfluxData Invocable Scripts API"

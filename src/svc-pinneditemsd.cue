@@ -10,7 +10,7 @@ import "github.com/influxdata/openapi/src/common/commonschemas"
 
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
-"svc-pinneditemsd": {
+all: "svc-pinneditemsd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "pinneditemsd"

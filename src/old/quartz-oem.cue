@@ -1,6 +1,6 @@
 package old
 
-"priv-quartz-oem": {
+"quartz-oem": {
 	openapi: "3.0.0"
 	info: {
 		title:   "QuartzPublicAPI"

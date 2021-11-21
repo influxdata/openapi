@@ -4,7 +4,7 @@ import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
 
 import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
 
-"svc-datasourcesd": {
+all: "svc-datasourcesd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Cloud Data Sources Service"

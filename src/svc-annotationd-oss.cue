@@ -12,7 +12,7 @@ import "github.com/influxdata/openapi/src/common/commonschemas"
 
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
-"svc-annotationd-oss": {
+all: "svc-annotationd-oss": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Annotations service"

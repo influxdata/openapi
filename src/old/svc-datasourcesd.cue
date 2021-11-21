@@ -1,6 +1,6 @@
 package old
 
-datasourcesd: {
+"svc-datasourcesd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Cloud Data Sources Service"

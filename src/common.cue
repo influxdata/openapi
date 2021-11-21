@@ -4,11 +4,11 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 
 import commonpkg "github.com/influxdata/openapi/src/common"
 
-let common = commonpkg & {
-	#DocsURL: #CommonDocsURL
-}
 
-"common": {
+all: common: {
+	let common1 = commonpkg & {
+		#DocsURL: #CommonDocsURL
+	}
 	openapi: "3.0.0"
 	info: {
 		title:   "Influx Common API"
@@ -17,10 +17,10 @@ let common = commonpkg & {
 	servers: [{
 		url: "/api/v2"
 	}]
-	paths: common.#Paths
+	paths: common1.#Paths
 	components: {
-		parameters: common.#Parameters
-		schemas:    common.#Schemas
+		parameters: common1.#Parameters
+		schemas:    common1.#Schemas
 		responses: ServerError: commonresponses.ServerError.#Ref
 	}
 }

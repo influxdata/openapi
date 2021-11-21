@@ -8,11 +8,22 @@ import "github.com/influxdata/openapi/src/cloud/cloudpaths"
 
 import commonpkg "github.com/influxdata/openapi/src/common"
 
-let common = commonpkg & {
+all: cloud: #Cloud & {
 	#DocsURL: #CloudDocsURL
 }
 
-cloud: {
+#_: all: "cloud-diff": #Cloud & {
+	#DocsURL: "{{% INFLUXDB_DOCS_URL %}}"
+}
+
+#Cloud: {
+	// This is only here so that it can be customized for the "cloud-diff" output;
+	// otherwise we could just use #CloudDocsURL directly.
+	#DocsURL: string
+	let docsURL = #DocsURL
+	let common = commonpkg & {
+		#DocsURL: docsURL
+	}
 	openapi: "3.0.0"
 	info: {
 		title:   "Influx Cloud API Service"

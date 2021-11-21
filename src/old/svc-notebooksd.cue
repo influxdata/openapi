@@ -1,6 +1,6 @@
 package old
 
-"priv-notebooksd": {
+"svc-notebooksd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "notebooksd"

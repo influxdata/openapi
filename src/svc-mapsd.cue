@@ -8,7 +8,7 @@ import "github.com/influxdata/openapi/src/common/commonschemas"
 
 import "github.com/influxdata/openapi/src/common/commonresponses"
 
-"svc-mapsd": {
+all: "svc-mapsd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Maps service"

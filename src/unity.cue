@@ -12,7 +12,7 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 
 import "github.com/influxdata/openapi/src/common/commonparameters"
 
-unity: {
+all: unity: {
 	openapi: "3.0.0"
 	info: {
 		title:   "Unity API Service"

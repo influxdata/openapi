@@ -1,9 +1,11 @@
 package contracts
 
-import ( "github.com/influxdata/openapi/src/common/commonresponses"
+// The idea is that this file can contain invariants we want to assert about
+// our APIs, such as consistent error return types.
 
-	// The idea is that this file can contain invariants we want to assert about
-	// our APIs, such as consistent error return types.
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/old"
 )
 
 #Method: "post" | "get" | "put" | "delete" | "patch"
@@ -21,3 +23,8 @@ import ( "github.com/influxdata/openapi/src/common/commonresponses"
 	}
 	...
 }
+
+#All: all
+#Old: old
+
+#Both: #All & #Old

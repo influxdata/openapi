@@ -1,6 +1,6 @@
 package old
 
-"priv-cloud-priv": {
+"cloud-priv": {
 	openapi: "3.0.0"
 	info: {
 		title:   "IDPE-exclusive API endpoints"

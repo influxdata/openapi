@@ -1,6 +1,6 @@
 package old
 
-"priv-annotationd-oss": {
+"svc-annotationd": {
 	openapi: "3.0.0"
 	info: {
 		title:   "Annotations service"
@@ -17,11 +17,6 @@ package old
 				]
 				operationId: "createAnnotations"
 				summary:     "Create annotations"
-				parameters: [{
-					name: "orgID"
-					in:   "query"
-					schema: type: "string"
-				}]
 				requestBody: {
 					description: "Annotations to create"
 					content: "application/json": schema: $ref: "#/components/schemas/AnnotationCreateList"
@@ -45,10 +40,6 @@ package old
 				summary:     "List annotations"
 				parameters: [{
 					$ref: "#/components/parameters/AnnotationListFilter"
-				}, {
-					name: "orgID"
-					in:   "query"
-					schema: type: "string"
 				}]
 				responses: {
 					"200": {
@@ -68,10 +59,6 @@ package old
 				summary:     "Delete annotation"
 				parameters: [{
 					$ref: "#/components/parameters/AnnotationDeleteFilter"
-				}, {
-					name: "orgID"
-					in:   "query"
-					schema: type: "string"
 				}]
 				responses: {
 					"204": $ref: "#/components/responses/NoContent"
@@ -161,11 +148,6 @@ package old
 				]
 				operationId: "createUpdateStream"
 				summary:     "Create or update stream"
-				parameters: [{
-					name: "orgID"
-					in:   "query"
-					schema: type: "string"
-				}]
 				requestBody: {
 					description: "Stream to create or update"
 					content: "application/json": schema: $ref: "#/components/schemas/Stream"
@@ -188,10 +170,6 @@ package old
 				summary:     "Get streams"
 				parameters: [{
 					$ref: "#/components/parameters/StreamListFilter"
-				}, {
-					name: "orgID"
-					in:   "query"
-					schema: type: "string"
 				}]
 				responses: {
 					"200": {
@@ -211,10 +189,6 @@ package old
 				summary:     "Delete stream"
 				parameters: [{
 					$ref: "#/components/parameters/StreamDeleteFilter"
-				}, {
-					name: "orgID"
-					in:   "query"
-					schema: type: "string"
 				}]
 				responses: {
 					"204": $ref: "#/components/responses/NoContent"
@@ -367,26 +341,7 @@ package old
 						stream: type: "string"
 						annotations: {
 							type: "array"
-							items: {
-								type: "object"
-								properties: {
-									id: type: "string"
-									summary: type: "string"
-									message: type: "string"
-									stickers: {
-										type: "object"
-										additionalProperties: type: "string"
-									}
-									startTime: {
-										type:   "string"
-										format: "date-time"
-									}
-									endTime: {
-										type:   "string"
-										format: "date-time"
-									}
-								}
-							}
+							items: $ref: "#/components/schemas/AnnotationResponse"
 						}
 					}
 				}
@@ -417,6 +372,26 @@ package old
 			Annotation: {
 				type: "object"
 				properties: {
+					summary: type: "string"
+					message: type: "string"
+					stickers: {
+						type: "object"
+						additionalProperties: type: "string"
+					}
+					startTime: {
+						type:   "string"
+						format: "date-time"
+					}
+					endTime: {
+						type:   "string"
+						format: "date-time"
+					}
+				}
+			}
+			AnnotationResponse: {
+				type: "object"
+				properties: {
+					id: type: "string"
 					summary: type: "string"
 					message: type: "string"
 					stickers: {
