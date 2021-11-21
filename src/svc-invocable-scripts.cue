@@ -29,7 +29,7 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 	}
 
 	servers: [{
-		url: "/"
+		url: "/api/v2"
 	}]
 	paths: {
 		"/scripts":                   invocablescriptspaths.scripts.#Ref

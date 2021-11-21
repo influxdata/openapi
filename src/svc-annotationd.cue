@@ -17,7 +17,7 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		version: "0.2.3"
 	}
 	servers: [{
-		url: "/"
+		url: "/api/v2private"
 	}]
 	paths: {
 		"/annotations":                annotationdpaths.annotations.#Ref

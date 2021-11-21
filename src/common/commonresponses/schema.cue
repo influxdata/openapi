@@ -1,3 +1,6 @@
 package commonresponses
 
-[name=string]: #Ref: $ref: "#/components/responses/\(name)"
+[name=string]: #Ref: {
+	description?: string
+	$ref: "#/components/responses/\(name)"
+}

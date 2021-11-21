@@ -15,7 +15,7 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		version: "0.1.0"
 	}
 	servers: [{
-		url: "/api/v1"
+		url: "/api/v2/maps"
 	}]
 	paths: "/mapToken": mapsdpaths.mapToken.#Ref
 	components: {

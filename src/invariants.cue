@@ -6,6 +6,18 @@ import ( "github.com/influxdata/openapi/src/common/commonresponses"
 	// our APIs, such as consistent error return types.
 )
 
+#Method: "post" | "get" | "put" | "delete" | "patch"
+
 #Invariants: {
-	paths: [string]: [string]: responses: default: commonresponses.ServerError.#Ref
+	paths: [string]: {
+		[#Method]: {
+			responses: {
+				default: commonresponses.ServerError.#Ref | commonresponses.ServerError
+				...
+			}
+			...
+		}
+		...
+	}
+	...
 }

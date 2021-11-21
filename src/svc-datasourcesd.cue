@@ -11,7 +11,7 @@ import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
 		version: "1.0"
 	}
 	servers: [{
-		url: "/"
+		url: "/api/v2/datasources"
 	}]
 	paths: {
 		"/datasources":                datasourcesdpaths.datasources.#Ref

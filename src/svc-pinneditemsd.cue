@@ -17,7 +17,7 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 		version: "1.0.0"
 	}
 	servers: [{
-		url: "/"
+		url: "/api/v2private"
 	}]
 	paths: {
 		"/pinned":      notebooksdpaths.pinned.#Ref

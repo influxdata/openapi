@@ -21,15 +21,16 @@ let osspaths = osspathspkg & {
 	#DocsURL: #OSSDocsURL
 }
 oss: #OSS
+oss: #Invariants
 
 // To verify that the output is identical to the old output,
 // import the old openAPI spec:
 //  cue import -p contracts -o oss-old.cue -l '"oldOSS"' yaml: ../contracts/oss.yml
 // Then verify with:
 //       cue vet -c -t docsurl=https://docs.influxdata.com/influxdb
-oldOSS:  _ | *{} // placeholder for imported old OSS file.
-#OldOSS: oldOSS  // make it closed to fully verify equality.
-oss:     #OldOSS
+//oldOSS:  _ | *{} // placeholder for imported old OSS file.
+//#OldOSS: oldOSS  // make it closed to fully verify equality.
+//oss:     #OldOSS
 
 #OSS: {
 	openapi: "3.0.0"
