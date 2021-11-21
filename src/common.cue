@@ -21,6 +21,6 @@ all: common: {
 	components: {
 		parameters: common1.#Parameters
 		schemas:    common1.#Schemas
-		responses: ServerError: commonresponses.ServerError.#Ref
+		responses: ServerError: commonresponses.ServerError
 	}
 }

@@ -2,5 +2,5 @@ package commonschemas
 
 Labels: {
 	type:  "array"
-	items: Label.#Ref
+	items: *Label.#Ref | Label
 }

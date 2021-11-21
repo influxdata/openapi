@@ -4,7 +4,7 @@ import "github.com/influxdata/openapi/src/common/commonresponses"
 
 import "github.com/influxdata/openapi/src/cloud/cloudschemas"
 
-import "github.com/influxdata/openapi/src/cloud/cloudpaths"
+import cloudpathspkg "github.com/influxdata/openapi/src/cloud/cloudpaths"
 
 import commonpkg "github.com/influxdata/openapi/src/common"
 
@@ -22,6 +22,9 @@ all: cloud: #Cloud & {
 	#DocsURL: string
 	let docsURL = #DocsURL
 	let common = commonpkg & {
+		#DocsURL: docsURL
+	}
+	let cloudpaths = cloudpathspkg & {
 		#DocsURL: docsURL
 	}
 	openapi: "3.0.0"
@@ -154,50 +157,50 @@ all: cloud: #Cloud & {
 	}]
 	paths: {
 		common.#Paths
-		"/users":                                                  cloudpaths.users.#Ref
-		"/users/{userID}":                                         cloudpaths.users_userID.#Ref
-		"/setup":                                                  cloudpaths.setup.#Ref
-		"/setup/user":                                             cloudpaths.setup_user.#Ref
-		"/authorizations":                                         cloudpaths.authorizations.#Ref
-		"/experimental/sampledata/buckets":                        cloudpaths.experimental_sampledata_buckets.#Ref
-		"/experimental/sampledata/buckets/{bucketID}/members":     cloudpaths.experimental_sampledata_buckets_members.#Ref
-		"/authorizations/{authID}":                                cloudpaths.authorizations_authID.#Ref
-		"/variables":                                              cloudpaths.variables.#Ref
-		"/variables/{variableID}":                                 cloudpaths.variables_variableID.#Ref
-		"/buckets/{bucketID}/schema/measurements":                 cloudpaths.measurements.#Ref
-		"/buckets/{bucketID}/schema/measurements/{measurementID}": cloudpaths.measurements_measurementID.#Ref
-		"/orgs/{orgID}/limits":                                    cloudpaths.orgs_orgID_limits_get.#Ref
-		"/orgs/{orgID}/usage":                                     cloudpaths.orgs_orgID_usage.#Ref
-		"/dashboards":                                             cloudpaths.dashboards.#Ref
-		"/tasks":                                                  cloudpaths.tasks.#Ref
-		"/write":                                                  cloudpaths.write.#Ref
+		"/users":                                                  cloudpaths.users
+		"/users/{userID}":                                         cloudpaths.users_userID
+		"/setup":                                                  cloudpaths.setup
+		"/setup/user":                                             cloudpaths.setup_user
+		"/authorizations":                                         cloudpaths.authorizations
+		"/experimental/sampledata/buckets":                        cloudpaths.experimental_sampledata_buckets
+		"/experimental/sampledata/buckets/{bucketID}/members":     cloudpaths.experimental_sampledata_buckets_members
+		"/authorizations/{authID}":                                cloudpaths.authorizations_authID
+		"/variables":                                              cloudpaths.variables
+		"/variables/{variableID}":                                 cloudpaths.variables_variableID
+		"/buckets/{bucketID}/schema/measurements":                 cloudpaths.measurements
+		"/buckets/{bucketID}/schema/measurements/{measurementID}": cloudpaths.measurements_measurementID
+		"/orgs/{orgID}/limits":                                    cloudpaths.orgs_orgID_limits_get
+		"/orgs/{orgID}/usage":                                     cloudpaths.orgs_orgID_usage
+		"/dashboards":                                             cloudpaths.dashboards
+		"/tasks":                                                  cloudpaths.tasks
+		"/write":                                                  cloudpaths.write
 	}
 	components: {
 		parameters: common.#Parameters
 		schemas: {
 			common.#Schemas
-			DemoDataBucket:                 cloudschemas.DemoDataBucket.#Ref
-			DemoDataBuckets:                cloudschemas.DemoDataBuckets.#Ref
-			Resource:                       cloudschemas.Resource.#Ref
-			Permission:                     cloudschemas.Permission.#Ref
-			Authorization:                  cloudschemas.Authorization.#Ref
-			Authorizations:                 cloudschemas.Authorizations.#Ref
-			User:                           cloudschemas.User.#Ref
-			Users:                          cloudschemas.Users.#Ref
-			OnboardingRequest:              cloudschemas.OnboardingRequest.#Ref
-			OnboardingResponse:             cloudschemas.OnboardingResponse.#Ref
-			Limit:                          cloudschemas.Limit.#Ref
-			Variable:                       cloudschemas.Variable.#Ref
-			Variables:                      cloudschemas.Variables.#Ref
-			ColumnDataType:                 cloudschemas.ColumnDataType.#Ref
-			ColumnSemanticType:             cloudschemas.ColumnSemanticType.#Ref
-			MeasurementSchema:              cloudschemas.MeasurementSchema.#Ref
-			MeasurementSchemaColumn:        cloudschemas.MeasurementSchemaColumn.#Ref
-			MeasurementSchemaCreateRequest: cloudschemas.MeasurementSchemaCreateRequest.#Ref
-			MeasurementSchemaList:          cloudschemas.MeasurementSchemaList.#Ref
-			MeasurementSchemaUpdateRequest: cloudschemas.MeasurementSchemaUpdateRequest.#Ref
+			DemoDataBucket:                 cloudschemas.DemoDataBucket
+			DemoDataBuckets:                cloudschemas.DemoDataBuckets
+			Resource:                       cloudschemas.Resource
+			Permission:                     cloudschemas.Permission
+			Authorization:                  cloudschemas.Authorization
+			Authorizations:                 cloudschemas.Authorizations
+			User:                           cloudschemas.User
+			Users:                          cloudschemas.Users
+			OnboardingRequest:              cloudschemas.OnboardingRequest
+			OnboardingResponse:             cloudschemas.OnboardingResponse
+			Limit:                          cloudschemas.Limit
+			Variable:                       cloudschemas.Variable
+			Variables:                      cloudschemas.Variables
+			ColumnDataType:                 cloudschemas.ColumnDataType
+			ColumnSemanticType:             cloudschemas.ColumnSemanticType
+			MeasurementSchema:              cloudschemas.MeasurementSchema
+			MeasurementSchemaColumn:        cloudschemas.MeasurementSchemaColumn
+			MeasurementSchemaCreateRequest: cloudschemas.MeasurementSchemaCreateRequest
+			MeasurementSchemaList:          cloudschemas.MeasurementSchemaList
+			MeasurementSchemaUpdateRequest: cloudschemas.MeasurementSchemaUpdateRequest
 		}
-		responses: ServerError: commonresponses.ServerError.#Ref
+		responses: ServerError: commonresponses.ServerError
 		securitySchemes: {
 			TokenAuthentication: {
 				type:         "http"

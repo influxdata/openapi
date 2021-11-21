@@ -16,7 +16,7 @@ pinned: {
 		responses: {
 			"200": {
 				description: "returns all pinned items for a given user"
-				content: "application/json": schema: pinneditemsdschemas.pinnedItemArray.#Ref
+				content: "application/json": schema: pinneditemsdschemas.PinnedItemArray.#Ref
 			}
 			"401": commonresponses.ServerError.#Ref
 			"500": commonresponses.ServerError.#Ref
@@ -35,7 +35,7 @@ pinned: {
 		responses: {
 			"200": {
 				description: "Pinned item record created"
-				content: "application/json": schema: pinneditemsdschemas.pinnedItem.#Ref
+				content: "application/json": schema: pinneditemsdschemas.PinnedItem.#Ref
 			}
 			"400": commonresponses.ServerError.#Ref
 			"401": commonresponses.ServerError.#Ref

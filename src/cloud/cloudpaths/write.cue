@@ -17,17 +17,17 @@ write: post: {
 
 		To write data into InfluxDB, you need the following:
 
-		- **organization name or ID** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
-		- **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for
+		- **organization name or ID** – _See [View organizations](\(#DocsURL)/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+		- **bucket** – _See [View buckets](\(#DocsURL)/organizations/buckets/view-buckets/) for
 		 instructions on viewing your bucket ID._
-		- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+		- **API token** – _See [View tokens](\(#DocsURL)/security/tokens/view-tokens/)
 		 for instructions on viewing your API token._
-		- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
-		- data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.
+		- **InfluxDB URL** – _See [InfluxDB URLs](\(#DocsURL)/reference/urls/)_.
+		- data in [line protocol](\(#DocsURL)/reference/syntax/line-protocol) format.
 
 		For more information and examples, see the following:
-		- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).
-		- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).
+		- [Write data with the InfluxDB API](\(#DocsURL)/write-data/developer-tools/api).
+		- [Optimize writes to InfluxDB](\(#DocsURL)/write-data/best-practices/optimize-writes/).
 
 		"""
 
@@ -132,7 +132,7 @@ write: post: {
 	}]
 	responses: {
 		"204": description:
-			"InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot)."
+			"InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors](\(#DocsURL)/write-data/troubleshoot)."
 		"400": {
 			description:
 				"Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.", content: "application/json": {
@@ -146,8 +146,8 @@ write: post: {
 				}
 			}
 		}
-		"401": $ref: "../../common/responses/AuthorizationError.yml"
-		"404": $ref: "../../common/responses/ResourceNotFoundError.yml"
+		"401": commonresponses.AuthorizationError
+		"404": commonresponses.ResourceNotFoundError
 		"413": {
 			description:
 				"Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.", content: "text/html": {
@@ -179,7 +179,7 @@ write: post: {
 				}
 			}
 		}
-		"500": commonresponses.InternalServerError.#Ref
+		"500": commonresponses.InternalServerError
 		"503": {
 			description:
 				"The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.", headers: "Retry-After": {
@@ -190,6 +190,6 @@ write: post: {
 				}
 			}
 		}
-		default: commonresponses.InternalServerError.#Ref
+		default: commonresponses.ServerError.#Ref
 	}
 }

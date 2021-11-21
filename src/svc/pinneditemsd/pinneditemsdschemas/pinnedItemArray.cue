@@ -1,6 +1,6 @@
 package pinneditemsdschemas
 
-pinnedItemArray: {
+PinnedItemArray: {
 	type: "array"
-	items: pinnedItem.#Ref
+	items: PinnedItem.#Ref
 }

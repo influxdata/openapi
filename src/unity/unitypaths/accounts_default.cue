@@ -12,7 +12,7 @@ accounts_default: put: {
 	requestBody: {
 		description: "The account to set as the user's default account"
 		required:    true
-		content: "application/json": schema: unityschemas.AccountsDefaultRequest.#Ref
+		content: "application/json": schema: unityschemas.AccountsDefaultRequest
 	}
 	responses: {
 		"204": description: "default account set"

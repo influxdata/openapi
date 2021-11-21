@@ -38,7 +38,7 @@ notebooks: {
 		responses: {
 			"200": {
 				description: "Notebook created"
-				content: "application/json": schema: notebooksdschemas.Notebook
+				content: "application/json": schema: notebooksdschemas.Notebook.#Ref
 			}
 			"400": commonresponses.ServerError.#Ref
 			"401": commonresponses.ServerError.#Ref

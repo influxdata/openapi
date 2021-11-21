@@ -32,21 +32,21 @@ all: "svc-invocable-scripts": {
 		url: "/api/v2"
 	}]
 	paths: {
-		"/scripts":                   invocablescriptspaths.scripts.#Ref
-		"/scripts/{scriptID}":        invocablescriptspaths.scripts_scriptID.#Ref
-		"/scripts/{scriptID}/invoke": invocablescriptspaths.scripts_scriptID_invoke.#Ref
+		"/scripts":                   invocablescriptspaths.scripts
+		"/scripts/{scriptID}":        invocablescriptspaths.scripts_scriptID
+		"/scripts/{scriptID}/invoke": invocablescriptspaths.scripts_scriptID_invoke
 	}
 	components: {
-		responses: ServerError: commonresponses.ServerError.#Ref
+		responses: ServerError: commonresponses.ServerError
 		schemas: {
-			Error:                  commonschemas.Error.#Ref
-			Script:                 invocablescriptsschemas.Script.#Ref
-			Scripts:                invocablescriptsschemas.Scripts.#Ref
-			ScriptCreateRequest:    invocablescriptsschemas.ScriptCreateRequest.#Ref
-			ScriptUpdateRequest:    invocablescriptsschemas.ScriptUpdateRequest.#Ref
-			ScriptHTTPResponseData: invocablescriptsschemas.ScriptHTTPResponseData.#Ref
-			ScriptInvocationParams: invocablescriptsschemas.ScriptInvocationParams.#Ref
-			ScriptLanguage:         invocablescriptsschemas.ScriptLanguage.#Ref
+			Error:                  commonschemas.Error
+			Script:                 invocablescriptsschemas.Script
+			Scripts:                invocablescriptsschemas.Scripts
+			ScriptCreateRequest:    invocablescriptsschemas.ScriptCreateRequest
+			ScriptUpdateRequest:    invocablescriptsschemas.ScriptUpdateRequest
+			ScriptHTTPResponseData: invocablescriptsschemas.ScriptHTTPResponseData
+			ScriptInvocationParams: invocablescriptsschemas.ScriptInvocationParams
+			ScriptLanguage:         invocablescriptsschemas.ScriptLanguage
 		}
 	}
 }

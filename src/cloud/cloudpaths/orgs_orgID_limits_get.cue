@@ -19,7 +19,7 @@ orgs_orgID_limits_get: get: {
 	responses: {
 		"200": {
 			description: "The Limits defined for the organization."
-			content: "application/json": schema: cloudschemas.LimitPublic.#Ref
+			content: "application/json": schema: cloudschemas.LimitPublic
 		}
 		default: {
 			description: "unexpected error"

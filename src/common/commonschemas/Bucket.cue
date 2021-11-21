@@ -58,7 +58,7 @@ Bucket: {
 		orgID: type:       "string"
 		rp: type:          "string"
 		schemaType: {
-			SchemaType.#Ref
+			*SchemaType.#Ref | SchemaType
 			default: "implicit"
 		}
 		createdAt: {
@@ -71,8 +71,8 @@ Bucket: {
 			format:   "date-time"
 			readOnly: true
 		}
-		retentionRules: RetentionRules.#Ref
-		labels:         Labels.#Ref
+		retentionRules: *RetentionRules.#Ref | RetentionRules
+		labels:         *Labels.#Ref | Labels
 	}
 	required: ["name", "retentionRules"]
 }

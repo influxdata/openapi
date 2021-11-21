@@ -1,6 +1,6 @@
 package pinneditemsdschemas
 
-pinnedItem: properties: {
+PinnedItem: properties: {
 	id: type: "string"
 	orgID: type: "string"
 	type: type: "string"

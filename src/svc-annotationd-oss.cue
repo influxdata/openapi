@@ -22,10 +22,10 @@ all: "svc-annotationd-oss": {
 		url: "/api/v2private"
 	}]
 	paths: {
-		"/annotations":                annotationdosspaths.annotations.#Ref
-		"/annotations/{annotationID}": annotationdpaths.annotation.#Ref
-		"/streams":                    annotationdosspaths.streams.#Ref
-		"/streams/{streamID}":         annotationdpaths.stream.#Ref
+		"/annotations":                annotationdosspaths.annotations
+		"/annotations/{annotationID}": annotationdpaths.annotation
+		"/streams":                    annotationdosspaths.streams
+		"/streams/{streamID}":         annotationdpaths.stream
 	}
 	components: {
 		parameters: {

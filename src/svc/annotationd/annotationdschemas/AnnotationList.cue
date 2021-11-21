@@ -8,7 +8,9 @@ AnnotationList: {
 			stream: type: "string"
 			annotations: {
 				type: "array"
-				items: AnnotationResponse.#Ref
+				// TODO why does openapi bundle produce different output
+				// under different circumstances?
+				items: *AnnotationResponse.#Ref | AnnotationResponse
 			}
 		}
 	}

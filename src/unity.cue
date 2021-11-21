@@ -56,57 +56,57 @@ all: unity: {
 		"/auth/connection":                              unitypaths.sso
 	}
 	components: {
-		parameters: TraceSpan: commonparameters.TraceSpan.#Ref
+		parameters: TraceSpan: commonparameters.TraceSpan
 		schemas: {
-			Error:                   commonschemas.Error.#Ref
-			Marketplace:             unityschemas.Marketplace.#Ref
-			OperatorAccount:         unityschemas.OperatorAccount.#Ref
-			OperatorAccounts:        unityschemas.OperatorAccounts.#Ref
-			MarketplaceSubscription: unityschemas.MarketplaceSubscription.#Ref
-			User:                    unityschemas.User.#Ref
-			Users:                   unityschemas.Users.#Ref
-			MarketplaceType:         unityschemas.MarketplaceType.#Ref
-			TimeRange:               unityschemas.TimeRange.#Ref
-			VectorName:              unityschemas.VectorName.#Ref
-			Role:                    unityschemas.Role.#Ref
-			PaymentFormType:         unityschemas.PaymentFormType.#Ref
-			AccountType:             unityschemas.AccountType.#Ref
-			BillingInfo:             unityschemas.BillingInfo.#Ref
-			Region:                  unityschemas.Region.#Ref
-			BillingDate:             unityschemas.BillingDate.#Ref
-			BillingContact:          unityschemas.BillingContact.#Ref
-			BillingNotifySettings:   unityschemas.BillingNotifySettings.#Ref
-			CheckoutRequest:         unityschemas.CheckoutRequest.#Ref
-			Invite:                  unityschemas.Invite.#Ref
-			Invites:                 unityschemas.Invites.#Ref
-			PaymentMethodPut:        unityschemas.PaymentMethodPut.#Ref
-			CreditCardParams:        unityschemas.CreditCardParams.#Ref
-			PaymentMethod:           unityschemas.PaymentMethod.#Ref
-			UsageVectors:            unityschemas.UsageVectors.#Ref
-			UsageVector:             unityschemas.UsageVector.#Ref
-			Invoice:                 unityschemas.Invoice.#Ref
-			Invoices:                unityschemas.Invoices.#Ref
-			OrgUser:                 unityschemas.OrgUser.#Ref
-			Me:                      unityschemas.Me.#Ref
-			OrgUsers:                unityschemas.OrgUsers.#Ref
-			Organization:            unityschemas.Organization.#Ref
-			Organizations:           unityschemas.Organizations.#Ref
-			RelatedAccount:          unityschemas.RelatedAccount.#Ref
+			Error:                   commonschemas.Error
+			Marketplace:             unityschemas.Marketplace
+			OperatorAccount:         unityschemas.OperatorAccount
+			OperatorAccounts:        unityschemas.OperatorAccounts
+			MarketplaceSubscription: unityschemas.MarketplaceSubscription
+			User:                    unityschemas.User
+			Users:                   unityschemas.Users
+			MarketplaceType:         unityschemas.MarketplaceType
+			TimeRange:               unityschemas.TimeRange
+			VectorName:              unityschemas.VectorName
+			Role:                    unityschemas.Role
+			PaymentFormType:         unityschemas.PaymentFormType
+			AccountType:             unityschemas.AccountType
+			BillingInfo:             unityschemas.BillingInfo
+			Region:                  unityschemas.Region
+			BillingDate:             unityschemas.BillingDate
+			BillingContact:          unityschemas.BillingContact
+			BillingNotifySettings:   unityschemas.BillingNotifySettings
+			CheckoutRequest:         unityschemas.CheckoutRequest
+			Invite:                  unityschemas.Invite
+			Invites:                 unityschemas.Invites
+			PaymentMethodPut:        unityschemas.PaymentMethodPut
+			CreditCardParams:        unityschemas.CreditCardParams
+			PaymentMethod:           unityschemas.PaymentMethod
+			UsageVectors:            unityschemas.UsageVectors
+			UsageVector:             unityschemas.UsageVector
+			Invoice:                 unityschemas.Invoice
+			Invoices:                unityschemas.Invoices
+			OrgUser:                 unityschemas.OrgUser
+			Me:                      unityschemas.Me
+			OrgUsers:                unityschemas.OrgUsers
+			Organization:            unityschemas.Organization
+			Organizations:           unityschemas.Organizations
+			RelatedAccount:          unityschemas.RelatedAccount
 			// quartz shared limits
 			OrgLimits: {
-				quartzschemas.OrgLimits.#Ref
+				quartzschemas.OrgLimits
 			}
-			RateLimits:                 quartzschemas.RateLimits.#Ref
-			Limit:                      quartzschemas.Limit.#Ref
-			BucketLimits:               quartzschemas.BucketLimits.#Ref
-			TaskLimits:                 quartzschemas.TaskLimits.#Ref
-			DashboardLimits:            quartzschemas.DashboardLimits.#Ref
-			CheckLimits:                quartzschemas.CheckLimits.#Ref
-			NotificationRuleLimits:     quartzschemas.NotificationRuleLimits.#Ref
-			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits.#Ref
-			RestrictedLimit:            quartzschemas.RestrictedLimit.#Ref
-			Unlimited:                  quartzschemas.Unlimited.#Ref
+			RateLimits:                 quartzschemas.RateLimits
+			Limit:                      quartzschemas.Limit
+			BucketLimits:               quartzschemas.BucketLimits
+			TaskLimits:                 quartzschemas.TaskLimits
+			DashboardLimits:            quartzschemas.DashboardLimits
+			CheckLimits:                quartzschemas.CheckLimits
+			NotificationRuleLimits:     quartzschemas.NotificationRuleLimits
+			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits
+			RestrictedLimit:            quartzschemas.RestrictedLimit
+			Unlimited:                  quartzschemas.Unlimited
 		}
-		responses: ServerError: commonresponses.ServerError.#Ref
+		responses: ServerError: commonresponses.ServerError
 	}
 }

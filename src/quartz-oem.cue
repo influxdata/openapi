@@ -22,9 +22,9 @@ all: "quartz-oem": {
 
 		]}]
 	paths: {
-		"/orgs":                quartzpaths.orgs.#Ref
-		"/orgs/{orgID}":        quartzpaths.org.#Ref
-		"/orgs/{orgID}/limits": quartzpaths.orgLimits.#Ref
+		"/orgs":                quartzpaths.orgs
+		"/orgs/{orgID}":        quartzpaths.org
+		"/orgs/{orgID}/limits": quartzpaths.orgLimits
 	}
 	components: {
 		securitySchemes: bearerAuth: {
@@ -32,26 +32,26 @@ all: "quartz-oem": {
 			scheme: "bearer"
 		}
 		schemas: {
-			BucketLimits:               quartzschemas.BucketLimits.#Ref
-			CheckLimits:                quartzschemas.CheckLimits.#Ref
-			DashboardLimits:            quartzschemas.DashboardLimits.#Ref
-			Error:                      commonschemas.Error.#Ref
-			Limit:                      quartzschemas.Limit.#Ref
-			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits.#Ref
-			NotificationRuleLimits:     quartzschemas.NotificationRuleLimits.#Ref
-			OrganizationRequest:        quartzschemas.OrganizationRequest.#Ref
-			OrganizationWithToken:      quartzschemas.OrganizationWithToken.#Ref
-			Organization:               quartzschemas.Organization.#Ref
-			Organizations:              quartzschemas.Organizations.#Ref
-			OrgLimits:                  quartzschemas.OrgLimits.#Ref
-			RateLimits:                 quartzschemas.RateLimits.#Ref
-			RestrictedLimit:            quartzschemas.RestrictedLimit.#Ref
-			TaskLimits:                 quartzschemas.TaskLimits.#Ref
-			Unlimited:                  quartzschemas.Unlimited.#Ref
+			BucketLimits:               quartzschemas.BucketLimits
+			CheckLimits:                quartzschemas.CheckLimits
+			DashboardLimits:            quartzschemas.DashboardLimits
+			Error:                      commonschemas.Error
+			Limit:                      quartzschemas.Limit
+			NotificationEndpointLimits: quartzschemas.NotificationEndpointLimits
+			NotificationRuleLimits:     quartzschemas.NotificationRuleLimits
+			OrganizationRequest:        quartzschemas.OrganizationRequest
+			OrganizationWithToken:      quartzschemas.OrganizationWithToken
+			Organization:               quartzschemas.Organization
+			Organizations:              quartzschemas.Organizations
+			OrgLimits:                  quartzschemas.OrgLimits
+			RateLimits:                 quartzschemas.RateLimits
+			RestrictedLimit:            quartzschemas.RestrictedLimit
+			TaskLimits:                 quartzschemas.TaskLimits
+			Unlimited:                  quartzschemas.Unlimited
 		}
 		responses: {
-			NoContent:   commonresponses.NoContent.#Ref
-			ServerError: commonresponses.ServerError.#Ref
+			NoContent:   commonresponses.NoContent
+			ServerError: commonresponses.ServerError
 		}
 	}
 }

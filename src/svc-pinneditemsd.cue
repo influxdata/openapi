@@ -20,14 +20,14 @@ all: "svc-pinneditemsd": {
 		url: "/api/v2private"
 	}]
 	paths: {
-		"/pinned":      notebooksdpaths.pinned.#Ref
-		"/pinned/{id}": notebooksdpaths.pinned_id.#Ref
+		"/pinned":      notebooksdpaths.pinned
+		"/pinned/{id}": notebooksdpaths.pinned_id
 	}
 	components: {
 		requestBodies: PinnedItemParams: pinneditemsdrequestBodies.PinnedItemParams
 		schemas: {
-			PinnedItem:      pinneditemsdschemas.pinnedItem
-			PinnedItemArray: pinneditemsdschemas.pinnedItemArray
+			PinnedItem:      pinneditemsdschemas.PinnedItem
+			PinnedItemArray: pinneditemsdschemas.PinnedItemArray
 			Error:           commonschemas.Error
 		}
 		responses: {

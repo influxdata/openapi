@@ -14,7 +14,7 @@ tenants: post: {
 	responses: {
 		"201": {
 			description: "The created organization and the initial bucket"
-			content: "application/json": schema: cloudschemas.OrganizationResponse.#Ref
+			content: "application/json": schema: cloudschemas.OrganizationResponse
 		}
 		"400": {
 			description: "The requested changes were invalid"

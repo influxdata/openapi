@@ -94,6 +94,7 @@ package old
 		requestBodies: PinnedItemParams: {
 			description: "Pinned Item record"
 			required:    false
+			// HERE
 			content: "application/json": schema: $ref: "#/components/schemas/PinnedItem"
 		}
 		schemas: {

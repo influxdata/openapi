@@ -20,10 +20,10 @@ all: "svc-annotationd": {
 		url: "/api/v2private"
 	}]
 	paths: {
-		"/annotations":                annotationdpaths.annotations.#Ref
-		"/annotations/{annotationID}": annotationdpaths.annotation.#Ref
-		"/streams":                    annotationdpaths.streams.#Ref
-		"/streams/{streamID}":         annotationdpaths.stream.#Ref
+		"/annotations":                annotationdpaths.annotations
+		"/annotations/{annotationID}": annotationdpaths.annotation
+		"/streams":                    annotationdpaths.streams
+		"/streams/{streamID}":         annotationdpaths.stream
 	}
 	components: {
 		parameters: {

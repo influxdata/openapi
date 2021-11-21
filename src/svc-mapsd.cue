@@ -17,12 +17,12 @@ all: "svc-mapsd": {
 	servers: [{
 		url: "/api/v2/maps"
 	}]
-	paths: "/mapToken": mapsdpaths.mapToken.#Ref
+	paths: "/mapToken": mapsdpaths.mapToken
 	components: {
 		schemas: {
-			Token: mapsdschemas.Token.#Ref
-			Error: commonschemas.Error.#Ref
+			Token: mapsdschemas.Token
+			Error: commonschemas.Error
 		}
-		responses: ServerError: commonresponses.ServerError.#Ref
+		responses: ServerError: commonresponses.ServerError
 	}
 }

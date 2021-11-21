@@ -12,7 +12,7 @@ flags: get: {
 	responses: {
 		"200": {
 			description: "Pre-authentication exposed feature flags"
-			content: "application/json": schema: commonschemas.Flags.#Ref
+			content: "application/json": schema: commonschemas.Flags
 		}
 		default: {
 			description: "unexpected error"

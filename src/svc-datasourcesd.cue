@@ -11,16 +11,18 @@ all: "svc-datasourcesd": {
 		version: "1.0"
 	}
 	servers: [{
-		url: "/api/v2/datasources"
+		url: "/"
+		// TODO the above should be like this in fact.
+		// url: "/api/v2/datasources"
 	}]
 	paths: {
-		"/datasources":                datasourcesdpaths.datasources.#Ref
-		"/datasources/{datasourceID}": datasourcesdpaths."datasources-id".#Ref
-		"/webhooks/{token}":           datasourcesdpaths.webhooks.#Ref
+		"/datasources":                datasourcesdpaths.datasources
+		"/datasources/{datasourceID}": datasourcesdpaths."datasources-id"
+		"/webhooks/{token}":           datasourcesdpaths.webhooks
 	}
 	components: schemas: {
-		Datasource:       datasourcesdschemas.Datasource.#Ref
-		ListenerEndpoint: datasourcesdschemas.ListenerEndpoint.#Ref
-		Service:          datasourcesdschemas.Service.#Ref
+		Datasource:       datasourcesdschemas.Datasource
+		ListenerEndpoint: datasourcesdschemas.ListenerEndpoint
+		Service:          datasourcesdschemas.Service
 	}
 }

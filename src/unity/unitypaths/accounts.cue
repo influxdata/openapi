@@ -13,7 +13,7 @@ accounts: get: {
 	responses: {
 		"200": {
 			description: "Accounts"
-			content: "application/json": schema: unityschemas.Accounts.#Ref
+			content: "application/json": schema: unityschemas.Accounts
 		}
 		"401": {
 			description: "Unauthorized"

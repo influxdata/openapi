@@ -14,13 +14,10 @@ common: {
 			operationId: "PostSignin"
 			summary:     "Create a user session."
 			description: "Authenticates ***Basic Auth*** credentials for a user. If successful, creates a new UI session for the user."
-			tags: [
-				"Signin",
-			]
+			tags: ["Signin"]
 			security: [{
-				BasicAuthentication: [
-
-				]}]
+				BasicAuthentication: []
+			}]
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}]
@@ -43,9 +40,7 @@ common: {
 		"/signout": post: {
 			operationId: "PostSignout"
 			summary:     "Expire the current UI session"
-			tags: [
-				"Signout",
-			]
+			tags: ["Signout"]
 			description: "Expires the current UI session for the user."
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -69,9 +64,7 @@ common: {
 				servers: [{
 					url: ""
 				}]
-				tags: [
-					"Ping",
-				]
+				tags: ["Ping"]
 				responses: "204": {
 					description: "OK"
 					headers: {
@@ -92,9 +85,7 @@ common: {
 				servers: [{
 					url: ""
 				}]
-				tags: [
-					"Ping",
-				]
+				tags: ["Ping"]
 				responses: "204": {
 					description: "OK"
 					headers: {
@@ -113,9 +104,7 @@ common: {
 		"/": get: {
 			operationId: "GetRoutes"
 			summary:     "List all top level routes"
-			tags: [
-				"Routes",
-			]
+			tags: ["Routes"]
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}]
@@ -127,9 +116,7 @@ common: {
 		"/dbrps": {
 			get: {
 				operationId: "GetDBRPs"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "List database retention policy mappings"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -186,9 +173,7 @@ common: {
 			}
 			post: {
 				operationId: "PostDBRP"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Add a database retention policy mapping"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -217,9 +202,7 @@ common: {
 		"/dbrps/{dbrpID}": {
 			get: {
 				operationId: "GetDBRPsID"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Retrieve a database retention policy mapping"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -257,9 +240,7 @@ common: {
 			}
 			patch: {
 				operationId: "PatchDBRPID"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Update a database retention policy mapping"
 				requestBody: {
 					description: "Database retention policy update to apply"
@@ -306,9 +287,7 @@ common: {
 			}
 			delete: {
 				operationId: "DeleteDBRPID"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Delete a database retention policy"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -344,9 +323,7 @@ common: {
 		}
 		"/telegraf/plugins": get: {
 			operationId: "GetTelegrafPlugins"
-			tags: [
-				"Telegraf Plugins",
-			]
+			tags: ["Telegraf Plugins"]
 			summary: "List all Telegraf plugins"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -370,9 +347,7 @@ common: {
 		"/telegrafs": {
 			get: {
 				operationId: "GetTelegrafs"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all Telegraf configurations"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -395,9 +370,7 @@ common: {
 			}
 			post: {
 				operationId: "PostTelegrafs"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Create a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -422,9 +395,7 @@ common: {
 		"/telegrafs/{telegrafID}": {
 			get: {
 				operationId: "GetTelegrafsID"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Retrieve a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -441,11 +412,7 @@ common: {
 					schema: {
 						type:    "string"
 						default: "application/toml"
-						enum: [
-							"application/toml",
-							"application/json",
-							"application/octet-stream",
-						]
+						enum: ["application/toml", "application/json", "application/octet-stream"]
 					}
 				}]
 				responses: {
@@ -454,19 +421,17 @@ common: {
 						content: {
 							"application/toml": {
 								example: """
-		[agent]
-		interval = \"10s\"
-		"""
-
+									[agent]
+									interval = "10s"
+									"""
 								schema: type: "string"
 							}
 							"application/json": schema: $ref: "#/components/schemas/Telegraf"
 							"application/octet-stream": {
 								example: """
-		[agent]
-		interval = \"10s\"
-		"""
-
+									[agent]
+									interval = "10s"
+									"""
 								schema: type: "string"
 							}
 						}
@@ -479,9 +444,7 @@ common: {
 			}
 			put: {
 				operationId: "PutTelegrafsID"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Update a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -510,9 +473,7 @@ common: {
 			}
 			delete: {
 				operationId: "DeleteTelegrafsID"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Delete a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -535,9 +496,7 @@ common: {
 		"/telegrafs/{telegrafID}/labels": {
 			get: {
 				operationId: "GetTelegrafsIDLabels"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all labels for a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -561,9 +520,7 @@ common: {
 			}
 			post: {
 				operationId: "PostTelegrafsIDLabels"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Add a label to a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -593,9 +550,7 @@ common: {
 		}
 		"/telegrafs/{telegrafID}/labels/{labelID}": delete: {
 			operationId: "DeleteTelegrafsIDLabelsID"
-			tags: [
-				"Telegrafs",
-			]
+			tags: ["Telegrafs"]
 			summary: "Delete a label from a Telegraf config"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -627,9 +582,7 @@ common: {
 		"/telegrafs/{telegrafID}/members": {
 			get: {
 				operationId: "GetTelegrafsIDMembers"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all users with member privileges for a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -653,9 +606,7 @@ common: {
 			}
 			post: {
 				operationId: "PostTelegrafsIDMembers"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Add a member to a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -685,9 +636,7 @@ common: {
 		}
 		"/telegrafs/{telegrafID}/members/{userID}": delete: {
 			operationId: "DeleteTelegrafsIDMembersID"
-			tags: [
-				"Telegrafs",
-			]
+			tags: ["Telegrafs"]
 			summary: "Remove a member from a Telegraf config"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -715,9 +664,7 @@ common: {
 		"/telegrafs/{telegrafID}/owners": {
 			get: {
 				operationId: "GetTelegrafsIDOwners"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all owners of a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -741,9 +688,7 @@ common: {
 			}
 			post: {
 				operationId: "PostTelegrafsIDOwners"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Add an owner to a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -773,9 +718,7 @@ common: {
 		}
 		"/telegrafs/{telegrafID}/owners/{userID}": delete: {
 			operationId: "DeleteTelegrafsIDOwnersID"
-			tags: [
-				"Telegrafs",
-			]
+			tags: ["Telegrafs"]
 			summary: "Remove an owner from a Telegraf config"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -803,9 +746,7 @@ common: {
 		"/variables/{variableID}/labels": {
 			get: {
 				operationId: "GetVariablesIDLabels"
-				tags: [
-					"Variables",
-				]
+				tags: ["Variables"]
 				summary: "List all labels for a variable"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -829,9 +770,7 @@ common: {
 			}
 			post: {
 				operationId: "PostVariablesIDLabels"
-				tags: [
-					"Variables",
-				]
+				tags: ["Variables"]
 				summary: "Add a label to a variable"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -861,9 +800,7 @@ common: {
 		}
 		"/variables/{variableID}/labels/{labelID}": delete: {
 			operationId: "DeleteVariablesIDLabelsID"
-			tags: [
-				"Variables",
-			]
+			tags: ["Variables"]
 			summary: "Delete a label from a variable"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -894,9 +831,7 @@ common: {
 		}
 		"/delete": post: {
 			operationId: "PostDelete"
-			tags: [
-				"Delete",
-			]
+			tags: ["Delete"]
 			summary: "Delete data"
 			requestBody: {
 				description: "Deletes data from an InfluxDB bucket."
@@ -958,9 +893,7 @@ common: {
 		"/labels": {
 			post: {
 				operationId: "PostLabels"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Create a label"
 				requestBody: {
 					description: "Label to create"
@@ -980,9 +913,7 @@ common: {
 			}
 			get: {
 				operationId: "GetLabels"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "List all labels"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1007,9 +938,7 @@ common: {
 		"/labels/{labelID}": {
 			get: {
 				operationId: "GetLabelsID"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Retrieve a label"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1033,9 +962,7 @@ common: {
 			}
 			patch: {
 				operationId: "PatchLabelsID"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Update a label"
 				requestBody: {
 					description: "Label update"
@@ -1068,9 +995,7 @@ common: {
 			}
 			delete: {
 				operationId: "DeleteLabelsID"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Delete a label"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1097,9 +1022,7 @@ common: {
 		"/dashboards/{dashboardID}": {
 			get: {
 				operationId: "GetDashboardsID"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Retrieve a Dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1115,9 +1038,7 @@ common: {
 					required: false
 					schema: {
 						type: "string"
-						enum: [
-							"properties",
-						]
+						enum: ["properties"]
 					}
 					description: "Includes the cell view properties in the response if set to `properties`"
 				}]
@@ -1142,9 +1063,7 @@ common: {
 			}
 			patch: {
 				operationId: "PatchDashboardsID"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Update a dashboard"
 				requestBody: {
 					description: "Patching of a dashboard"
@@ -1194,9 +1113,7 @@ common: {
 			}
 			delete: {
 				operationId: "DeleteDashboardsID"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Delete a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1223,10 +1140,7 @@ common: {
 		"/dashboards/{dashboardID}/cells": {
 			put: {
 				operationId: "PutDashboardsIDCells"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary:     "Replace cells in a dashboard"
 				description: "Replaces all cells in a dashboard. This is used primarily to update the positional information of all cells."
 				requestBody: {
@@ -1259,10 +1173,7 @@ common: {
 			}
 			post: {
 				operationId: "PostDashboardsIDCells"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary: "Create a dashboard cell"
 				requestBody: {
 					description: "Cell that will be added"
@@ -1297,10 +1208,7 @@ common: {
 		"/dashboards/{dashboardID}/cells/{cellID}": {
 			patch: {
 				operationId: "PatchDashboardsIDCellsID"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary:     "Update the non-positional information related to a cell"
 				description: "Updates the non positional information related to a cell. Updates to a single cell's positional data could cause grid conflicts."
 				requestBody: {
@@ -1339,10 +1247,7 @@ common: {
 			}
 			delete: {
 				operationId: "DeleteDashboardsIDCellsID"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary: "Delete a dashboard cell"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1375,11 +1280,7 @@ common: {
 		"/dashboards/{dashboardID}/cells/{cellID}/view": {
 			get: {
 				operationId: "GetDashboardsIDCellsIDView"
-				tags: [
-					"Cells",
-					"Dashboards",
-					"Views",
-				]
+				tags: ["Cells", "Dashboards", "Views"]
 				summary: "Retrieve the view for a cell"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1413,11 +1314,7 @@ common: {
 			}
 			patch: {
 				operationId: "PatchDashboardsIDCellsIDView"
-				tags: [
-					"Cells",
-					"Dashboards",
-					"Views",
-				]
+				tags: ["Cells", "Dashboards", "Views"]
 				summary: "Update the view for a cell"
 				requestBody: {
 					required: true
@@ -1457,9 +1354,7 @@ common: {
 		"/dashboards/{dashboardID}/labels": {
 			get: {
 				operationId: "GetDashboardsIDLabels"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "List all labels for a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1483,9 +1378,7 @@ common: {
 			}
 			post: {
 				operationId: "PostDashboardsIDLabels"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Add a label to a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1515,9 +1408,7 @@ common: {
 		}
 		"/dashboards/{dashboardID}/labels/{labelID}": delete: {
 			operationId: "DeleteDashboardsIDLabelsID"
-			tags: [
-				"Dashboards",
-			]
+			tags: ["Dashboards"]
 			summary: "Delete a label from a dashboard"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1549,9 +1440,7 @@ common: {
 		"/dashboards/{dashboardID}/members": {
 			get: {
 				operationId: "GetDashboardsIDMembers"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "List all dashboard members"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1575,9 +1464,7 @@ common: {
 			}
 			post: {
 				operationId: "PostDashboardsIDMembers"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Add a member to a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1607,9 +1494,7 @@ common: {
 		}
 		"/dashboards/{dashboardID}/members/{userID}": delete: {
 			operationId: "DeleteDashboardsIDMembersID"
-			tags: [
-				"Dashboards",
-			]
+			tags: ["Dashboards"]
 			summary: "Remove a member from a dashboard"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1637,9 +1522,7 @@ common: {
 		"/dashboards/{dashboardID}/owners": {
 			get: {
 				operationId: "GetDashboardsIDOwners"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "List all dashboard owners"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1663,9 +1546,7 @@ common: {
 			}
 			post: {
 				operationId: "PostDashboardsIDOwners"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Add an owner to a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1695,9 +1576,7 @@ common: {
 		}
 		"/dashboards/{dashboardID}/owners/{userID}": delete: {
 			operationId: "DeleteDashboardsIDOwnersID"
-			tags: [
-				"Dashboards",
-			]
+			tags: ["Dashboards"]
 			summary: "Remove an owner from a dashboard"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1725,9 +1604,7 @@ common: {
 		"/query/ast": post: {
 			operationId: "PostQueryAst"
 			description: "Analyzes flux query and generates a query specification."
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Generate an Abstract Syntax Tree (AST) from a query"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1736,9 +1613,7 @@ common: {
 				name: "Content-Type"
 				schema: {
 					type: "string"
-					enum: [
-						"application/json",
-					]
+					enum: ["application/json"]
 				}
 			}]
 			requestBody: {
@@ -1758,9 +1633,7 @@ common: {
 		}
 		"/query/suggestions": get: {
 			operationId: "GetQuerySuggestions"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Retrieve query suggestions"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1778,9 +1651,7 @@ common: {
 		}
 		"/query/suggestions/{name}": get: {
 			operationId: "GetQuerySuggestionsName"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Retrieve query suggestions for a branching suggestion"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1804,9 +1675,7 @@ common: {
 		}
 		"/query/analyze": post: {
 			operationId: "PostQueryAnalyze"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Analyze a Flux query"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1815,9 +1684,7 @@ common: {
 				name: "Content-Type"
 				schema: {
 					type: "string"
-					enum: [
-						"application/json",
-					]
+					enum: ["application/json"]
 				}
 			}]
 			requestBody: {
@@ -1847,9 +1714,7 @@ common: {
 		}
 		"/query": post: {
 			operationId: "PostQuery"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Query data"
 			description: """
 				Retrieves data from InfluxDB buckets.
@@ -1864,7 +1729,6 @@ common: {
 				For more information and examples, see [Query with the InfluxDB API](https://docs.influxdata.com/influxdb/common/query-data/execute-queries/influx-api/).
 
 				"""
-
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
@@ -1875,20 +1739,14 @@ common: {
 					type:        "string"
 					description: "The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data."
 					default:     "identity"
-					enum: [
-						"gzip",
-						"identity",
-					]
+					enum: ["gzip", "identity"]
 				}
 			}, {
 				in:   "header"
 				name: "Content-Type"
 				schema: {
 					type: "string"
-					enum: [
-						"application/json",
-						"application/vnd.flux",
-					]
+					enum: ["application/json", "application/vnd.flux"]
 				}
 			}, {
 				in:          "query"
@@ -1900,25 +1758,23 @@ common: {
 				name:        "orgID"
 				description: "Specifies the ID of the organization executing the query. If both `orgID` and `org` are specified, `org` takes precedence."
 				schema: type: "string"
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "Flux query or specification to execute"
 				content: {
 					"application/json": schema: $ref: "#/components/schemas/Query"
 					"application/vnd.flux": {
 						schema: type: "string"
 						example: """
-		from(bucket: \"example-bucket\")
-		    |> range(start: -5m)
-		    |> filter(fn: (r) => r._measurement == \"example-measurement\")
+								from(bucket: "example-bucket")
+								    |> range(start: -5m)
+								    |> filter(fn: (r) => r._measurement == "example-measurement")
 
-		"""
+								"""
 					}
 				}
 			}
-
 			responses: {
-
 				"200": {
 					description: "Success. Returns query results."
 					headers: {
@@ -1927,15 +1783,11 @@ common: {
 							schema: {
 								type: "string"
 								description: """
-		The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
+										The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
 
-		"""
-
+										"""
 								default: "identity"
-								enum: [
-									"gzip",
-									"identity",
-								]
+								enum: ["gzip", "identity"]
 							}
 						}
 						"Trace-Id": {
@@ -1950,11 +1802,10 @@ common: {
 						"text/csv": schema: {
 							type: "string"
 							example: """
-		result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
+										result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
 
-		"""
+										"""
 						}
-
 						"application/vnd.influx.arrow": schema: {
 							type:   "string"
 							format: "binary"
@@ -1976,11 +1827,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/buckets": {
+		}
+		"/buckets": {
 			get: {
-				operationId:
-					"GetBuckets", tags: ["Buckets"], summary:
-					"List all buckets", parameters: [{
+				operationId: "GetBuckets"
+				tags: ["Buckets"]
+				summary: "List all buckets"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -2008,8 +1861,8 @@ common: {
 					name:        "id"
 					description: "Only returns buckets with a specific ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of buckets"
 						content: "application/json": schema: $ref: "#/components/schemas/Buckets"
@@ -2019,18 +1872,20 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBuckets", tags: ["Buckets"], summary:
-					"Create a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBuckets"
+				tags: ["Buckets"]
+				summary: "Create a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Bucket to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostBucketRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Bucket created"
 						content: "application/json": schema: $ref: "#/components/schemas/Bucket"
@@ -2045,11 +1900,13 @@ common: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}": {
+		}
+		"/buckets/{bucketID}": {
 			get: {
-				operationId:
-					"GetBucketsID", tags: ["Buckets"], summary:
-					"Retrieve a bucket", parameters: [{
+				operationId: "GetBucketsID"
+				tags: ["Buckets"]
+				summary: "Retrieve a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2057,8 +1914,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Bucket details"
 						content: "application/json": schema: $ref: "#/components/schemas/Bucket"
@@ -2068,15 +1925,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchBucketsID", tags: ["Buckets"], summary:
-					"Update a bucket", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchBucketsID"
+				tags: ["Buckets"]
+				summary: "Update a bucket"
+				requestBody: {
 					description: "Bucket update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PatchBucketRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2084,8 +1943,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated bucket"
 						content: "application/json": schema: $ref: "#/components/schemas/Bucket"
@@ -2095,10 +1954,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteBucketsID", tags: ["Buckets"], summary:
-					"Delete a bucket", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteBucketsID"
+				tags: ["Buckets"]
+				summary: "Delete a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2106,8 +1967,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the bucket to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "Bucket not found"
@@ -2119,11 +1980,13 @@ common: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/labels": {
+		}
+		"/buckets/{bucketID}/labels": {
 			get: {
-				operationId:
-					"GetBucketsIDLabels", tags: ["Buckets"], summary:
-					"List all labels for a bucket", parameters: [{
+				operationId: "GetBucketsIDLabels"
+				tags: ["Buckets"]
+				summary: "List all labels for a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2131,8 +1994,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a bucket"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -2142,10 +2005,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBucketsIDLabels", tags: ["Buckets"], summary:
-					"Add a label to a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBucketsIDLabels"
+				tags: ["Buckets"]
+				summary: "Add a label to a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2153,13 +2018,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The newly added label"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -2170,10 +2035,12 @@ common: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteBucketsIDLabelsID", tags: ["Buckets"], summary:
-				"Delete a label from a bucket", parameters: [{
+		}
+		"/buckets/{bucketID}/labels/{labelID}": delete: {
+			operationId: "DeleteBucketsIDLabelsID"
+			tags: ["Buckets"]
+			summary: "Delete a label from a bucket"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2187,8 +2054,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Bucket not found"
@@ -2199,11 +2066,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/buckets/{bucketID}/members": {
+		}
+		"/buckets/{bucketID}/members": {
 			get: {
-				operationId:
-					"GetBucketsIDMembers", tags: ["Buckets"], summary:
-					"List all users with member privileges for a bucket", parameters: [{
+				operationId: "GetBucketsIDMembers"
+				tags: ["Buckets"]
+				summary: "List all users with member privileges for a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2211,8 +2080,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of bucket members"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMembers"
@@ -2222,10 +2091,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBucketsIDMembers", tags: ["Buckets"], summary:
-					"Add a member to a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBucketsIDMembers"
+				tags: ["Buckets"]
+				summary: "Add a member to a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2233,13 +2104,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as member"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Member added to bucket"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMember"
@@ -2250,10 +2121,12 @@ common: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/members/{userID}": delete: {
-			operationId:
-				"DeleteBucketsIDMembersID", tags: ["Buckets"], summary:
-				"Remove a member from a bucket", parameters: [{
+		}
+		"/buckets/{bucketID}/members/{userID}": delete: {
+			operationId: "DeleteBucketsIDMembersID"
+			tags: ["Buckets"]
+			summary: "Remove a member from a bucket"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2267,19 +2140,21 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The bucket ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Member removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/buckets/{bucketID}/owners": {
+		}
+		"/buckets/{bucketID}/owners": {
 			get: {
-				operationId:
-					"GetBucketsIDOwners", tags: ["Buckets"], summary:
-					"List all owners of a bucket", parameters: [{
+				operationId: "GetBucketsIDOwners"
+				tags: ["Buckets"]
+				summary: "List all owners of a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2287,8 +2162,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of bucket owners"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwners"
@@ -2298,10 +2173,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBucketsIDOwners", tags: ["Buckets"], summary:
-					"Add an owner to a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBucketsIDOwners"
+				tags: ["Buckets"]
+				summary: "Add an owner to a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2309,13 +2186,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as owner"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Bucket owner added"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwner"
@@ -2326,10 +2203,12 @@ common: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/owners/{userID}": delete: {
-			operationId:
-				"DeleteBucketsIDOwnersID", tags: ["Buckets"], summary:
-				"Remove an owner from a bucket", parameters: [{
+		}
+		"/buckets/{bucketID}/owners/{userID}": delete: {
+			operationId: "DeleteBucketsIDOwnersID"
+			tags: ["Buckets"]
+			summary: "Remove an owner from a bucket"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2343,19 +2222,21 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The bucket ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Owner removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs": {
+		}
+		"/orgs": {
 			get: {
-				operationId:
-					"GetOrgs", tags: ["Organizations"], summary:
-					"List all organizations", parameters: [{
+				operationId: "GetOrgs"
+				tags: ["Organizations"]
+				summary: "List all organizations"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -2378,8 +2259,8 @@ common: {
 					name: "userID"
 					schema: type: "string"
 					description: "Filter organizations to a specific user ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of organizations"
 						content: "application/json": schema: $ref: "#/components/schemas/Organizations"
@@ -2389,18 +2270,20 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostOrgs", tags: ["Organizations"], summary:
-					"Create an organization", parameters: [{
+			}
+			post: {
+				operationId: "PostOrgs"
+				tags: ["Organizations"]
+				summary: "Create an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Organization to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostOrganizationRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Organization created"
 						content: "application/json": schema: $ref: "#/components/schemas/Organization"
@@ -2411,11 +2294,13 @@ common: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}": {
+		}
+		"/orgs/{orgID}": {
 			get: {
-				operationId:
-					"GetOrgsID", tags: ["Organizations"], summary:
-					"Retrieve an organization", parameters: [{
+				operationId: "GetOrgsID"
+				tags: ["Organizations"]
+				summary: "Retrieve an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2423,8 +2308,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the organization to get."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Organization details"
 						content: "application/json": schema: $ref: "#/components/schemas/Organization"
@@ -2434,15 +2319,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchOrgsID", tags: ["Organizations"], summary:
-					"Update an organization", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchOrgsID"
+				tags: ["Organizations"]
+				summary: "Update an organization"
+				requestBody: {
 					description: "Organization update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PatchOrganizationRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2450,8 +2337,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the organization to get."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Organization updated"
 						content: "application/json": schema: $ref: "#/components/schemas/Organization"
@@ -2461,10 +2348,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteOrgsID", tags: ["Organizations"], summary:
-					"Delete an organization", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteOrgsID"
+				tags: ["Organizations"]
+				summary: "Delete an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2472,8 +2361,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the organization to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "Organization not found"
@@ -2485,11 +2374,13 @@ common: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/secrets": {
+		}
+		"/orgs/{orgID}/secrets": {
 			get: {
-				operationId:
-					"GetOrgsIDSecrets", tags: ["Secrets"], summary:
-					"List all secret keys for an organization", parameters: [{
+				operationId: "GetOrgsIDSecrets"
+				tags: ["Secrets"]
+				summary: "List all secret keys for an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2497,8 +2388,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all secret keys"
 						content: "application/json": schema: $ref: "#/components/schemas/SecretKeysResponse"
@@ -2508,10 +2399,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchOrgsIDSecrets", tags: ["Secrets"], summary:
-					"Update secrets in an organization", parameters: [{
+			}
+			patch: {
+				operationId: "PatchOrgsIDSecrets"
+				tags: ["Secrets"]
+				summary: "Update secrets in an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2519,13 +2412,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Secret key value pairs to update/add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Secrets"
-				}, responses: {
-
+				}
+				responses: {
 					"204": description: "Keys successfully patched"
 					default: {
 						description: "Unexpected error"
@@ -2533,11 +2426,13 @@ common: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/members": {
+		}
+		"/orgs/{orgID}/members": {
 			get: {
-				operationId:
-					"GetOrgsIDMembers", tags: ["Organizations"], summary:
-					"List all members of an organization", parameters: [{
+				operationId: "GetOrgsIDMembers"
+				tags: ["Organizations"]
+				summary: "List all members of an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2545,8 +2440,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of organization members"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMembers"
@@ -2560,10 +2455,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostOrgsIDMembers", tags: ["Organizations"], summary:
-					"Add a member to an organization", parameters: [{
+			}
+			post: {
+				operationId: "PostOrgsIDMembers"
+				tags: ["Organizations"]
+				summary: "Add a member to an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2571,13 +2468,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as member"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added to organization created"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMember"
@@ -2588,10 +2485,12 @@ common: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/members/{userID}": delete: {
-			operationId:
-				"DeleteOrgsIDMembersID", tags: ["Organizations"], summary:
-				"Remove a member from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/members/{userID}": delete: {
+			operationId: "DeleteOrgsIDMembersID"
+			tags: ["Organizations"]
+			summary: "Remove a member from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2605,19 +2504,21 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The organization ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Member removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs/{orgID}/owners": {
+		}
+		"/orgs/{orgID}/owners": {
 			get: {
-				operationId:
-					"GetOrgsIDOwners", tags: ["Organizations"], summary:
-					"List all owners of an organization", parameters: [{
+				operationId: "GetOrgsIDOwners"
+				tags: ["Organizations"]
+				summary: "List all owners of an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2625,8 +2526,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of organization owners"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwners"
@@ -2640,10 +2541,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostOrgsIDOwners", tags: ["Organizations"], summary:
-					"Add an owner to an organization", parameters: [{
+			}
+			post: {
+				operationId: "PostOrgsIDOwners"
+				tags: ["Organizations"]
+				summary: "Add an owner to an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2651,13 +2554,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as owner"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Organization owner added"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwner"
@@ -2668,10 +2571,12 @@ common: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/owners/{userID}": delete: {
-			operationId:
-				"DeleteOrgsIDOwnersID", tags: ["Organizations"], summary:
-				"Remove an owner from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/owners/{userID}": delete: {
+			operationId: "DeleteOrgsIDOwnersID"
+			tags: ["Organizations"]
+			summary: "Remove an owner from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2685,19 +2590,21 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The organization ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Owner removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs/{orgID}/secrets/delete": post: {
-			deprecated:
-				true, operationId:
-				"PostOrgsIDSecrets", tags: ["Secrets"], summary:
-				"Delete secrets from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/secrets/delete": post: {
+			deprecated:  true
+			operationId: "PostOrgsIDSecrets"
+			tags: ["Secrets"]
+			summary: "Delete secrets from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2705,23 +2612,25 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The organization ID."
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "Secret key to delete"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/SecretKeys"
-			}, responses: {
-
+			}
+			responses: {
 				"204": description: "Keys successfully patched"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs/{orgID}/secrets/{secretID}": delete: {
-			operationId:
-				"DeleteOrgsIDSecretsID", tags: ["Secrets"], summary:
-				"Delete a secret from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/secrets/{secretID}": delete: {
+			operationId: "DeleteOrgsIDSecretsID"
+			tags: ["Secrets"]
+			summary: "Delete a secret from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2735,21 +2644,23 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The secret ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Keys successfully deleted"
 				default: {
 					description: "Unexpected error"
 					$ref:        "#/components/responses/ServerError"
 				}
 			}
-		}, "/resources": get: {
-			operationId:
-				"GetResources", tags: ["Resources"], summary:
-				"List all known resources", parameters: [{
+		}
+		"/resources": get: {
+			operationId: "GetResources"
+			tags: ["Resources"]
+			summary: "List all known resources"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "All resources targets"
 					content: "application/json": schema: {
@@ -2762,11 +2673,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/stacks": {
+		}
+		"/stacks": {
 			get: {
-				operationId:
-					"ListStacks", tags: ["Templates"], summary:
-					"List installed templates", parameters: [{
+				operationId: "ListStacks"
+				tags: ["Templates"]
+				summary: "List installed templates"
+				parameters: [{
 					in:       "query"
 					name:     "orgID"
 					required: true
@@ -2782,8 +2695,8 @@ common: {
 					name: "stackID"
 					schema: type: "string"
 					description: "A collection of stackIDs to filter the list by."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Success. Returns the list of stacks."
 						content: "application/json": schema: {
@@ -2799,19 +2712,20 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateStack", tags: ["Templates"], summary:
-					"Create a new stack", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateStack"
+				tags: ["Templates"]
+				summary: "Create a new stack"
+				requestBody: {
 					description: "The stack to create."
 					required:    true
 					content: "application/json": schema: {
 						type:  "object"
 						title: "PostStackRequest"
 						properties: {
-							orgID: type: "string"
-							name: type: "string"
+							orgID: type:       "string"
+							name: type:        "string"
 							description: type: "string"
 							urls: {
 								type: "array"
@@ -2819,8 +2733,8 @@ common: {
 							}
 						}
 					}
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Success. Returns the newly created stack."
 						content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -2831,18 +2745,20 @@ common: {
 					}
 				}
 			}
-		}, "/stacks/{stack_id}": {
+		}
+		"/stacks/{stack_id}": {
 			get: {
-				operationId:
-					"ReadStack", tags: ["Templates"], summary:
-					"Retrieve a stack", parameters: [{
+				operationId: "ReadStack"
+				tags: ["Templates"]
+				summary: "Retrieve a stack"
+				parameters: [{
 					in:       "path"
 					name:     "stack_id"
 					required: true
 					schema: type: "string"
 					description: "The identifier of the stack."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Returns the stack."
 						content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -2852,17 +2768,19 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"UpdateStack", tags: ["Templates"], summary:
-					"Update a stack", parameters: [{
+			}
+			patch: {
+				operationId: "UpdateStack"
+				tags: ["Templates"]
+				summary: "Update a stack"
+				parameters: [{
 					in:       "path"
 					name:     "stack_id"
 					required: true
 					schema: type: "string"
 					description: "The identifier of the stack."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "The stack to update."
 					required:    true
 					content: "application/json": schema: {
@@ -2887,20 +2805,17 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										resourceID: type: "string"
-										kind: type: "string"
+										resourceID: type:       "string"
+										kind: type:             "string"
 										templateMetaName: type: "string"
 									}
-									required: [
-										"kind",
-										"resourceID",
-									]
+									required: ["kind", "resourceID"]
 								}
 							}
 						}
 					}
-				}, responses: {
-
+				}
+				responses: {
 					"200": {
 						description: "Returns the updated stack."
 						content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -2910,10 +2825,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteStack", tags: ["Templates"], summary:
-					"Delete a stack and associated resources", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteStack"
+				tags: ["Templates"]
+				summary: "Delete a stack and associated resources"
+				parameters: [{
 					in:       "path"
 					name:     "stack_id"
 					required: true
@@ -2925,8 +2842,8 @@ common: {
 					required: true
 					schema: type: "string"
 					description: "The identifier of the organization."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "The stack and its associated resources were deleted."
 					default: {
 						description: "Unexpected error"
@@ -2934,17 +2851,19 @@ common: {
 					}
 				}
 			}
-		}, "/stacks/{stack_id}/uninstall": post: {
-			operationId:
-				"UninstallStack", tags: ["Templates"], summary:
-				"Uninstall a stack", parameters: [{
+		}
+		"/stacks/{stack_id}/uninstall": post: {
+			operationId: "UninstallStack"
+			tags: ["Templates"]
+			summary: "Uninstall a stack"
+			parameters: [{
 				in:       "path"
 				name:     "stack_id"
 				required: true
 				schema: type: "string"
 				description: "The identifier of the stack."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Returns the uninstalled stack."
 					content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -2954,34 +2873,33 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/templates/apply": post: {
-			operationId:
-				"ApplyTemplate", tags: ["Templates"], summary:
-				"Apply or dry-run a template", description:
-				"Applies or performs a dry-run of template in an organization.", requestBody: {
-
+		}
+		"/templates/apply": post: {
+			operationId: "ApplyTemplate"
+			tags: ["Templates"]
+			summary:     "Apply or dry-run a template"
+			description: "Applies or performs a dry-run of template in an organization."
+			requestBody: {
 				required: true
 				content: {
-					"application/json": schema: $ref: "#/components/schemas/TemplateApply"
+					"application/json": schema: $ref:      "#/components/schemas/TemplateApply"
 					"application/x-jsonnet": schema: $ref: "#/components/schemas/TemplateApply"
-					"text/yml": schema: $ref: "#/components/schemas/TemplateApply"
+					"text/yml": schema: $ref:              "#/components/schemas/TemplateApply"
 				}
-			}, responses: {
-
+			}
+			responses: {
 				"200": {
 					description: """
 						Success. The package dry-run succeeded. No new resources were created. Returns a diff and summary of the dry-run. The diff and summary won't contain IDs for resources that didn't exist at the time of the dry-run.
 
 						"""
-
 					content: "application/json": schema: $ref: "#/components/schemas/TemplateSummary"
 				}
 				"201": {
 					description: """
-						Success. The package applied successfully. Returns a diff and summary of the run. The summary contains newly created resources. The diff compares the initial state to the state after the package applied. This corresponds to `\"dryRun\": true`.
+						Success. The package applied successfully. Returns a diff and summary of the run. The summary contains newly created resources. The diff compares the initial state to the state after the package applied. This corresponds to `"dryRun": true`.
 
 						"""
-
 					content: "application/json": schema: $ref: "#/components/schemas/TemplateSummary"
 				}
 				default: {
@@ -2989,11 +2907,12 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/templates/export": post: {
-			operationId:
-				"ExportTemplate", tags: ["Templates"], summary:
-				"Export a new template", requestBody: {
-
+		}
+		"/templates/export": post: {
+			operationId: "ExportTemplate"
+			tags: ["Templates"]
+			summary: "Export a new template"
+			requestBody: {
 				description: "Export resources as an InfluxDB template."
 				required:    false
 				content: "application/json": schema: oneOf: [{
@@ -3001,12 +2920,12 @@ common: {
 				}, {
 					$ref: "#/components/schemas/TemplateExportByName"
 				}]
-			}, responses: {
-
+			}
+			responses: {
 				"200": {
 					description: "The template was created successfully. Returns the newly created template."
 					content: {
-						"application/json": schema: $ref: "#/components/schemas/Template"
+						"application/json": schema: $ref:   "#/components/schemas/Template"
 						"application/x-yaml": schema: $ref: "#/components/schemas/Template"
 					}
 				}
@@ -3015,11 +2934,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}": {
+		}
+		"/tasks/{taskID}": {
 			get: {
-				operationId:
-					"GetTasksID", tags: ["Tasks"], summary:
-					"Retrieve a task", parameters: [{
+				operationId: "GetTasksID"
+				tags: ["Tasks"]
+				summary: "Retrieve a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3027,8 +2948,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Task details"
 						content: "application/json": schema: $ref: "#/components/schemas/Task"
@@ -3038,16 +2959,18 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchTasksID", tags: ["Tasks"], summary:
-					"Update a task", description:
-					"Update a task. This will cancel all queued runs.", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchTasksID"
+				tags: ["Tasks"]
+				summary:     "Update a task"
+				description: "Update a task. This will cancel all queued runs."
+				requestBody: {
 					description: "Task update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/TaskUpdateRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3055,8 +2978,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Task updated"
 						content: "application/json": schema: $ref: "#/components/schemas/Task"
@@ -3066,11 +2989,13 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteTasksID", tags: ["Tasks"], summary:
-					"Delete a task", description:
-					"Deletes a task and all associated records", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteTasksID"
+				tags: ["Tasks"]
+				summary:     "Delete a task"
+				description: "Deletes a task and all associated records"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3078,8 +3003,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the task to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Task deleted"
 					default: {
 						description: "Unexpected error"
@@ -3087,11 +3012,13 @@ common: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/runs": {
+		}
+		"/tasks/{taskID}/runs": {
 			get: {
-				operationId:
-					"GetTasksIDRuns", tags: ["Tasks"], summary:
-					"List runs for a task", parameters: [{
+				operationId: "GetTasksIDRuns"
+				tags: ["Tasks"]
+				summary: "List runs for a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3130,8 +3057,8 @@ common: {
 						format: "date-time"
 					}
 					description: "Filter runs to those scheduled before this time, RFC3339"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of task runs"
 						content: "application/json": schema: $ref: "#/components/schemas/Runs"
@@ -3141,18 +3068,21 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDRuns", tags: ["Tasks"], summary:
-					"Manually start a task run, overriding the current schedule", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDRuns"
+				tags: ["Tasks"]
+				summary: "Manually start a task run, overriding the current schedule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
 					name: "taskID"
 					schema: type: "string"
-												required: true
-				}], requestBody: content: "application/json": schema: $ref: "#/components/schemas/RunManually", responses: {
-
+					required: true
+				}]
+				requestBody: content: "application/json": schema: $ref: "#/components/schemas/RunManually"
+				responses: {
 					"201": {
 						description: "Run scheduled to start"
 						content: "application/json": schema: $ref: "#/components/schemas/Run"
@@ -3163,11 +3093,13 @@ common: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/runs/{runID}": {
+		}
+		"/tasks/{taskID}/runs/{runID}": {
 			get: {
-				operationId:
-					"GetTasksIDRunsID", tags: ["Tasks"], summary:
-					"Retrieve a single run for a task", parameters: [{
+				operationId: "GetTasksIDRunsID"
+				tags: ["Tasks"]
+				summary: "Retrieve a single run for a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3181,8 +3113,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The run ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The run record"
 						content: "application/json": schema: $ref: "#/components/schemas/Run"
@@ -3192,10 +3124,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteTasksIDRunsID", tags: ["Tasks"], summary:
-					"Cancel a running task", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteTasksIDRunsID"
+				tags: ["Tasks"]
+				summary: "Cancel a running task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3209,8 +3143,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The run ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					default: {
 						description: "Unexpected error"
@@ -3218,11 +3152,14 @@ common: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/runs/{runID}/retry": post: {
-			operationId:
-				"PostTasksIDRunsIDRetry", tags: ["Tasks"], summary:
-				"Retry a task run", requestBody: content: "application/json; charset=utf-8": schema: type: "object", parameters: [{
-				$ref:                                                                                      "#/components/parameters/TraceSpan"
+		}
+		"/tasks/{taskID}/runs/{runID}/retry": post: {
+			operationId: "PostTasksIDRunsIDRetry"
+			tags: ["Tasks"]
+			summary: "Retry a task run"
+			requestBody: content: "application/json; charset=utf-8": schema: type: "object"
+			parameters: [{
+				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
 				name: "taskID"
@@ -3235,8 +3172,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The run ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Run that has been queued"
 					content: "application/json": schema: $ref: "#/components/schemas/Run"
@@ -3246,10 +3183,12 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/logs": get: {
-			operationId:
-				"GetTasksIDLogs", tags: ["Tasks"], summary:
-				"Retrieve all logs for a task", parameters: [{
+		}
+		"/tasks/{taskID}/logs": get: {
+			operationId: "GetTasksIDLogs"
+			tags: ["Tasks"]
+			summary: "Retrieve all logs for a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3257,8 +3196,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The task ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "All logs for a task"
 					content: "application/json": schema: $ref: "#/components/schemas/Logs"
@@ -3268,10 +3207,12 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/runs/{runID}/logs": get: {
-			operationId:
-				"GetTasksIDRunsIDLogs", tags: ["Tasks"], summary:
-				"Retrieve all logs for a run", parameters: [{
+		}
+		"/tasks/{taskID}/runs/{runID}/logs": get: {
+			operationId: "GetTasksIDRunsIDLogs"
+			tags: ["Tasks"]
+			summary: "Retrieve all logs for a run"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3285,8 +3226,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "ID of run to get logs for."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "All logs for a run"
 					content: "application/json": schema: $ref: "#/components/schemas/Logs"
@@ -3296,11 +3237,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/labels": {
+		}
+		"/tasks/{taskID}/labels": {
 			get: {
-				operationId:
-					"GetTasksIDLabels", tags: ["Tasks"], summary:
-					"List all labels for a task", parameters: [{
+				operationId: "GetTasksIDLabels"
+				tags: ["Tasks"]
+				summary: "List all labels for a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3308,8 +3251,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -3319,10 +3262,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDLabels", tags: ["Tasks"], summary:
-					"Add a label to a task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDLabels"
+				tags: ["Tasks"]
+				summary: "Add a label to a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3330,13 +3275,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "A list of all labels for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -3347,10 +3292,12 @@ common: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteTasksIDLabelsID", tags: ["Tasks"], summary:
-				"Delete a label from a task", parameters: [{
+		}
+		"/tasks/{taskID}/labels/{labelID}": delete: {
+			operationId: "DeleteTasksIDLabelsID"
+			tags: ["Tasks"]
+			summary: "Delete a label from a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3364,8 +3311,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The label ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Task not found"
@@ -3376,13 +3323,15 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/flags": get: {
-			operationId:
-				"GetFlags", tags: ["Users"], summary:
-				"Return the feature flags for the currently authenticated user", parameters: [{
+		}
+		"/flags": get: {
+			operationId: "GetFlags"
+			tags: ["Users"]
+			summary: "Return the feature flags for the currently authenticated user"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Feature flags for the currently authenticated user"
 					content: "application/json": schema: $ref: "#/components/schemas/Flags"
@@ -3392,13 +3341,15 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/me": get: {
-			operationId:
-				"GetMe", tags: ["Users"], summary:
-				"Retrieve the currently authenticated user", parameters: [{
+		}
+		"/me": get: {
+			operationId: "GetMe"
+			tags: ["Users"]
+			summary: "Retrieve the currently authenticated user"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The currently authenticated user."
 					content: "application/json": schema: $ref: "#/components/schemas/UserResponse"
@@ -3408,32 +3359,36 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/me/password": put: {
-			operationId:
-				"PutMePassword", tags: ["Users"], summary:
-				"Update a password", security: [{
-				BasicAuthentication: [
-
-				]}], parameters: [{
+		}
+		"/me/password": put: {
+			operationId: "PutMePassword"
+			tags: ["Users"]
+			summary: "Update a password"
+			security: [{
+				BasicAuthentication: []
+			}]
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "New password"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/PasswordResetBody"
-			}, responses: {
-
+			}
+			responses: {
 				"204": description: "Password successfully updated"
 				default: {
 					description: "Unsuccessful authentication"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/members": {
+		}
+		"/tasks/{taskID}/members": {
 			get: {
-				operationId:
-					"GetTasksIDMembers", tags: ["Tasks"], summary:
-					"List all task members", parameters: [{
+				operationId: "GetTasksIDMembers"
+				tags: ["Tasks"]
+				summary: "List all task members"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3441,8 +3396,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of users who have member privileges for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMembers"
@@ -3452,10 +3407,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDMembers", tags: ["Tasks"], summary:
-					"Add a member to a task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDMembers"
+				tags: ["Tasks"]
+				summary: "Add a member to a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3463,13 +3420,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as member"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added to task members"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMember"
@@ -3480,10 +3437,12 @@ common: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/members/{userID}": delete: {
-			operationId:
-				"DeleteTasksIDMembersID", tags: ["Tasks"], summary:
-				"Remove a member from a task", parameters: [{
+		}
+		"/tasks/{taskID}/members/{userID}": delete: {
+			operationId: "DeleteTasksIDMembersID"
+			tags: ["Tasks"]
+			summary: "Remove a member from a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3497,19 +3456,21 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The task ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Member removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/owners": {
+		}
+		"/tasks/{taskID}/owners": {
 			get: {
-				operationId:
-					"GetTasksIDOwners", tags: ["Tasks"], summary:
-					"List all owners of a task", parameters: [{
+				operationId: "GetTasksIDOwners"
+				tags: ["Tasks"]
+				summary: "List all owners of a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3517,8 +3478,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of users who have owner privileges for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwners"
@@ -3528,10 +3489,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDOwners", tags: ["Tasks"], summary:
-					"Add an owner to a task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDOwners"
+				tags: ["Tasks"]
+				summary: "Add an owner to a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3539,13 +3502,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as owner"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added to task owners"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwner"
@@ -3556,10 +3519,12 @@ common: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/owners/{userID}": delete: {
-			operationId:
-				"DeleteTasksIDOwnersID", tags: ["Tasks"], summary:
-				"Remove an owner from a task", parameters: [{
+		}
+		"/tasks/{taskID}/owners/{userID}": delete: {
+			operationId: "DeleteTasksIDOwnersID"
+			tags: ["Tasks"]
+			summary: "Remove an owner from a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3573,21 +3538,23 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The task ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Owner removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/users/{userID}/password": post: {
-			operationId:
-				"PostUsersIDPassword", tags: ["Users"], summary:
-				"Update a password", security: [{
-				BasicAuthentication: [
-
-				]}], parameters: [{
+		}
+		"/users/{userID}/password": post: {
+			operationId: "PostUsersIDPassword"
+			tags: ["Users"]
+			summary: "Update a password"
+			security: [{
+				BasicAuthentication: []
+			}]
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3595,24 +3562,26 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The user ID."
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "New password"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/PasswordResetBody"
-			}, responses: {
-
+			}
+			responses: {
 				"204": description: "Password successfully updated"
 				default: {
 					description: "Unsuccessful authentication"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/checks": {
+		}
+		"/checks": {
 			get: {
-				operationId:
-					"GetChecks", tags: ["Checks"], summary:
-					"List all checks", parameters: [{
+				operationId: "GetChecks"
+				tags: ["Checks"]
+				summary: "List all checks"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -3624,8 +3593,8 @@ common: {
 					required:    true
 					description: "Only show checks that belong to a specific organization ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of checks"
 						content: "application/json": schema: $ref: "#/components/schemas/Checks"
@@ -3635,16 +3604,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateCheck", tags: ["Checks"], summary:
-					"Add new check", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateCheck"
+				tags: ["Checks"]
+				summary: "Add new check"
+				requestBody: {
 					description: "Check to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostCheck"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Check created"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3655,11 +3625,13 @@ common: {
 					}
 				}
 			}
-		}, "/checks/{checkID}": {
+		}
+		"/checks/{checkID}": {
 			get: {
-				operationId:
-					"GetChecksID", tags: ["Checks"], summary:
-					"Retrieve a check", parameters: [{
+				operationId: "GetChecksID"
+				tags: ["Checks"]
+				summary: "Retrieve a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3667,8 +3639,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The check requested"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3678,15 +3650,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, put: {
-				operationId:
-					"PutChecksID", tags: ["Checks"], summary:
-					"Update a check", requestBody: {
-
+			}
+			put: {
+				operationId: "PutChecksID"
+				tags: ["Checks"]
+				summary: "Update a check"
+				requestBody: {
 					description: "Check update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Check"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3694,8 +3668,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated check"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3709,15 +3683,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchChecksID", tags: ["Checks"], summary:
-					"Update a check", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchChecksID"
+				tags: ["Checks"]
+				summary: "Update a check"
+				requestBody: {
 					description: "Check update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/CheckPatch"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3725,8 +3701,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated check"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3740,10 +3716,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteChecksID", tags: ["Checks"], summary:
-					"Delete a check", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteChecksID"
+				tags: ["Checks"]
+				summary: "Delete a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3751,8 +3729,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "The check was not found"
@@ -3764,11 +3742,13 @@ common: {
 					}
 				}
 			}
-		}, "/checks/{checkID}/labels": {
+		}
+		"/checks/{checkID}/labels": {
 			get: {
-				operationId:
-					"GetChecksIDLabels", tags: ["Checks"], summary:
-					"List all labels for a check", parameters: [{
+				operationId: "GetChecksIDLabels"
+				tags: ["Checks"]
+				summary: "List all labels for a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3776,8 +3756,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a check"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -3787,10 +3767,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostChecksIDLabels", tags: ["Checks"], summary:
-					"Add a label to a check", parameters: [{
+			}
+			post: {
+				operationId: "PostChecksIDLabels"
+				tags: ["Checks"]
+				summary: "Add a label to a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3798,13 +3780,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The label was added to the check"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -3815,10 +3797,12 @@ common: {
 					}
 				}
 			}
-		}, "/checks/{checkID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteChecksIDLabelsID", tags: ["Checks"], summary:
-				"Delete label from a check", parameters: [{
+		}
+		"/checks/{checkID}/labels/{labelID}": delete: {
+			operationId: "DeleteChecksIDLabelsID"
+			tags: ["Checks"]
+			summary: "Delete label from a check"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3832,8 +3816,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Check or label not found"
@@ -3844,11 +3828,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationRules": {
+		}
+		"/notificationRules": {
 			get: {
-				operationId:
-					"GetNotificationRules", tags: ["NotificationRules"], summary:
-					"List all notification rules", parameters: [{
+				operationId: "GetNotificationRules"
+				tags: ["NotificationRules"]
+				summary: "List all notification rules"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -3874,8 +3860,8 @@ common: {
 						pattern: "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
 						example: "env:prod"
 					}
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of notification rules"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRules"
@@ -3885,16 +3871,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateNotificationRule", tags: ["NotificationRules"], summary:
-					"Add a notification rule", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateNotificationRule"
+				tags: ["NotificationRules"]
+				summary: "Add a notification rule"
+				requestBody: {
 					description: "Notification rule to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostNotificationRule"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Notification rule created"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -3905,10 +3892,12 @@ common: {
 					}
 				}
 			}
-		}, "/checks/{checkID}/query": get: {
-			operationId:
-				"GetChecksIDQuery", tags: ["Checks"], summary:
-				"Retrieve a check query", parameters: [{
+		}
+		"/checks/{checkID}/query": get: {
+			operationId: "GetChecksIDQuery"
+			tags: ["Checks"]
+			summary: "Retrieve a check query"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3916,8 +3905,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The check ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The check query requested"
 					content: "application/json": schema: $ref: "#/components/schemas/FluxResponse"
@@ -3935,11 +3924,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationRules/{ruleID}": {
+		}
+		"/notificationRules/{ruleID}": {
 			get: {
-				operationId:
-					"GetNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Retrieve a notification rule", parameters: [{
+				operationId: "GetNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Retrieve a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3947,8 +3938,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The notification rule requested"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -3958,15 +3949,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, put: {
-				operationId:
-					"PutNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Update a notification rule", requestBody: {
-
+			}
+			put: {
+				operationId: "PutNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Update a notification rule"
+				requestBody: {
 					description: "Notification rule update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3974,8 +3967,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -3989,15 +3982,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Update a notification rule", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Update a notification rule"
+				requestBody: {
 					description: "Notification rule update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationRuleUpdate"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4005,8 +4000,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -4020,10 +4015,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Delete a notification rule", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Delete a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4031,8 +4028,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "The check was not found"
@@ -4044,11 +4041,13 @@ common: {
 					}
 				}
 			}
-		}, "/notificationRules/{ruleID}/labels": {
+		}
+		"/notificationRules/{ruleID}/labels": {
 			get: {
-				operationId:
-					"GetNotificationRulesIDLabels", tags: ["NotificationRules"], summary:
-					"List all labels for a notification rule", parameters: [{
+				operationId: "GetNotificationRulesIDLabels"
+				tags: ["NotificationRules"]
+				summary: "List all labels for a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4056,8 +4055,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -4067,10 +4066,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostNotificationRuleIDLabels", tags: ["NotificationRules"], summary:
-					"Add a label to a notification rule", parameters: [{
+			}
+			post: {
+				operationId: "PostNotificationRuleIDLabels"
+				tags: ["NotificationRules"]
+				summary: "Add a label to a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4078,13 +4079,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The label was added to the notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -4095,10 +4096,12 @@ common: {
 					}
 				}
 			}
-		}, "/notificationRules/{ruleID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteNotificationRulesIDLabelsID", tags: ["NotificationRules"], summary:
-				"Delete label from a notification rule", parameters: [{
+		}
+		"/notificationRules/{ruleID}/labels/{labelID}": delete: {
+			operationId: "DeleteNotificationRulesIDLabelsID"
+			tags: ["NotificationRules"]
+			summary: "Delete label from a notification rule"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4112,8 +4115,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Rule or label not found"
@@ -4124,10 +4127,12 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationRules/{ruleID}/query": get: {
-			operationId:
-				"GetNotificationRulesIDQuery", tags: ["Rules"], summary:
-				"Retrieve a notification rule query", parameters: [{
+		}
+		"/notificationRules/{ruleID}/query": get: {
+			operationId: "GetNotificationRulesIDQuery"
+			tags: ["Rules"]
+			summary: "Retrieve a notification rule query"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4135,8 +4140,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The notification rule ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The notification rule query requested"
 					content: "application/json": schema: $ref: "#/components/schemas/FluxResponse"
@@ -4154,11 +4159,13 @@ common: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationEndpoints": {
+		}
+		"/notificationEndpoints": {
 			get: {
-				operationId:
-					"GetNotificationEndpoints", tags: ["NotificationEndpoints"], summary:
-					"List all notification endpoints", parameters: [{
+				operationId: "GetNotificationEndpoints"
+				tags: ["NotificationEndpoints"]
+				summary: "List all notification endpoints"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -4170,8 +4177,8 @@ common: {
 					required:    true
 					description: "Only show notification endpoints that belong to specific organization ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of notification endpoints"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoints"
@@ -4181,16 +4188,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateNotificationEndpoint", tags: ["NotificationEndpoints"], summary:
-					"Add a notification endpoint", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateNotificationEndpoint"
+				tags: ["NotificationEndpoints"]
+				summary: "Add a notification endpoint"
+				requestBody: {
 					description: "Notification endpoint to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostNotificationEndpoint"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Notification endpoint created"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4201,11 +4209,13 @@ common: {
 					}
 				}
 			}
-		}, "/notificationEndpoints/{endpointID}": {
+		}
+		"/notificationEndpoints/{endpointID}": {
 			get: {
-				operationId:
-					"GetNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Retrieve a notification endpoint", parameters: [{
+				operationId: "GetNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Retrieve a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4213,8 +4223,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The notification endpoint requested"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4224,15 +4234,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, put: {
-				operationId:
-					"PutNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Update a notification endpoint", requestBody: {
-
+			}
+			put: {
+				operationId: "PutNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Update a notification endpoint"
+				requestBody: {
 					description: "A new notification endpoint to replace the existing endpoint with"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4240,8 +4252,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4255,15 +4267,17 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Update a notification endpoint", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Update a notification endpoint"
+				requestBody: {
 					description: "Check update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpointUpdate"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4271,8 +4285,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4286,10 +4300,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Delete a notification endpoint", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Delete a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4297,8 +4313,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "The endpoint was not found"
@@ -4310,11 +4326,13 @@ common: {
 					}
 				}
 			}
-		}, "/notificationEndpoints/{endpointID}/labels": {
+		}
+		"/notificationEndpoints/{endpointID}/labels": {
 			get: {
-				operationId:
-					"GetNotificationEndpointsIDLabels", tags: ["NotificationEndpoints"], summary:
-					"List all labels for a notification endpoint", parameters: [{
+				operationId: "GetNotificationEndpointsIDLabels"
+				tags: ["NotificationEndpoints"]
+				summary: "List all labels for a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4322,8 +4340,8 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -4333,10 +4351,12 @@ common: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostNotificationEndpointIDLabels", tags: ["NotificationEndpoints"], summary:
-					"Add a label to a notification endpoint", parameters: [{
+			}
+			post: {
+				operationId: "PostNotificationEndpointIDLabels"
+				tags: ["NotificationEndpoints"]
+				summary: "Add a label to a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4344,13 +4364,13 @@ common: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The label was added to the notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -4361,10 +4381,12 @@ common: {
 					}
 				}
 			}
-		}, "/notificationEndpoints/{endpointID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteNotificationEndpointsIDLabelsID", tags: ["NotificationEndpoints"], summary:
-				"Delete a label from a notification endpoint", parameters: [{
+		}
+		"/notificationEndpoints/{endpointID}/labels/{labelID}": delete: {
+			operationId: "DeleteNotificationEndpointsIDLabelsID"
+			tags: ["NotificationEndpoints"]
+			summary: "Delete a label from a notification endpoint"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4378,8 +4400,8 @@ common: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Endpoint or label not found"
@@ -4391,77 +4413,82 @@ common: {
 				}
 			}
 		}
-	}, components: {
+	}
+	components: {
 		parameters: {
 			TraceSpan: {
-				in:
-					"header", name:
-					"Zap-Trace-Span", description:
-					"OpenTracing span context", example: {
-
+				in:          "header"
+				name:        "Zap-Trace-Span"
+				description: "OpenTracing span context"
+				example: {
 					trace_id: "1"
 					span_id:  "1"
 					baggage: key: "value"
-				}, required:
-					false, schema: type: "string"
-			}, Offset: {
-				in:
-					"query", name:
-					"offset", required:
-					false, schema: {
-
+				}
+				required: false
+				schema: type: "string"
+			}
+			Offset: {
+				in:       "query"
+				name:     "offset"
+				required: false
+				schema: {
 					type:    "integer"
 					minimum: 0
 				}
-			}, Limit: {
-				in:
-					"query", name:
-					"limit", required:
-					false, schema: {
-
+			}
+			Limit: {
+				in:       "query"
+				name:     "limit"
+				required: false
+				schema: {
 					type:    "integer"
 					minimum: 1
 					maximum: 100
 					default: 20
 				}
-			}, Descending: {
-				in:
-					"query", name:
-					"descending", required:
-					false, schema: {
-
+			}
+			Descending: {
+				in:       "query"
+				name:     "descending"
+				required: false
+				schema: {
 					type:    "boolean"
 					default: false
 				}
-			}, SortBy: {
-				in:
-					"query", name:
-					"sortBy", required:
-					false, schema: type: "string"
-			}, After: {
-				in:
-					"query", name:
-					"after", required:
-					false, schema: type: "string", description:
-					"""
-						The last resource ID from which to seek from (but not including). This is to be used instead of `offset`.
+			}
+			SortBy: {
+				in:       "query"
+				name:     "sortBy"
+				required: false
+				schema: type: "string"
+			}
+			After: {
+				in:       "query"
+				name:     "after"
+				required: false
+				schema: type: "string"
+				description: """
+					The last resource ID from which to seek from (but not including). This is to be used instead of `offset`.
 
-						"""
+					"""
 			}
 		}
 		schemas: {
 			LanguageRequest: {
-				description:
-					"Flux query to be analyzed.", type:
-					"object", required: ["query"], properties: query: {
+				description: "Flux query to be analyzed."
+				type:        "object"
+				required: ["query"]
+				properties: query: {
 					description: "Flux query script to be analyzed"
 					type:        "string"
 				}
-			}, Query: {
-				description:
-					"Query influx using the Flux language", type:
-					"object", required: ["query"], properties: {
-
+			}
+			Query: {
+				description: "Query influx using the Flux language"
+				type:        "object"
+				required: ["query"]
+				properties: {
 					extern: $ref: "#/components/schemas/File"
 					query: {
 						description: "Query script to execute."
@@ -4476,11 +4503,10 @@ common: {
 						type:                 "object"
 						additionalProperties: true
 						description: """
-		Enumeration of key/value pairs that respresent parameters to be injected into query (can only specify either this field or extern and not both)
+							Enumeration of key/value pairs that respresent parameters to be injected into query (can only specify either this field or extern and not both)
 
-		"""
+							"""
 					}
-
 					dialect: $ref: "#/components/schemas/Dialect"
 					now: {
 						description: "Specifies the time that should be reported as \"now\" in the query. Default is the server's now time."
@@ -4488,11 +4514,11 @@ common: {
 						format:      "date-time"
 					}
 				}
-			}, Package: {
-				description:
-					"Represents a complete package source tree.", type:
-					"object", properties: {
-
+			}
+			Package: {
+				description: "Represents a complete package source tree."
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					path: {
 						description: "Package import path"
@@ -4508,11 +4534,11 @@ common: {
 						items: $ref: "#/components/schemas/File"
 					}
 				}
-			}, File: {
-				description:
-					"Represents a source from a single file", type:
-					"object", properties: {
-
+			}
+			File: {
+				description: "Represents a source from a single file"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					name: {
 						description: "The name of the file."
@@ -4530,31 +4556,29 @@ common: {
 						items: $ref: "#/components/schemas/Statement"
 					}
 				}
-			}, PackageClause: {
-				description:
-					"Defines a package identifier", type:
-					"object", properties: {
-
+			}
+			PackageClause: {
+				description: "Defines a package identifier"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					name: $ref: "#/components/schemas/Identifier"
 				}
-			}, ImportDeclaration: {
-				description:
-					"Declares a package import", type:
-					"object", properties: {
-
+			}
+			ImportDeclaration: {
+				description: "Declares a package import"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
-					as: $ref: "#/components/schemas/Identifier"
+					as: $ref:   "#/components/schemas/Identifier"
 					path: $ref: "#/components/schemas/StringLiteral"
 				}
-			}, DeletePredicateRequest: {
-				description:
-					"The delete predicate request.", type:
-					"object", required: [
-					"start",
-					"stop",
-				], properties: {
-
+			}
+			DeletePredicateRequest: {
+				description: "The delete predicate request."
+				type:        "object"
+				required: ["start", "stop"]
+				properties: {
 					start: {
 						description: "RFC3339Nano"
 						type:        "string"
@@ -4571,19 +4595,20 @@ common: {
 						type:        "string"
 					}
 				}
-			}, Node: oneOf: [{
+			}
+			Node: oneOf: [{
 				$ref: "#/components/schemas/Expression"
 			}, {
 				$ref: "#/components/schemas/Block"
-			}], NodeType: {
-				description:
-					"Type of AST node", type:
-					"string"
-			}, Block: {
-				description:
-					"A set of statements", type:
-					"object", properties: {
-
+			}]
+			NodeType: {
+				description: "Type of AST node"
+				type:        "string"
+			}
+			Block: {
+				description: "A set of statements"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					body: {
 						description: "Block body"
@@ -4591,7 +4616,8 @@ common: {
 						items: $ref: "#/components/schemas/Statement"
 					}
 				}
-			}, Statement: oneOf: [{
+			}
+			Statement: oneOf: [{
 				$ref: "#/components/schemas/BadStatement"
 			}, {
 				$ref: "#/components/schemas/VariableAssignment"
@@ -4607,56 +4633,56 @@ common: {
 				$ref: "#/components/schemas/BuiltinStatement"
 			}, {
 				$ref: "#/components/schemas/TestStatement"
-			}], BadStatement: {
-				description:
-					"A placeholder for statements for which no correct statement nodes can be created", type:
-					"object", properties: {
-
+			}]
+			BadStatement: {
+				description: "A placeholder for statements for which no correct statement nodes can be created"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					text: {
 						description: "Raw source text"
 						type:        "string"
 					}
 				}
-			}, VariableAssignment: {
-				description:
-					"Represents the declaration of a variable", type:
-					"object", properties: {
-
+			}
+			VariableAssignment: {
+				description: "Represents the declaration of a variable"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
-					id: $ref: "#/components/schemas/Identifier"
+					id: $ref:   "#/components/schemas/Identifier"
 					init: $ref: "#/components/schemas/Expression"
 				}
-			}, MemberAssignment: {
-				description:
-					"Object property assignment", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			MemberAssignment: {
+				description: "Object property assignment"
+				type:        "object"
+				properties: {
+					type: $ref:   "#/components/schemas/NodeType"
 					member: $ref: "#/components/schemas/MemberExpression"
-					init: $ref: "#/components/schemas/Expression"
+					init: $ref:   "#/components/schemas/Expression"
 				}
-			}, ExpressionStatement: {
-				description:
-					"May consist of an expression that does not return a value and is executed solely for its side-effects", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			ExpressionStatement: {
+				description: "May consist of an expression that does not return a value and is executed solely for its side-effects"
+				type:        "object"
+				properties: {
+					type: $ref:       "#/components/schemas/NodeType"
 					expression: $ref: "#/components/schemas/Expression"
 				}
-			}, ReturnStatement: {
-				description:
-					"Defines an expression to return", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			ReturnStatement: {
+				description: "Defines an expression to return"
+				type:        "object"
+				properties: {
+					type: $ref:     "#/components/schemas/NodeType"
 					argument: $ref: "#/components/schemas/Expression"
 				}
-			}, OptionStatement: {
-				description:
-					"A single variable declaration", type:
-					"object", properties: {
-
+			}
+			OptionStatement: {
+				description: "A single variable declaration"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					assignment: oneOf: [{
 						$ref: "#/components/schemas/VariableAssignment"
@@ -4664,23 +4690,24 @@ common: {
 						$ref: "#/components/schemas/MemberAssignment"
 					}]
 				}
-			}, BuiltinStatement: {
-				description:
-					"Declares a builtin identifier and its type", type:
-					"object", properties: {
-
+			}
+			BuiltinStatement: {
+				description: "Declares a builtin identifier and its type"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
-					id: $ref: "#/components/schemas/Identifier"
+					id: $ref:   "#/components/schemas/Identifier"
 				}
-			}, TestStatement: {
-				description:
-					"Declares a Flux test case", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			TestStatement: {
+				description: "Declares a Flux test case"
+				type:        "object"
+				properties: {
+					type: $ref:       "#/components/schemas/NodeType"
 					assignment: $ref: "#/components/schemas/VariableAssignment"
 				}
-			}, Expression: oneOf: [{
+			}
+			Expression: oneOf: [{
 				$ref: "#/components/schemas/ArrayExpression"
 			}, {
 				$ref: "#/components/schemas/DictExpression"
@@ -4726,11 +4753,11 @@ common: {
 				$ref: "#/components/schemas/UnsignedIntegerLiteral"
 			}, {
 				$ref: "#/components/schemas/Identifier"
-			}], ArrayExpression: {
-				description:
-					"Used to create and directly specify the elements of an array object", type:
-					"object", properties: {
-
+			}]
+			ArrayExpression: {
+				description: "Used to create and directly specify the elements of an array object"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					elements: {
 						description: "Elements of the array"
@@ -4738,11 +4765,11 @@ common: {
 						items: $ref: "#/components/schemas/Expression"
 					}
 				}
-			}, DictExpression: {
-				description:
-					"Used to create and directly specify the elements of a dictionary", type:
-					"object", properties: {
-
+			}
+			DictExpression: {
+				description: "Used to create and directly specify the elements of a dictionary"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					elements: {
 						description: "Elements of the dictionary"
@@ -4750,20 +4777,20 @@ common: {
 						items: $ref: "#/components/schemas/DictItem"
 					}
 				}
-			}, DictItem: {
-				description:
-					"A key/value pair in a dictionary", type:
-					"object", properties: {
-
+			}
+			DictItem: {
+				description: "A key/value pair in a dictionary"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
-					key: $ref: "#/components/schemas/Expression"
-					val: $ref: "#/components/schemas/Expression"
+					key: $ref:  "#/components/schemas/Expression"
+					val: $ref:  "#/components/schemas/Expression"
 				}
-			}, FunctionExpression: {
-				description:
-					"Function expression", type:
-					"object", properties: {
-
+			}
+			FunctionExpression: {
+				description: "Function expression"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					params: {
 						description: "Function parameters"
@@ -4772,22 +4799,22 @@ common: {
 					}
 					body: $ref: "#/components/schemas/Node"
 				}
-			}, BinaryExpression: {
-				description:
-					"uses binary operators to act on two operands in an expression", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			BinaryExpression: {
+				description: "uses binary operators to act on two operands in an expression"
+				type:        "object"
+				properties: {
+					type: $ref:     "#/components/schemas/NodeType"
 					operator: type: "string"
-					left: $ref: "#/components/schemas/Expression"
-					right: $ref: "#/components/schemas/Expression"
+					left: $ref:     "#/components/schemas/Expression"
+					right: $ref:    "#/components/schemas/Expression"
 				}
-			}, CallExpression: {
-				description:
-					"Represents a function call", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			CallExpression: {
+				description: "Represents a function call"
+				type:        "object"
+				properties: {
+					type: $ref:   "#/components/schemas/NodeType"
 					callee: $ref: "#/components/schemas/Expression"
 					arguments: {
 						description: "Function arguments"
@@ -4795,49 +4822,49 @@ common: {
 						items: $ref: "#/components/schemas/Expression"
 					}
 				}
-			}, ConditionalExpression: {
-				description:
-					"Selects one of two expressions, `Alternate` or `Consequent`, depending on a third boolean expression, `Test`", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
-					test: $ref: "#/components/schemas/Expression"
-					alternate: $ref: "#/components/schemas/Expression"
+			}
+			ConditionalExpression: {
+				description: "Selects one of two expressions, `Alternate` or `Consequent`, depending on a third boolean expression, `Test`"
+				type:        "object"
+				properties: {
+					type: $ref:       "#/components/schemas/NodeType"
+					test: $ref:       "#/components/schemas/Expression"
+					alternate: $ref:  "#/components/schemas/Expression"
 					consequent: $ref: "#/components/schemas/Expression"
 				}
-			}, LogicalExpression: {
-				description:
-					"Represents the rule conditions that collectively evaluate to either true or false", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			LogicalExpression: {
+				description: "Represents the rule conditions that collectively evaluate to either true or false"
+				type:        "object"
+				properties: {
+					type: $ref:     "#/components/schemas/NodeType"
 					operator: type: "string"
-					left: $ref: "#/components/schemas/Expression"
-					right: $ref: "#/components/schemas/Expression"
+					left: $ref:     "#/components/schemas/Expression"
+					right: $ref:    "#/components/schemas/Expression"
 				}
-			}, MemberExpression: {
-				description:
-					"Represents accessing a property of an object", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
-					object: $ref: "#/components/schemas/Expression"
+			}
+			MemberExpression: {
+				description: "Represents accessing a property of an object"
+				type:        "object"
+				properties: {
+					type: $ref:     "#/components/schemas/NodeType"
+					object: $ref:   "#/components/schemas/Expression"
 					property: $ref: "#/components/schemas/PropertyKey"
 				}
-			}, IndexExpression: {
-				description:
-					"Represents indexing into an array", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			IndexExpression: {
+				description: "Represents indexing into an array"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					array: $ref: "#/components/schemas/Expression"
 					index: $ref: "#/components/schemas/Expression"
 				}
-			}, ObjectExpression: {
-				description:
-					"Allows the declaration of an anonymous object within a declaration", type:
-					"object", properties: {
-
+			}
+			ObjectExpression: {
+				description: "Allows the declaration of an anonymous object within a declaration"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					properties: {
 						description: "Object properties"
@@ -4845,56 +4872,56 @@ common: {
 						items: $ref: "#/components/schemas/Property"
 					}
 				}
-			}, ParenExpression: {
-				description:
-					"Represents an expression wrapped in parenthesis", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			ParenExpression: {
+				description: "Represents an expression wrapped in parenthesis"
+				type:        "object"
+				properties: {
+					type: $ref:       "#/components/schemas/NodeType"
 					expression: $ref: "#/components/schemas/Expression"
 				}
-			}, PipeExpression: {
-				description:
-					"Call expression with pipe argument", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			PipeExpression: {
+				description: "Call expression with pipe argument"
+				type:        "object"
+				properties: {
+					type: $ref:     "#/components/schemas/NodeType"
 					argument: $ref: "#/components/schemas/Expression"
-					call: $ref: "#/components/schemas/CallExpression"
+					call: $ref:     "#/components/schemas/CallExpression"
 				}
-			}, UnaryExpression: {
-				description:
-					"Uses operators to act on a single operand in an expression", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			UnaryExpression: {
+				description: "Uses operators to act on a single operand in an expression"
+				type:        "object"
+				properties: {
+					type: $ref:     "#/components/schemas/NodeType"
 					operator: type: "string"
 					argument: $ref: "#/components/schemas/Expression"
 				}
-			}, BooleanLiteral: {
-				description:
-					"Represents boolean values", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			BooleanLiteral: {
+				description: "Represents boolean values"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					value: type: "boolean"
 				}
-			}, DateTimeLiteral: {
-				description:
-					"Represents an instant in time with nanosecond precision using the syntax of golang's RFC3339 Nanosecond variant", type:
-					"object", properties: {
-
+			}
+			DateTimeLiteral: {
+				description: "Represents an instant in time with nanosecond precision using the syntax of golang's RFC3339 Nanosecond variant"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					value: {
 						type:   "string"
 						format: "date-time"
 					}
 				}
-			}, DurationLiteral: {
-				description:
-					"Represents the elapsed time between two instants as an int64 nanosecond count with syntax of golang's time.Duration", type:
-					"object", properties: {
-
+			}
+			DurationLiteral: {
+				description: "Represents the elapsed time between two instants as an int64 nanosecond count with syntax of golang's time.Duration"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					values: {
 						description: "Duration values"
@@ -4902,85 +4929,87 @@ common: {
 						items: $ref: "#/components/schemas/Duration"
 					}
 				}
-			}, FloatLiteral: {
-				description:
-					"Represents floating point numbers according to the double representations defined by the IEEE-754-1985", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			FloatLiteral: {
+				description: "Represents floating point numbers according to the double representations defined by the IEEE-754-1985"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					value: type: "number"
 				}
-			}, IntegerLiteral: {
-				description:
-					"Represents integer numbers", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			IntegerLiteral: {
+				description: "Represents integer numbers"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					value: type: "string"
 				}
-			}, PipeLiteral: {
-				description:
-					"Represents a specialized literal value, indicating the left hand value of a pipe expression", type:
-					"object", properties: type: $ref: "#/components/schemas/NodeType"
-			}, RegexpLiteral: {
-				description:
-					"Expressions begin and end with `/` and are regular expressions with syntax accepted by RE2", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			PipeLiteral: {
+				description: "Represents a specialized literal value, indicating the left hand value of a pipe expression"
+				type:        "object"
+				properties: type: $ref: "#/components/schemas/NodeType"
+			}
+			RegexpLiteral: {
+				description: "Expressions begin and end with `/` and are regular expressions with syntax accepted by RE2"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					value: type: "string"
 				}
-			}, StringLiteral: {
-				description:
-					"Expressions begin and end with double quote marks", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			StringLiteral: {
+				description: "Expressions begin and end with double quote marks"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					value: type: "string"
 				}
-			}, UnsignedIntegerLiteral: {
-				description:
-					"Represents integer numbers", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			UnsignedIntegerLiteral: {
+				description: "Represents integer numbers"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
 					value: type: "string"
 				}
-			}, Duration: {
-				description:
-					"A pair consisting of length of time and the unit of time measured. It is the atomic unit from which all duration literals are composed.", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
+			}
+			Duration: {
+				description: "A pair consisting of length of time and the unit of time measured. It is the atomic unit from which all duration literals are composed."
+				type:        "object"
+				properties: {
+					type: $ref:      "#/components/schemas/NodeType"
 					magnitude: type: "integer"
-					unit: type: "string"
+					unit: type:      "string"
 				}
-			}, Property: {
-				description:
-					"The value associated with a key", type:
-					"object", properties: {
-
-					type: $ref: "#/components/schemas/NodeType"
-					key: $ref: "#/components/schemas/PropertyKey"
+			}
+			Property: {
+				description: "The value associated with a key"
+				type:        "object"
+				properties: {
+					type: $ref:  "#/components/schemas/NodeType"
+					key: $ref:   "#/components/schemas/PropertyKey"
 					value: $ref: "#/components/schemas/Expression"
 				}
-			}, PropertyKey: oneOf: [{
+			}
+			PropertyKey: oneOf: [{
 				$ref: "#/components/schemas/Identifier"
 			}, {
 				$ref: "#/components/schemas/StringLiteral"
-			}], Identifier: {
-				description:
-					"A valid Flux identifier", type:
-					"object", properties: {
-
+			}]
+			Identifier: {
+				description: "A valid Flux identifier"
+				type:        "object"
+				properties: {
 					type: $ref: "#/components/schemas/NodeType"
 					name: type: "string"
 				}
-			}, Dialect: {
-				description:
-					"Dialect are options to change the default CSV output format; https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions", type:
-					"object", properties: {
-
+			}
+			Dialect: {
+				description: "Dialect are options to change the default CSV output format; https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions"
+				type:        "object"
+				properties: {
 					header: {
 						description: "If true, the results will contain a header row"
 						type:        "boolean"
@@ -4999,11 +5028,7 @@ common: {
 						uniqueItems: true
 						items: {
 							type: "string"
-							enum: [
-								"group",
-								"datatype",
-								"default",
-							]
+							enum: ["group", "datatype", "default"]
 						}
 					}
 					commentPrefix: {
@@ -5017,47 +5042,38 @@ common: {
 						description: "Format of timestamps"
 						type:        "string"
 						default:     "RFC3339"
-						enum: [
-							"RFC3339",
-							"RFC3339Nano",
-						]
+						enum: ["RFC3339", "RFC3339Nano"]
 					}
 				}
-			}, AuthorizationUpdateRequest: properties: {
-
+			}
+			AuthorizationUpdateRequest: properties: {
 				status: {
 					description: "If inactive the token is inactive and requests using the token will be rejected."
 					default:     "active"
 					type:        "string"
-					enum: [
-						"active",
-						"inactive",
-					]
+					enum: ["active", "inactive"]
 				}
 				description: {
 					type:        "string"
 					description: "A description of the token."
 				}
-			}, PostBucketRequest: {
+			}
+			PostBucketRequest: {
 				properties: {
-
-					orgID: type: "string"
-					name: type: "string"
-					description: type: "string"
-					rp: type: "string"
+					orgID: type:          "string"
+					name: type:           "string"
+					description: type:    "string"
+					rp: type:             "string"
 					retentionRules: $ref: "#/components/schemas/RetentionRules"
 					schemaType: {
 						$ref:    "#/components/schemas/SchemaType"
 						default: "implicit"
 					}
-				}, required: [
-					"orgID",
-					"name",
-					"retentionRules",
-				]
-			}, Bucket: {
+				}
+				required: ["orgID", "name", "retentionRules"]
+			}
+			Bucket: {
 				properties: {
-
 					links: {
 						type:     "object"
 						readOnly: true
@@ -5104,15 +5120,12 @@ common: {
 						readOnly: true
 						type:     "string"
 						default:  "user"
-						enum: [
-							"user",
-							"system",
-						]
+						enum: ["user", "system"]
 					}
-					name: type: "string"
+					name: type:        "string"
 					description: type: "string"
-					orgID: type: "string"
-					rp: type: "string"
+					orgID: type:       "string"
+					rp: type:          "string"
 					schemaType: {
 						$ref:    "#/components/schemas/SchemaType"
 						default: "implicit"
@@ -5128,15 +5141,13 @@ common: {
 						readOnly: true
 					}
 					retentionRules: $ref: "#/components/schemas/RetentionRules"
-					labels: $ref: "#/components/schemas/Labels"
-				}, required: [
-					"name",
-					"retentionRules",
-				]
-			}, Buckets: {
-				type:
-					"object", properties: {
-
+					labels: $ref:         "#/components/schemas/Labels"
+				}
+				required: ["name", "retentionRules"]
+			}
+			Buckets: {
+				type: "object"
+				properties: {
 					links: {
 						readOnly: true
 						$ref:     "#/components/schemas/Links"
@@ -5146,28 +5157,30 @@ common: {
 						items: $ref: "#/components/schemas/Bucket"
 					}
 				}
-			}, RetentionRules: {
-				type:
-					"array", description:
-					"Rules to expire or retain data.  No rules means data never expires.", items: $ref: "#/components/schemas/RetentionRule"
-			}, PatchBucketRequest: {
-				type:
-					"object", description:
-					"Updates to an existing bucket resource.", properties: {
-
-					name: type: "string"
-					description: type: "string"
+			}
+			RetentionRules: {
+				type:        "array"
+				description: "Rules to expire or retain data.  No rules means data never expires."
+				items: $ref: "#/components/schemas/RetentionRule"
+			}
+			PatchBucketRequest: {
+				type:        "object"
+				description: "Updates to an existing bucket resource."
+				properties: {
+					name: type:           "string"
+					description: type:    "string"
 					retentionRules: $ref: "#/components/schemas/PatchRetentionRules"
 				}
-			}, PatchRetentionRules: {
-				type:
-					"array", description:
-					"Updates to rules to expire or retain data. No rules means no updates.", items: $ref: "#/components/schemas/PatchRetentionRule"
-			}, PatchRetentionRule: {
-				type:
-					"object", description:
-					"Updates to a rule to expire or retain data.", properties: {
-
+			}
+			PatchRetentionRules: {
+				type:        "array"
+				description: "Updates to rules to expire or retain data. No rules means no updates."
+				items: $ref: "#/components/schemas/PatchRetentionRule"
+			}
+			PatchRetentionRule: {
+				type:        "object"
+				description: "Updates to a rule to expire or retain data."
+				properties: {
 					type: {
 						type:    "string"
 						default: "expire"
@@ -5185,11 +5198,12 @@ common: {
 						format:      "int64"
 						description: "Shard duration measured in seconds."
 					}
-				}, required: ["type"]
-			}, RetentionRule: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["type"]
+			}
+			RetentionRule: {
+				type: "object"
+				properties: {
 					type: {
 						type:    "string"
 						default: "expire"
@@ -5207,35 +5221,35 @@ common: {
 						format:      "int64"
 						description: "Shard duration measured in seconds."
 					}
-				}, required: [
-					"type",
-					"everySeconds",
-				]
-			}, Link: {
-				type:
-					"string", format:
-					"uri", readOnly:
-					true, description:
-					"URI of resource."
-			}, Links: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["type", "everySeconds"]
+			}
+			Link: {
+				type:        "string"
+				format:      "uri"
+				readOnly:    true
+				description: "URI of resource."
+			}
+			Links: {
+				type: "object"
+				properties: {
 					next: $ref: "#/components/schemas/Link"
 					self: $ref: "#/components/schemas/Link"
 					prev: $ref: "#/components/schemas/Link"
-				}, required: ["self"]
-			}, Logs: {
-				type:
-					"object", properties: events: {
+				}
+				required: ["self"]
+			}
+			Logs: {
+				type: "object"
+				properties: events: {
 					readOnly: true
 					type:     "array"
 					items: $ref: "#/components/schemas/LogEvent"
 				}
-			}, LogEvent: {
-				type:
-					"object", properties: {
-
+			}
+			LogEvent: {
+				type: "object"
+				properties: {
 					time: {
 						readOnly:    true
 						description: "Time event occurred, RFC3339Nano."
@@ -5254,9 +5268,9 @@ common: {
 						type:        "string"
 					}
 				}
-			}, Organization: {
+			}
+			Organization: {
 				properties: {
-
 					links: {
 						type:     "object"
 						readOnly: true
@@ -5271,13 +5285,13 @@ common: {
 							dashboards: "/api/v2/dashboards?org=myorg"
 						}
 						properties: {
-							self: $ref: "#/components/schemas/Link"
-							members: $ref: "#/components/schemas/Link"
-							owners: $ref: "#/components/schemas/Link"
-							labels: $ref: "#/components/schemas/Link"
-							secrets: $ref: "#/components/schemas/Link"
-							buckets: $ref: "#/components/schemas/Link"
-							tasks: $ref: "#/components/schemas/Link"
+							self: $ref:       "#/components/schemas/Link"
+							members: $ref:    "#/components/schemas/Link"
+							owners: $ref:     "#/components/schemas/Link"
+							labels: $ref:     "#/components/schemas/Link"
+							secrets: $ref:    "#/components/schemas/Link"
+							buckets: $ref:    "#/components/schemas/Link"
+							tasks: $ref:      "#/components/schemas/Link"
 							dashboards: $ref: "#/components/schemas/Link"
 						}
 					}
@@ -5285,7 +5299,7 @@ common: {
 						readOnly: true
 						type:     "string"
 					}
-					name: type: "string"
+					name: type:        "string"
 					description: type: "string"
 					createdAt: {
 						type:     "string"
@@ -5301,33 +5315,32 @@ common: {
 						description: "If inactive the organization is inactive."
 						default:     "active"
 						type:        "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
-				}, required: ["name"]
-			}, Organizations: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["name"]
+			}
+			Organizations: {
+				type: "object"
+				properties: {
 					links: $ref: "#/components/schemas/Links"
 					orgs: {
 						type: "array"
 						items: $ref: "#/components/schemas/Organization"
 					}
 				}
-			}, PostOrganizationRequest: {
-				type:
-					"object", properties: {
-
-					name: type: "string"
+			}
+			PostOrganizationRequest: {
+				type: "object"
+				properties: {
+					name: type:        "string"
 					description: type: "string"
-				}, required: ["name"]
-			}, PatchOrganizationRequest: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["name"]
+			}
+			PatchOrganizationRequest: {
+				type: "object"
+				properties: {
 					name: {
 						type:        "string"
 						description: "New name to set on the organization"
@@ -5337,12 +5350,12 @@ common: {
 						description: "New description to set on the organization"
 					}
 				}
-			}, TemplateApply: {
-				type:
-					"object", properties: {
-
-					dryRun: type: "boolean"
-					orgID: type: "string"
+			}
+			TemplateApply: {
+				type: "object"
+				properties: {
+					dryRun: type:  "boolean"
+					orgID: type:   "string"
 					stackID: type: "string"
 					template: {
 						type: "object"
@@ -5390,7 +5403,7 @@ common: {
 						items: {
 							type: "object"
 							properties: {
-								url: type: "string"
+								url: type:         "string"
 								contentType: type: "string"
 							}
 							required: ["url"]
@@ -5421,40 +5434,23 @@ common: {
 								properties: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:                 "#/components/schemas/TemplateKind"
 										resourceTemplateName: type: "string"
 									}
-									required: [
-										"kind",
-										"resourceTemplateName",
-									]
+									required: ["kind", "resourceTemplateName"]
 								}
 							}
 						}]
 					}
 				}
-			}, TemplateKind: {
-				type:
-					"string", enum: [
-					"Bucket",
-					"Check",
-					"CheckDeadman",
-					"CheckThreshold",
-					"Dashboard",
-					"Label",
-					"NotificationEndpoint",
-					"NotificationEndpointHTTP",
-					"NotificationEndpointPagerDuty",
-					"NotificationEndpointSlack",
-					"NotificationRule",
-					"Task",
-					"Telegraf",
-					"Variable",
-				]
-			}, TemplateExportByID: {
-				type:
-					"object", properties: {
-
+			}
+			TemplateKind: {
+				type: "string"
+				enum: ["Bucket", "Check", "CheckDeadman", "CheckThreshold", "Dashboard", "Label", "NotificationEndpoint", "NotificationEndpointHTTP", "NotificationEndpointPagerDuty", "NotificationEndpointSlack", "NotificationRule", "Task", "Telegraf", "Variable"]
+			}
+			TemplateExportByID: {
+				type: "object"
+				properties: {
 					stackID: type: "string"
 					orgIDs: {
 						type: "array"
@@ -5483,24 +5479,21 @@ common: {
 						items: {
 							type: "object"
 							properties: {
-								id: type: "string"
+								id: type:   "string"
 								kind: $ref: "#/components/schemas/TemplateKind"
 								name: {
 									type:        "string"
 									description: "if defined with id, name is used for resource exported by id. if defined independently, resources strictly matching name are exported"
 								}
 							}
-							required: [
-								"id",
-								"kind",
-							]
+							required: ["id", "kind"]
 						}
 					}
 				}
-			}, TemplateExportByName: {
-				type:
-					"object", properties: {
-
+			}
+			TemplateExportByName: {
+				type: "object"
+				properties: {
 					stackID: type: "string"
 					orgIDs: {
 						type: "array"
@@ -5532,21 +5525,18 @@ common: {
 								kind: $ref: "#/components/schemas/TemplateKind"
 								name: type: "string"
 							}
-							required: [
-								"name",
-								"kind",
-							]
+							required: ["name", "kind"]
 						}
 					}
 				}
-			}, Template: {
-				type:
-					"array", items: {
-
+			}
+			Template: {
+				type: "array"
+				items: {
 					type: "object"
 					properties: {
 						apiVersion: type: "string"
-						kind: $ref: "#/components/schemas/TemplateKind"
+						kind: $ref:       "#/components/schemas/TemplateKind"
 						meta: {
 							type: "object"
 							properties: name: type: "string"
@@ -5554,10 +5544,10 @@ common: {
 						spec: type: "object"
 					}
 				}
-			}, TemplateEnvReferences: {
-				type:
-					"array", items: {
-
+			}
+			TemplateEnvReferences: {
+				type: "array"
+				items: {
 					type: "object"
 					properties: {
 						resourceField: {
@@ -5595,15 +5585,12 @@ common: {
 							}]
 						}
 					}
-					required: [
-						"resourceField",
-						"envRefKey",
-					]
+					required: ["resourceField", "envRefKey"]
 				}
-			}, TemplateSummary: {
-				type:
-					"object", properties: {
-
+			}
+			TemplateSummary: {
+				type: "object"
+				properties: {
 					sources: {
 						type: "array"
 						items: type: "string"
@@ -5617,13 +5604,13 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										id: type: "string"
-										orgID: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
+										id: type:               "string"
+										orgID: type:            "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										name: type: "string"
-										description: type: "string"
-										retentionPeriod: type: "integer"
+										name: type:             "string"
+										description: type:      "string"
+										retentionPeriod: type:  "integer"
 										labelAssociations: {
 											type: "array"
 											items: $ref: "#/components/schemas/TemplateSummaryLabel"
@@ -5639,7 +5626,7 @@ common: {
 								}, {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										labelAssociations: {
 											type: "array"
@@ -5654,12 +5641,12 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										id: type: "string"
-										orgID: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
+										id: type:               "string"
+										orgID: type:            "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										name: type: "string"
-										description: type: "string"
+										name: type:             "string"
+										description: type:      "string"
 										labelAssociations: {
 											type: "array"
 											items: $ref: "#/components/schemas/TemplateSummaryLabel"
@@ -5681,14 +5668,14 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										status: type: "string"
+										status: type:                   "string"
 										resourceTemplateMetaName: type: "string"
-										resourceName: type: "string"
-										resourceID: type: "string"
-										resourceType: type: "string"
-										labelTemplateMetaName: type: "string"
-										labelName: type: "string"
-										labelID: type: "string"
+										resourceName: type:             "string"
+										resourceID: type:               "string"
+										resourceType: type:             "string"
+										labelTemplateMetaName: type:    "string"
+										labelName: type:                "string"
+										labelID: type:                  "string"
 									}
 								}
 							}
@@ -5707,7 +5694,7 @@ common: {
 								}, {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										labelAssociations: {
 											type: "array"
@@ -5722,23 +5709,23 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										templateMetaName: type: "string"
-										name: type: "string"
-										description: type: "string"
+										kind: $ref:                     "#/components/schemas/TemplateKind"
+										templateMetaName: type:         "string"
+										name: type:                     "string"
+										description: type:              "string"
 										endpointTemplateMetaName: type: "string"
-										endpointID: type: "string"
-										endpointType: type: "string"
-										every: type: "string"
-										offset: type: "string"
-										messageTemplate: type: "string"
-										status: type: "string"
+										endpointID: type:               "string"
+										endpointType: type:             "string"
+										every: type:                    "string"
+										offset: type:                   "string"
+										messageTemplate: type:          "string"
+										status: type:                   "string"
 										statusRules: {
 											type: "array"
 											items: {
 												type: "object"
 												properties: {
-													currentLevel: type: "string"
+													currentLevel: type:  "string"
 													previousLevel: type: "string"
 												}
 											}
@@ -5748,8 +5735,8 @@ common: {
 											items: {
 												type: "object"
 												properties: {
-													key: type: "string"
-													value: type: "string"
+													key: type:      "string"
+													value: type:    "string"
 													operator: type: "string"
 												}
 											}
@@ -5767,17 +5754,17 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										id: type: "string"
-										name: type: "string"
-										cron: type: "string"
-										description: type: "string"
-										every: type: "string"
-										offset: type: "string"
-										query: type: "string"
-										status: type: "string"
-										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
+										id: type:               "string"
+										name: type:             "string"
+										cron: type:             "string"
+										description: type:      "string"
+										every: type:            "string"
+										offset: type:           "string"
+										query: type:            "string"
+										status: type:           "string"
+										envReferences: $ref:    "#/components/schemas/TemplateEnvReferences"
 									}
 								}
 							}
@@ -5788,7 +5775,7 @@ common: {
 								}, {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										labelAssociations: {
 											type: "array"
@@ -5803,13 +5790,13 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										id: type: "string"
-										orgID: type: "string"
-										name: type: "string"
-										description: type: "string"
-										arguments: $ref: "#/components/schemas/VariableProperties"
+										id: type:               "string"
+										orgID: type:            "string"
+										name: type:             "string"
+										description: type:      "string"
+										arguments: $ref:        "#/components/schemas/VariableProperties"
 										labelAssociations: {
 											type: "array"
 											items: $ref: "#/components/schemas/TemplateSummaryLabel"
@@ -5828,23 +5815,23 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
+												name: type:           "string"
+												description: type:    "string"
 												retentionRules: $ref: "#/components/schemas/RetentionRules"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
+												name: type:           "string"
+												description: type:    "string"
 												retentionRules: $ref: "#/components/schemas/RetentionRules"
 											}
 										}
@@ -5856,12 +5843,12 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
-										new: $ref: "#/components/schemas/CheckDiscriminator"
-										old: $ref: "#/components/schemas/CheckDiscriminator"
+										new: $ref:              "#/components/schemas/CheckDiscriminator"
+										old: $ref:              "#/components/schemas/CheckDiscriminator"
 									}
 								}
 							}
@@ -5870,14 +5857,14 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										stateStatus: type: "string"
-										id: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
 												charts: {
 													type: "array"
@@ -5888,7 +5875,7 @@ common: {
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
 												charts: {
 													type: "array"
@@ -5904,23 +5891,23 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										stateStatus: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
-										id: type: "string"
+										stateStatus: type:      "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												color: type: "string"
+												name: type:        "string"
+												color: type:       "string"
 												description: type: "string"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												color: type: "string"
+												name: type:        "string"
+												color: type:       "string"
 												description: type: "string"
 											}
 										}
@@ -5932,14 +5919,14 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										status: type: "string"
-										resourceType: type: "string"
-										resourceID: type: "string"
+										status: type:                   "string"
+										resourceType: type:             "string"
+										resourceID: type:               "string"
 										resourceTemplateMetaName: type: "string"
-										resourceName: type: "string"
-										labelID: type: "string"
-										labelTemplateMetaName: type: "string"
-										labelName: type: "string"
+										resourceName: type:             "string"
+										labelID: type:                  "string"
+										labelTemplateMetaName: type:    "string"
+										labelName: type:                "string"
 									}
 								}
 							}
@@ -5948,12 +5935,12 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
-										new: $ref: "#/components/schemas/NotificationEndpointDiscriminator"
-										old: $ref: "#/components/schemas/NotificationEndpointDiscriminator"
+										new: $ref:              "#/components/schemas/NotificationEndpointDiscriminator"
+										old: $ref:              "#/components/schemas/NotificationEndpointDiscriminator"
 									}
 								}
 							}
@@ -5962,28 +5949,28 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
-												endpointName: type: "string"
-												endpointID: type: "string"
-												endpointType: type: "string"
-												every: type: "string"
-												offset: type: "string"
+												name: type:            "string"
+												description: type:     "string"
+												endpointName: type:    "string"
+												endpointID: type:      "string"
+												endpointType: type:    "string"
+												every: type:           "string"
+												offset: type:          "string"
 												messageTemplate: type: "string"
-												status: type: "string"
+												status: type:          "string"
 												statusRules: {
 													type: "array"
 													items: {
 														type: "object"
 														properties: {
-															currentLevel: type: "string"
+															currentLevel: type:  "string"
 															previousLevel: type: "string"
 														}
 													}
@@ -5993,8 +5980,8 @@ common: {
 													items: {
 														type: "object"
 														properties: {
-															key: type: "string"
-															value: type: "string"
+															key: type:      "string"
+															value: type:    "string"
 															operator: type: "string"
 														}
 													}
@@ -6004,21 +5991,21 @@ common: {
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
-												endpointName: type: "string"
-												endpointID: type: "string"
-												endpointType: type: "string"
-												every: type: "string"
-												offset: type: "string"
+												name: type:            "string"
+												description: type:     "string"
+												endpointName: type:    "string"
+												endpointID: type:      "string"
+												endpointType: type:    "string"
+												every: type:           "string"
+												offset: type:          "string"
 												messageTemplate: type: "string"
-												status: type: "string"
+												status: type:          "string"
 												statusRules: {
 													type: "array"
 													items: {
 														type: "object"
 														properties: {
-															currentLevel: type: "string"
+															currentLevel: type:  "string"
 															previousLevel: type: "string"
 														}
 													}
@@ -6028,8 +6015,8 @@ common: {
 													items: {
 														type: "object"
 														properties: {
-															key: type: "string"
-															value: type: "string"
+															key: type:      "string"
+															value: type:    "string"
 															operator: type: "string"
 														}
 													}
@@ -6044,32 +6031,32 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												cron: type: "string"
+												name: type:        "string"
+												cron: type:        "string"
 												description: type: "string"
-												every: type: "string"
-												offset: type: "string"
-												query: type: "string"
-												status: type: "string"
+												every: type:       "string"
+												offset: type:      "string"
+												query: type:       "string"
+												status: type:      "string"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												cron: type: "string"
+												name: type:        "string"
+												cron: type:        "string"
 												description: type: "string"
-												every: type: "string"
-												offset: type: "string"
-												query: type: "string"
-												status: type: "string"
+												every: type:       "string"
+												offset: type:      "string"
+												query: type:       "string"
+												status: type:      "string"
 											}
 										}
 									}
@@ -6080,12 +6067,12 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
-										new: $ref: "#/components/schemas/TelegrafRequest"
-										old: $ref: "#/components/schemas/TelegrafRequest"
+										new: $ref:              "#/components/schemas/TelegrafRequest"
+										old: $ref:              "#/components/schemas/TelegrafRequest"
 									}
 								}
 							}
@@ -6094,24 +6081,24 @@ common: {
 								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
-												args: $ref: "#/components/schemas/VariableProperties"
+												args: $ref:        "#/components/schemas/VariableProperties"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
-												args: $ref: "#/components/schemas/VariableProperties"
+												args: $ref:        "#/components/schemas/VariableProperties"
 											}
 										}
 									}
@@ -6124,7 +6111,7 @@ common: {
 						items: {
 							type: "object"
 							properties: {
-								kind: $ref: "#/components/schemas/TemplateKind"
+								kind: $ref:   "#/components/schemas/TemplateKind"
 								reason: type: "string"
 								fields: {
 									type: "array"
@@ -6138,39 +6125,39 @@ common: {
 						}
 					}
 				}
-			}, TemplateSummaryLabel: {
-				type:
-					"object", properties: {
-
-					id: type: "string"
-					orgID: type: "string"
-					kind: $ref: "#/components/schemas/TemplateKind"
+			}
+			TemplateSummaryLabel: {
+				type: "object"
+				properties: {
+					id: type:               "string"
+					orgID: type:            "string"
+					kind: $ref:             "#/components/schemas/TemplateKind"
 					templateMetaName: type: "string"
-					name: type: "string"
+					name: type:             "string"
 					properties: {
 						type: "object"
 						properties: {
-							color: type: "string"
+							color: type:       "string"
 							description: type: "string"
 						}
 					}
 					envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 				}
-			}, TemplateChart: {
-				type:
-					"object", properties: {
-
-					xPos: type: "integer"
-					yPos: type: "integer"
-					height: type: "integer"
-					width: type: "integer"
+			}
+			TemplateChart: {
+				type: "object"
+				properties: {
+					xPos: type:       "integer"
+					yPos: type:       "integer"
+					height: type:     "integer"
+					width: type:      "integer"
 					properties: $ref: "#/components/schemas/ViewProperties"
 				}
-			}, Stack: {
-				type:
-					"object", properties: {
-
-					id: type: "string"
+			}
+			Stack: {
+				type: "object"
+				properties: {
+					id: type:    "string"
 					orgID: type: "string"
 					createdAt: {
 						type:     "string"
@@ -6182,8 +6169,8 @@ common: {
 						items: {
 							type: "object"
 							properties: {
-								eventType: type: "string"
-								name: type: "string"
+								eventType: type:   "string"
+								name: type:        "string"
 								description: type: "string"
 								sources: {
 									type: "array"
@@ -6194,16 +6181,16 @@ common: {
 									items: {
 										type: "object"
 										properties: {
-											apiVersion: type: "string"
-											resourceID: type: "string"
-											kind: $ref: "#/components/schemas/TemplateKind"
+											apiVersion: type:       "string"
+											resourceID: type:       "string"
+											kind: $ref:             "#/components/schemas/TemplateKind"
 											templateMetaName: type: "string"
 											associations: {
 												type: "array"
 												items: {
 													type: "object"
 													properties: {
-														kind: $ref: "#/components/schemas/TemplateKind"
+														kind: $ref:     "#/components/schemas/TemplateKind"
 														metaName: type: "string"
 													}
 												}
@@ -6228,18 +6215,18 @@ common: {
 						}
 					}
 				}
-			}, Runs: {
-				type:
-					"object", properties: {
-
+			}
+			Runs: {
+				type: "object"
+				properties: {
 					links: $ref: "#/components/schemas/Links"
 					runs: {
 						type: "array"
 						items: $ref: "#/components/schemas/Run"
 					}
 				}
-			}, Run: properties: {
-
+			}
+			Run: properties: {
 				id: {
 					readOnly: true
 					type:     "string"
@@ -6251,13 +6238,7 @@ common: {
 				status: {
 					readOnly: true
 					type:     "string"
-					enum: [
-						"scheduled",
-						"started",
-						"failed",
-						"success",
-						"canceled",
-					]
+					enum: ["scheduled", "started", "failed", "success", "canceled"]
 				}
 				scheduledFor: {
 					description: "Time used for run's \"now\" option, RFC3339."
@@ -6311,15 +6292,16 @@ common: {
 						}
 					}
 				}
-			}, RunManually: properties: scheduledFor: {
+			}
+			RunManually: properties: scheduledFor: {
 				nullable:    true
 				description: "Time used for run's \"now\" option, RFC3339.  Default is the server's now time."
 				type:        "string"
 				format:      "date-time"
-			}, Tasks: {
-				type:
-					"object", properties: {
-
+			}
+			Tasks: {
+				type: "object"
+				properties: {
 					links: {
 						readOnly: true
 						$ref:     "#/components/schemas/Links"
@@ -6329,10 +6311,10 @@ common: {
 						items: $ref: "#/components/schemas/Task"
 					}
 				}
-			}, Task: {
-				type:
-					"object", properties: {
-
+			}
+			Task: {
+				type: "object"
+				properties: {
 					id: {
 						readOnly: true
 						type:     "string"
@@ -6392,11 +6374,7 @@ common: {
 					lastRunStatus: {
 						readOnly: true
 						type:     "string"
-						enum: [
-							"failed",
-							"success",
-							"canceled",
-						]
+						enum: ["failed", "success", "canceled"]
 					}
 					lastRunError: {
 						readOnly: true
@@ -6424,43 +6402,34 @@ common: {
 							logs:    "/api/v2/tasks/1/logs"
 						}
 						properties: {
-							self: $ref: "#/components/schemas/Link"
-							owners: $ref: "#/components/schemas/Link"
+							self: $ref:    "#/components/schemas/Link"
+							owners: $ref:  "#/components/schemas/Link"
 							members: $ref: "#/components/schemas/Link"
-							runs: $ref: "#/components/schemas/Link"
-							logs: $ref: "#/components/schemas/Link"
-							labels: $ref: "#/components/schemas/Link"
+							runs: $ref:    "#/components/schemas/Link"
+							logs: $ref:    "#/components/schemas/Link"
+							labels: $ref:  "#/components/schemas/Link"
 						}
 					}
-				}, required: [
-					"id",
-					"name",
-					"orgID",
-					"flux",
-				]
-			}, TaskStatusType: {
-				type:
-					"string", enum: [
-					"active",
-					"inactive",
-				]
-			}, UserResponse: {
+				}
+				required: ["id", "name", "orgID", "flux"]
+			}
+			TaskStatusType: {
+				type: "string"
+				enum: ["active", "inactive"]
+			}
+			UserResponse: {
 				properties: {
-
 					id: {
 						readOnly: true
 						type:     "string"
 					}
 					oauthID: type: "string"
-					name: type: "string"
+					name: type:    "string"
 					status: {
 						description: "If inactive the user is inactive."
 						default:     "active"
 						type:        "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
 					links: {
 						type:     "object"
@@ -6471,12 +6440,14 @@ common: {
 							format: "uri"
 						}
 					}
-				}, required: ["name"]
-			}, Flags: {
-				type:
-					"object", additionalProperties:
-					true
-			}, ResourceMember: allOf: [{
+				}
+				required: ["name"]
+			}
+			Flags: {
+				type:                 "object"
+				additionalProperties: true
+			}
+			ResourceMember: allOf: [{
 				$ref: "#/components/schemas/UserResponse"
 			}, {
 				type: "object"
@@ -6485,10 +6456,10 @@ common: {
 					default: "member"
 					enum: ["member"]
 				}
-			}], ResourceMembers: {
-				type:
-					"object", properties: {
-
+			}]
+			ResourceMembers: {
+				type: "object"
+				properties: {
 					links: {
 						type: "object"
 						properties: self: {
@@ -6501,7 +6472,8 @@ common: {
 						items: $ref: "#/components/schemas/ResourceMember"
 					}
 				}
-			}, ResourceOwner: allOf: [{
+			}
+			ResourceOwner: allOf: [{
 				$ref: "#/components/schemas/UserResponse"
 			}, {
 				type: "object"
@@ -6510,10 +6482,10 @@ common: {
 					default: "owner"
 					enum: ["owner"]
 				}
-			}], ResourceOwners: {
-				type:
-					"object", properties: {
-
+			}]
+			ResourceOwners: {
+				type: "object"
+				properties: {
 					links: {
 						type: "object"
 						properties: self: {
@@ -6526,24 +6498,25 @@ common: {
 						items: $ref: "#/components/schemas/ResourceOwner"
 					}
 				}
-			}, FluxSuggestions: {
-				type:
-					"object", properties: funcs: {
+			}
+			FluxSuggestions: {
+				type: "object"
+				properties: funcs: {
 					type: "array"
 					items: $ref: "#/components/schemas/FluxSuggestion"
 				}
-			}, FluxSuggestion: {
-				type:
-					"object", properties: {
-
+			}
+			FluxSuggestion: {
+				type: "object"
+				properties: {
 					name: type: "string"
 					params: {
 						type: "object"
 						additionalProperties: type: "string"
 					}
 				}
-			}, Routes: properties: {
-
+			}
+			Routes: properties: {
 				authorizations: {
 					type:   "string"
 					format: "uri"
@@ -6649,28 +6622,14 @@ common: {
 					type:   "string"
 					format: "uri"
 				}
-			}, Error: {
+			}
+			Error: {
 				properties: {
-
 					code: {
 						description: "code is the machine-readable error code."
 						readOnly:    true
 						type:        "string"
-						enum: [
-							"internal error",
-							"not found",
-							"conflict",
-							"invalid",
-							"unprocessable entity",
-							"empty value",
-							"unavailable",
-							"forbidden",
-							"too many requests",
-							"unauthorized",
-							"method not allowed",
-							"request too large",
-							"unsupported media type",
-						]
+						enum: ["internal error", "not found", "conflict", "invalid", "unprocessable entity", "empty value", "unavailable", "forbidden", "too many requests", "unauthorized", "method not allowed", "request too large", "unsupported media type"]
 					}
 					message: {
 						readOnly:    true
@@ -6687,25 +6646,16 @@ common: {
 						description: "err is a stack of errors that occurred during processing of the request. Useful for debugging."
 						type:        "string"
 					}
-				}, required: [
-					"code",
-					"message",
-				]
-			}, LineProtocolError: {
+				}
+				required: ["code", "message"]
+			}
+			LineProtocolError: {
 				properties: {
-
 					code: {
 						description: "Code is the machine-readable error code."
 						readOnly:    true
 						type:        "string"
-						enum: [
-							"internal error",
-							"not found",
-							"conflict",
-							"invalid",
-							"empty value",
-							"unavailable",
-						]
+						enum: ["internal error", "not found", "conflict", "invalid", "empty value", "unavailable"]
 					}
 					message: {
 						readOnly:    true
@@ -6728,15 +6678,11 @@ common: {
 						type:        "integer"
 						format:      "int32"
 					}
-				}, required: [
-					"code",
-					"message",
-					"op",
-					"err",
-				]
-			}, LineProtocolLengthError: {
+				}
+				required: ["code", "message", "op", "err"]
+			}
+			LineProtocolLengthError: {
 				properties: {
-
 					code: {
 						description: "Code is the machine-readable error code."
 						readOnly:    true
@@ -6754,15 +6700,12 @@ common: {
 						type:        "integer"
 						format:      "int32"
 					}
-				}, required: [
-					"code",
-					"message",
-					"maxLength",
-				]
-			}, Field: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["code", "message", "maxLength"]
+			}
+			Field: {
+				type: "object"
+				properties: {
 					value: {
 						description: "value is the value of the field.  Meaning of the value is implied by the `type` key"
 						type:        "string"
@@ -6770,14 +6713,7 @@ common: {
 					type: {
 						description: "`type` describes the field type. `func` is a function. `field` is a field reference."
 						type:        "string"
-						enum: [
-							"func",
-							"field",
-							"integer",
-							"number",
-							"regex",
-							"wildcard",
-						]
+						enum: ["func", "field", "integer", "number", "regex", "wildcard"]
 					}
 					alias: {
 						description: "Alias overrides the field name in the returned response.  Applies only if type is `func`"
@@ -6789,10 +6725,10 @@ common: {
 						items: $ref: "#/components/schemas/Field"
 					}
 				}
-			}, BuilderConfig: {
-				type:
-					"object", properties: {
-
+			}
+			BuilderConfig: {
+				type: "object"
+				properties: {
 					buckets: {
 						type: "array"
 						items: type: "string"
@@ -6808,15 +6744,15 @@ common: {
 					aggregateWindow: {
 						type: "object"
 						properties: {
-							period: type: "string"
+							period: type:     "string"
 							fillValues: type: "boolean"
 						}
 					}
 				}
-			}, BuilderTagsType: {
-				type:
-					"object", properties: {
-
+			}
+			BuilderTagsType: {
+				type: "object"
+				properties: {
 					key: type: "string"
 					values: {
 						type: "array"
@@ -6824,38 +6760,35 @@ common: {
 					}
 					aggregateFunctionType: $ref: "#/components/schemas/BuilderAggregateFunctionType"
 				}
-			}, BuilderAggregateFunctionType: {
-				type:
-					"string", enum: [
-					"filter",
-					"group",
-				]
-			}, BuilderFunctionsType: {
-				type:
-					"object", properties: name: type: "string"
-			}, DashboardQuery: {
-				type:
-					"object", properties: {
-
+			}
+			BuilderAggregateFunctionType: {
+				type: "string"
+				enum: ["filter", "group"]
+			}
+			BuilderFunctionsType: {
+				type: "object"
+				properties: name: type: "string"
+			}
+			DashboardQuery: {
+				type: "object"
+				properties: {
 					text: {
 						type:        "string"
 						description: "The text of the Flux query."
 					}
-					editMode: $ref: "#/components/schemas/QueryEditMode"
-					name: type: "string"
+					editMode: $ref:      "#/components/schemas/QueryEditMode"
+					name: type:          "string"
 					builderConfig: $ref: "#/components/schemas/BuilderConfig"
 				}
-			}, QueryEditMode: {
-				type:
-					"string", enum: [
-					"builder",
-					"advanced",
-				]
-			}, Axis: {
-				type:
-					"object", description:
-					"The description of a particular axis for a visualization.", properties: {
-
+			}
+			QueryEditMode: {
+				type: "string"
+				enum: ["builder", "advanced"]
+			}
+			Axis: {
+				type:        "object"
+				description: "The description of a particular axis for a visualization."
+				properties: {
 					bounds: {
 						type:        "array"
 						minItems:    0
@@ -6878,32 +6811,21 @@ common: {
 					base: {
 						description: "Base represents the radix for formatting axis values."
 						type:        "string"
-						enum: [
-							"",
-							"2",
-							"10",
-						]
+						enum: ["", "2", "10"]
 					}
 					scale: $ref: "#/components/schemas/AxisScale"
 				}
-			}, AxisScale: {
-				description:
-					"Scale is the axis formatting scale. Supported: \"log\", \"linear\"", type:
-					"string", enum: [
-					"log",
-					"linear",
-				]
-			}, DashboardColor: {
-				type:
-					"object", description:
-					"Defines an encoding of data value into color space.", required: [
-					"id",
-					"type",
-					"hex",
-					"name",
-					"value",
-				], properties: {
-
+			}
+			AxisScale: {
+				description: "Scale is the axis formatting scale. Supported: \"log\", \"linear\""
+				type:        "string"
+				enum: ["log", "linear"]
+			}
+			DashboardColor: {
+				type:        "object"
+				description: "Defines an encoding of data value into color space."
+				required: ["id", "type", "hex", "name", "value"]
+				properties: {
 					id: {
 						description: "The unique ID of the view color."
 						type:        "string"
@@ -6911,14 +6833,7 @@ common: {
 					type: {
 						description: "Type is how the color is used."
 						type:        "string"
-						enum: [
-							"min",
-							"max",
-							"threshold",
-							"scale",
-							"text",
-							"background",
-						]
+						enum: ["min", "max", "threshold", "scale", "text", "background"]
 					}
 					hex: {
 						description: "The hex number of the color"
@@ -6936,11 +6851,11 @@ common: {
 						format:      "float"
 					}
 				}
-			}, RenamableField: {
-				description:
-					"Describes a field that can be renamed and made visible or invisible.", type:
-					"object", properties: {
-
+			}
+			RenamableField: {
+				description: "Describes a field that can be renamed and made visible or invisible."
+				type:        "object"
+				properties: {
 					internalName: {
 						description: "The calculated name of a field."
 						readOnly:    true
@@ -6955,20 +6870,11 @@ common: {
 						type:        "boolean"
 					}
 				}
-			}, XYViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"geom",
-					"queries",
-					"shape",
-					"axes",
-					"colors",
-					"note",
-					"showNoteWhenEmpty",
-					"position",
-				], properties: {
-
+			}
+			XYViewProperties: {
+				type: "object"
+				required: ["type", "geom", "queries", "shape", "axes", "colors", "note", "showNoteWhenEmpty", "position"]
+				properties: {
 					timeFormat: type: "string"
 					type: {
 						type: "string"
@@ -6992,9 +6898,9 @@ common: {
 						description: "If true, will display note when empty"
 						type:        "boolean"
 					}
-					axes: $ref: "#/components/schemas/Axes"
+					axes: $ref:         "#/components/schemas/Axes"
 					staticLegend: $ref: "#/components/schemas/StaticLegend"
-					xColumn: type: "string"
+					xColumn: type:      "string"
 					generateXAxisTicks: {
 						type: "array"
 						items: type: "string"
@@ -7025,51 +6931,30 @@ common: {
 					shadeBelow: type: "boolean"
 					hoverDimension: {
 						type: "string"
-						enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+						enum: ["auto", "x", "y", "xy"]
 					}
 					position: {
 						type: "string"
-						enum: [
-							"overlaid",
-							"stacked",
-						]
+						enum: ["overlaid", "stacked"]
 					}
-					geom: $ref: "#/components/schemas/XYGeom"
+					geom: $ref:               "#/components/schemas/XYGeom"
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, XYGeom: {
-				type:
-					"string", enum: [
-					"line",
-					"step",
-					"stacked",
-					"bar",
-					"monotoneX",
-				]
-			}, BandViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"geom",
-					"queries",
-					"shape",
-					"axes",
-					"colors",
-					"note",
-					"showNoteWhenEmpty",
-				], properties: {
-
+			}
+			XYGeom: {
+				type: "string"
+				enum: ["line", "step", "stacked", "bar", "monotoneX"]
+			}
+			BandViewProperties: {
+				type: "object"
+				required: ["type", "geom", "queries", "shape", "axes", "colors", "note", "showNoteWhenEmpty"]
+				properties: {
 					timeFormat: type: "string"
 					type: {
 						type: "string"
@@ -7093,9 +6978,9 @@ common: {
 						description: "If true, will display note when empty"
 						type:        "boolean"
 					}
-					axes: $ref: "#/components/schemas/Axes"
+					axes: $ref:         "#/components/schemas/Axes"
 					staticLegend: $ref: "#/components/schemas/StaticLegend"
-					xColumn: type: "string"
+					xColumn: type:      "string"
 					generateXAxisTicks: {
 						type: "array"
 						items: type: "string"
@@ -7124,42 +7009,26 @@ common: {
 						format: "float"
 					}
 					upperColumn: type: "string"
-					mainColumn: type: "string"
+					mainColumn: type:  "string"
 					lowerColumn: type: "string"
 					hoverDimension: {
 						type: "string"
-						enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+						enum: ["auto", "x", "y", "xy"]
 					}
-					geom: $ref: "#/components/schemas/XYGeom"
+					geom: $ref:               "#/components/schemas/XYGeom"
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, LinePlusSingleStatProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"shape",
-					"axes",
-					"colors",
-					"note",
-					"showNoteWhenEmpty",
-					"prefix",
-					"suffix",
-					"decimalPlaces",
-					"position",
-				], properties: {
-
+			}
+			LinePlusSingleStatProperties: {
+				type: "object"
+				required: ["type", "queries", "shape", "axes", "colors", "note", "showNoteWhenEmpty", "prefix", "suffix", "decimalPlaces", "position"]
+				properties: {
 					timeFormat: type: "string"
 					type: {
 						type: "string"
@@ -7183,9 +7052,9 @@ common: {
 						description: "If true, will display note when empty"
 						type:        "boolean"
 					}
-					axes: $ref: "#/components/schemas/Axes"
+					axes: $ref:         "#/components/schemas/Axes"
 					staticLegend: $ref: "#/components/schemas/StaticLegend"
-					xColumn: type: "string"
+					xColumn: type:      "string"
 					generateXAxisTicks: {
 						type: "array"
 						items: type: "string"
@@ -7216,53 +7085,28 @@ common: {
 					shadeBelow: type: "boolean"
 					hoverDimension: {
 						type: "string"
-						enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+						enum: ["auto", "x", "y", "xy"]
 					}
 					position: {
 						type: "string"
-						enum: [
-							"overlaid",
-							"stacked",
-						]
+						enum: ["overlaid", "stacked"]
 					}
-					prefix: type: "string"
-					suffix: type: "string"
-					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
+					prefix: type:             "string"
+					suffix: type:             "string"
+					decimalPlaces: $ref:      "#/components/schemas/DecimalPlaces"
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, MosaicViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"ySeriesColumns",
-					"fillColumns",
-					"xDomain",
-					"yDomain",
-					"xAxisLabel",
-					"yAxisLabel",
-					"xPrefix",
-					"yPrefix",
-					"xSuffix",
-					"ySuffix",
-				], properties: {
-
+			}
+			MosaicViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "ySeriesColumns", "fillColumns", "xDomain", "yDomain", "xAxisLabel", "yAxisLabel", "xPrefix", "yPrefix", "xSuffix", "ySuffix"]
+				properties: {
 					timeFormat: type: "string"
 					type: {
 						type: "string"
@@ -7325,50 +7169,27 @@ common: {
 					}
 					xAxisLabel: type: "string"
 					yAxisLabel: type: "string"
-					xPrefix: type: "string"
-					xSuffix: type: "string"
-					yPrefix: type: "string"
-					ySuffix: type: "string"
+					xPrefix: type:    "string"
+					xSuffix: type:    "string"
+					yPrefix: type:    "string"
+					ySuffix: type:    "string"
 					hoverDimension: {
 						type: "string"
-						enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+						enum: ["auto", "x", "y", "xy"]
 					}
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, ScatterViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"yColumn",
-					"fillColumns",
-					"symbolColumns",
-					"xDomain",
-					"yDomain",
-					"xAxisLabel",
-					"yAxisLabel",
-					"xPrefix",
-					"yPrefix",
-					"xSuffix",
-					"ySuffix",
-				], properties: {
-
+			}
+			ScatterViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "yColumn", "fillColumns", "symbolColumns", "xDomain", "yDomain", "xAxisLabel", "yAxisLabel", "xPrefix", "yPrefix", "xSuffix", "ySuffix"]
+				properties: {
 					timeFormat: type: "string"
 					type: {
 						type: "string"
@@ -7438,42 +7259,25 @@ common: {
 						items: type: "number"
 						maxItems: 2
 					}
-					xAxisLabel: type: "string"
-					yAxisLabel: type: "string"
-					xPrefix: type: "string"
-					xSuffix: type: "string"
-					yPrefix: type: "string"
-					ySuffix: type: "string"
+					xAxisLabel: type:         "string"
+					yAxisLabel: type:         "string"
+					xPrefix: type:            "string"
+					xSuffix: type:            "string"
+					yPrefix: type:            "string"
+					ySuffix: type:            "string"
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, HeatmapViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"yColumn",
-					"xDomain",
-					"yDomain",
-					"xAxisLabel",
-					"yAxisLabel",
-					"xPrefix",
-					"yPrefix",
-					"xSuffix",
-					"ySuffix",
-					"binSize",
-				], properties: {
-
+			}
+			HeatmapViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "yColumn", "xDomain", "yDomain", "xAxisLabel", "yAxisLabel", "xPrefix", "yPrefix", "xSuffix", "ySuffix", "binSize"]
+				properties: {
 					timeFormat: type: "string"
 					type: {
 						type: "string"
@@ -7535,37 +7339,26 @@ common: {
 						items: type: "number"
 						maxItems: 2
 					}
-					xAxisLabel: type: "string"
-					yAxisLabel: type: "string"
-					xPrefix: type: "string"
-					xSuffix: type: "string"
-					yPrefix: type: "string"
-					ySuffix: type: "string"
-					binSize: type: "number"
+					xAxisLabel: type:         "string"
+					yAxisLabel: type:         "string"
+					xPrefix: type:            "string"
+					xSuffix: type:            "string"
+					yPrefix: type:            "string"
+					ySuffix: type:            "string"
+					binSize: type:            "number"
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, SingleStatViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"prefix",
-					"tickPrefix",
-					"suffix",
-					"tickSuffix",
-					"decimalPlaces",
-				], properties: {
-
+			}
+			SingleStatViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "prefix", "tickPrefix", "suffix", "tickSuffix", "decimalPlaces"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["single-stat"]
@@ -7588,30 +7381,18 @@ common: {
 						description: "If true, will display note when empty"
 						type:        "boolean"
 					}
-					prefix: type: "string"
-					tickPrefix: type: "string"
-					suffix: type: "string"
-					tickSuffix: type: "string"
-					staticLegend: $ref: "#/components/schemas/StaticLegend"
+					prefix: type:        "string"
+					tickPrefix: type:    "string"
+					suffix: type:        "string"
+					tickSuffix: type:    "string"
+					staticLegend: $ref:  "#/components/schemas/StaticLegend"
 					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
 				}
-			}, HistogramViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"fillColumns",
-					"xDomain",
-					"xAxisLabel",
-					"position",
-					"binCount",
-				], properties: {
-
+			}
+			HistogramViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "fillColumns", "xDomain", "xAxisLabel", "position", "binCount"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["histogram"]
@@ -7649,36 +7430,22 @@ common: {
 					xAxisLabel: type: "string"
 					position: {
 						type: "string"
-						enum: [
-							"overlaid",
-							"stacked",
-						]
+						enum: ["overlaid", "stacked"]
 					}
-					binCount: type: "integer"
+					binCount: type:           "integer"
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, GaugeViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"prefix",
-					"tickPrefix",
-					"suffix",
-					"tickSuffix",
-					"decimalPlaces",
-				], properties: {
-
+			}
+			GaugeViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "prefix", "tickPrefix", "suffix", "tickSuffix", "decimalPlaces"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["gauge"]
@@ -7701,27 +7468,17 @@ common: {
 						description: "If true, will display note when empty"
 						type:        "boolean"
 					}
-					prefix: type: "string"
-					tickPrefix: type: "string"
-					suffix: type: "string"
-					tickSuffix: type: "string"
+					prefix: type:        "string"
+					tickPrefix: type:    "string"
+					suffix: type:        "string"
+					tickSuffix: type:    "string"
 					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
 				}
-			}, TableViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"tableOptions",
-					"fieldOptions",
-					"timeFormat",
-					"decimalPlaces",
-				], properties: {
-
+			}
+			TableViewProperties: {
+				type: "object"
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "tableOptions", "fieldOptions", "timeFormat", "decimalPlaces"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["table"]
@@ -7755,11 +7512,7 @@ common: {
 							wrapping: {
 								description: "Wrapping describes the text wrapping style to be used in table views"
 								type:        "string"
-								enum: [
-									"truncate",
-									"wrap",
-									"single-line",
-								]
+								enum: ["truncate", "wrap", "single-line"]
 							}
 							fixFirstColumn: {
 								description: "fixFirstColumn indicates whether the first column of the table should be locked"
@@ -7778,17 +7531,11 @@ common: {
 					}
 					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
 				}
-			}, SimpleTableViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"showAll",
-					"queries",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-				], properties: {
-
+			}
+			SimpleTableViewProperties: {
+				type: "object"
+				required: ["type", "showAll", "queries", "shape", "note", "showNoteWhenEmpty"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["simple-table"]
@@ -7808,14 +7555,11 @@ common: {
 						type:        "boolean"
 					}
 				}
-			}, MarkdownViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"shape",
-					"note",
-				], properties: {
-
+			}
+			MarkdownViewProperties: {
+				type: "object"
+				required: ["type", "shape", "note"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["markdown"]
@@ -7826,16 +7570,11 @@ common: {
 					}
 					note: type: "string"
 				}
-			}, CheckViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"shape",
-					"checkID",
-					"queries",
-					"colors",
-				], properties: {
-
+			}
+			CheckViewProperties: {
+				type: "object"
+				required: ["type", "shape", "checkID", "queries", "colors"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["check"]
@@ -7845,7 +7584,7 @@ common: {
 						enum: ["chronograf-v2"]
 					}
 					checkID: type: "string"
-					check: $ref: "#/components/schemas/Check"
+					check: $ref:   "#/components/schemas/Check"
 					queries: {
 						type: "array"
 						items: $ref: "#/components/schemas/DashboardQuery"
@@ -7856,16 +7595,17 @@ common: {
 						items: $ref: "#/components/schemas/DashboardColor"
 					}
 					legendColorizeRows: type: "boolean"
-					legendHide: type: "boolean"
+					legendHide: type:         "boolean"
 					legendOpacity: {
 						type:   "number"
 						format: "float"
 					}
 					legendOrientationThreshold: type: "integer"
 				}
-			}, GeoViewLayer: {
-				type:
-					"object", oneOf: [{
+			}
+			GeoViewLayer: {
+				type: "object"
+				oneOf: [{
 					$ref: "#/components/schemas/GeoCircleViewLayer"
 				}, {
 					$ref: "#/components/schemas/GeoHeatMapViewLayer"
@@ -7874,28 +7614,20 @@ common: {
 				}, {
 					$ref: "#/components/schemas/GeoTrackMapViewLayer"
 				}]
-			}, GeoViewLayerProperties: {
-				type:
-					"object", required: ["type"], properties: type: {
+			}
+			GeoViewLayerProperties: {
+				type: "object"
+				required: ["type"]
+				properties: type: {
 					type: "string"
-					enum: [
-						"heatmap",
-						"circleMap",
-						"pointMap",
-						"trackMap",
-					]
+					enum: ["heatmap", "circleMap", "pointMap", "trackMap"]
 				}
-			}, GeoCircleViewLayer: allOf: [{
+			}
+			GeoCircleViewLayer: allOf: [{
 				$ref: "#/components/schemas/GeoViewLayerProperties"
 			}, {
 				type: "object"
-				required: [
-					"radiusField",
-					"radiusDimension",
-					"colorField",
-					"colorDimension",
-					"colors",
-				]
+				required: ["radiusField", "radiusDimension", "colorField", "colorDimension", "colors"]
 				properties: {
 					radiusField: {
 						type:        "string"
@@ -7921,15 +7653,12 @@ common: {
 						type:        "boolean"
 					}
 				}
-			}], GeoPointMapViewLayer: allOf: [{
+			}]
+			GeoPointMapViewLayer: allOf: [{
 				$ref: "#/components/schemas/GeoViewLayerProperties"
 			}, {
 				type: "object"
-				required: [
-					"colorField",
-					"colorDimension",
-					"colors",
-				]
+				required: ["colorField", "colorDimension", "colors"]
 				properties: {
 					colorField: {
 						type:        "string"
@@ -7951,19 +7680,15 @@ common: {
 						items: type: "string"
 					}
 				}
-			}], GeoTrackMapViewLayer: {
+			}]
+			GeoTrackMapViewLayer: {
 				allOf: [{
 					$ref: "#/components/schemas/GeoViewLayerProperties"
 				}, {
 					type: "object"
-					required: [
-						"trackWidth",
-						"speed",
-						"randomColors",
-						"trackPointVisualization",
-					]
-				}], properties: {
-
+					required: ["trackWidth", "speed", "randomColors", "trackPointVisualization"]
+				}]
+				properties: {
 					trackWidth: {
 						description: "Width of the track"
 						type:        "integer"
@@ -7982,17 +7707,12 @@ common: {
 						items: $ref: "#/components/schemas/DashboardColor"
 					}
 				}
-			}, GeoHeatMapViewLayer: allOf: [{
+			}
+			GeoHeatMapViewLayer: allOf: [{
 				$ref: "#/components/schemas/GeoViewLayerProperties"
 			}, {
 				type: "object"
-				required: [
-					"intensityField",
-					"intensityDimension",
-					"radius",
-					"blur",
-					"colors",
-				]
+				required: ["intensityField", "intensityDimension", "radius", "blur", "colors"]
 				properties: {
 					intensityField: {
 						type:        "string"
@@ -8013,21 +7733,11 @@ common: {
 						items: $ref: "#/components/schemas/DashboardColor"
 					}
 				}
-			}], GeoViewProperties: {
-				type:
-					"object", required: [
-					"type",
-					"shape",
-					"queries",
-					"note",
-					"showNoteWhenEmpty",
-					"center",
-					"zoom",
-					"allowPanAndZoom",
-					"detectCoordinateFields",
-					"layers",
-				], properties: {
-
+			}]
+			GeoViewProperties: {
+				type: "object"
+				required: ["type", "shape", "queries", "note", "showNoteWhenEmpty", "center", "zoom", "allowPanAndZoom", "detectCoordinateFields", "layers"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["geo"]
@@ -8043,10 +7753,7 @@ common: {
 					center: {
 						description: "Coordinates of the center of the map"
 						type:        "object"
-						required: [
-							"lat",
-							"lon",
-						]
+						required: ["lat", "lon"]
 						properties: {
 							lat: {
 								description: "Latitude of the center of the map"
@@ -8106,25 +7813,21 @@ common: {
 						items: $ref: "#/components/schemas/GeoViewLayer"
 					}
 				}
-			}, LatLonColumns: {
-				description:
-					"Object type to define lat/lon columns", type:
-					"object", required: [
-					"lat",
-					"lon",
-				], properties: {
-
+			}
+			LatLonColumns: {
+				description: "Object type to define lat/lon columns"
+				type:        "object"
+				required: ["lat", "lon"]
+				properties: {
 					lat: $ref: "#/components/schemas/LatLonColumn"
 					lon: $ref: "#/components/schemas/LatLonColumn"
 				}
-			}, LatLonColumn: {
-				description:
-					"Object type for key and column definitions", type:
-					"object", required: [
-					"key",
-					"column",
-				], properties: {
-
+			}
+			LatLonColumn: {
+				description: "Object type for key and column definitions"
+				type:        "object"
+				required: ["key", "column"]
+				properties: {
 					key: {
 						description: "Key to determine whether the column is tag/field"
 						type:        "string"
@@ -8134,22 +7837,20 @@ common: {
 						type:        "string"
 					}
 				}
-			}, Axes: {
-				description:
-					"The viewport for a View's visualizations", type:
-					"object", required: [
-					"x",
-					"y",
-				], properties: {
-
+			}
+			Axes: {
+				description: "The viewport for a View's visualizations"
+				type:        "object"
+				required: ["x", "y"]
+				properties: {
 					x: $ref: "#/components/schemas/Axis"
 					y: $ref: "#/components/schemas/Axis"
 				}
-			}, StaticLegend: {
-				description:
-					"StaticLegend represents the options specific to the static legend", type:
-					"object", properties: {
-
+			}
+			StaticLegend: {
+				description: "StaticLegend represents the options specific to the static legend"
+				type:        "object"
+				properties: {
 					colorizeRows: type: "boolean"
 					heightRatio: {
 						type:   "number"
@@ -8161,17 +7862,17 @@ common: {
 						format: "float"
 					}
 					orientationThreshold: type: "integer"
-					valueAxis: type: "string"
+					valueAxis: type:            "string"
 					widthRatio: {
 						type:   "number"
 						format: "float"
 					}
 				}
-			}, DecimalPlaces: {
-				description:
-					"Indicates whether decimal places should be enforced, and how many digits it should show.", type:
-					"object", properties: {
-
+			}
+			DecimalPlaces: {
+				description: "Indicates whether decimal places should be enforced, and how many digits it should show."
+				type:        "object"
+				properties: {
 					isEnforced: {
 						description: "Indicates whether decimal point setting should be enforced"
 						type:        "boolean"
@@ -8182,8 +7883,8 @@ common: {
 						format:      "int32"
 					}
 				}
-			}, ConstantVariableProperties: properties: {
-
+			}
+			ConstantVariableProperties: properties: {
 				type: {
 					type: "string"
 					enum: ["constant"]
@@ -8192,8 +7893,8 @@ common: {
 					type: "array"
 					items: type: "string"
 				}
-			}, MapVariableProperties: properties: {
-
+			}
+			MapVariableProperties: properties: {
 				type: {
 					type: "string"
 					enum: ["map"]
@@ -8202,8 +7903,8 @@ common: {
 					type: "object"
 					additionalProperties: type: "string"
 				}
-			}, QueryVariableProperties: properties: {
-
+			}
+			QueryVariableProperties: properties: {
 				type: {
 					type: "string"
 					enum: ["query"]
@@ -8211,20 +7912,22 @@ common: {
 				values: {
 					type: "object"
 					properties: {
-						query: type: "string"
+						query: type:    "string"
 						language: type: "string"
 					}
 				}
-			}, VariableProperties: {
-				type:
-					"object", oneOf: [{
+			}
+			VariableProperties: {
+				type: "object"
+				oneOf: [{
 					$ref: "#/components/schemas/QueryVariableProperties"
 				}, {
 					$ref: "#/components/schemas/ConstantVariableProperties"
 				}, {
 					$ref: "#/components/schemas/MapVariableProperties"
 				}]
-			}, ViewProperties: oneOf: [{
+			}
+			ViewProperties: oneOf: [{
 				$ref: "#/components/schemas/LinePlusSingleStatProperties"
 			}, {
 				$ref: "#/components/schemas/XYViewProperties"
@@ -8252,12 +7955,10 @@ common: {
 				$ref: "#/components/schemas/BandViewProperties"
 			}, {
 				$ref: "#/components/schemas/GeoViewProperties"
-			}], View: {
-				required: [
-					"name",
-					"properties",
-				], properties: {
-
+			}]
+			View: {
+				required: ["name", "properties"]
+				properties: {
 					links: {
 						type:     "object"
 						readOnly: true
@@ -8267,13 +7968,13 @@ common: {
 						readOnly: true
 						type:     "string"
 					}
-					name: type: "string"
+					name: type:       "string"
 					properties: $ref: "#/components/schemas/ViewProperties"
 				}
-			}, Views: {
-				type:
-					"object", properties: {
-
+			}
+			Views: {
+				type: "object"
+				properties: {
 					links: {
 						type: "object"
 						properties: self: type: "string"
@@ -8283,10 +7984,10 @@ common: {
 						items: $ref: "#/components/schemas/View"
 					}
 				}
-			}, CellUpdate: {
-				type:
-					"object", properties: {
-
+			}
+			CellUpdate: {
+				type: "object"
+				properties: {
 					x: {
 						type:   "integer"
 						format: "int32"
@@ -8304,10 +8005,10 @@ common: {
 						format: "int32"
 					}
 				}
-			}, CreateCell: {
-				type:
-					"object", properties: {
-
+			}
+			CreateCell: {
+				type: "object"
+				properties: {
 					name: type: "string"
 					x: {
 						type:   "integer"
@@ -8330,35 +8031,37 @@ common: {
 						description: "Makes a copy of the provided view."
 					}
 				}
-			}, AnalyzeQueryResponse: {
-				type:
-					"object", properties: errors: {
+			}
+			AnalyzeQueryResponse: {
+				type: "object"
+				properties: errors: {
 					type: "array"
 					items: {
 						type: "object"
 						properties: {
-							line: type: "integer"
-							column: type: "integer"
+							line: type:      "integer"
+							column: type:    "integer"
 							character: type: "integer"
-							message: type: "string"
+							message: type:   "string"
 						}
 					}
 				}
-			}, CellWithViewProperties: {
-				type:
-					"object", allOf: [{
+			}
+			CellWithViewProperties: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/Cell"
 				}, {
 					type: "object"
 					properties: {
-						name: type: "string"
+						name: type:       "string"
 						properties: $ref: "#/components/schemas/ViewProperties"
 					}
 				}]
-			}, Cell: {
-				type:
-					"object", properties: {
-
+			}
+			Cell: {
+				type: "object"
+				properties: {
 					id: type: "string"
 					links: {
 						type: "object"
@@ -8388,21 +8091,27 @@ common: {
 						description: "The reference to a view from the views API."
 					}
 				}
-			}, CellsWithViewProperties: {
-				type:
-					"array", items: $ref: "#/components/schemas/CellWithViewProperties"
-			}, Cells: {
-				type:
-					"array", items: $ref: "#/components/schemas/Cell"
-			}, Secrets: {
-				additionalProperties: type: "string", example: apikey: "abc123xyz"
-			}, SecretKeys: {
-				type:
-					"object", properties: secrets: {
+			}
+			CellsWithViewProperties: {
+				type: "array"
+				items: $ref: "#/components/schemas/CellWithViewProperties"
+			}
+			Cells: {
+				type: "array"
+				items: $ref: "#/components/schemas/Cell"
+			}
+			Secrets: {
+				additionalProperties: type: "string"
+				example: apikey:            "abc123xyz"
+			}
+			SecretKeys: {
+				type: "object"
+				properties: secrets: {
 					type: "array"
 					items: type: "string"
 				}
-			}, SecretKeysResponse: allOf: [{
+			}
+			SecretKeysResponse: allOf: [{
 				$ref: "#/components/schemas/SecretKeys"
 			}, {
 				type: "object"
@@ -8411,12 +8120,12 @@ common: {
 					type:     "object"
 					properties: {
 						self: type: "string"
-						org: type: "string"
+						org: type:  "string"
 					}
 				}
-			}], CreateDashboardRequest: {
+			}]
+			CreateDashboardRequest: {
 				properties: {
-
 					orgID: {
 						type:        "string"
 						description: "The ID of the organization that owns the dashboard."
@@ -8429,13 +8138,12 @@ common: {
 						type:        "string"
 						description: "The user-facing description of the dashboard."
 					}
-				}, required: [
-					"orgID",
-					"name",
-				]
-			}, DashboardWithViewProperties: {
-				type:
-					"object", allOf: [{
+				}
+				required: ["orgID", "name"]
+			}
+			DashboardWithViewProperties: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/CreateDashboardRequest"
 				}, {
 					type: "object"
@@ -8451,12 +8159,12 @@ common: {
 								org:     "/api/v2/labels/1"
 							}
 							properties: {
-								self: $ref: "#/components/schemas/Link"
-								cells: $ref: "#/components/schemas/Link"
+								self: $ref:    "#/components/schemas/Link"
+								cells: $ref:   "#/components/schemas/Link"
 								members: $ref: "#/components/schemas/Link"
-								owners: $ref: "#/components/schemas/Link"
-								labels: $ref: "#/components/schemas/Link"
-								org: $ref: "#/components/schemas/Link"
+								owners: $ref:  "#/components/schemas/Link"
+								labels: $ref:  "#/components/schemas/Link"
+								org: $ref:     "#/components/schemas/Link"
 							}
 						}
 						id: {
@@ -8476,13 +8184,14 @@ common: {
 								}
 							}
 						}
-						cells: $ref: "#/components/schemas/CellsWithViewProperties"
+						cells: $ref:  "#/components/schemas/CellsWithViewProperties"
 						labels: $ref: "#/components/schemas/Labels"
 					}
 				}]
-			}, Dashboard: {
-				type:
-					"object", allOf: [{
+			}
+			Dashboard: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/CreateDashboardRequest"
 				}, {
 					type: "object"
@@ -8498,12 +8207,12 @@ common: {
 								org:     "/api/v2/labels/1"
 							}
 							properties: {
-								self: $ref: "#/components/schemas/Link"
-								cells: $ref: "#/components/schemas/Link"
+								self: $ref:    "#/components/schemas/Link"
+								cells: $ref:   "#/components/schemas/Link"
 								members: $ref: "#/components/schemas/Link"
-								owners: $ref: "#/components/schemas/Link"
-								labels: $ref: "#/components/schemas/Link"
-								org: $ref: "#/components/schemas/Link"
+								owners: $ref:  "#/components/schemas/Link"
+								labels: $ref:  "#/components/schemas/Link"
+								org: $ref:     "#/components/schemas/Link"
 							}
 						}
 						id: {
@@ -8523,25 +8232,25 @@ common: {
 								}
 							}
 						}
-						cells: $ref: "#/components/schemas/Cells"
+						cells: $ref:  "#/components/schemas/Cells"
 						labels: $ref: "#/components/schemas/Labels"
 					}
 				}]
-			}, Dashboards: {
-				type:
-					"object", properties: {
-
+			}
+			Dashboards: {
+				type: "object"
+				properties: {
 					links: $ref: "#/components/schemas/Links"
 					dashboards: {
 						type: "array"
 						items: $ref: "#/components/schemas/Dashboard"
 					}
 				}
-			}, TelegrafRequest: {
-				type:
-					"object", properties: {
-
-					name: type: "string"
+			}
+			TelegrafRequest: {
+				type: "object"
+				properties: {
+					name: type:        "string"
 					description: type: "string"
 					metadata: {
 						type: "object"
@@ -8551,11 +8260,12 @@ common: {
 						}
 					}
 					config: type: "string"
-					orgID: type: "string"
+					orgID: type:  "string"
 				}
-			}, Telegraf: {
-				type:
-					"object", allOf: [{
+			}
+			Telegraf: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/TelegrafRequest"
 				}, {
 					type: "object"
@@ -8574,10 +8284,10 @@ common: {
 								members: "/api/v2/telegrafs/1/members"
 							}
 							properties: {
-								self: $ref: "#/components/schemas/Link"
-								labels: $ref: "#/components/schemas/Link"
+								self: $ref:    "#/components/schemas/Link"
+								labels: $ref:  "#/components/schemas/Link"
 								members: $ref: "#/components/schemas/Link"
-								owners: $ref: "#/components/schemas/Link"
+								owners: $ref:  "#/components/schemas/Link"
 							}
 						}
 						labels: {
@@ -8586,51 +8296,56 @@ common: {
 						}
 					}
 				}]
-			}, Telegrafs: {
-				type:
-					"object", properties: configurations: {
+			}
+			Telegrafs: {
+				type: "object"
+				properties: configurations: {
 					type: "array"
 					items: $ref: "#/components/schemas/Telegraf"
 				}
-			}, TelegrafPlugin: {
-				type:
-					"object", properties: {
-
-					type: type: "string"
-					name: type: "string"
+			}
+			TelegrafPlugin: {
+				type: "object"
+				properties: {
+					type: type:        "string"
+					name: type:        "string"
 					description: type: "string"
-					config: type: "string"
+					config: type:      "string"
 				}
-			}, TelegrafPlugins: {
-				type:
-					"object", properties: {
-
+			}
+			TelegrafPlugins: {
+				type: "object"
+				properties: {
 					version: type: "string"
-					os: type: "string"
+					os: type:      "string"
 					plugins: {
 						type: "array"
 						items: $ref: "#/components/schemas/TelegrafPlugin"
 					}
 				}
-			}, IsOnboarding: {
-				type:
-					"object", properties: allowed: {
+			}
+			IsOnboarding: {
+				type: "object"
+				properties: allowed: {
 					description: "True means that the influxdb instance has NOT had initial setup; false means that the database has been setup."
 					type:        "boolean"
 				}
-			}, PasswordResetBody: {
-				properties: password: type: "string", required: ["password"]
-			}, AddResourceMemberRequestBody: {
-				type:
-					"object", properties: {
-
-					id: type: "string"
+			}
+			PasswordResetBody: {
+				properties: password: type: "string"
+				required: ["password"]
+			}
+			AddResourceMemberRequestBody: {
+				type: "object"
+				properties: {
+					id: type:   "string"
 					name: type: "string"
-				}, required: ["id"]
-			}, Ready: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["id"]
+			}
+			Ready: {
+				type: "object"
+				properties: {
 					status: {
 						type: "string"
 						enum: ["ready"]
@@ -8645,14 +8360,12 @@ common: {
 						example: "14m45.911966424s"
 					}
 				}
-			}, HealthCheck: {
-				type:
-					"object", required: [
-					"name",
-					"status",
-				], properties: {
-
-					name: type: "string"
+			}
+			HealthCheck: {
+				type: "object"
+				required: ["name", "status"]
+				properties: {
+					name: type:    "string"
 					message: type: "string"
 					checks: {
 						type: "array"
@@ -8660,21 +8373,19 @@ common: {
 					}
 					status: {
 						type: "string"
-						enum: [
-							"pass",
-							"fail",
-						]
+						enum: ["pass", "fail"]
 					}
 					version: type: "string"
-					commit: type: "string"
+					commit: type:  "string"
 				}
-			}, Labels: {
-				type:
-					"array", items: $ref: "#/components/schemas/Label"
-			}, Label: {
-				type:
-					"object", properties: {
-
+			}
+			Labels: {
+				type: "array"
+				items: $ref: "#/components/schemas/Label"
+			}
+			Label: {
+				type: "object"
+				properties: {
 					id: {
 						readOnly: true
 						type:     "string"
@@ -8694,14 +8405,27 @@ common: {
 						}
 					}
 				}
-			}, LabelCreateRequest: {
-				type:
-					"object", required: [
-					"orgID",
-					"name",
-				], properties: {
-
+			}
+			LabelCreateRequest: {
+				type: "object"
+				required: ["orgID", "name"]
+				properties: {
 					orgID: type: "string"
+					name: type:  "string"
+					properties: {
+						type: "object"
+						additionalProperties: type: "string"
+						description: "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value."
+						example: {
+							color:       "ffb3b3"
+							description: "this is a description"
+						}
+					}
+				}
+			}
+			LabelUpdate: {
+				type: "object"
+				properties: {
 					name: type: "string"
 					properties: {
 						type: "object"
@@ -8713,54 +8437,37 @@ common: {
 						}
 					}
 				}
-			}, LabelUpdate: {
-				type:
-					"object", properties: {
-
-					name: type: "string"
-					properties: {
-						type: "object"
-						additionalProperties: type: "string"
-						description: "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value."
-						example: {
-							color:       "ffb3b3"
-							description: "this is a description"
-						}
-					}
-				}
-			}, LabelMapping: {
-				type:
-					"object", properties: labelID: type: "string"
-			}, LabelsResponse: {
-				type:
-					"object", properties: {
-
+			}
+			LabelMapping: {
+				type: "object"
+				properties: labelID: type: "string"
+			}
+			LabelsResponse: {
+				type: "object"
+				properties: {
 					labels: $ref: "#/components/schemas/Labels"
-					links: $ref: "#/components/schemas/Links"
+					links: $ref:  "#/components/schemas/Links"
 				}
-			}, LabelResponse: {
-				type:
-					"object", properties: {
-
+			}
+			LabelResponse: {
+				type: "object"
+				properties: {
 					label: $ref: "#/components/schemas/Label"
 					links: $ref: "#/components/schemas/Links"
 				}
-			}, ASTResponse: {
-				description:
-					"Contains the AST for the supplied Flux query", type:
-					"object", properties: ast: $ref: "#/components/schemas/Package"
-			}, WritePrecision: {
-				type:
-					"string", enum: [
-					"ms",
-					"s",
-					"us",
-					"ns",
-				]
-			}, TaskCreateRequest: {
-				type:
-					"object", properties: {
-
+			}
+			ASTResponse: {
+				description: "Contains the AST for the supplied Flux query"
+				type:        "object"
+				properties: ast: $ref: "#/components/schemas/Package"
+			}
+			WritePrecision: {
+				type: "string"
+				enum: ["ms", "s", "us", "ns"]
+			}
+			TaskCreateRequest: {
+				type: "object"
+				properties: {
 					orgID: {
 						description: "The ID of the organization that owns this Task."
 						type:        "string"
@@ -8778,11 +8485,12 @@ common: {
 						description: "An optional description of the task."
 						type:        "string"
 					}
-				}, required: ["flux"]
-			}, TaskUpdateRequest: {
-				type:
-					"object", properties: {
-
+				}
+				required: ["flux"]
+			}
+			TaskUpdateRequest: {
+				type: "object"
+				properties: {
 					status: $ref: "#/components/schemas/TaskStatusType"
 					flux: {
 						description: "The Flux script to run for this task."
@@ -8809,32 +8517,31 @@ common: {
 						type:        "string"
 					}
 				}
-			}, FluxResponse: {
-				description:
-					"Rendered flux that backs the check or notification.", properties: flux: type: "string"
-			}, CheckPatch: {
-				type:
-					"object", properties: {
-
-					name: type: "string"
+			}
+			FluxResponse: {
+				description: "Rendered flux that backs the check or notification."
+				properties: flux: type: "string"
+			}
+			CheckPatch: {
+				type: "object"
+				properties: {
+					name: type:        "string"
 					description: type: "string"
 					status: {
 						type: "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
 				}
-			}, CheckDiscriminator: {
+			}
+			CheckDiscriminator: {
 				oneOf: [{
 					$ref: "#/components/schemas/DeadmanCheck"
 				}, {
 					$ref: "#/components/schemas/ThresholdCheck"
 				}, {
 					$ref: "#/components/schemas/CustomCheck"
-				}], discriminator: {
-
+				}]
+				discriminator: {
 					propertyName: "type"
 					mapping: {
 						deadman:   "#/components/schemas/DeadmanCheck"
@@ -8842,20 +8549,22 @@ common: {
 						custom:    "#/components/schemas/CustomCheck"
 					}
 				}
-			}, Check: allOf: [{
+			}
+			Check: allOf: [{
 				$ref: "#/components/schemas/CheckDiscriminator"
-			}], PostCheck: allOf: [{
+			}]
+			PostCheck: allOf: [{
 				$ref: "#/components/schemas/CheckDiscriminator"
-			}], Checks: properties: {
-
+			}]
+			Checks: properties: {
 				checks: {
 					type: "array"
 					items: $ref: "#/components/schemas/Check"
 				}
 				links: $ref: "#/components/schemas/Links"
-			}, CheckBase: {
+			}
+			CheckBase: {
 				properties: {
-
 					id: {
 						readOnly: true
 						type:     "string"
@@ -8884,7 +8593,7 @@ common: {
 						format:   "date-time"
 						readOnly: true
 					}
-					query: $ref: "#/components/schemas/DashboardQuery"
+					query: $ref:  "#/components/schemas/DashboardQuery"
 					status: $ref: "#/components/schemas/TaskStatusType"
 					description: {
 						description: "An optional description of the check."
@@ -8899,11 +8608,7 @@ common: {
 					lastRunStatus: {
 						readOnly: true
 						type:     "string"
-						enum: [
-							"failed",
-							"success",
-							"canceled",
-						]
+						enum: ["failed", "success", "canceled"]
 					}
 					lastRunError: {
 						readOnly: true
@@ -8943,12 +8648,10 @@ common: {
 							}
 						}
 					}
-				}, required: [
-					"name",
-					"orgID",
-					"query",
-				]
-			}, ThresholdCheck: allOf: [{
+				}
+				required: ["name", "orgID", "query"]
+			}
+			ThresholdCheck: allOf: [{
 				$ref: "#/components/schemas/CheckBase"
 			}, {
 				type: "object"
@@ -8976,7 +8679,7 @@ common: {
 						items: {
 							type: "object"
 							properties: {
-								key: type: "string"
+								key: type:   "string"
 								value: type: "string"
 							}
 						}
@@ -8986,15 +8689,16 @@ common: {
 						type:        "string"
 					}
 				}
-			}], Threshold: {
+			}]
+			Threshold: {
 				oneOf: [{
 					$ref: "#/components/schemas/GreaterThreshold"
 				}, {
 					$ref: "#/components/schemas/LesserThreshold"
 				}, {
 					$ref: "#/components/schemas/RangeThreshold"
-				}], discriminator: {
-
+				}]
+				discriminator: {
 					propertyName: "type"
 					mapping: {
 						greater: "#/components/schemas/GreaterThreshold"
@@ -9002,7 +8706,8 @@ common: {
 						range:   "#/components/schemas/RangeThreshold"
 					}
 				}
-			}, DeadmanCheck: allOf: [{
+			}
+			DeadmanCheck: allOf: [{
 				$ref: "#/components/schemas/CheckBase"
 			}, {
 				type: "object"
@@ -9039,7 +8744,7 @@ common: {
 						items: {
 							type: "object"
 							properties: {
-								key: type: "string"
+								key: type:   "string"
 								value: type: "string"
 							}
 						}
@@ -9049,7 +8754,8 @@ common: {
 						type:        "string"
 					}
 				}
-			}], CustomCheck: allOf: [{
+			}]
+			CustomCheck: allOf: [{
 				$ref: "#/components/schemas/CheckBase"
 			}, {
 				type: "object"
@@ -9058,21 +8764,19 @@ common: {
 					enum: ["custom"]
 				}
 				required: ["type"]
-			}], ThresholdBase: properties: {
-
+			}]
+			ThresholdBase: properties: {
 				level: $ref: "#/components/schemas/CheckStatusLevel"
 				allValues: {
 					description: "If true, only alert if all values meet threshold."
 					type:        "boolean"
 				}
-			}, GreaterThreshold: allOf: [{
+			}
+			GreaterThreshold: allOf: [{
 				$ref: "#/components/schemas/ThresholdBase"
 			}, {
 				type: "object"
-				required: [
-					"type",
-					"value",
-				]
+				required: ["type", "value"]
 				properties: {
 					type: {
 						type: "string"
@@ -9083,14 +8787,12 @@ common: {
 						format: "float"
 					}
 				}
-			}], LesserThreshold: allOf: [{
+			}]
+			LesserThreshold: allOf: [{
 				$ref: "#/components/schemas/ThresholdBase"
 			}, {
 				type: "object"
-				required: [
-					"type",
-					"value",
-				]
+				required: ["type", "value"]
 				properties: {
 					type: {
 						type: "string"
@@ -9101,16 +8803,12 @@ common: {
 						format: "float"
 					}
 				}
-			}], RangeThreshold: allOf: [{
+			}]
+			RangeThreshold: allOf: [{
 				$ref: "#/components/schemas/ThresholdBase"
 			}, {
 				type: "object"
-				required: [
-					"type",
-					"min",
-					"max",
-					"within",
-				]
+				required: ["type", "min", "max", "within"]
 				properties: {
 					type: {
 						type: "string"
@@ -9126,42 +8824,29 @@ common: {
 					}
 					within: type: "boolean"
 				}
-			}], CheckStatusLevel: {
-				description:
-					"The state to record if check matches a criteria.", type:
-					"string", enum: [
-					"UNKNOWN",
-					"OK",
-					"INFO",
-					"CRIT",
-					"WARN",
-				]
-			}, RuleStatusLevel: {
-				description:
-					"The state to record if check matches a criteria.", type:
-					"string", enum: [
-					"UNKNOWN",
-					"OK",
-					"INFO",
-					"CRIT",
-					"WARN",
-					"ANY",
-				]
-			}, NotificationRuleUpdate: {
-				type:
-					"object", properties: {
-
-					name: type: "string"
+			}]
+			CheckStatusLevel: {
+				description: "The state to record if check matches a criteria."
+				type:        "string"
+				enum: ["UNKNOWN", "OK", "INFO", "CRIT", "WARN"]
+			}
+			RuleStatusLevel: {
+				description: "The state to record if check matches a criteria."
+				type:        "string"
+				enum: ["UNKNOWN", "OK", "INFO", "CRIT", "WARN", "ANY"]
+			}
+			NotificationRuleUpdate: {
+				type: "object"
+				properties: {
+					name: type:        "string"
 					description: type: "string"
 					status: {
 						type: "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
 				}
-			}, NotificationRuleDiscriminator: {
+			}
+			NotificationRuleDiscriminator: {
 				oneOf: [{
 					$ref: "#/components/schemas/SlackNotificationRule"
 				}, {
@@ -9172,8 +8857,8 @@ common: {
 					$ref: "#/components/schemas/HTTPNotificationRule"
 				}, {
 					$ref: "#/components/schemas/TelegramNotificationRule"
-				}], discriminator: {
-
+				}]
+				discriminator: {
 					propertyName: "type"
 					mapping: {
 						slack:     "#/components/schemas/SlackNotificationRule"
@@ -9183,27 +8868,24 @@ common: {
 						telegram:  "#/components/schemas/TelegramNotificationRule"
 					}
 				}
-			}, NotificationRule: allOf: [{
+			}
+			NotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleDiscriminator"
-			}], PostNotificationRule: allOf: [{
+			}]
+			PostNotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleDiscriminator"
-			}], NotificationRules: properties: {
-
+			}]
+			NotificationRules: properties: {
 				notificationRules: {
 					type: "array"
 					items: $ref: "#/components/schemas/NotificationRule"
 				}
 				links: $ref: "#/components/schemas/Links"
-			}, NotificationRuleBase: {
-				type:
-					"object", required: [
-					"orgID",
-					"status",
-					"name",
-					"statusRules",
-					"endpointID",
-				], properties: {
-
+			}
+			NotificationRuleBase: {
+				type: "object"
+				required: ["orgID", "status", "name", "statusRules", "endpointID"]
+				properties: {
 					latestCompleted: {
 						description: "Timestamp of latest scheduled, completed run, RFC3339."
 						type:        "string"
@@ -9213,11 +8895,7 @@ common: {
 					lastRunStatus: {
 						readOnly: true
 						type:     "string"
-						enum: [
-							"failed",
-							"success",
-							"canceled",
-						]
+						enum: ["failed", "success", "canceled"]
 					}
 					lastRunError: {
 						readOnly: true
@@ -9324,112 +9002,103 @@ common: {
 						}
 					}
 				}
-			}, TagRule: {
-				type:
-					"object", properties: {
-
-					key: type: "string"
+			}
+			TagRule: {
+				type: "object"
+				properties: {
+					key: type:   "string"
 					value: type: "string"
 					operator: {
 						type: "string"
-						enum: [
-							"equal",
-							"notequal",
-							"equalregex",
-							"notequalregex",
-						]
+						enum: ["equal", "notequal", "equalregex", "notequalregex"]
 					}
 				}
-			}, StatusRule: {
-				type:
-					"object", properties: {
-
-					currentLevel: $ref: "#/components/schemas/RuleStatusLevel"
+			}
+			StatusRule: {
+				type: "object"
+				properties: {
+					currentLevel: $ref:  "#/components/schemas/RuleStatusLevel"
 					previousLevel: $ref: "#/components/schemas/RuleStatusLevel"
-					count: type: "integer"
-					period: type: "string"
+					count: type:         "integer"
+					period: type:        "string"
 				}
-			}, HTTPNotificationRuleBase: {
-				type:
-					"object", required: ["type"], properties: {
-
+			}
+			HTTPNotificationRuleBase: {
+				type: "object"
+				required: ["type"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["http"]
 					}
 					url: type: "string"
 				}
-			}, HTTPNotificationRule: allOf: [{
+			}
+			HTTPNotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
 				$ref: "#/components/schemas/HTTPNotificationRuleBase"
-			}], SlackNotificationRuleBase: {
-				type:
-					"object", required: [
-					"type",
-					"messageTemplate",
-				], properties: {
-
+			}]
+			SlackNotificationRuleBase: {
+				type: "object"
+				required: ["type", "messageTemplate"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["slack"]
 					}
-					channel: type: "string"
+					channel: type:         "string"
 					messageTemplate: type: "string"
 				}
-			}, SlackNotificationRule: allOf: [{
+			}
+			SlackNotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
 				$ref: "#/components/schemas/SlackNotificationRuleBase"
-			}], SMTPNotificationRule: allOf: [{
+			}]
+			SMTPNotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
 				$ref: "#/components/schemas/SMTPNotificationRuleBase"
-			}], SMTPNotificationRuleBase: {
-				type:
-					"object", required: [
-					"type",
-					"subjectTemplate",
-					"to",
-				], properties: {
-
+			}]
+			SMTPNotificationRuleBase: {
+				type: "object"
+				required: ["type", "subjectTemplate", "to"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["smtp"]
 					}
 					subjectTemplate: type: "string"
-					bodyTemplate: type: "string"
-					to: type: "string"
+					bodyTemplate: type:    "string"
+					to: type:              "string"
 				}
-			}, PagerDutyNotificationRule: allOf: [{
+			}
+			PagerDutyNotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
 				$ref: "#/components/schemas/PagerDutyNotificationRuleBase"
-			}], PagerDutyNotificationRuleBase: {
-				type:
-					"object", required: [
-					"type",
-					"messageTemplate",
-				], properties: {
-
+			}]
+			PagerDutyNotificationRuleBase: {
+				type: "object"
+				required: ["type", "messageTemplate"]
+				properties: {
 					type: {
 						type: "string"
 						enum: ["pagerduty"]
 					}
 					messageTemplate: type: "string"
 				}
-			}, TelegramNotificationRule: allOf: [{
+			}
+			TelegramNotificationRule: allOf: [{
 				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
 				$ref: "#/components/schemas/TelegramNotificationRuleBase"
-			}], TelegramNotificationRuleBase: {
-				type:
-					"object", required: [
-					"type",
-					"messageTemplate",
-					"channel",
-				], properties: {
-
+			}]
+			TelegramNotificationRuleBase: {
+				type: "object"
+				required: ["type", "messageTemplate", "channel"]
+				properties: {
 					type: {
 						description: "The discriminator between other types of notification rules is \"telegram\"."
 						type:        "string"
@@ -9442,32 +9111,26 @@ common: {
 					parseMode: {
 						description: "Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to \"MarkdownV2\" ."
 						type:        "string"
-						enum: [
-							"MarkdownV2",
-							"HTML",
-							"Markdown",
-						]
+						enum: ["MarkdownV2", "HTML", "Markdown"]
 					}
 					disableWebPagePreview: {
 						description: "Disables preview of web links in the sent messages when \"true\". Defaults to \"false\" ."
 						type:        "boolean"
 					}
 				}
-			}, NotificationEndpointUpdate: {
-				type:
-					"object", properties: {
-
-					name: type: "string"
+			}
+			NotificationEndpointUpdate: {
+				type: "object"
+				properties: {
+					name: type:        "string"
 					description: type: "string"
 					status: {
 						type: "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
 				}
-			}, NotificationEndpointDiscriminator: {
+			}
+			NotificationEndpointDiscriminator: {
 				oneOf: [{
 					$ref: "#/components/schemas/SlackNotificationEndpoint"
 				}, {
@@ -9476,8 +9139,8 @@ common: {
 					$ref: "#/components/schemas/HTTPNotificationEndpoint"
 				}, {
 					$ref: "#/components/schemas/TelegramNotificationEndpoint"
-				}], discriminator: {
-
+				}]
+				discriminator: {
 					propertyName: "type"
 					mapping: {
 						slack:     "#/components/schemas/SlackNotificationEndpoint"
@@ -9486,26 +9149,26 @@ common: {
 						telegram:  "#/components/schemas/TelegramNotificationEndpoint"
 					}
 				}
-			}, NotificationEndpoint: allOf: [{
+			}
+			NotificationEndpoint: allOf: [{
 				$ref: "#/components/schemas/NotificationEndpointDiscriminator"
-			}], PostNotificationEndpoint: allOf: [{
+			}]
+			PostNotificationEndpoint: allOf: [{
 				$ref: "#/components/schemas/NotificationEndpointDiscriminator"
-			}], NotificationEndpoints: properties: {
-
+			}]
+			NotificationEndpoints: properties: {
 				notificationEndpoints: {
 					type: "array"
 					items: $ref: "#/components/schemas/NotificationEndpoint"
 				}
 				links: $ref: "#/components/schemas/Links"
-			}, NotificationEndpointBase: {
-				type:
-					"object", required: [
-					"type",
-					"name",
-				], properties: {
-
-					id: type: "string"
-					orgID: type: "string"
+			}
+			NotificationEndpointBase: {
+				type: "object"
+				required: ["type", "name"]
+				properties: {
+					id: type:     "string"
+					orgID: type:  "string"
 					userID: type: "string"
 					createdAt: {
 						type:     "string"
@@ -9526,10 +9189,7 @@ common: {
 						description: "The status of the endpoint."
 						default:     "active"
 						type:        "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
 					labels: $ref: "#/components/schemas/Labels"
 					links: {
@@ -9562,9 +9222,10 @@ common: {
 					}
 					type: $ref: "#/components/schemas/NotificationEndpointType"
 				}
-			}, SlackNotificationEndpoint: {
-				type:
-					"object", allOf: [{
+			}
+			SlackNotificationEndpoint: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
 					type: "object"
@@ -9579,49 +9240,39 @@ common: {
 						}
 					}
 				}]
-			}, PagerDutyNotificationEndpoint: {
-				type:
-					"object", allOf: [{
+			}
+			PagerDutyNotificationEndpoint: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
 					type: "object"
 					required: ["routingKey"]
 					properties: {
-						clientURL: type: "string"
+						clientURL: type:  "string"
 						routingKey: type: "string"
 					}
 				}]
-			}, HTTPNotificationEndpoint: {
-				type:
-					"object", allOf: [{
+			}
+			HTTPNotificationEndpoint: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
 					type: "object"
-					required: [
-						"url",
-						"authMethod",
-						"method",
-					]
+					required: ["url", "authMethod", "method"]
 					properties: {
-						url: type: "string"
+						url: type:      "string"
 						username: type: "string"
 						password: type: "string"
-						token: type: "string"
+						token: type:    "string"
 						method: {
 							type: "string"
-							enum: [
-								"POST",
-								"GET",
-								"PUT",
-							]
+							enum: ["POST", "GET", "PUT"]
 						}
 						authMethod: {
 							type: "string"
-							enum: [
-								"none",
-								"basic",
-								"bearer",
-							]
+							enum: ["none", "basic", "bearer"]
 						}
 						contentTemplate: type: "string"
 						headers: {
@@ -9631,16 +9282,14 @@ common: {
 						}
 					}
 				}]
-			}, TelegramNotificationEndpoint: {
-				type:
-					"object", allOf: [{
+			}
+			TelegramNotificationEndpoint: {
+				type: "object"
+				allOf: [{
 					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
 					type: "object"
-					required: [
-						"token",
-						"channel",
-					]
+					required: ["token", "channel"]
 					properties: {
 						token: {
 							description: "Specifies the Telegram bot token. See https://core.telegram.org/bots#creating-a-new-bot ."
@@ -9652,18 +9301,14 @@ common: {
 						}
 					}
 				}]
-			}, NotificationEndpointType: {
-				type:
-					"string", enum: [
-					"slack",
-					"pagerduty",
-					"http",
-					"telegram",
-				]
-			}, DBRP: {
-				type:
-					"object", properties: {
-
+			}
+			NotificationEndpointType: {
+				type: "string"
+				enum: ["slack", "pagerduty", "http", "telegram"]
+			}
+			DBRP: {
+				type: "object"
+				properties: {
 					id: {
 						type:        "string"
 						description: "the mapping identifier"
@@ -9690,28 +9335,23 @@ common: {
 						description: "Specify if this mapping represents the default retention policy for the database specificed."
 					}
 					links: $ref: "#/components/schemas/Links"
-				}, required: [
-					"id",
-					"orgID",
-					"bucketID",
-					"database",
-					"retention_policy",
-					"default",
-				]
-			}, DBRPs: properties: content: {
+				}
+				required: ["id", "orgID", "bucketID", "database", "retention_policy", "default"]
+			}
+			DBRPs: properties: content: {
 				type: "array"
 				items: $ref: "#/components/schemas/DBRP"
-			}, DBRPUpdate: properties: {
-
+			}
+			DBRPUpdate: properties: {
 				retention_policy: {
 					type:        "string"
 					description: "InfluxDB v1 retention policy"
 				}
 				default: type: "boolean"
-			}, DBRPCreate: {
-				type:
-					"object", properties: {
-
+			}
+			DBRPCreate: {
+				type: "object"
+				properties: {
 					orgID: {
 						type:        "string"
 						description: "the organization ID that owns this mapping."
@@ -9736,27 +9376,24 @@ common: {
 						type:        "boolean"
 						description: "Specify if this mapping represents the default retention policy for the database specificed."
 					}
-				}, required: [
-					"bucketID",
-					"database",
-					"retention_policy",
-				]
-			}, DBRPGet: {
-				type:
-					"object", properties: content: {
+				}
+				required: ["bucketID", "database", "retention_policy"]
+			}
+			DBRPGet: {
+				type: "object"
+				properties: content: {
 					$ref:     "#/components/schemas/DBRP"
 					required: true
 				}
-			}, SchemaType: {
-				type:
-					"string", enum: [
-					"implicit",
-					"explicit",
-				]
 			}
-		}, responses: ServerError: {
-			description:
-				"Non 2XX error response from server.", content: "application/json": schema: $ref: "#/components/schemas/Error"
+			SchemaType: {
+				type: "string"
+				enum: ["implicit", "explicit"]
+			}
+		}
+		responses: ServerError: {
+			description: "Non 2XX error response from server."
+			content: "application/json": schema: $ref: "#/components/schemas/Error"
 		}
 	}
 }

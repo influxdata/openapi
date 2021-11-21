@@ -1,0 +1,3 @@
+package cloudpaths
+
+#DocsURL: string

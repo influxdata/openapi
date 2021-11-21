@@ -10,7 +10,6 @@ cloud: {
 
 			"""
 	}
-
 	servers: [{
 		url: "/api/v2"
 	}]
@@ -24,7 +23,6 @@ cloud: {
 			<!-- ReDoc-Inject: <security-definitions> -->
 
 			"""
-
 		"x-traitTag": true
 	}, {
 		name:         "Quick start"
@@ -82,93 +80,34 @@ cloud: {
 
 			"""
 	}]
-
 	"x-tagGroups": [{
 		name: "Overview"
-		tags: [
-			"Quick start",
-			"Authentication",
-			"Response codes",
-		]
+		tags: ["Quick start", "Authentication", "Response codes"]
 	}, {
 		name: "Data I/O endpoints"
-		tags: [
-			"Write",
-			"Query",
-		]
+		tags: ["Write", "Query"]
 	}, {
 		name: "Resource endpoints"
-		tags: [
-			"Buckets",
-			"Dashboards",
-			"Tasks",
-			"Resources",
-		]
+		tags: ["Buckets", "Dashboards", "Tasks", "Resources"]
 	}, {
 		name: "Security and access endpoints"
-		tags: [
-			"Authorizations",
-			"Organizations",
-			"Users",
-		]
+		tags: ["Authorizations", "Organizations", "Users"]
 	}, {
 		name: "System information endpoints"
-		tags: [
-			"Ping",
-			"Routes",
-		]
+		tags: ["Ping", "Routes"]
 	}, {
 		name: "All endpoints"
-		tags: [
-			"Annotations",
-			"Authorizations",
-			"Buckets",
-			"Cells",
-			"Checks",
-			"DBRPs",
-			"Dashboards",
-			"Delete",
-			"DemoDataBuckets",
-			"Invocable Scripts",
-			"Labels",
-			"Limits",
-			"NotificationEndpoints",
-			"NotificationRules",
-			"OAuth",
-			"Organizations",
-			"Ping",
-			"Public Flags",
-			"Query",
-			"Resources",
-			"Routes",
-			"Rules",
-			"Secrets",
-			"Setup",
-			"Signin",
-			"Signout",
-			"Streams",
-			"Tasks",
-			"Telegraf Plugins",
-			"Telegrafs",
-			"Templates",
-			"Usage",
-			"Users",
-			"Variables",
-			"Write",
-		]
+		tags: ["Annotations", "Authorizations", "Buckets", "Cells", "Checks", "DBRPs", "Dashboards", "Delete", "DemoDataBuckets", "Invocable Scripts", "Labels", "Limits", "NotificationEndpoints", "NotificationRules", "OAuth", "Organizations", "Ping", "Public Flags", "Query", "Resources", "Routes", "Rules", "Secrets", "Setup", "Signin", "Signout", "Streams", "Tasks", "Telegraf Plugins", "Telegrafs", "Templates", "Usage", "Users", "Variables", "Write"]
 	}]
 	paths: {
 		"/signin": post: {
 			operationId: "PostSignin"
 			summary:     "Create a user session."
 			description: "Authenticates ***Basic Auth*** credentials for a user. If successful, creates a new UI session for the user."
-			tags: [
-				"Signin",
-			]
+			tags: ["Signin"]
 			security: [{
-				BasicAuthentication: [
-
-				]}]
+				BasicAuthentication: []
+			}]
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}]
@@ -191,9 +130,7 @@ cloud: {
 		"/signout": post: {
 			operationId: "PostSignout"
 			summary:     "Expire the current UI session"
-			tags: [
-				"Signout",
-			]
+			tags: ["Signout"]
 			description: "Expires the current UI session for the user."
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -217,9 +154,7 @@ cloud: {
 				servers: [{
 					url: ""
 				}]
-				tags: [
-					"Ping",
-				]
+				tags: ["Ping"]
 				responses: "204": {
 					description: "OK"
 					headers: {
@@ -240,9 +175,7 @@ cloud: {
 				servers: [{
 					url: ""
 				}]
-				tags: [
-					"Ping",
-				]
+				tags: ["Ping"]
 				responses: "204": {
 					description: "OK"
 					headers: {
@@ -261,9 +194,7 @@ cloud: {
 		"/": get: {
 			operationId: "GetRoutes"
 			summary:     "List all top level routes"
-			tags: [
-				"Routes",
-			]
+			tags: ["Routes"]
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}]
@@ -275,9 +206,7 @@ cloud: {
 		"/dbrps": {
 			get: {
 				operationId: "GetDBRPs"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "List database retention policy mappings"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -334,9 +263,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostDBRP"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Add a database retention policy mapping"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -365,9 +292,7 @@ cloud: {
 		"/dbrps/{dbrpID}": {
 			get: {
 				operationId: "GetDBRPsID"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Retrieve a database retention policy mapping"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -405,9 +330,7 @@ cloud: {
 			}
 			patch: {
 				operationId: "PatchDBRPID"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Update a database retention policy mapping"
 				requestBody: {
 					description: "Database retention policy update to apply"
@@ -454,9 +377,7 @@ cloud: {
 			}
 			delete: {
 				operationId: "DeleteDBRPID"
-				tags: [
-					"DBRPs",
-				]
+				tags: ["DBRPs"]
 				summary: "Delete a database retention policy"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -492,9 +413,7 @@ cloud: {
 		}
 		"/telegraf/plugins": get: {
 			operationId: "GetTelegrafPlugins"
-			tags: [
-				"Telegraf Plugins",
-			]
+			tags: ["Telegraf Plugins"]
 			summary: "List all Telegraf plugins"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -518,9 +437,7 @@ cloud: {
 		"/telegrafs": {
 			get: {
 				operationId: "GetTelegrafs"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all Telegraf configurations"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -543,9 +460,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostTelegrafs"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Create a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -570,9 +485,7 @@ cloud: {
 		"/telegrafs/{telegrafID}": {
 			get: {
 				operationId: "GetTelegrafsID"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Retrieve a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -589,11 +502,7 @@ cloud: {
 					schema: {
 						type:    "string"
 						default: "application/toml"
-						enum: [
-							"application/toml",
-							"application/json",
-							"application/octet-stream",
-						]
+						enum: ["application/toml", "application/json", "application/octet-stream"]
 					}
 				}]
 				responses: {
@@ -602,19 +511,17 @@ cloud: {
 						content: {
 							"application/toml": {
 								example: """
-		[agent]
-		interval = \"10s\"
-		"""
-
+									[agent]
+									interval = "10s"
+									"""
 								schema: type: "string"
 							}
 							"application/json": schema: $ref: "#/components/schemas/Telegraf"
 							"application/octet-stream": {
 								example: """
-		[agent]
-		interval = \"10s\"
-		"""
-
+									[agent]
+									interval = "10s"
+									"""
 								schema: type: "string"
 							}
 						}
@@ -627,9 +534,7 @@ cloud: {
 			}
 			put: {
 				operationId: "PutTelegrafsID"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Update a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -658,9 +563,7 @@ cloud: {
 			}
 			delete: {
 				operationId: "DeleteTelegrafsID"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Delete a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -683,9 +586,7 @@ cloud: {
 		"/telegrafs/{telegrafID}/labels": {
 			get: {
 				operationId: "GetTelegrafsIDLabels"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all labels for a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -709,9 +610,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostTelegrafsIDLabels"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Add a label to a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -741,9 +640,7 @@ cloud: {
 		}
 		"/telegrafs/{telegrafID}/labels/{labelID}": delete: {
 			operationId: "DeleteTelegrafsIDLabelsID"
-			tags: [
-				"Telegrafs",
-			]
+			tags: ["Telegrafs"]
 			summary: "Delete a label from a Telegraf config"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -775,9 +672,7 @@ cloud: {
 		"/telegrafs/{telegrafID}/members": {
 			get: {
 				operationId: "GetTelegrafsIDMembers"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all users with member privileges for a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -801,9 +696,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostTelegrafsIDMembers"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Add a member to a Telegraf config"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -833,9 +726,7 @@ cloud: {
 		}
 		"/telegrafs/{telegrafID}/members/{userID}": delete: {
 			operationId: "DeleteTelegrafsIDMembersID"
-			tags: [
-				"Telegrafs",
-			]
+			tags: ["Telegrafs"]
 			summary: "Remove a member from a Telegraf config"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -863,9 +754,7 @@ cloud: {
 		"/telegrafs/{telegrafID}/owners": {
 			get: {
 				operationId: "GetTelegrafsIDOwners"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "List all owners of a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -889,9 +778,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostTelegrafsIDOwners"
-				tags: [
-					"Telegrafs",
-				]
+				tags: ["Telegrafs"]
 				summary: "Add an owner to a Telegraf configuration"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -921,9 +808,7 @@ cloud: {
 		}
 		"/telegrafs/{telegrafID}/owners/{userID}": delete: {
 			operationId: "DeleteTelegrafsIDOwnersID"
-			tags: [
-				"Telegrafs",
-			]
+			tags: ["Telegrafs"]
 			summary: "Remove an owner from a Telegraf config"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -951,9 +836,7 @@ cloud: {
 		"/variables/{variableID}/labels": {
 			get: {
 				operationId: "GetVariablesIDLabels"
-				tags: [
-					"Variables",
-				]
+				tags: ["Variables"]
 				summary: "List all labels for a variable"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -977,9 +860,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostVariablesIDLabels"
-				tags: [
-					"Variables",
-				]
+				tags: ["Variables"]
 				summary: "Add a label to a variable"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1009,9 +890,7 @@ cloud: {
 		}
 		"/variables/{variableID}/labels/{labelID}": delete: {
 			operationId: "DeleteVariablesIDLabelsID"
-			tags: [
-				"Variables",
-			]
+			tags: ["Variables"]
 			summary: "Delete a label from a variable"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1042,9 +921,7 @@ cloud: {
 		}
 		"/delete": post: {
 			operationId: "PostDelete"
-			tags: [
-				"Delete",
-			]
+			tags: ["Delete"]
 			summary: "Delete data"
 			requestBody: {
 				description: "Deletes data from an InfluxDB bucket."
@@ -1106,9 +983,7 @@ cloud: {
 		"/labels": {
 			post: {
 				operationId: "PostLabels"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Create a label"
 				requestBody: {
 					description: "Label to create"
@@ -1128,9 +1003,7 @@ cloud: {
 			}
 			get: {
 				operationId: "GetLabels"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "List all labels"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1155,9 +1028,7 @@ cloud: {
 		"/labels/{labelID}": {
 			get: {
 				operationId: "GetLabelsID"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Retrieve a label"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1181,9 +1052,7 @@ cloud: {
 			}
 			patch: {
 				operationId: "PatchLabelsID"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Update a label"
 				requestBody: {
 					description: "Label update"
@@ -1216,9 +1085,7 @@ cloud: {
 			}
 			delete: {
 				operationId: "DeleteLabelsID"
-				tags: [
-					"Labels",
-				]
+				tags: ["Labels"]
 				summary: "Delete a label"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1245,9 +1112,7 @@ cloud: {
 		"/dashboards/{dashboardID}": {
 			get: {
 				operationId: "GetDashboardsID"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Retrieve a Dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1263,9 +1128,7 @@ cloud: {
 					required: false
 					schema: {
 						type: "string"
-						enum: [
-							"properties",
-						]
+						enum: ["properties"]
 					}
 					description: "Includes the cell view properties in the response if set to `properties`"
 				}]
@@ -1290,9 +1153,7 @@ cloud: {
 			}
 			patch: {
 				operationId: "PatchDashboardsID"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Update a dashboard"
 				requestBody: {
 					description: "Patching of a dashboard"
@@ -1342,9 +1203,7 @@ cloud: {
 			}
 			delete: {
 				operationId: "DeleteDashboardsID"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Delete a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1371,10 +1230,7 @@ cloud: {
 		"/dashboards/{dashboardID}/cells": {
 			put: {
 				operationId: "PutDashboardsIDCells"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary:     "Replace cells in a dashboard"
 				description: "Replaces all cells in a dashboard. This is used primarily to update the positional information of all cells."
 				requestBody: {
@@ -1407,10 +1263,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostDashboardsIDCells"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary: "Create a dashboard cell"
 				requestBody: {
 					description: "Cell that will be added"
@@ -1445,10 +1298,7 @@ cloud: {
 		"/dashboards/{dashboardID}/cells/{cellID}": {
 			patch: {
 				operationId: "PatchDashboardsIDCellsID"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary:     "Update the non-positional information related to a cell"
 				description: "Updates the non positional information related to a cell. Updates to a single cell's positional data could cause grid conflicts."
 				requestBody: {
@@ -1487,10 +1337,7 @@ cloud: {
 			}
 			delete: {
 				operationId: "DeleteDashboardsIDCellsID"
-				tags: [
-					"Cells",
-					"Dashboards",
-				]
+				tags: ["Cells", "Dashboards"]
 				summary: "Delete a dashboard cell"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1523,11 +1370,7 @@ cloud: {
 		"/dashboards/{dashboardID}/cells/{cellID}/view": {
 			get: {
 				operationId: "GetDashboardsIDCellsIDView"
-				tags: [
-					"Cells",
-					"Dashboards",
-					"Views",
-				]
+				tags: ["Cells", "Dashboards", "Views"]
 				summary: "Retrieve the view for a cell"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1561,11 +1404,7 @@ cloud: {
 			}
 			patch: {
 				operationId: "PatchDashboardsIDCellsIDView"
-				tags: [
-					"Cells",
-					"Dashboards",
-					"Views",
-				]
+				tags: ["Cells", "Dashboards", "Views"]
 				summary: "Update the view for a cell"
 				requestBody: {
 					required: true
@@ -1605,9 +1444,7 @@ cloud: {
 		"/dashboards/{dashboardID}/labels": {
 			get: {
 				operationId: "GetDashboardsIDLabels"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "List all labels for a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1631,9 +1468,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostDashboardsIDLabels"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Add a label to a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1663,9 +1498,7 @@ cloud: {
 		}
 		"/dashboards/{dashboardID}/labels/{labelID}": delete: {
 			operationId: "DeleteDashboardsIDLabelsID"
-			tags: [
-				"Dashboards",
-			]
+			tags: ["Dashboards"]
 			summary: "Delete a label from a dashboard"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1697,9 +1530,7 @@ cloud: {
 		"/dashboards/{dashboardID}/members": {
 			get: {
 				operationId: "GetDashboardsIDMembers"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "List all dashboard members"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1723,9 +1554,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostDashboardsIDMembers"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Add a member to a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1755,9 +1584,7 @@ cloud: {
 		}
 		"/dashboards/{dashboardID}/members/{userID}": delete: {
 			operationId: "DeleteDashboardsIDMembersID"
-			tags: [
-				"Dashboards",
-			]
+			tags: ["Dashboards"]
 			summary: "Remove a member from a dashboard"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1785,9 +1612,7 @@ cloud: {
 		"/dashboards/{dashboardID}/owners": {
 			get: {
 				operationId: "GetDashboardsIDOwners"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "List all dashboard owners"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1811,9 +1636,7 @@ cloud: {
 			}
 			post: {
 				operationId: "PostDashboardsIDOwners"
-				tags: [
-					"Dashboards",
-				]
+				tags: ["Dashboards"]
 				summary: "Add an owner to a dashboard"
 				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
@@ -1843,9 +1666,7 @@ cloud: {
 		}
 		"/dashboards/{dashboardID}/owners/{userID}": delete: {
 			operationId: "DeleteDashboardsIDOwnersID"
-			tags: [
-				"Dashboards",
-			]
+			tags: ["Dashboards"]
 			summary: "Remove an owner from a dashboard"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1873,9 +1694,7 @@ cloud: {
 		"/query/ast": post: {
 			operationId: "PostQueryAst"
 			description: "Analyzes flux query and generates a query specification."
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Generate an Abstract Syntax Tree (AST) from a query"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1884,9 +1703,7 @@ cloud: {
 				name: "Content-Type"
 				schema: {
 					type: "string"
-					enum: [
-						"application/json",
-					]
+					enum: ["application/json"]
 				}
 			}]
 			requestBody: {
@@ -1906,9 +1723,7 @@ cloud: {
 		}
 		"/query/suggestions": get: {
 			operationId: "GetQuerySuggestions"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Retrieve query suggestions"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1926,9 +1741,7 @@ cloud: {
 		}
 		"/query/suggestions/{name}": get: {
 			operationId: "GetQuerySuggestionsName"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Retrieve query suggestions for a branching suggestion"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1952,9 +1765,7 @@ cloud: {
 		}
 		"/query/analyze": post: {
 			operationId: "PostQueryAnalyze"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Analyze a Flux query"
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
@@ -1963,9 +1774,7 @@ cloud: {
 				name: "Content-Type"
 				schema: {
 					type: "string"
-					enum: [
-						"application/json",
-					]
+					enum: ["application/json"]
 				}
 			}]
 			requestBody: {
@@ -1995,9 +1804,7 @@ cloud: {
 		}
 		"/query": post: {
 			operationId: "PostQuery"
-			tags: [
-				"Query",
-			]
+			tags: ["Query"]
 			summary: "Query data"
 			description: """
 				Retrieves data from InfluxDB buckets.
@@ -2012,7 +1819,6 @@ cloud: {
 				For more information and examples, see [Query with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/query-data/execute-queries/influx-api/).
 
 				"""
-
 			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
@@ -2023,20 +1829,14 @@ cloud: {
 					type:        "string"
 					description: "The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data."
 					default:     "identity"
-					enum: [
-						"gzip",
-						"identity",
-					]
+					enum: ["gzip", "identity"]
 				}
 			}, {
 				in:   "header"
 				name: "Content-Type"
 				schema: {
 					type: "string"
-					enum: [
-						"application/json",
-						"application/vnd.flux",
-					]
+					enum: ["application/json", "application/vnd.flux"]
 				}
 			}, {
 				in:          "query"
@@ -2048,25 +1848,23 @@ cloud: {
 				name:        "orgID"
 				description: "Specifies the ID of the organization executing the query. If both `orgID` and `org` are specified, `org` takes precedence."
 				schema: type: "string"
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "Flux query or specification to execute"
 				content: {
 					"application/json": schema: $ref: "#/components/schemas/Query"
 					"application/vnd.flux": {
 						schema: type: "string"
 						example: """
-		from(bucket: \"example-bucket\")
-		    |> range(start: -5m)
-		    |> filter(fn: (r) => r._measurement == \"example-measurement\")
+								from(bucket: "example-bucket")
+								    |> range(start: -5m)
+								    |> filter(fn: (r) => r._measurement == "example-measurement")
 
-		"""
+								"""
 					}
 				}
 			}
-
 			responses: {
-
 				"200": {
 					description: "Success. Returns query results."
 					headers: {
@@ -2075,15 +1873,11 @@ cloud: {
 							schema: {
 								type: "string"
 								description: """
-		The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
+										The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
 
-		"""
-
+										"""
 								default: "identity"
-								enum: [
-									"gzip",
-									"identity",
-								]
+								enum: ["gzip", "identity"]
 							}
 						}
 						"Trace-Id": {
@@ -2098,11 +1892,10 @@ cloud: {
 						"text/csv": schema: {
 							type: "string"
 							example: """
-		result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
+										result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
 
-		"""
+										"""
 						}
-
 						"application/vnd.influx.arrow": schema: {
 							type:   "string"
 							format: "binary"
@@ -2124,11 +1917,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/buckets": {
+		}
+		"/buckets": {
 			get: {
-				operationId:
-					"GetBuckets", tags: ["Buckets"], summary:
-					"List all buckets", parameters: [{
+				operationId: "GetBuckets"
+				tags: ["Buckets"]
+				summary: "List all buckets"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -2156,8 +1951,8 @@ cloud: {
 					name:        "id"
 					description: "Only returns buckets with a specific ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of buckets"
 						content: "application/json": schema: $ref: "#/components/schemas/Buckets"
@@ -2167,18 +1962,20 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBuckets", tags: ["Buckets"], summary:
-					"Create a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBuckets"
+				tags: ["Buckets"]
+				summary: "Create a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Bucket to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostBucketRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Bucket created"
 						content: "application/json": schema: $ref: "#/components/schemas/Bucket"
@@ -2193,11 +1990,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}": {
+		}
+		"/buckets/{bucketID}": {
 			get: {
-				operationId:
-					"GetBucketsID", tags: ["Buckets"], summary:
-					"Retrieve a bucket", parameters: [{
+				operationId: "GetBucketsID"
+				tags: ["Buckets"]
+				summary: "Retrieve a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2205,8 +2004,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Bucket details"
 						content: "application/json": schema: $ref: "#/components/schemas/Bucket"
@@ -2216,15 +2015,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchBucketsID", tags: ["Buckets"], summary:
-					"Update a bucket", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchBucketsID"
+				tags: ["Buckets"]
+				summary: "Update a bucket"
+				requestBody: {
 					description: "Bucket update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PatchBucketRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2232,8 +2033,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated bucket"
 						content: "application/json": schema: $ref: "#/components/schemas/Bucket"
@@ -2243,10 +2044,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteBucketsID", tags: ["Buckets"], summary:
-					"Delete a bucket", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteBucketsID"
+				tags: ["Buckets"]
+				summary: "Delete a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2254,8 +2057,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the bucket to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "Bucket not found"
@@ -2267,11 +2070,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/labels": {
+		}
+		"/buckets/{bucketID}/labels": {
 			get: {
-				operationId:
-					"GetBucketsIDLabels", tags: ["Buckets"], summary:
-					"List all labels for a bucket", parameters: [{
+				operationId: "GetBucketsIDLabels"
+				tags: ["Buckets"]
+				summary: "List all labels for a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2279,8 +2084,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a bucket"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -2290,10 +2095,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBucketsIDLabels", tags: ["Buckets"], summary:
-					"Add a label to a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBucketsIDLabels"
+				tags: ["Buckets"]
+				summary: "Add a label to a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2301,13 +2108,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The newly added label"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -2318,10 +2125,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteBucketsIDLabelsID", tags: ["Buckets"], summary:
-				"Delete a label from a bucket", parameters: [{
+		}
+		"/buckets/{bucketID}/labels/{labelID}": delete: {
+			operationId: "DeleteBucketsIDLabelsID"
+			tags: ["Buckets"]
+			summary: "Delete a label from a bucket"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2335,8 +2144,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Bucket not found"
@@ -2347,11 +2156,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/buckets/{bucketID}/members": {
+		}
+		"/buckets/{bucketID}/members": {
 			get: {
-				operationId:
-					"GetBucketsIDMembers", tags: ["Buckets"], summary:
-					"List all users with member privileges for a bucket", parameters: [{
+				operationId: "GetBucketsIDMembers"
+				tags: ["Buckets"]
+				summary: "List all users with member privileges for a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2359,8 +2170,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of bucket members"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMembers"
@@ -2370,10 +2181,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBucketsIDMembers", tags: ["Buckets"], summary:
-					"Add a member to a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBucketsIDMembers"
+				tags: ["Buckets"]
+				summary: "Add a member to a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2381,13 +2194,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as member"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Member added to bucket"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMember"
@@ -2398,10 +2211,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/members/{userID}": delete: {
-			operationId:
-				"DeleteBucketsIDMembersID", tags: ["Buckets"], summary:
-				"Remove a member from a bucket", parameters: [{
+		}
+		"/buckets/{bucketID}/members/{userID}": delete: {
+			operationId: "DeleteBucketsIDMembersID"
+			tags: ["Buckets"]
+			summary: "Remove a member from a bucket"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2415,19 +2230,21 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The bucket ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Member removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/buckets/{bucketID}/owners": {
+		}
+		"/buckets/{bucketID}/owners": {
 			get: {
-				operationId:
-					"GetBucketsIDOwners", tags: ["Buckets"], summary:
-					"List all owners of a bucket", parameters: [{
+				operationId: "GetBucketsIDOwners"
+				tags: ["Buckets"]
+				summary: "List all owners of a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2435,8 +2252,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of bucket owners"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwners"
@@ -2446,10 +2263,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostBucketsIDOwners", tags: ["Buckets"], summary:
-					"Add an owner to a bucket", parameters: [{
+			}
+			post: {
+				operationId: "PostBucketsIDOwners"
+				tags: ["Buckets"]
+				summary: "Add an owner to a bucket"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2457,13 +2276,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The bucket ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as owner"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Bucket owner added"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwner"
@@ -2474,10 +2293,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/owners/{userID}": delete: {
-			operationId:
-				"DeleteBucketsIDOwnersID", tags: ["Buckets"], summary:
-				"Remove an owner from a bucket", parameters: [{
+		}
+		"/buckets/{bucketID}/owners/{userID}": delete: {
+			operationId: "DeleteBucketsIDOwnersID"
+			tags: ["Buckets"]
+			summary: "Remove an owner from a bucket"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2491,19 +2312,21 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The bucket ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Owner removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs": {
+		}
+		"/orgs": {
 			get: {
-				operationId:
-					"GetOrgs", tags: ["Organizations"], summary:
-					"List all organizations", parameters: [{
+				operationId: "GetOrgs"
+				tags: ["Organizations"]
+				summary: "List all organizations"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -2526,8 +2349,8 @@ cloud: {
 					name: "userID"
 					schema: type: "string"
 					description: "Filter organizations to a specific user ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of organizations"
 						content: "application/json": schema: $ref: "#/components/schemas/Organizations"
@@ -2537,18 +2360,20 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostOrgs", tags: ["Organizations"], summary:
-					"Create an organization", parameters: [{
+			}
+			post: {
+				operationId: "PostOrgs"
+				tags: ["Organizations"]
+				summary: "Create an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Organization to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostOrganizationRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Organization created"
 						content: "application/json": schema: $ref: "#/components/schemas/Organization"
@@ -2559,11 +2384,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}": {
+		}
+		"/orgs/{orgID}": {
 			get: {
-				operationId:
-					"GetOrgsID", tags: ["Organizations"], summary:
-					"Retrieve an organization", parameters: [{
+				operationId: "GetOrgsID"
+				tags: ["Organizations"]
+				summary: "Retrieve an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2571,8 +2398,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the organization to get."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Organization details"
 						content: "application/json": schema: $ref: "#/components/schemas/Organization"
@@ -2582,15 +2409,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchOrgsID", tags: ["Organizations"], summary:
-					"Update an organization", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchOrgsID"
+				tags: ["Organizations"]
+				summary: "Update an organization"
+				requestBody: {
 					description: "Organization update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PatchOrganizationRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2598,8 +2427,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the organization to get."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Organization updated"
 						content: "application/json": schema: $ref: "#/components/schemas/Organization"
@@ -2609,10 +2438,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteOrgsID", tags: ["Organizations"], summary:
-					"Delete an organization", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteOrgsID"
+				tags: ["Organizations"]
+				summary: "Delete an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2620,8 +2451,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the organization to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "Organization not found"
@@ -2633,11 +2464,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/secrets": {
+		}
+		"/orgs/{orgID}/secrets": {
 			get: {
-				operationId:
-					"GetOrgsIDSecrets", tags: ["Secrets"], summary:
-					"List all secret keys for an organization", parameters: [{
+				operationId: "GetOrgsIDSecrets"
+				tags: ["Secrets"]
+				summary: "List all secret keys for an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2645,8 +2478,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all secret keys"
 						content: "application/json": schema: $ref: "#/components/schemas/SecretKeysResponse"
@@ -2656,10 +2489,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchOrgsIDSecrets", tags: ["Secrets"], summary:
-					"Update secrets in an organization", parameters: [{
+			}
+			patch: {
+				operationId: "PatchOrgsIDSecrets"
+				tags: ["Secrets"]
+				summary: "Update secrets in an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2667,13 +2502,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Secret key value pairs to update/add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Secrets"
-				}, responses: {
-
+				}
+				responses: {
 					"204": description: "Keys successfully patched"
 					default: {
 						description: "Unexpected error"
@@ -2681,11 +2516,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/members": {
+		}
+		"/orgs/{orgID}/members": {
 			get: {
-				operationId:
-					"GetOrgsIDMembers", tags: ["Organizations"], summary:
-					"List all members of an organization", parameters: [{
+				operationId: "GetOrgsIDMembers"
+				tags: ["Organizations"]
+				summary: "List all members of an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2693,8 +2530,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of organization members"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMembers"
@@ -2708,10 +2545,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostOrgsIDMembers", tags: ["Organizations"], summary:
-					"Add a member to an organization", parameters: [{
+			}
+			post: {
+				operationId: "PostOrgsIDMembers"
+				tags: ["Organizations"]
+				summary: "Add a member to an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2719,13 +2558,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as member"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added to organization created"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMember"
@@ -2736,10 +2575,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/members/{userID}": delete: {
-			operationId:
-				"DeleteOrgsIDMembersID", tags: ["Organizations"], summary:
-				"Remove a member from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/members/{userID}": delete: {
+			operationId: "DeleteOrgsIDMembersID"
+			tags: ["Organizations"]
+			summary: "Remove a member from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2753,19 +2594,21 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The organization ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Member removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs/{orgID}/owners": {
+		}
+		"/orgs/{orgID}/owners": {
 			get: {
-				operationId:
-					"GetOrgsIDOwners", tags: ["Organizations"], summary:
-					"List all owners of an organization", parameters: [{
+				operationId: "GetOrgsIDOwners"
+				tags: ["Organizations"]
+				summary: "List all owners of an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2773,8 +2616,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of organization owners"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwners"
@@ -2788,10 +2631,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostOrgsIDOwners", tags: ["Organizations"], summary:
-					"Add an owner to an organization", parameters: [{
+			}
+			post: {
+				operationId: "PostOrgsIDOwners"
+				tags: ["Organizations"]
+				summary: "Add an owner to an organization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -2799,13 +2644,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The organization ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as owner"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Organization owner added"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwner"
@@ -2816,10 +2661,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/owners/{userID}": delete: {
-			operationId:
-				"DeleteOrgsIDOwnersID", tags: ["Organizations"], summary:
-				"Remove an owner from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/owners/{userID}": delete: {
+			operationId: "DeleteOrgsIDOwnersID"
+			tags: ["Organizations"]
+			summary: "Remove an owner from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2833,19 +2680,21 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The organization ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Owner removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs/{orgID}/secrets/delete": post: {
-			deprecated:
-				true, operationId:
-				"PostOrgsIDSecrets", tags: ["Secrets"], summary:
-				"Delete secrets from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/secrets/delete": post: {
+			deprecated:  true
+			operationId: "PostOrgsIDSecrets"
+			tags: ["Secrets"]
+			summary: "Delete secrets from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2853,23 +2702,25 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The organization ID."
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "Secret key to delete"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/SecretKeys"
-			}, responses: {
-
+			}
+			responses: {
 				"204": description: "Keys successfully patched"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/orgs/{orgID}/secrets/{secretID}": delete: {
-			operationId:
-				"DeleteOrgsIDSecretsID", tags: ["Secrets"], summary:
-				"Delete a secret from an organization", parameters: [{
+		}
+		"/orgs/{orgID}/secrets/{secretID}": delete: {
+			operationId: "DeleteOrgsIDSecretsID"
+			tags: ["Secrets"]
+			summary: "Delete a secret from an organization"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -2883,21 +2734,23 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The secret ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Keys successfully deleted"
 				default: {
 					description: "Unexpected error"
 					$ref:        "#/components/responses/ServerError"
 				}
 			}
-		}, "/resources": get: {
-			operationId:
-				"GetResources", tags: ["Resources"], summary:
-				"List all known resources", parameters: [{
+		}
+		"/resources": get: {
+			operationId: "GetResources"
+			tags: ["Resources"]
+			summary: "List all known resources"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "All resources targets"
 					content: "application/json": schema: {
@@ -2910,11 +2763,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/stacks": {
+		}
+		"/stacks": {
 			get: {
-				operationId:
-					"ListStacks", tags: ["Templates"], summary:
-					"List installed templates", parameters: [{
+				operationId: "ListStacks"
+				tags: ["Templates"]
+				summary: "List installed templates"
+				parameters: [{
 					in:       "query"
 					name:     "orgID"
 					required: true
@@ -2930,8 +2785,8 @@ cloud: {
 					name: "stackID"
 					schema: type: "string"
 					description: "A collection of stackIDs to filter the list by."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Success. Returns the list of stacks."
 						content: "application/json": schema: {
@@ -2947,19 +2802,20 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateStack", tags: ["Templates"], summary:
-					"Create a new stack", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateStack"
+				tags: ["Templates"]
+				summary: "Create a new stack"
+				requestBody: {
 					description: "The stack to create."
 					required:    true
 					content: "application/json": schema: {
 						type:  "object"
 						title: "PostStackRequest"
 						properties: {
-							orgID: type: "string"
-							name: type: "string"
+							orgID: type:       "string"
+							name: type:        "string"
 							description: type: "string"
 							urls: {
 								type: "array"
@@ -2967,8 +2823,8 @@ cloud: {
 							}
 						}
 					}
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Success. Returns the newly created stack."
 						content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -2979,18 +2835,20 @@ cloud: {
 					}
 				}
 			}
-		}, "/stacks/{stack_id}": {
+		}
+		"/stacks/{stack_id}": {
 			get: {
-				operationId:
-					"ReadStack", tags: ["Templates"], summary:
-					"Retrieve a stack", parameters: [{
+				operationId: "ReadStack"
+				tags: ["Templates"]
+				summary: "Retrieve a stack"
+				parameters: [{
 					in:       "path"
 					name:     "stack_id"
 					required: true
 					schema: type: "string"
 					description: "The identifier of the stack."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Returns the stack."
 						content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -3000,17 +2858,19 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"UpdateStack", tags: ["Templates"], summary:
-					"Update a stack", parameters: [{
+			}
+			patch: {
+				operationId: "UpdateStack"
+				tags: ["Templates"]
+				summary: "Update a stack"
+				parameters: [{
 					in:       "path"
 					name:     "stack_id"
 					required: true
 					schema: type: "string"
 					description: "The identifier of the stack."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "The stack to update."
 					required:    true
 					content: "application/json": schema: {
@@ -3035,20 +2895,17 @@ cloud: {
 								items: {
 									type: "object"
 									properties: {
-										resourceID: type: "string"
-										kind: type: "string"
+										resourceID: type:       "string"
+										kind: type:             "string"
 										templateMetaName: type: "string"
 									}
-									required: [
-										"kind",
-										"resourceID",
-									]
+									required: ["kind", "resourceID"]
 								}
 							}
 						}
 					}
-				}, responses: {
-
+				}
+				responses: {
 					"200": {
 						description: "Returns the updated stack."
 						content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -3058,10 +2915,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteStack", tags: ["Templates"], summary:
-					"Delete a stack and associated resources", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteStack"
+				tags: ["Templates"]
+				summary: "Delete a stack and associated resources"
+				parameters: [{
 					in:       "path"
 					name:     "stack_id"
 					required: true
@@ -3073,8 +2932,8 @@ cloud: {
 					required: true
 					schema: type: "string"
 					description: "The identifier of the organization."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "The stack and its associated resources were deleted."
 					default: {
 						description: "Unexpected error"
@@ -3082,17 +2941,19 @@ cloud: {
 					}
 				}
 			}
-		}, "/stacks/{stack_id}/uninstall": post: {
-			operationId:
-				"UninstallStack", tags: ["Templates"], summary:
-				"Uninstall a stack", parameters: [{
+		}
+		"/stacks/{stack_id}/uninstall": post: {
+			operationId: "UninstallStack"
+			tags: ["Templates"]
+			summary: "Uninstall a stack"
+			parameters: [{
 				in:       "path"
 				name:     "stack_id"
 				required: true
 				schema: type: "string"
 				description: "The identifier of the stack."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Returns the uninstalled stack."
 					content: "application/json": schema: $ref: "#/components/schemas/Stack"
@@ -3102,34 +2963,33 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/templates/apply": post: {
-			operationId:
-				"ApplyTemplate", tags: ["Templates"], summary:
-				"Apply or dry-run a template", description:
-				"Applies or performs a dry-run of template in an organization.", requestBody: {
-
+		}
+		"/templates/apply": post: {
+			operationId: "ApplyTemplate"
+			tags: ["Templates"]
+			summary:     "Apply or dry-run a template"
+			description: "Applies or performs a dry-run of template in an organization."
+			requestBody: {
 				required: true
 				content: {
-					"application/json": schema: $ref: "#/components/schemas/TemplateApply"
+					"application/json": schema: $ref:      "#/components/schemas/TemplateApply"
 					"application/x-jsonnet": schema: $ref: "#/components/schemas/TemplateApply"
-					"text/yml": schema: $ref: "#/components/schemas/TemplateApply"
+					"text/yml": schema: $ref:              "#/components/schemas/TemplateApply"
 				}
-			}, responses: {
-
+			}
+			responses: {
 				"200": {
 					description: """
 						Success. The package dry-run succeeded. No new resources were created. Returns a diff and summary of the dry-run. The diff and summary won't contain IDs for resources that didn't exist at the time of the dry-run.
 
 						"""
-
 					content: "application/json": schema: $ref: "#/components/schemas/TemplateSummary"
 				}
 				"201": {
 					description: """
-						Success. The package applied successfully. Returns a diff and summary of the run. The summary contains newly created resources. The diff compares the initial state to the state after the package applied. This corresponds to `\"dryRun\": true`.
+						Success. The package applied successfully. Returns a diff and summary of the run. The summary contains newly created resources. The diff compares the initial state to the state after the package applied. This corresponds to `"dryRun": true`.
 
 						"""
-
 					content: "application/json": schema: $ref: "#/components/schemas/TemplateSummary"
 				}
 				default: {
@@ -3137,11 +2997,12 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/templates/export": post: {
-			operationId:
-				"ExportTemplate", tags: ["Templates"], summary:
-				"Export a new template", requestBody: {
-
+		}
+		"/templates/export": post: {
+			operationId: "ExportTemplate"
+			tags: ["Templates"]
+			summary: "Export a new template"
+			requestBody: {
 				description: "Export resources as an InfluxDB template."
 				required:    false
 				content: "application/json": schema: oneOf: [{
@@ -3149,12 +3010,12 @@ cloud: {
 				}, {
 					$ref: "#/components/schemas/TemplateExportByName"
 				}]
-			}, responses: {
-
+			}
+			responses: {
 				"200": {
 					description: "The template was created successfully. Returns the newly created template."
 					content: {
-						"application/json": schema: $ref: "#/components/schemas/Template"
+						"application/json": schema: $ref:   "#/components/schemas/Template"
 						"application/x-yaml": schema: $ref: "#/components/schemas/Template"
 					}
 				}
@@ -3163,11 +3024,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}": {
+		}
+		"/tasks/{taskID}": {
 			get: {
-				operationId:
-					"GetTasksID", tags: ["Tasks"], summary:
-					"Retrieve a task", parameters: [{
+				operationId: "GetTasksID"
+				tags: ["Tasks"]
+				summary: "Retrieve a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3175,8 +3038,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Task details"
 						content: "application/json": schema: $ref: "#/components/schemas/Task"
@@ -3186,16 +3049,18 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchTasksID", tags: ["Tasks"], summary:
-					"Update a task", description:
-					"Update a task. This will cancel all queued runs.", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchTasksID"
+				tags: ["Tasks"]
+				summary:     "Update a task"
+				description: "Update a task. This will cancel all queued runs."
+				requestBody: {
 					description: "Task update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/TaskUpdateRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3203,8 +3068,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Task updated"
 						content: "application/json": schema: $ref: "#/components/schemas/Task"
@@ -3214,11 +3079,13 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteTasksID", tags: ["Tasks"], summary:
-					"Delete a task", description:
-					"Deletes a task and all associated records", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteTasksID"
+				tags: ["Tasks"]
+				summary:     "Delete a task"
+				description: "Deletes a task and all associated records"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3226,8 +3093,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the task to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Task deleted"
 					default: {
 						description: "Unexpected error"
@@ -3235,11 +3102,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/runs": {
+		}
+		"/tasks/{taskID}/runs": {
 			get: {
-				operationId:
-					"GetTasksIDRuns", tags: ["Tasks"], summary:
-					"List runs for a task", parameters: [{
+				operationId: "GetTasksIDRuns"
+				tags: ["Tasks"]
+				summary: "List runs for a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3278,8 +3147,8 @@ cloud: {
 						format: "date-time"
 					}
 					description: "Filter runs to those scheduled before this time, RFC3339"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of task runs"
 						content: "application/json": schema: $ref: "#/components/schemas/Runs"
@@ -3289,18 +3158,21 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDRuns", tags: ["Tasks"], summary:
-					"Manually start a task run, overriding the current schedule", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDRuns"
+				tags: ["Tasks"]
+				summary: "Manually start a task run, overriding the current schedule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
 					name: "taskID"
 					schema: type: "string"
-												required: true
-				}], requestBody: content: "application/json": schema: $ref: "#/components/schemas/RunManually", responses: {
-
+					required: true
+				}]
+				requestBody: content: "application/json": schema: $ref: "#/components/schemas/RunManually"
+				responses: {
 					"201": {
 						description: "Run scheduled to start"
 						content: "application/json": schema: $ref: "#/components/schemas/Run"
@@ -3311,11 +3183,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/runs/{runID}": {
+		}
+		"/tasks/{taskID}/runs/{runID}": {
 			get: {
-				operationId:
-					"GetTasksIDRunsID", tags: ["Tasks"], summary:
-					"Retrieve a single run for a task", parameters: [{
+				operationId: "GetTasksIDRunsID"
+				tags: ["Tasks"]
+				summary: "Retrieve a single run for a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3329,8 +3203,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The run ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The run record"
 						content: "application/json": schema: $ref: "#/components/schemas/Run"
@@ -3340,10 +3214,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteTasksIDRunsID", tags: ["Tasks"], summary:
-					"Cancel a running task", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteTasksIDRunsID"
+				tags: ["Tasks"]
+				summary: "Cancel a running task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3357,8 +3233,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The run ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					default: {
 						description: "Unexpected error"
@@ -3366,11 +3242,14 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/runs/{runID}/retry": post: {
-			operationId:
-				"PostTasksIDRunsIDRetry", tags: ["Tasks"], summary:
-				"Retry a task run", requestBody: content: "application/json; charset=utf-8": schema: type: "object", parameters: [{
-				$ref:                                                                                      "#/components/parameters/TraceSpan"
+		}
+		"/tasks/{taskID}/runs/{runID}/retry": post: {
+			operationId: "PostTasksIDRunsIDRetry"
+			tags: ["Tasks"]
+			summary: "Retry a task run"
+			requestBody: content: "application/json; charset=utf-8": schema: type: "object"
+			parameters: [{
+				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
 				name: "taskID"
@@ -3383,8 +3262,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The run ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Run that has been queued"
 					content: "application/json": schema: $ref: "#/components/schemas/Run"
@@ -3394,10 +3273,12 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/logs": get: {
-			operationId:
-				"GetTasksIDLogs", tags: ["Tasks"], summary:
-				"Retrieve all logs for a task", parameters: [{
+		}
+		"/tasks/{taskID}/logs": get: {
+			operationId: "GetTasksIDLogs"
+			tags: ["Tasks"]
+			summary: "Retrieve all logs for a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3405,8 +3286,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The task ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "All logs for a task"
 					content: "application/json": schema: $ref: "#/components/schemas/Logs"
@@ -3416,10 +3297,12 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/runs/{runID}/logs": get: {
-			operationId:
-				"GetTasksIDRunsIDLogs", tags: ["Tasks"], summary:
-				"Retrieve all logs for a run", parameters: [{
+		}
+		"/tasks/{taskID}/runs/{runID}/logs": get: {
+			operationId: "GetTasksIDRunsIDLogs"
+			tags: ["Tasks"]
+			summary: "Retrieve all logs for a run"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3433,8 +3316,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "ID of run to get logs for."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "All logs for a run"
 					content: "application/json": schema: $ref: "#/components/schemas/Logs"
@@ -3444,11 +3327,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/labels": {
+		}
+		"/tasks/{taskID}/labels": {
 			get: {
-				operationId:
-					"GetTasksIDLabels", tags: ["Tasks"], summary:
-					"List all labels for a task", parameters: [{
+				operationId: "GetTasksIDLabels"
+				tags: ["Tasks"]
+				summary: "List all labels for a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3456,8 +3341,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -3467,10 +3352,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDLabels", tags: ["Tasks"], summary:
-					"Add a label to a task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDLabels"
+				tags: ["Tasks"]
+				summary: "Add a label to a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3478,13 +3365,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "A list of all labels for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -3495,10 +3382,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteTasksIDLabelsID", tags: ["Tasks"], summary:
-				"Delete a label from a task", parameters: [{
+		}
+		"/tasks/{taskID}/labels/{labelID}": delete: {
+			operationId: "DeleteTasksIDLabelsID"
+			tags: ["Tasks"]
+			summary: "Delete a label from a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3512,8 +3401,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The label ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Task not found"
@@ -3524,13 +3413,15 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/flags": get: {
-			operationId:
-				"GetFlags", tags: ["Users"], summary:
-				"Return the feature flags for the currently authenticated user", parameters: [{
+		}
+		"/flags": get: {
+			operationId: "GetFlags"
+			tags: ["Users"]
+			summary: "Return the feature flags for the currently authenticated user"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Feature flags for the currently authenticated user"
 					content: "application/json": schema: $ref: "#/components/schemas/Flags"
@@ -3540,13 +3431,15 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/me": get: {
-			operationId:
-				"GetMe", tags: ["Users"], summary:
-				"Retrieve the currently authenticated user", parameters: [{
+		}
+		"/me": get: {
+			operationId: "GetMe"
+			tags: ["Users"]
+			summary: "Retrieve the currently authenticated user"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The currently authenticated user."
 					content: "application/json": schema: $ref: "#/components/schemas/UserResponse"
@@ -3556,32 +3449,36 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/me/password": put: {
-			operationId:
-				"PutMePassword", tags: ["Users"], summary:
-				"Update a password", security: [{
-				BasicAuthentication: [
-
-				]}], parameters: [{
+		}
+		"/me/password": put: {
+			operationId: "PutMePassword"
+			tags: ["Users"]
+			summary: "Update a password"
+			security: [{
+				BasicAuthentication: []
+			}]
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "New password"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/PasswordResetBody"
-			}, responses: {
-
+			}
+			responses: {
 				"204": description: "Password successfully updated"
 				default: {
 					description: "Unsuccessful authentication"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/members": {
+		}
+		"/tasks/{taskID}/members": {
 			get: {
-				operationId:
-					"GetTasksIDMembers", tags: ["Tasks"], summary:
-					"List all task members", parameters: [{
+				operationId: "GetTasksIDMembers"
+				tags: ["Tasks"]
+				summary: "List all task members"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3589,8 +3486,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of users who have member privileges for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMembers"
@@ -3600,10 +3497,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDMembers", tags: ["Tasks"], summary:
-					"Add a member to a task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDMembers"
+				tags: ["Tasks"]
+				summary: "Add a member to a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3611,13 +3510,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as member"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added to task members"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceMember"
@@ -3628,10 +3527,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/members/{userID}": delete: {
-			operationId:
-				"DeleteTasksIDMembersID", tags: ["Tasks"], summary:
-				"Remove a member from a task", parameters: [{
+		}
+		"/tasks/{taskID}/members/{userID}": delete: {
+			operationId: "DeleteTasksIDMembersID"
+			tags: ["Tasks"]
+			summary: "Remove a member from a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3645,19 +3546,21 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The task ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Member removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/tasks/{taskID}/owners": {
+		}
+		"/tasks/{taskID}/owners": {
 			get: {
-				operationId:
-					"GetTasksIDOwners", tags: ["Tasks"], summary:
-					"List all owners of a task", parameters: [{
+				operationId: "GetTasksIDOwners"
+				tags: ["Tasks"]
+				summary: "List all owners of a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3665,8 +3568,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of users who have owner privileges for a task"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwners"
@@ -3676,10 +3579,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasksIDOwners", tags: ["Tasks"], summary:
-					"Add an owner to a task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasksIDOwners"
+				tags: ["Tasks"]
+				summary: "Add an owner to a task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3687,13 +3592,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The task ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to add as owner"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AddResourceMemberRequestBody"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added to task owners"
 						content: "application/json": schema: $ref: "#/components/schemas/ResourceOwner"
@@ -3704,10 +3609,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks/{taskID}/owners/{userID}": delete: {
-			operationId:
-				"DeleteTasksIDOwnersID", tags: ["Tasks"], summary:
-				"Remove an owner from a task", parameters: [{
+		}
+		"/tasks/{taskID}/owners/{userID}": delete: {
+			operationId: "DeleteTasksIDOwnersID"
+			tags: ["Tasks"]
+			summary: "Remove an owner from a task"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3721,21 +3628,23 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The task ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Owner removed"
 				default: {
 					description: "Unexpected error"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/users/{userID}/password": post: {
-			operationId:
-				"PostUsersIDPassword", tags: ["Users"], summary:
-				"Update a password", security: [{
-				BasicAuthentication: [
-
-				]}], parameters: [{
+		}
+		"/users/{userID}/password": post: {
+			operationId: "PostUsersIDPassword"
+			tags: ["Users"]
+			summary: "Update a password"
+			security: [{
+				BasicAuthentication: []
+			}]
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3743,24 +3652,26 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The user ID."
-			}], requestBody: {
-
+			}]
+			requestBody: {
 				description: "New password"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/PasswordResetBody"
-			}, responses: {
-
+			}
+			responses: {
 				"204": description: "Password successfully updated"
 				default: {
 					description: "Unsuccessful authentication"
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/checks": {
+		}
+		"/checks": {
 			get: {
-				operationId:
-					"GetChecks", tags: ["Checks"], summary:
-					"List all checks", parameters: [{
+				operationId: "GetChecks"
+				tags: ["Checks"]
+				summary: "List all checks"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -3772,8 +3683,8 @@ cloud: {
 					required:    true
 					description: "Only show checks that belong to a specific organization ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of checks"
 						content: "application/json": schema: $ref: "#/components/schemas/Checks"
@@ -3783,16 +3694,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateCheck", tags: ["Checks"], summary:
-					"Add new check", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateCheck"
+				tags: ["Checks"]
+				summary: "Add new check"
+				requestBody: {
 					description: "Check to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostCheck"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Check created"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3803,11 +3715,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/checks/{checkID}": {
+		}
+		"/checks/{checkID}": {
 			get: {
-				operationId:
-					"GetChecksID", tags: ["Checks"], summary:
-					"Retrieve a check", parameters: [{
+				operationId: "GetChecksID"
+				tags: ["Checks"]
+				summary: "Retrieve a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3815,8 +3729,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The check requested"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3826,15 +3740,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, put: {
-				operationId:
-					"PutChecksID", tags: ["Checks"], summary:
-					"Update a check", requestBody: {
-
+			}
+			put: {
+				operationId: "PutChecksID"
+				tags: ["Checks"]
+				summary: "Update a check"
+				requestBody: {
 					description: "Check update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Check"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3842,8 +3758,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated check"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3857,15 +3773,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchChecksID", tags: ["Checks"], summary:
-					"Update a check", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchChecksID"
+				tags: ["Checks"]
+				summary: "Update a check"
+				requestBody: {
 					description: "Check update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/CheckPatch"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3873,8 +3791,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated check"
 						content: "application/json": schema: $ref: "#/components/schemas/Check"
@@ -3888,10 +3806,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteChecksID", tags: ["Checks"], summary:
-					"Delete a check", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteChecksID"
+				tags: ["Checks"]
+				summary: "Delete a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3899,8 +3819,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "The check was not found"
@@ -3912,11 +3832,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/checks/{checkID}/labels": {
+		}
+		"/checks/{checkID}/labels": {
 			get: {
-				operationId:
-					"GetChecksIDLabels", tags: ["Checks"], summary:
-					"List all labels for a check", parameters: [{
+				operationId: "GetChecksIDLabels"
+				tags: ["Checks"]
+				summary: "List all labels for a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3924,8 +3846,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a check"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -3935,10 +3857,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostChecksIDLabels", tags: ["Checks"], summary:
-					"Add a label to a check", parameters: [{
+			}
+			post: {
+				operationId: "PostChecksIDLabels"
+				tags: ["Checks"]
+				summary: "Add a label to a check"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -3946,13 +3870,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The check ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The label was added to the check"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -3963,10 +3887,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/checks/{checkID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteChecksIDLabelsID", tags: ["Checks"], summary:
-				"Delete label from a check", parameters: [{
+		}
+		"/checks/{checkID}/labels/{labelID}": delete: {
+			operationId: "DeleteChecksIDLabelsID"
+			tags: ["Checks"]
+			summary: "Delete label from a check"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -3980,8 +3906,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Check or label not found"
@@ -3992,11 +3918,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationRules": {
+		}
+		"/notificationRules": {
 			get: {
-				operationId:
-					"GetNotificationRules", tags: ["NotificationRules"], summary:
-					"List all notification rules", parameters: [{
+				operationId: "GetNotificationRules"
+				tags: ["NotificationRules"]
+				summary: "List all notification rules"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -4022,8 +3950,8 @@ cloud: {
 						pattern: "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
 						example: "env:prod"
 					}
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of notification rules"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRules"
@@ -4033,16 +3961,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateNotificationRule", tags: ["NotificationRules"], summary:
-					"Add a notification rule", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateNotificationRule"
+				tags: ["NotificationRules"]
+				summary: "Add a notification rule"
+				requestBody: {
 					description: "Notification rule to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostNotificationRule"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Notification rule created"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -4053,10 +3982,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/checks/{checkID}/query": get: {
-			operationId:
-				"GetChecksIDQuery", tags: ["Checks"], summary:
-				"Retrieve a check query", parameters: [{
+		}
+		"/checks/{checkID}/query": get: {
+			operationId: "GetChecksIDQuery"
+			tags: ["Checks"]
+			summary: "Retrieve a check query"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4064,8 +3995,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The check ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The check query requested"
 					content: "application/json": schema: $ref: "#/components/schemas/FluxResponse"
@@ -4083,11 +4014,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationRules/{ruleID}": {
+		}
+		"/notificationRules/{ruleID}": {
 			get: {
-				operationId:
-					"GetNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Retrieve a notification rule", parameters: [{
+				operationId: "GetNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Retrieve a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4095,8 +4028,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The notification rule requested"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -4106,15 +4039,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, put: {
-				operationId:
-					"PutNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Update a notification rule", requestBody: {
-
+			}
+			put: {
+				operationId: "PutNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Update a notification rule"
+				requestBody: {
 					description: "Notification rule update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4122,8 +4057,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -4137,15 +4072,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Update a notification rule", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Update a notification rule"
+				requestBody: {
 					description: "Notification rule update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationRuleUpdate"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4153,8 +4090,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationRule"
@@ -4168,10 +4105,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteNotificationRulesID", tags: ["NotificationRules"], summary:
-					"Delete a notification rule", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteNotificationRulesID"
+				tags: ["NotificationRules"]
+				summary: "Delete a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4179,8 +4118,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "The check was not found"
@@ -4192,11 +4131,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/notificationRules/{ruleID}/labels": {
+		}
+		"/notificationRules/{ruleID}/labels": {
 			get: {
-				operationId:
-					"GetNotificationRulesIDLabels", tags: ["NotificationRules"], summary:
-					"List all labels for a notification rule", parameters: [{
+				operationId: "GetNotificationRulesIDLabels"
+				tags: ["NotificationRules"]
+				summary: "List all labels for a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4204,8 +4145,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -4215,10 +4156,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostNotificationRuleIDLabels", tags: ["NotificationRules"], summary:
-					"Add a label to a notification rule", parameters: [{
+			}
+			post: {
+				operationId: "PostNotificationRuleIDLabels"
+				tags: ["NotificationRules"]
+				summary: "Add a label to a notification rule"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4226,13 +4169,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification rule ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The label was added to the notification rule"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -4243,10 +4186,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/notificationRules/{ruleID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteNotificationRulesIDLabelsID", tags: ["NotificationRules"], summary:
-				"Delete label from a notification rule", parameters: [{
+		}
+		"/notificationRules/{ruleID}/labels/{labelID}": delete: {
+			operationId: "DeleteNotificationRulesIDLabelsID"
+			tags: ["NotificationRules"]
+			summary: "Delete label from a notification rule"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4260,8 +4205,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Rule or label not found"
@@ -4272,10 +4217,12 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationRules/{ruleID}/query": get: {
-			operationId:
-				"GetNotificationRulesIDQuery", tags: ["Rules"], summary:
-				"Retrieve a notification rule query", parameters: [{
+		}
+		"/notificationRules/{ruleID}/query": get: {
+			operationId: "GetNotificationRulesIDQuery"
+			tags: ["Rules"]
+			summary: "Retrieve a notification rule query"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4283,8 +4230,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The notification rule ID."
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The notification rule query requested"
 					content: "application/json": schema: $ref: "#/components/schemas/FluxResponse"
@@ -4302,11 +4249,13 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/notificationEndpoints": {
+		}
+		"/notificationEndpoints": {
 			get: {
-				operationId:
-					"GetNotificationEndpoints", tags: ["NotificationEndpoints"], summary:
-					"List all notification endpoints", parameters: [{
+				operationId: "GetNotificationEndpoints"
+				tags: ["NotificationEndpoints"]
+				summary: "List all notification endpoints"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -4318,8 +4267,8 @@ cloud: {
 					required:    true
 					description: "Only show notification endpoints that belong to specific organization ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of notification endpoints"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoints"
@@ -4329,16 +4278,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"CreateNotificationEndpoint", tags: ["NotificationEndpoints"], summary:
-					"Add a notification endpoint", requestBody: {
-
+			}
+			post: {
+				operationId: "CreateNotificationEndpoint"
+				tags: ["NotificationEndpoints"]
+				summary: "Add a notification endpoint"
+				requestBody: {
 					description: "Notification endpoint to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/PostNotificationEndpoint"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Notification endpoint created"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4349,11 +4299,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/notificationEndpoints/{endpointID}": {
+		}
+		"/notificationEndpoints/{endpointID}": {
 			get: {
-				operationId:
-					"GetNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Retrieve a notification endpoint", parameters: [{
+				operationId: "GetNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Retrieve a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4361,8 +4313,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The notification endpoint requested"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4372,15 +4324,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, put: {
-				operationId:
-					"PutNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Update a notification endpoint", requestBody: {
-
+			}
+			put: {
+				operationId: "PutNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Update a notification endpoint"
+				requestBody: {
 					description: "A new notification endpoint to replace the existing endpoint with"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4388,8 +4342,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4403,15 +4357,17 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Update a notification endpoint", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Update a notification endpoint"
+				requestBody: {
 					description: "Check update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpointUpdate"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4419,8 +4375,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "An updated notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/NotificationEndpoint"
@@ -4434,10 +4390,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteNotificationEndpointsID", tags: ["NotificationEndpoints"], summary:
-					"Delete a notification endpoint", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteNotificationEndpointsID"
+				tags: ["NotificationEndpoints"]
+				summary: "Delete a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4445,8 +4403,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Delete has been accepted"
 					"404": {
 						description: "The endpoint was not found"
@@ -4458,11 +4416,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/notificationEndpoints/{endpointID}/labels": {
+		}
+		"/notificationEndpoints/{endpointID}/labels": {
 			get: {
-				operationId:
-					"GetNotificationEndpointsIDLabels", tags: ["NotificationEndpoints"], summary:
-					"List all labels for a notification endpoint", parameters: [{
+				operationId: "GetNotificationEndpointsIDLabels"
+				tags: ["NotificationEndpoints"]
+				summary: "List all labels for a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4470,8 +4430,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of all labels for a notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelsResponse"
@@ -4481,10 +4441,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostNotificationEndpointIDLabels", tags: ["NotificationEndpoints"], summary:
-					"Add a label to a notification endpoint", parameters: [{
+			}
+			post: {
+				operationId: "PostNotificationEndpointIDLabels"
+				tags: ["NotificationEndpoints"]
+				summary: "Add a label to a notification endpoint"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4492,13 +4454,13 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The notification endpoint ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Label to add"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/LabelMapping"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The label was added to the notification endpoint"
 						content: "application/json": schema: $ref: "#/components/schemas/LabelResponse"
@@ -4509,10 +4471,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/notificationEndpoints/{endpointID}/labels/{labelID}": delete: {
-			operationId:
-				"DeleteNotificationEndpointsIDLabelsID", tags: ["NotificationEndpoints"], summary:
-				"Delete a label from a notification endpoint", parameters: [{
+		}
+		"/notificationEndpoints/{endpointID}/labels/{labelID}": delete: {
+			operationId: "DeleteNotificationEndpointsIDLabelsID"
+			tags: ["NotificationEndpoints"]
+			summary: "Delete a label from a notification endpoint"
+			parameters: [{
 				$ref: "#/components/parameters/TraceSpan"
 			}, {
 				in:   "path"
@@ -4526,8 +4490,8 @@ cloud: {
 				schema: type: "string"
 				required:    true
 				description: "The ID of the label to delete."
-			}], responses: {
-
+			}]
+			responses: {
 				"204": description: "Delete has been accepted"
 				"404": {
 					description: "Endpoint or label not found"
@@ -4538,14 +4502,16 @@ cloud: {
 					content: "application/json": schema: $ref: "#/components/schemas/Error"
 				}
 			}
-		}, "/users": {
+		}
+		"/users": {
 			get: {
-				operationId:
-					"GetUsers", tags: ["Users"], summary:
-					"List all users", parameters: [{
+				operationId: "GetUsers"
+				tags: ["Users"]
+				summary: "List all users"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of users"
 						content: "application/json": schema: $ref: "#/components/schemas/Users"
@@ -4555,18 +4521,20 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostUsers", tags: ["Users"], summary:
-					"Create a user", parameters: [{
+			}
+			post: {
+				operationId: "PostUsers"
+				tags: ["Users"]
+				summary: "Create a user"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "User to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/User"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "User created"
 						content: "application/json": schema: $ref: "#/components/schemas/UserResponse"
@@ -4577,11 +4545,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/users/{userID}": {
+		}
+		"/users/{userID}": {
 			get: {
-				operationId:
-					"GetUsersID", tags: ["Users"], summary:
-					"Retrieve a user", parameters: [{
+				operationId: "GetUsersID"
+				tags: ["Users"]
+				summary: "Retrieve a user"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4589,8 +4559,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The user ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "User details"
 						content: "application/json": schema: $ref: "#/components/schemas/UserResponse"
@@ -4600,15 +4570,17 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchUsersID", tags: ["Users"], summary:
-					"Update a user", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchUsersID"
+				tags: ["Users"]
+				summary: "Update a user"
+				requestBody: {
 					description: "User update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/User"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4616,8 +4588,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the user to update."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "User updated"
 						content: "application/json": schema: $ref: "#/components/schemas/UserResponse"
@@ -4627,10 +4599,12 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteUsersID", tags: ["Users"], summary:
-					"Delete a user", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteUsersID"
+				tags: ["Users"]
+				summary: "Delete a user"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4638,8 +4612,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The ID of the user to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "User deleted"
 					default: {
 						description: "Unexpected error"
@@ -4647,30 +4621,35 @@ cloud: {
 					}
 				}
 			}
-		}, "/setup": {
+		}
+		"/setup": {
 			get: {
-				operationId:
-					"GetSetup", tags: ["Setup"], summary:
-					"Retrieve setup status", description:
-					"Check if setup is allowed. Returns `true` if no default user, organization, or bucket have been created.", parameters: [{
+				operationId: "GetSetup"
+				tags: ["Setup"]
+				summary:     "Retrieve setup status"
+				description: "Check if setup is allowed. Returns `true` if no default user, organization, or bucket have been created."
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], responses: "200": {
+				}]
+				responses: "200": {
 					description: "Setup is allowed, true or false"
 					content: "application/json": schema: $ref: "#/components/schemas/IsOnboarding"
 				}
-			}, post: {
-				operationId:
-					"PostSetup", tags: ["Setup"], summary:
-					"Create an initial user, organization, and bucket", description:
-					"Post an onboarding request to create an initial user, organization, and bucket.", parameters: [{
+			}
+			post: {
+				operationId: "PostSetup"
+				tags: ["Setup"]
+				summary:     "Create an initial user, organization, and bucket"
+				description: "Post an onboarding request to create an initial user, organization, and bucket."
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Source to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/OnboardingRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "The created default user, bucket, and organization"
 						content: "application/json": schema: $ref: "#/components/schemas/OnboardingResponse"
@@ -4681,17 +4660,18 @@ cloud: {
 					}
 				}
 			}
-		}, "/setup/user": post: {
-			operationId:
-				"PostSetupUser", tags: ["Setup"], summary:
-				"Create a new user, organization, and bucket", description:
-				"Post an onboarding request to create a new user, organization, and bucket.", requestBody: {
-
+		}
+		"/setup/user": post: {
+			operationId: "PostSetupUser"
+			tags: ["Setup"]
+			summary:     "Create a new user, organization, and bucket"
+			description: "Post an onboarding request to create a new user, organization, and bucket."
+			requestBody: {
 				description: "Source to create"
 				required:    true
 				content: "application/json": schema: $ref: "#/components/schemas/OnboardingRequest"
-			}, responses: {
-
+			}
+			responses: {
 				"201": {
 					description: "The created default user, bucket, and organization."
 					content: "application/json": schema: $ref: "#/components/schemas/OnboardingResponse"
@@ -4701,11 +4681,13 @@ cloud: {
 					$ref:        "#/components/responses/ServerError"
 				}
 			}
-		}, "/authorizations": {
+		}
+		"/authorizations": {
 			get: {
-				operationId:
-					"GetAuthorizations", tags: ["Authorizations"], summary:
-					"List all authorizations", parameters: [{
+				operationId: "GetAuthorizations"
+				tags: ["Authorizations"]
+				summary: "List all authorizations"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "query"
@@ -4732,8 +4714,8 @@ cloud: {
 					name: "token"
 					schema: type: "string"
 					description: "Find a token by value."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of authorizations"
 						content: "application/json": schema: $ref: "#/components/schemas/Authorizations"
@@ -4743,18 +4725,20 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostAuthorizations", tags: ["Authorizations"], summary:
-					"Create an authorization", parameters: [{
+			}
+			post: {
+				operationId: "PostAuthorizations"
+				tags: ["Authorizations"]
+				summary: "Create an authorization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Authorization to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Authorization"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Authorization created"
 						content: "application/json": schema: $ref: "#/components/schemas/Authorization"
@@ -4769,11 +4753,12 @@ cloud: {
 					}
 				}
 			}
-		}, "/experimental/sampledata/buckets": get: {
-			operationId:
-				"GetDemoDataBuckets", tags: ["DemoDataBuckets"], summary:
-				"List of Demo Data Buckets", responses: {
-
+		}
+		"/experimental/sampledata/buckets": get: {
+			operationId: "GetDemoDataBuckets"
+			tags: ["DemoDataBuckets"]
+			summary: "List of Demo Data Buckets"
+			responses: {
 				"200": {
 					description: "A list of demo data buckets"
 					content: "application/json": schema: $ref: "#/components/schemas/DemoDataBuckets"
@@ -4783,36 +4768,20 @@ cloud: {
 					$ref:        "#/components/responses/ServerError"
 				}
 			}
-		}, "/experimental/sampledata/buckets/{bucketID}/members": {
+		}
+		"/experimental/sampledata/buckets/{bucketID}/members": {
 			post: {
-				operationId:
-					"GetDemoDataBucketMembers", tags: ["DemoDataBuckets"], summary:
-					"List of Demo Data Buckets", parameters: [{
+				operationId: "GetDemoDataBucketMembers"
+				tags: ["DemoDataBuckets"]
+				summary: "List of Demo Data Buckets"
+				parameters: [{
 					in:       "path"
 					name:     "bucketID"
 					required: true
 					schema: type: "string"
 					description: "bucket id"
-				}], responses: {
-
-					"200": description: "if sampledata route is not available gateway responds with 200"
-					"204": description: "A list of demo data buckets"
-					default: {
-						description: "Unexpected error"
-						content: "application/json": schema: $ref: "#/components/schemas/Error"
-					}
-				}
-			}, delete: {
-				operationId:
-					"DeleteDemoDataBucketMembers", tags: ["DemoDataBuckets"], summary:
-					"List of Demo Data Buckets", parameters: [{
-					in:       "path"
-					name:     "bucketID"
-					required: true
-					schema: type: "string"
-					description: "bucket id"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": description: "if sampledata route is not available gateway responds with 200"
 					"204": description: "A list of demo data buckets"
 					default: {
@@ -4821,11 +4790,33 @@ cloud: {
 					}
 				}
 			}
-		}, "/authorizations/{authID}": {
+			delete: {
+				operationId: "DeleteDemoDataBucketMembers"
+				tags: ["DemoDataBuckets"]
+				summary: "List of Demo Data Buckets"
+				parameters: [{
+					in:       "path"
+					name:     "bucketID"
+					required: true
+					schema: type: "string"
+					description: "bucket id"
+				}]
+				responses: {
+					"200": description: "if sampledata route is not available gateway responds with 200"
+					"204": description: "A list of demo data buckets"
+					default: {
+						description: "Unexpected error"
+						content: "application/json": schema: $ref: "#/components/schemas/Error"
+					}
+				}
+			}
+		}
+		"/authorizations/{authID}": {
 			get: {
-				operationId:
-					"GetAuthorizationsID", tags: ["Authorizations"], summary:
-					"Retrieve an authorization", parameters: [{
+				operationId: "GetAuthorizationsID"
+				tags: ["Authorizations"]
+				summary: "Retrieve an authorization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4833,8 +4824,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The identifier of the authorization to get."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Authorization details"
 						content: "application/json": schema: $ref: "#/components/schemas/Authorization"
@@ -4844,16 +4835,18 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchAuthorizationsID", tags: ["Authorizations"], summary:
-					"Update authorization status", description:
-					"Update an authorization's status to `active` or `inactive`.", requestBody: {
-
+			}
+			patch: {
+				operationId: "PatchAuthorizationsID"
+				tags: ["Authorizations"]
+				summary:     "Update authorization status"
+				description: "Update an authorization's status to `active` or `inactive`."
+				requestBody: {
 					description: "The updated Authorization object."
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/AuthorizationUpdateRequest"
-				}, parameters: [{
+				}
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4861,8 +4854,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The identifier of the authorization to update."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "The updated authorization."
 						content: "application/json": schema: $ref: "#/components/schemas/Authorization"
@@ -4872,10 +4865,12 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteAuthorizationsID", tags: ["Authorizations"], summary:
-					"Delete an authorization", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteAuthorizationsID"
+				tags: ["Authorizations"]
+				summary: "Delete an authorization"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:   "path"
@@ -4883,8 +4878,8 @@ cloud: {
 					schema: type: "string"
 					required:    true
 					description: "The identifier of the authorization to delete."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Authorization deleted"
 					default: {
 						description: "Unexpected error"
@@ -4892,11 +4887,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/variables": {
+		}
+		"/variables": {
 			get: {
-				operationId:
-					"GetVariables", tags: ["Variables"], summary:
-					"List all variables", parameters: [{
+				operationId: "GetVariables"
+				tags: ["Variables"]
+				summary: "List all variables"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:          "query"
@@ -4908,8 +4905,8 @@ cloud: {
 					name:        "orgID"
 					description: "The organization ID."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of variables for an organization."
 						content: "application/json": schema: $ref: "#/components/schemas/Variables"
@@ -4923,18 +4920,20 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostVariables", summary:
-					"Create a variable", tags: ["Variables"], parameters: [{
+			}
+			post: {
+				operationId: "PostVariables"
+				summary:     "Create a variable"
+				tags: ["Variables"]
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Variable to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Variable"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Variable created"
 						content: "application/json": schema: $ref: "#/components/schemas/Variable"
@@ -4945,11 +4944,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/variables/{variableID}": {
+		}
+		"/variables/{variableID}": {
 			get: {
-				operationId:
-					"GetVariablesID", tags: ["Variables"], summary:
-					"Retrieve a variable", parameters: [{
+				operationId: "GetVariablesID"
+				tags: ["Variables"]
+				summary: "Retrieve a variable"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:       "path"
@@ -4957,8 +4958,8 @@ cloud: {
 					required: true
 					schema: type: "string"
 					description: "The variable ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "Variable found"
 						content: "application/json": schema: $ref: "#/components/schemas/Variable"
@@ -4972,10 +4973,12 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, delete: {
-				operationId:
-					"DeleteVariablesID", tags: ["Variables"], summary:
-					"Delete a variable", parameters: [{
+			}
+			delete: {
+				operationId: "DeleteVariablesID"
+				tags: ["Variables"]
+				summary: "Delete a variable"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:       "path"
@@ -4983,18 +4986,20 @@ cloud: {
 					required: true
 					schema: type: "string"
 					description: "The variable ID."
-				}], responses: {
-
+				}]
+				responses: {
 					"204": description: "Variable deleted"
 					default: {
 						description: "Internal server error"
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, patch: {
-				operationId:
-					"PatchVariablesID", summary:
-					"Update a variable", tags: ["Variables"], parameters: [{
+			}
+			patch: {
+				operationId: "PatchVariablesID"
+				summary:     "Update a variable"
+				tags: ["Variables"]
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:       "path"
@@ -5002,40 +5007,13 @@ cloud: {
 					required: true
 					schema: type: "string"
 					description: "The variable ID."
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Variable update to apply"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/Variable"
-				}, responses: {
-
-					"200": {
-						description: "Variable updated"
-						content: "application/json": schema: $ref: "#/components/schemas/Variable"
-					}
-					default: {
-						description: "Internal server error"
-						$ref:        "#/components/responses/ServerError"
-					}
 				}
-			}, put: {
-				operationId:
-					"PutVariablesID", summary:
-					"Replace a variable", tags: ["Variables"], parameters: [{
-					$ref: "#/components/parameters/TraceSpan"
-				}, {
-					in:       "path"
-					name:     "variableID"
-					required: true
-					schema: type: "string"
-					description: "The variable ID."
-				}], requestBody: {
-
-					description: "Variable to replace"
-					required:    true
-					content: "application/json": schema: $ref: "#/components/schemas/Variable"
-				}, responses: {
-
+				responses: {
 					"200": {
 						description: "Variable updated"
 						content: "application/json": schema: $ref: "#/components/schemas/Variable"
@@ -5046,12 +5024,42 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/schema/measurements": {
-			summary:
-				"Bucket schemas", get: {
-				summary:
-					"List all measurement schemas of a bucket", operationId:
-					"getMeasurementSchemas", parameters: [{
+			put: {
+				operationId: "PutVariablesID"
+				summary:     "Replace a variable"
+				tags: ["Variables"]
+				parameters: [{
+					$ref: "#/components/parameters/TraceSpan"
+				}, {
+					in:       "path"
+					name:     "variableID"
+					required: true
+					schema: type: "string"
+					description: "The variable ID."
+				}]
+				requestBody: {
+					description: "Variable to replace"
+					required:    true
+					content: "application/json": schema: $ref: "#/components/schemas/Variable"
+				}
+				responses: {
+					"200": {
+						description: "Variable updated"
+						content: "application/json": schema: $ref: "#/components/schemas/Variable"
+					}
+					default: {
+						description: "Internal server error"
+						$ref:        "#/components/responses/ServerError"
+					}
+				}
+			}
+		}
+		"/buckets/{bucketID}/schema/measurements": {
+			summary: "Bucket schemas"
+			get: {
+				summary:     "List all measurement schemas of a bucket"
+				operationId: "getMeasurementSchemas"
+				parameters: [{
 					in:          "query"
 					name:        "org"
 					description: "The name of the organization."
@@ -5072,8 +5080,9 @@ cloud: {
 					description: "The identifier of the bucket."
 					schema: type: "string"
 					required: true
-				}], tags: ["Bucket Schemas"], responses: {
-
+				}]
+				tags: ["Bucket Schemas"]
+				responses: {
 					"200": {
 						description: "A list of measurement schemas returning summary information."
 						headers: ETag: {
@@ -5087,10 +5096,11 @@ cloud: {
 						$ref:        "#/components/responses/ServerError"
 					}
 				}
-			}, post: {
-				summary:
-					"Create a measurement schema for a bucket", operationId:
-					"createMeasurementSchema", parameters: [{
+			}
+			post: {
+				summary:     "Create a measurement schema for a bucket"
+				operationId: "createMeasurementSchema"
+				parameters: [{
 					in:          "query"
 					name:        "org"
 					description: "The name of the organization."
@@ -5105,9 +5115,11 @@ cloud: {
 					name:        "bucketID"
 					description: "The identifier of the bucket."
 					schema: type: "string"
-															required: true
-				}], tags: ["Bucket Schemas"], requestBody: content: "application/json": schema: $ref: "#/components/schemas/MeasurementSchemaCreateRequest", responses: {
-
+					required: true
+				}]
+				tags: ["Bucket Schemas"]
+				requestBody: content: "application/json": schema: $ref: "#/components/schemas/MeasurementSchemaCreateRequest"
+				responses: {
 					"201": {
 						description: "The created measurement schema."
 						headers: ETag: {
@@ -5166,12 +5178,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/buckets/{bucketID}/schema/measurements/{measurementID}": {
-			summary:
-				"Bucket Schema", get: {
-				summary:
-					"Retrieve measurement schema information", operationId:
-					"getMeasurementSchema", parameters: [{
+		}
+		"/buckets/{bucketID}/schema/measurements/{measurementID}": {
+			summary: "Bucket Schema"
+			get: {
+				summary:     "Retrieve measurement schema information"
+				operationId: "getMeasurementSchema"
+				parameters: [{
 					in:          "query"
 					name:        "org"
 					description: "The name of the organization."
@@ -5193,7 +5206,9 @@ cloud: {
 					description: "The identifier of the measurement."
 					schema: type: "string"
 					required: true
-				}], tags: ["Bucket Schemas"], responses: "200": {
+				}]
+				tags: ["Bucket Schemas"]
+				responses: "200": {
 					description: "Schema definition for a single measurement"
 					headers: ETag: {
 						description: "The current version of the measurement schema"
@@ -5201,10 +5216,11 @@ cloud: {
 					}
 					content: "application/json": schema: $ref: "#/components/schemas/MeasurementSchema"
 				}
-			}, patch: {
-				summary:
-					"Update a measurement schema", operationId:
-					"updateMeasurementSchema", parameters: [{
+			}
+			patch: {
+				summary:     "Update a measurement schema"
+				operationId: "updateMeasurementSchema"
+				parameters: [{
 					in:          "query"
 					name:        "org"
 					description: "The name of the organization."
@@ -5225,9 +5241,11 @@ cloud: {
 					name:        "measurementID"
 					description: "The identifier of the measurement."
 					schema: type: "string"
-															required: true
-				}], tags: ["Bucket Schemas"], requestBody: content: "application/json": schema: $ref: "#/components/schemas/MeasurementSchemaUpdateRequest", responses: {
-
+					required: true
+				}]
+				tags: ["Bucket Schemas"]
+				requestBody: content: "application/json": schema: $ref: "#/components/schemas/MeasurementSchemaUpdateRequest"
+				responses: {
 					"200": {
 						description: "The updated measurement schema"
 						content: "application/json": schema: $ref: "#/components/schemas/MeasurementSchema"
@@ -5248,23 +5266,25 @@ cloud: {
 					}
 				}
 			}
-		}, "/orgs/{orgID}/limits": get: {
-			tags: ["Limits"], summary:
-				"Retrieve limits for an organization", parameters: [{
+		}
+		"/orgs/{orgID}/limits": get: {
+			tags: ["Limits"]
+			summary: "Retrieve limits for an organization"
+			parameters: [{
 				in:          "path"
 				name:        "orgID"
 				description: "The identifier of the organization."
 				required:    true
 				schema: type: "string"
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "The Limits defined for the organization."
 					content: "application/json": schema: {
 						type:        "object"
 						description: "These are org limits similar to those configured in/by quartz."
 						properties: {
-							links: $ref: "#/components/schemas/Links"
+							links: $ref:  "#/components/schemas/Links"
 							limits: $ref: "#/components/schemas/Limit"
 						}
 					}
@@ -5274,9 +5294,11 @@ cloud: {
 					$ref:        "#/components/responses/ServerError"
 				}
 			}
-		}, "/orgs/{orgID}/usage": get: {
-			tags: ["Usage"], summary:
-				"Retrieve usage for an organization", parameters: [{
+		}
+		"/orgs/{orgID}/usage": get: {
+			tags: ["Usage"]
+			summary: "Retrieve usage for an organization"
+			parameters: [{
 				in:          "path"
 				name:        "orgID"
 				description: "The identifier of the organization."
@@ -5303,8 +5325,8 @@ cloud: {
 					type:    "boolean"
 					default: false
 				}
-			}], responses: {
-
+			}]
+			responses: {
 				"200": {
 					description: "Usage data"
 					headers: "Content-Encoding": {
@@ -5313,39 +5335,37 @@ cloud: {
 							type:        "string"
 							description: "The content coding. `gzip` for compressed data or `identity` for unmodified, uncompressed data."
 							default:     "identity"
-							enum: [
-								"gzip",
-								"identity",
-							]
+							enum: ["gzip", "identity"]
 						}
 					}
 					content: "text/csv": schema: {
 						type: "string"
 						example: """
-		#group,false,false,true,true,false,false,true,true,true,true #datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,double,string,string,string,string #default,_result,,,,,,,,, ,result,table,_start,_stop,_time,_value,_field,_measurement,bucket_id,org_id ,,0,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,5434066,gauge,storage_usage_bucket_bytes,2f6ba0cf9a2fdcbb,cec6fc1d2176dc11 ,,1,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,9924053.966666665,gauge,storage_usage_bucket_bytes,8af67bcaf69d9daf,cec6fc1d2176dc11
+										#group,false,false,true,true,false,false,true,true,true,true #datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,double,string,string,string,string #default,_result,,,,,,,,, ,result,table,_start,_stop,_time,_value,_field,_measurement,bucket_id,org_id ,,0,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,5434066,gauge,storage_usage_bucket_bytes,2f6ba0cf9a2fdcbb,cec6fc1d2176dc11 ,,1,2021-05-10T14:25:10.865702397Z,2021-05-10T15:25:10.865702397Z,2021-05-10T15:00:00Z,9924053.966666665,gauge,storage_usage_bucket_bytes,8af67bcaf69d9daf,cec6fc1d2176dc11
 
-		"""
+										"""
 					}
 				}
-
 				default: {
 					description: "unexpected error"
 					$ref:        "#/components/responses/ServerError"
 				}
 			}
-		}, "/dashboards": {
+		}
+		"/dashboards": {
 			post: {
-				operationId:
-					"PostDashboards", tags: ["Dashboards"], summary:
-					"Create a dashboard", parameters: [{
+				operationId: "PostDashboards"
+				tags: ["Dashboards"]
+				summary: "Create a dashboard"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Dashboard to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/CreateDashboardRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Added dashboard"
 						content: "application/json": schema: oneOf: [{
@@ -5359,10 +5379,12 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, get: {
-				operationId:
-					"GetDashboards", tags: ["Dashboards"], summary:
-					"List all dashboards", parameters: [{
+			}
+			get: {
+				operationId: "GetDashboards"
+				tags: ["Dashboards"]
+				summary: "List all dashboards"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					$ref: "#/components/parameters/Offset"
@@ -5389,11 +5411,7 @@ cloud: {
 					description: "The column to sort by."
 					schema: {
 						type: "string"
-						enum: [
-							"ID",
-							"CreatedAt",
-							"UpdatedAt",
-						]
+						enum: ["ID", "CreatedAt", "UpdatedAt"]
 					}
 				}, {
 					in:          "query"
@@ -5413,8 +5431,8 @@ cloud: {
 					name:        "org"
 					description: "The name of the organization."
 					schema: type: "string"
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "All dashboards"
 						content: "application/json": schema: $ref: "#/components/schemas/Dashboards"
@@ -5425,11 +5443,13 @@ cloud: {
 					}
 				}
 			}
-		}, "/tasks": {
+		}
+		"/tasks": {
 			get: {
-				operationId:
-					"GetTasks", tags: ["Tasks"], summary:
-					"List all tasks", parameters: [{
+				operationId: "GetTasks"
+				tags: ["Tasks"]
+				summary: "List all tasks"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
 				}, {
 					in:          "query"
@@ -5461,10 +5481,7 @@ cloud: {
 					name: "status"
 					schema: {
 						type: "string"
-						enum: [
-							"active",
-							"inactive",
-						]
+						enum: ["active", "inactive"]
 					}
 					description: "Filter tasks by a status--\"inactive\" or \"active\"."
 				}, {
@@ -5485,13 +5502,10 @@ cloud: {
 					schema: {
 						default: ""
 						type:    "string"
-						enum: [
-							"basic",
-							"system",
-						]
+						enum: ["basic", "system"]
 					}
-				}], responses: {
-
+				}]
+				responses: {
 					"200": {
 						description: "A list of tasks"
 						content: "application/json": schema: $ref: "#/components/schemas/Tasks"
@@ -5501,18 +5515,20 @@ cloud: {
 						content: "application/json": schema: $ref: "#/components/schemas/Error"
 					}
 				}
-			}, post: {
-				operationId:
-					"PostTasks", tags: ["Tasks"], summary:
-					"Create a new task", parameters: [{
+			}
+			post: {
+				operationId: "PostTasks"
+				tags: ["Tasks"]
+				summary: "Create a new task"
+				parameters: [{
 					$ref: "#/components/parameters/TraceSpan"
-				}], requestBody: {
-
+				}]
+				requestBody: {
 					description: "Task to create"
 					required:    true
 					content: "application/json": schema: $ref: "#/components/schemas/TaskCreateRequest"
-				}, responses: {
-
+				}
+				responses: {
 					"201": {
 						description: "Task created"
 						content: "application/json": schema: $ref: "#/components/schemas/Task"
@@ -5523,136 +5539,120 @@ cloud: {
 					}
 				}
 			}
-		}, "/write": post: {
-			operationId:
-				"PostWrite", tags: ["Write"], summary:
-				"Write data", description:
+		}
+		"/write": post: {
+			operationId: "PostWrite"
+			tags: ["Write"]
+			summary: "Write data"
+			description: """
+				Writes data to a bucket.
+
+				To write data into InfluxDB, you need the following:
+
+				- **organization name or ID** – _See [View organizations](https://docs.influxdata.com/influxdb/cloud/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+				- **bucket** – _See [View buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/view-buckets/) for
+				 instructions on viewing your bucket ID._
+				- **API token** – _See [View tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/)
+				 for instructions on viewing your API token._
+				- **InfluxDB URL** – _See [InfluxDB URLs](https://docs.influxdata.com/influxdb/cloud/reference/urls/)_.
+				- data in [line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol) format.
+
+				For more information and examples, see the following:
+				- [Write data with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/write-data/developer-tools/api).
+				- [Optimize writes to InfluxDB](https://docs.influxdata.com/influxdb/cloud/write-data/best-practices/optimize-writes/).
+
 				"""
-					Writes data to a bucket.
-
-					To write data into InfluxDB, you need the following:
-
-					- **organization name or ID** – _See [View organizations](https://docs.influxdata.com/influxdb/cloud/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
-					- **bucket** – _See [View buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/view-buckets/) for
-					 instructions on viewing your bucket ID._
-					- **API token** – _See [View tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/)
-					 for instructions on viewing your API token._
-					- **InfluxDB URL** – _See [InfluxDB URLs](https://docs.influxdata.com/influxdb/cloud/reference/urls/)_.
-					- data in [line protocol](https://docs.influxdata.com/influxdb/cloud/reference/syntax/line-protocol) format.
-
-					For more information and examples, see the following:
-					- [Write data with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/write-data/developer-tools/api).
-					- [Optimize writes to InfluxDB](https://docs.influxdata.com/influxdb/cloud/write-data/best-practices/optimize-writes/).
-
-					"""
-
 			requestBody: {
-				description:
-					"Data in line protocol format.", required:
-					true, content: "text/plain": schema: {
-					type:
-						"string", format:
-						"byte"
+				description: "Data in line protocol format."
+				required:    true
+				content: "text/plain": schema: {
+					type:   "string"
+					format: "byte"
 				}
-			}, parameters: [{
-				$ref:
-					"#/components/parameters/TraceSpan"
+			}
+			parameters: [{
+				$ref: "#/components/parameters/TraceSpan"
 			}, {
-				in: "header"
-				name:
-					"Content-Encoding", description:
+				in:   "header"
+				name: "Content-Encoding"
+				description: """
+					The value tells InfluxDB what compression is applied to the line protocol in the request payload.
+					To make an API request with a GZIP payload, send `Content-Encoding: gzip` as a request header.
+
 					"""
-						The value tells InfluxDB what compression is applied to the line protocol in the request payload.
-						To make an API request with a GZIP payload, send `Content-Encoding: gzip` as a request header.
-
-						"""
-
 				schema: {
-					type:
-						"string", description:
-						"The content coding. Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.", default:
-						"identity", enum: [
-						"gzip",
-						"identity",
-					]
+					type:        "string"
+					description: "The content coding. Use `gzip` for compressed data or `identity` for unmodified, uncompressed data."
+					default:     "identity"
+					enum: ["gzip", "identity"]
 				}
 			}, {
-				in: "header"
-				name:
-					"Content-Type", description:
-					"The header value indicates the format of the data in the request body.", schema: {
-					type:
-						"string", description:
-						"""
-		`text/plain` specifies line protocol. `UTF-8` is the default character set.
+				in:          "header"
+				name:        "Content-Type"
+				description: "The header value indicates the format of the data in the request body."
+				schema: {
+					type: "string"
+					description: """
+						`text/plain` specifies line protocol. `UTF-8` is the default character set.
 
-		"""
-					default:
-						"text/plain; charset=utf-8", enum: [
-						"text/plain",
-						"text/plain; charset=utf-8",
-						"application/vnd.influx.arrow",
-					]
+						"""
+					default: "text/plain; charset=utf-8"
+					enum: ["text/plain", "text/plain; charset=utf-8", "application/vnd.influx.arrow"]
 				}
 			}, {
-				in: "header"
-				name:
-					"Content-Length", description:
-					"The header value indicates the size of the entity-body, in bytes, sent to the database. If the length is greater than the database's `max body` configuration option, the server responds with status code `413`.", schema: {
-					type:
-						"integer", description:
-						"The length in decimal number of octets."
+				in:          "header"
+				name:        "Content-Length"
+				description: "The header value indicates the size of the entity-body, in bytes, sent to the database. If the length is greater than the database's `max body` configuration option, the server responds with status code `413`."
+				schema: {
+					type:        "integer"
+					description: "The length in decimal number of octets."
 				}
 			}, {
-				in: "header"
-				name:
-					"Accept", description:
-					"The header value specifies the response format.", schema: {
-					type:
-						"string", description:
-						"The response format for errors.", default:
-						"application/json", enum: [
-						"application/json",
-					]
+				in:          "header"
+				name:        "Accept"
+				description: "The header value specifies the response format."
+				schema: {
+					type:        "string"
+					description: "The response format for errors."
+					default:     "application/json"
+					enum: ["application/json"]
 				}
 			}, {
-				in: "query"
-				name:
-					"org", description:
-					"The parameter value specifies the destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence.", required:
-					true, schema: {
-					type:
-						"string", description:
-						"Organization name or ID."
+				in:          "query"
+				name:        "org"
+				description: "The parameter value specifies the destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence."
+				required:    true
+				schema: {
+					type:        "string"
+					description: "Organization name or ID."
 				}
 			}, {
-				in: "query"
-				name:
-					"orgID", description:
-					"The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.", schema: type:
-					"string"
+				in:          "query"
+				name:        "orgID"
+				description: "The parameter value specifies the ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence."
+				schema: type: "string"
 			}, {
-				in: "query"
-				name:
-					"bucket", description:
-					"The destination bucket for writes.", required:
-					true, schema: {
-					type:
-						"string", description:
-						"All points within batch are written to this bucket."
+				in:          "query"
+				name:        "bucket"
+				description: "The destination bucket for writes."
+				required:    true
+				schema: {
+					type:        "string"
+					description: "All points within batch are written to this bucket."
 				}
 			}, {
-				in: "query"
-				name:
-					"precision", description:
-					"The precision for the unix timestamps within the body line-protocol.", schema: $ref:
-					"#/components/schemas/WritePrecision"
-			}], responses: {
-				"204": description:
-					"InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot).", "400": {
-					description:
-						"Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.", content: "application/json": {
-						schema: $ref: "#/components/schemas/LineProtocolError", examples: measurementSchemaFieldTypeConflict: {
+				in:          "query"
+				name:        "precision"
+				description: "The precision for the unix timestamps within the body line-protocol."
+				schema: $ref: "#/components/schemas/WritePrecision"
+			}]
+			responses: {
+				"204": description: "InfluxDB validated the request data format and accepted the data for writing to the bucket. `204` doesn't indicate a successful write operation since writes are asynchronous. See [how to check for write errors](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot)."
+				"400": {
+					description: "Bad request. The line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data."
+					content: "application/json": {
+						schema: $ref: "#/components/schemas/LineProtocolError"
+						examples: measurementSchemaFieldTypeConflict: {
 							summary: "Field type conflict thrown by an explicit bucket schema"
 							value: {
 								code:    "invalid"
@@ -5660,18 +5660,18 @@ cloud: {
 							}
 						}
 					}
-				}, "401": {
-					description:
+				}
+				"401": {
+					description: """
+						Unauthorized. The error may indicate one of the following:
+						  * The `Authorization: Token` header is missing or malformed.
+						  * The API token value is missing from the header.
+						  * The token does not have sufficient permissions to write to this organization and bucket.
+
 						"""
-		Unauthorized. The error may indicate one of the following:
-		  * The `Authorization: Token` header is missing or malformed.
-		  * The API token value is missing from the header.
-		  * The token does not have sufficient permissions to write to this organization and bucket.
-
-		"""
-
 					content: "application/json": {
-						schema: $ref: "#/components/schemas/Error", examples: tokenNotAuthorized: {
+						schema: $ref: "#/components/schemas/Error"
+						examples: tokenNotAuthorized: {
 							summary: "Token is not authorized to access the organization or resource"
 							value: {
 								code:    "unauthorized"
@@ -5679,10 +5679,12 @@ cloud: {
 							}
 						}
 					}
-				}, "404": {
-					description:
-						"Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name.", content: "application/json": {
-						schema: $ref: "#/components/schemas/Error", examples: "resource-not-found": {
+				}
+				"404": {
+					description: "Not found. A requested resource was not found. The response body contains the requested resource type, e.g. `organization name` or `bucket`, and name."
+					content: "application/json": {
+						schema: $ref: "#/components/schemas/Error"
+						examples: "resource-not-found": {
 							summary: "Not found error"
 							value: {
 								code:    "not found"
@@ -5690,1032 +5692,963 @@ cloud: {
 							}
 						}
 					}
-				}, "413": {
-					description:
-						"Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data.", content: "text/html": {
-						schema: type: "string", examples: dataExceedsSizeLimit: {
+				}
+				"413": {
+					description: "Request entity too large. The payload exceeded the 50MB size limit. InfluxDB rejected the batch and did not write any data."
+					content: "text/html": {
+						schema: type: "string"
+						examples: dataExceedsSizeLimit: {
 							summary: "Cloud response"
 							value: """
-		<html>
-		  <head><title>413 Request Entity Too Large</title></head>
-		  <body>
-		    <center><h1>413 Request Entity Too Large</h1></center>
-		    <hr>
-		    <center>nginx</center>
-		  </body>
-		</html>
+											<html>
+											  <head><title>413 Request Entity Too Large</title></head>
+											  <body>
+											    <center><h1>413 Request Entity Too Large</h1></center>
+											    <hr>
+											    <center>nginx</center>
+											  </body>
+											</html>
 
-		"""
+											"""
 						}
 					}
 				}
-
 				"429": {
-					description:
-						"The token is temporarily over quota. The Retry-After header describes when to try the write again.", headers: "Retry-After": {
-						description:
-							"A non-negative decimal integer indicating the seconds to delay after the response is received.", schema: {
-
+					description: "The token is temporarily over quota. The Retry-After header describes when to try the write again."
+					headers: "Retry-After": {
+						description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
+						schema: {
 							type:   "integer"
 							format: "int32"
 						}
 					}
-				}, "500": {
-					description:
-						"Internal server error.", content: "application/json": {
-						schema: $ref: "#/components/schemas/Error", examples: internalError: {
+				}
+				"500": {
+					description: "Internal server error."
+					content: "application/json": {
+						schema: $ref: "#/components/schemas/Error"
+						examples: internalError: {
 							summary: "Internal error example"
 							value: code: "internal error"
 						}
 					}
-				}, "503": {
-					description:
-						"The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again.", headers: "Retry-After": {
-						description:
-							"A non-negative decimal integer indicating the seconds to delay after the response is received.", schema: {
-
+				}
+				"503": {
+					description: "The server is temporarily unavailable to accept writes.  The `Retry-After` header describes when to try the write again."
+					headers: "Retry-After": {
+						description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
+						schema: {
 							type:   "integer"
 							format: "int32"
 						}
 					}
-				}, default: $ref:
-					"#/components/responses/ServerError"
+				}
+				default: $ref: "#/components/responses/ServerError"
 			}
 		}
-	}, components: {parameters: {
-
-		TraceSpan: {
-			in:   "header"
-			name: "Zap-Trace-Span"
-			description:
-				"OpenTracing span context", example: {
-				trace_id:
-					"1", span_id:
-					"1", baggage: key:
-					"value"
-			}, required:
-				false, schema: type: "string"
-		}
-		Offset: {
-			in:   "query"
-			name: "offset"
-			required:
-				false, schema: {
-				type: "integer"
-				minimum:
-					0
+	}
+	components: {
+		parameters: {
+			TraceSpan: {
+				in:          "header"
+				name:        "Zap-Trace-Span"
+				description: "OpenTracing span context"
+				example: {
+					trace_id: "1"
+					span_id:  "1"
+					baggage: key: "value"
+				}
+				required: false
+				schema: type: "string"
 			}
-		}, Limit: {
-			in:   "query"
-			name: "limit"
-			required:
-				false, schema: {
-				type: "integer"
-				minimum:
-					1, maximum:
-					100, default:
-					20
+			Offset: {
+				in:       "query"
+				name:     "offset"
+				required: false
+				schema: {
+					type:    "integer"
+					minimum: 0
+				}
 			}
-		}, Descending: {
-			in:   "query"
-			name: "descending"
-			required:
-				false, schema: {
-				type: "boolean"
-				default:
-					false
+			Limit: {
+				in:       "query"
+				name:     "limit"
+				required: false
+				schema: {
+					type:    "integer"
+					minimum: 1
+					maximum: 100
+					default: 20
+				}
 			}
-		}, SortBy: {
-			in:   "query"
-			name: "sortBy"
-			required:
-				false, schema: type: "string"
-		}
-		After: {
-			in:   "query"
-			name: "after"
-			required:
-				false, schema: type: "string"
-			description:
-				"""
+			Descending: {
+				in:       "query"
+				name:     "descending"
+				required: false
+				schema: {
+					type:    "boolean"
+					default: false
+				}
+			}
+			SortBy: {
+				in:       "query"
+				name:     "sortBy"
+				required: false
+				schema: type: "string"
+			}
+			After: {
+				in:       "query"
+				name:     "after"
+				required: false
+				schema: type: "string"
+				description: """
 					The last resource ID from which to seek from (but not including). This is to be used instead of `offset`.
 
 					"""
+			}
 		}
-	}
 		schemas: {
 			LanguageRequest: {
-				description:
-					"Flux query to be analyzed.", type: "object"
-				required: [
-					"query",
-				]
+				description: "Flux query to be analyzed."
+				type:        "object"
+				required: ["query"]
 				properties: query: {
-					description:
-						"Flux query script to be analyzed", type:
-						"string"
+					description: "Flux query script to be analyzed"
+					type:        "string"
 				}
-			}, Query: {
-				description:
-					"Query influx using the Flux language", type: "object"
-				required: [
-					"query",
-				]
+			}
+			Query: {
+				description: "Query influx using the Flux language"
+				type:        "object"
+				required: ["query"]
 				properties: {
-					extern: $ref:
-						"#/components/schemas/File", query: {
-						description:
-							"Query script to execute.", type:
-							"string"
-					}, type: {
-						description:
-							"The type of query. Must be \"flux\".", type:
-							"string", enum: [
-							"flux",
-						]
+					extern: $ref: "#/components/schemas/File"
+					query: {
+						description: "Query script to execute."
+						type:        "string"
+					}
+					type: {
+						description: "The type of query. Must be \"flux\"."
+						type:        "string"
+						enum: ["flux"]
 					}
 					params: {
-						type:
-							"object", additionalProperties:
-							true, description:
-							"""
-		Enumeration of key/value pairs that respresent parameters to be injected into query (can only specify either this field or extern and not both)
+						type:                 "object"
+						additionalProperties: true
+						description: """
+							Enumeration of key/value pairs that respresent parameters to be injected into query (can only specify either this field or extern and not both)
 
-		"""
+							"""
 					}
-					dialect: $ref:
-						"#/components/schemas/Dialect", now: {
-						description:
-							"Specifies the time that should be reported as \"now\" in the query. Default is the server's now time.", type:
-							"string", format:
-							"date-time"
-					}
-				}
-			}, Package: {
-				description:
-					"Represents a complete package source tree.", type: "object"
-				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", path: {
-						description:
-							"Package import path", type:
-							"string"
-					}, package: {
-						description:
-							"Package name", type:
-							"string"
-					}, files: {
-						description:
-							"Package files", type:
-							"array", items: $ref:
-							"#/components/schemas/File"
+					dialect: $ref: "#/components/schemas/Dialect"
+					now: {
+						description: "Specifies the time that should be reported as \"now\" in the query. Default is the server's now time."
+						type:        "string"
+						format:      "date-time"
 					}
 				}
-			}, File: {
-				description:
-					"Represents a source from a single file", type: "object"
+			}
+			Package: {
+				description: "Represents a complete package source tree."
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", name: {
-						description:
-							"The name of the file.", type:
-							"string"
-					}, package: $ref:
-						"#/components/schemas/PackageClause", imports: {
-						description:
-							"A list of package imports", type:
-							"array", items: $ref:
-							"#/components/schemas/ImportDeclaration"
-					}, body: {
-						description:
-							"List of Flux statements", type:
-							"array", items: $ref:
-							"#/components/schemas/Statement"
+					type: $ref: "#/components/schemas/NodeType"
+					path: {
+						description: "Package import path"
+						type:        "string"
+					}
+					package: {
+						description: "Package name"
+						type:        "string"
+					}
+					files: {
+						description: "Package files"
+						type:        "array"
+						items: $ref: "#/components/schemas/File"
 					}
 				}
-			}, PackageClause: {
-				description:
-					"Defines a package identifier", type: "object"
+			}
+			File: {
+				description: "Represents a source from a single file"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", name: $ref:
-						"#/components/schemas/Identifier"
+					type: $ref: "#/components/schemas/NodeType"
+					name: {
+						description: "The name of the file."
+						type:        "string"
+					}
+					package: $ref: "#/components/schemas/PackageClause"
+					imports: {
+						description: "A list of package imports"
+						type:        "array"
+						items: $ref: "#/components/schemas/ImportDeclaration"
+					}
+					body: {
+						description: "List of Flux statements"
+						type:        "array"
+						items: $ref: "#/components/schemas/Statement"
+					}
 				}
-			}, ImportDeclaration: {
-				description:
-					"Declares a package import", type: "object"
+			}
+			PackageClause: {
+				description: "Defines a package identifier"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", as: $ref:
-						"#/components/schemas/Identifier", path: $ref:
-						"#/components/schemas/StringLiteral"
+					type: $ref: "#/components/schemas/NodeType"
+					name: $ref: "#/components/schemas/Identifier"
 				}
-			}, DeletePredicateRequest: {
-				description:
-					"The delete predicate request.", type: "object"
-				required: [
-					"start",
-					"stop",
-				]
+			}
+			ImportDeclaration: {
+				description: "Declares a package import"
+				type:        "object"
+				properties: {
+					type: $ref: "#/components/schemas/NodeType"
+					as: $ref:   "#/components/schemas/Identifier"
+					path: $ref: "#/components/schemas/StringLiteral"
+				}
+			}
+			DeletePredicateRequest: {
+				description: "The delete predicate request."
+				type:        "object"
+				required: ["start", "stop"]
 				properties: {
 					start: {
-						description:
-							"RFC3339Nano", type:
-							"string", format:
-							"date-time"
-					}, stop: {
-						description:
-							"RFC3339Nano", type:
-							"string", format:
-							"date-time"
-					}, predicate: {
-						description:
-							"InfluxQL-like delete statement", example:
-							"tag1=\"value1\" and (tag2=\"value2\" and tag3!=\"value3\")", type:
-							"string"
+						description: "RFC3339Nano"
+						type:        "string"
+						format:      "date-time"
+					}
+					stop: {
+						description: "RFC3339Nano"
+						type:        "string"
+						format:      "date-time"
+					}
+					predicate: {
+						description: "InfluxQL-like delete statement"
+						example:     "tag1=\"value1\" and (tag2=\"value2\" and tag3!=\"value3\")"
+						type:        "string"
 					}
 				}
-			}, Node: oneOf: [{
-				$ref:
-					"#/components/schemas/Expression"
+			}
+			Node: oneOf: [{
+				$ref: "#/components/schemas/Expression"
 			}, {
-				$ref:
-					"#/components/schemas/Block"
-			}], NodeType: {
-				description:
-					"Type of AST node", type: "string"
+				$ref: "#/components/schemas/Block"
+			}]
+			NodeType: {
+				description: "Type of AST node"
+				type:        "string"
 			}
 			Block: {
-				description:
-					"A set of statements", type: "object"
+				description: "A set of statements"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", body: {
-						description:
-							"Block body", type:
-							"array", items: $ref:
-							"#/components/schemas/Statement"
+					type: $ref: "#/components/schemas/NodeType"
+					body: {
+						description: "Block body"
+						type:        "array"
+						items: $ref: "#/components/schemas/Statement"
 					}
 				}
-			}, Statement: oneOf: [{
-				$ref:
-					"#/components/schemas/BadStatement"
+			}
+			Statement: oneOf: [{
+				$ref: "#/components/schemas/BadStatement"
 			}, {
-				$ref:
-					"#/components/schemas/VariableAssignment"
+				$ref: "#/components/schemas/VariableAssignment"
 			}, {
-				$ref:
-					"#/components/schemas/MemberAssignment"
+				$ref: "#/components/schemas/MemberAssignment"
 			}, {
-				$ref:
-					"#/components/schemas/ExpressionStatement"
+				$ref: "#/components/schemas/ExpressionStatement"
 			}, {
-				$ref:
-					"#/components/schemas/ReturnStatement"
+				$ref: "#/components/schemas/ReturnStatement"
 			}, {
-				$ref:
-					"#/components/schemas/OptionStatement"
+				$ref: "#/components/schemas/OptionStatement"
 			}, {
-				$ref:
-					"#/components/schemas/BuiltinStatement"
+				$ref: "#/components/schemas/BuiltinStatement"
 			}, {
-				$ref:
-					"#/components/schemas/TestStatement"
-			}], BadStatement: {
-				description:
-					"A placeholder for statements for which no correct statement nodes can be created", type: "object"
+				$ref: "#/components/schemas/TestStatement"
+			}]
+			BadStatement: {
+				description: "A placeholder for statements for which no correct statement nodes can be created"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", text: {
-						description:
-							"Raw source text", type:
-							"string"
+					type: $ref: "#/components/schemas/NodeType"
+					text: {
+						description: "Raw source text"
+						type:        "string"
 					}
 				}
-			}, VariableAssignment: {
-				description:
-					"Represents the declaration of a variable", type: "object"
+			}
+			VariableAssignment: {
+				description: "Represents the declaration of a variable"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", id: $ref:
-						"#/components/schemas/Identifier", init: $ref:
-						"#/components/schemas/Expression"
+					type: $ref: "#/components/schemas/NodeType"
+					id: $ref:   "#/components/schemas/Identifier"
+					init: $ref: "#/components/schemas/Expression"
 				}
-			}, MemberAssignment: {
-				description:
-					"Object property assignment", type: "object"
+			}
+			MemberAssignment: {
+				description: "Object property assignment"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", member: $ref:
-						"#/components/schemas/MemberExpression", init: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:   "#/components/schemas/NodeType"
+					member: $ref: "#/components/schemas/MemberExpression"
+					init: $ref:   "#/components/schemas/Expression"
 				}
-			}, ExpressionStatement: {
-				description:
-					"May consist of an expression that does not return a value and is executed solely for its side-effects", type: "object"
+			}
+			ExpressionStatement: {
+				description: "May consist of an expression that does not return a value and is executed solely for its side-effects"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", expression: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:       "#/components/schemas/NodeType"
+					expression: $ref: "#/components/schemas/Expression"
 				}
-			}, ReturnStatement: {
-				description:
-					"Defines an expression to return", type: "object"
+			}
+			ReturnStatement: {
+				description: "Defines an expression to return"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", argument: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:     "#/components/schemas/NodeType"
+					argument: $ref: "#/components/schemas/Expression"
 				}
-			}, OptionStatement: {
-				description:
-					"A single variable declaration", type: "object"
+			}
+			OptionStatement: {
+				description: "A single variable declaration"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", assignment: oneOf: [{
-						$ref:
-							"#/components/schemas/VariableAssignment"
+					type: $ref: "#/components/schemas/NodeType"
+					assignment: oneOf: [{
+						$ref: "#/components/schemas/VariableAssignment"
 					}, {
-						$ref:
-							"#/components/schemas/MemberAssignment"
+						$ref: "#/components/schemas/MemberAssignment"
 					}]
 				}
-			}, BuiltinStatement: {
-				description:
-					"Declares a builtin identifier and its type", type: "object"
+			}
+			BuiltinStatement: {
+				description: "Declares a builtin identifier and its type"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", id: $ref:
-						"#/components/schemas/Identifier"
+					type: $ref: "#/components/schemas/NodeType"
+					id: $ref:   "#/components/schemas/Identifier"
 				}
-			}, TestStatement: {
-				description:
-					"Declares a Flux test case", type: "object"
+			}
+			TestStatement: {
+				description: "Declares a Flux test case"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", assignment: $ref:
-						"#/components/schemas/VariableAssignment"
+					type: $ref:       "#/components/schemas/NodeType"
+					assignment: $ref: "#/components/schemas/VariableAssignment"
 				}
-			}, Expression: oneOf: [{
-				$ref:
-					"#/components/schemas/ArrayExpression"
+			}
+			Expression: oneOf: [{
+				$ref: "#/components/schemas/ArrayExpression"
 			}, {
-				$ref:
-					"#/components/schemas/DictExpression"
+				$ref: "#/components/schemas/DictExpression"
 			}, {
-				$ref:
-					"#/components/schemas/FunctionExpression"
+				$ref: "#/components/schemas/FunctionExpression"
 			}, {
-				$ref:
-					"#/components/schemas/BinaryExpression"
+				$ref: "#/components/schemas/BinaryExpression"
 			}, {
-				$ref:
-					"#/components/schemas/CallExpression"
+				$ref: "#/components/schemas/CallExpression"
 			}, {
-				$ref:
-					"#/components/schemas/ConditionalExpression"
+				$ref: "#/components/schemas/ConditionalExpression"
 			}, {
-				$ref:
-					"#/components/schemas/LogicalExpression"
+				$ref: "#/components/schemas/LogicalExpression"
 			}, {
-				$ref:
-					"#/components/schemas/MemberExpression"
+				$ref: "#/components/schemas/MemberExpression"
 			}, {
-				$ref:
-					"#/components/schemas/IndexExpression"
+				$ref: "#/components/schemas/IndexExpression"
 			}, {
-				$ref:
-					"#/components/schemas/ObjectExpression"
+				$ref: "#/components/schemas/ObjectExpression"
 			}, {
-				$ref:
-					"#/components/schemas/ParenExpression"
+				$ref: "#/components/schemas/ParenExpression"
 			}, {
-				$ref:
-					"#/components/schemas/PipeExpression"
+				$ref: "#/components/schemas/PipeExpression"
 			}, {
-				$ref:
-					"#/components/schemas/UnaryExpression"
+				$ref: "#/components/schemas/UnaryExpression"
 			}, {
-				$ref:
-					"#/components/schemas/BooleanLiteral"
+				$ref: "#/components/schemas/BooleanLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/DateTimeLiteral"
+				$ref: "#/components/schemas/DateTimeLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/DurationLiteral"
+				$ref: "#/components/schemas/DurationLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/FloatLiteral"
+				$ref: "#/components/schemas/FloatLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/IntegerLiteral"
+				$ref: "#/components/schemas/IntegerLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/PipeLiteral"
+				$ref: "#/components/schemas/PipeLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/RegexpLiteral"
+				$ref: "#/components/schemas/RegexpLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/StringLiteral"
+				$ref: "#/components/schemas/StringLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/UnsignedIntegerLiteral"
+				$ref: "#/components/schemas/UnsignedIntegerLiteral"
 			}, {
-				$ref:
-					"#/components/schemas/Identifier"
-			}], ArrayExpression: {
-				description:
-					"Used to create and directly specify the elements of an array object", type: "object"
+				$ref: "#/components/schemas/Identifier"
+			}]
+			ArrayExpression: {
+				description: "Used to create and directly specify the elements of an array object"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", elements: {
-						description:
-							"Elements of the array", type:
-							"array", items: $ref:
-							"#/components/schemas/Expression"
+					type: $ref: "#/components/schemas/NodeType"
+					elements: {
+						description: "Elements of the array"
+						type:        "array"
+						items: $ref: "#/components/schemas/Expression"
 					}
 				}
-			}, DictExpression: {
-				description:
-					"Used to create and directly specify the elements of a dictionary", type: "object"
+			}
+			DictExpression: {
+				description: "Used to create and directly specify the elements of a dictionary"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", elements: {
-						description:
-							"Elements of the dictionary", type:
-							"array", items: $ref:
-							"#/components/schemas/DictItem"
+					type: $ref: "#/components/schemas/NodeType"
+					elements: {
+						description: "Elements of the dictionary"
+						type:        "array"
+						items: $ref: "#/components/schemas/DictItem"
 					}
 				}
-			}, DictItem: {
-				description:
-					"A key/value pair in a dictionary", type: "object"
+			}
+			DictItem: {
+				description: "A key/value pair in a dictionary"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", key: $ref:
-						"#/components/schemas/Expression", val: $ref:
-						"#/components/schemas/Expression"
+					type: $ref: "#/components/schemas/NodeType"
+					key: $ref:  "#/components/schemas/Expression"
+					val: $ref:  "#/components/schemas/Expression"
 				}
-			}, FunctionExpression: {
-				description:
-					"Function expression", type: "object"
+			}
+			FunctionExpression: {
+				description: "Function expression"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", params: {
-						description:
-							"Function parameters", type:
-							"array", items: $ref:
-							"#/components/schemas/Property"
-					}, body: $ref:
-						"#/components/schemas/Node"
+					type: $ref: "#/components/schemas/NodeType"
+					params: {
+						description: "Function parameters"
+						type:        "array"
+						items: $ref: "#/components/schemas/Property"
+					}
+					body: $ref: "#/components/schemas/Node"
 				}
-			}, BinaryExpression: {
-				description:
-					"uses binary operators to act on two operands in an expression", type: "object"
+			}
+			BinaryExpression: {
+				description: "uses binary operators to act on two operands in an expression"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", operator: type:
-						"string", left: $ref:
-						"#/components/schemas/Expression", right: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:     "#/components/schemas/NodeType"
+					operator: type: "string"
+					left: $ref:     "#/components/schemas/Expression"
+					right: $ref:    "#/components/schemas/Expression"
 				}
-			}, CallExpression: {
-				description:
-					"Represents a function call", type: "object"
+			}
+			CallExpression: {
+				description: "Represents a function call"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", callee: $ref:
-						"#/components/schemas/Expression", arguments: {
-						description:
-							"Function arguments", type:
-							"array", items: $ref:
-							"#/components/schemas/Expression"
+					type: $ref:   "#/components/schemas/NodeType"
+					callee: $ref: "#/components/schemas/Expression"
+					arguments: {
+						description: "Function arguments"
+						type:        "array"
+						items: $ref: "#/components/schemas/Expression"
 					}
 				}
-			}, ConditionalExpression: {
-				description:
-					"Selects one of two expressions, `Alternate` or `Consequent`, depending on a third boolean expression, `Test`", type: "object"
+			}
+			ConditionalExpression: {
+				description: "Selects one of two expressions, `Alternate` or `Consequent`, depending on a third boolean expression, `Test`"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", test: $ref:
-						"#/components/schemas/Expression", alternate: $ref:
-						"#/components/schemas/Expression", consequent: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:       "#/components/schemas/NodeType"
+					test: $ref:       "#/components/schemas/Expression"
+					alternate: $ref:  "#/components/schemas/Expression"
+					consequent: $ref: "#/components/schemas/Expression"
 				}
-			}, LogicalExpression: {
-				description:
-					"Represents the rule conditions that collectively evaluate to either true or false", type: "object"
+			}
+			LogicalExpression: {
+				description: "Represents the rule conditions that collectively evaluate to either true or false"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", operator: type:
-						"string", left: $ref:
-						"#/components/schemas/Expression", right: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:     "#/components/schemas/NodeType"
+					operator: type: "string"
+					left: $ref:     "#/components/schemas/Expression"
+					right: $ref:    "#/components/schemas/Expression"
 				}
-			}, MemberExpression: {
-				description:
-					"Represents accessing a property of an object", type: "object"
+			}
+			MemberExpression: {
+				description: "Represents accessing a property of an object"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", object: $ref:
-						"#/components/schemas/Expression", property: $ref:
-						"#/components/schemas/PropertyKey"
+					type: $ref:     "#/components/schemas/NodeType"
+					object: $ref:   "#/components/schemas/Expression"
+					property: $ref: "#/components/schemas/PropertyKey"
 				}
-			}, IndexExpression: {
-				description:
-					"Represents indexing into an array", type: "object"
+			}
+			IndexExpression: {
+				description: "Represents indexing into an array"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", array: $ref:
-						"#/components/schemas/Expression", index: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:  "#/components/schemas/NodeType"
+					array: $ref: "#/components/schemas/Expression"
+					index: $ref: "#/components/schemas/Expression"
 				}
-			}, ObjectExpression: {
-				description:
-					"Allows the declaration of an anonymous object within a declaration", type: "object"
+			}
+			ObjectExpression: {
+				description: "Allows the declaration of an anonymous object within a declaration"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", properties: {
-						description:
-							"Object properties", type:
-							"array", items: $ref:
-							"#/components/schemas/Property"
+					type: $ref: "#/components/schemas/NodeType"
+					properties: {
+						description: "Object properties"
+						type:        "array"
+						items: $ref: "#/components/schemas/Property"
 					}
 				}
-			}, ParenExpression: {
-				description:
-					"Represents an expression wrapped in parenthesis", type: "object"
+			}
+			ParenExpression: {
+				description: "Represents an expression wrapped in parenthesis"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", expression: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:       "#/components/schemas/NodeType"
+					expression: $ref: "#/components/schemas/Expression"
 				}
-			}, PipeExpression: {
-				description:
-					"Call expression with pipe argument", type: "object"
+			}
+			PipeExpression: {
+				description: "Call expression with pipe argument"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", argument: $ref:
-						"#/components/schemas/Expression", call: $ref:
-						"#/components/schemas/CallExpression"
+					type: $ref:     "#/components/schemas/NodeType"
+					argument: $ref: "#/components/schemas/Expression"
+					call: $ref:     "#/components/schemas/CallExpression"
 				}
-			}, UnaryExpression: {
-				description:
-					"Uses operators to act on a single operand in an expression", type: "object"
+			}
+			UnaryExpression: {
+				description: "Uses operators to act on a single operand in an expression"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", operator: type:
-						"string", argument: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:     "#/components/schemas/NodeType"
+					operator: type: "string"
+					argument: $ref: "#/components/schemas/Expression"
 				}
-			}, BooleanLiteral: {
-				description:
-					"Represents boolean values", type: "object"
+			}
+			BooleanLiteral: {
+				description: "Represents boolean values"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: type:
-						"boolean"
+					type: $ref:  "#/components/schemas/NodeType"
+					value: type: "boolean"
 				}
-			}, DateTimeLiteral: {
-				description:
-					"Represents an instant in time with nanosecond precision using the syntax of golang's RFC3339 Nanosecond variant", type: "object"
+			}
+			DateTimeLiteral: {
+				description: "Represents an instant in time with nanosecond precision using the syntax of golang's RFC3339 Nanosecond variant"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: {
-						type:
-							"string", format:
-							"date-time"
+					type: $ref: "#/components/schemas/NodeType"
+					value: {
+						type:   "string"
+						format: "date-time"
 					}
 				}
-			}, DurationLiteral: {
-				description:
-					"Represents the elapsed time between two instants as an int64 nanosecond count with syntax of golang's time.Duration", type: "object"
+			}
+			DurationLiteral: {
+				description: "Represents the elapsed time between two instants as an int64 nanosecond count with syntax of golang's time.Duration"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", values: {
-						description:
-							"Duration values", type:
-							"array", items: $ref:
-							"#/components/schemas/Duration"
+					type: $ref: "#/components/schemas/NodeType"
+					values: {
+						description: "Duration values"
+						type:        "array"
+						items: $ref: "#/components/schemas/Duration"
 					}
 				}
-			}, FloatLiteral: {
-				description:
-					"Represents floating point numbers according to the double representations defined by the IEEE-754-1985", type: "object"
+			}
+			FloatLiteral: {
+				description: "Represents floating point numbers according to the double representations defined by the IEEE-754-1985"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: type:
-						"number"
+					type: $ref:  "#/components/schemas/NodeType"
+					value: type: "number"
 				}
-			}, IntegerLiteral: {
-				description:
-					"Represents integer numbers", type: "object"
+			}
+			IntegerLiteral: {
+				description: "Represents integer numbers"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: type:
-						"string"
+					type: $ref:  "#/components/schemas/NodeType"
+					value: type: "string"
 				}
-			}, PipeLiteral: {
-				description:
-					"Represents a specialized literal value, indicating the left hand value of a pipe expression", type: "object"
-				properties: type: $ref:
-					"#/components/schemas/NodeType"
-			}, RegexpLiteral: {
-				description:
-					"Expressions begin and end with `/` and are regular expressions with syntax accepted by RE2", type: "object"
+			}
+			PipeLiteral: {
+				description: "Represents a specialized literal value, indicating the left hand value of a pipe expression"
+				type:        "object"
+				properties: type: $ref: "#/components/schemas/NodeType"
+			}
+			RegexpLiteral: {
+				description: "Expressions begin and end with `/` and are regular expressions with syntax accepted by RE2"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: type:
-						"string"
+					type: $ref:  "#/components/schemas/NodeType"
+					value: type: "string"
 				}
-			}, StringLiteral: {
-				description:
-					"Expressions begin and end with double quote marks", type: "object"
+			}
+			StringLiteral: {
+				description: "Expressions begin and end with double quote marks"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: type:
-						"string"
+					type: $ref:  "#/components/schemas/NodeType"
+					value: type: "string"
 				}
-			}, UnsignedIntegerLiteral: {
-				description:
-					"Represents integer numbers", type: "object"
+			}
+			UnsignedIntegerLiteral: {
+				description: "Represents integer numbers"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", value: type:
-						"string"
+					type: $ref:  "#/components/schemas/NodeType"
+					value: type: "string"
 				}
-			}, Duration: {
-				description:
-					"A pair consisting of length of time and the unit of time measured. It is the atomic unit from which all duration literals are composed.", type: "object"
+			}
+			Duration: {
+				description: "A pair consisting of length of time and the unit of time measured. It is the atomic unit from which all duration literals are composed."
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", magnitude: type:
-						"integer", unit: type:
-						"string"
+					type: $ref:      "#/components/schemas/NodeType"
+					magnitude: type: "integer"
+					unit: type:      "string"
 				}
-			}, Property: {
-				description:
-					"The value associated with a key", type: "object"
+			}
+			Property: {
+				description: "The value associated with a key"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", key: $ref:
-						"#/components/schemas/PropertyKey", value: $ref:
-						"#/components/schemas/Expression"
+					type: $ref:  "#/components/schemas/NodeType"
+					key: $ref:   "#/components/schemas/PropertyKey"
+					value: $ref: "#/components/schemas/Expression"
 				}
-			}, PropertyKey: oneOf: [{
-				$ref:
-					"#/components/schemas/Identifier"
+			}
+			PropertyKey: oneOf: [{
+				$ref: "#/components/schemas/Identifier"
 			}, {
-				$ref:
-					"#/components/schemas/StringLiteral"
-			}], Identifier: {
-				description:
-					"A valid Flux identifier", type: "object"
+				$ref: "#/components/schemas/StringLiteral"
+			}]
+			Identifier: {
+				description: "A valid Flux identifier"
+				type:        "object"
 				properties: {
-					type: $ref:
-						"#/components/schemas/NodeType", name: type:
-						"string"
+					type: $ref: "#/components/schemas/NodeType"
+					name: type: "string"
 				}
-			}, Dialect: {
-				description:
-					"Dialect are options to change the default CSV output format; https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions", type: "object"
+			}
+			Dialect: {
+				description: "Dialect are options to change the default CSV output format; https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions"
+				type:        "object"
 				properties: {
 					header: {
-						description:
-							"If true, the results will contain a header row", type:
-							"boolean", default:
-							true
-					}, delimiter: {
-						description:
-							"Separator between cells; the default is ,", type:
-							"string", default:
-							",", maxLength:
-							1, minLength:
-							1
-					}, annotations: {
-						description:
-							"https://www.w3.org/TR/2015/REC-tabular-data-model-20151217/#columns", type:
-							"array", uniqueItems:
-							true, items: {
-							type:
-								"string", enum: [
-								"group",
-								"datatype",
-								"default",
-							]
+						description: "If true, the results will contain a header row"
+						type:        "boolean"
+						default:     true
+					}
+					delimiter: {
+						description: "Separator between cells; the default is ,"
+						type:        "string"
+						default:     ","
+						maxLength:   1
+						minLength:   1
+					}
+					annotations: {
+						description: "https://www.w3.org/TR/2015/REC-tabular-data-model-20151217/#columns"
+						type:        "array"
+						uniqueItems: true
+						items: {
+							type: "string"
+							enum: ["group", "datatype", "default"]
 						}
-					}, commentPrefix: {
-						description:
-							"Character prefixed to comment strings", type:
-							"string", default:
-							"#", maxLength:
-							1, minLength:
-							0
-					}, dateTimeFormat: {
-						description:
-							"Format of timestamps", type:
-							"string", default:
-							"RFC3339", enum: [
-							"RFC3339",
-							"RFC3339Nano",
-						]
+					}
+					commentPrefix: {
+						description: "Character prefixed to comment strings"
+						type:        "string"
+						default:     "#"
+						maxLength:   1
+						minLength:   0
+					}
+					dateTimeFormat: {
+						description: "Format of timestamps"
+						type:        "string"
+						default:     "RFC3339"
+						enum: ["RFC3339", "RFC3339Nano"]
 					}
 				}
 			}
 			AuthorizationUpdateRequest: properties: {
 				status: {
-					description:
-						"If inactive the token is inactive and requests using the token will be rejected.", default:
-						"active", type:
-						"string", enum: [
-						"active",
-						"inactive",
-					]
+					description: "If inactive the token is inactive and requests using the token will be rejected."
+					default:     "active"
+					type:        "string"
+					enum: ["active", "inactive"]
 				}
 				description: {
-					type:
-						"string", description:
-						"A description of the token."
+					type:        "string"
+					description: "A description of the token."
 				}
-			}, PostBucketRequest: {
+			}
+			PostBucketRequest: {
 				properties: {
-					orgID: type:
-						"string", name: type:
-						"string", description: type:
-						"string", rp: type:
-						"string", retentionRules: $ref:
-						"#/components/schemas/RetentionRules", schemaType: {
-						$ref:
-							"#/components/schemas/SchemaType", default:
-							"implicit"
+					orgID: type:          "string"
+					name: type:           "string"
+					description: type:    "string"
+					rp: type:             "string"
+					retentionRules: $ref: "#/components/schemas/RetentionRules"
+					schemaType: {
+						$ref:    "#/components/schemas/SchemaType"
+						default: "implicit"
 					}
-				}, required: [
-					"orgID",
-					"name",
-					"retentionRules",
-				]
+				}
+				required: ["orgID", "name", "retentionRules"]
 			}
 			Bucket: {
 				properties: {
 					links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							labels:
-								"/api/v2/buckets/1/labels", members:
-								"/api/v2/buckets/1/members", org:
-								"/api/v2/orgs/2", owners:
-								"/api/v2/buckets/1/owners", self:
-								"/api/v2/buckets/1", write:
-								"/api/v2/write?org=2&bucket=1"
-						}, properties: {
+						type:     "object"
+						readOnly: true
+						example: {
+							labels:  "/api/v2/buckets/1/labels"
+							members: "/api/v2/buckets/1/members"
+							org:     "/api/v2/orgs/2"
+							owners:  "/api/v2/buckets/1/owners"
+							self:    "/api/v2/buckets/1"
+							write:   "/api/v2/write?org=2&bucket=1"
+						}
+						properties: {
 							labels: {
-								description:
-									"URL to retrieve labels for this bucket", $ref:
-									"#/components/schemas/Link"
-							}, members: {
-								description:
-									"URL to retrieve members that can read this bucket", $ref:
-									"#/components/schemas/Link"
-							}, org: {
-								description:
-									"URL to retrieve parent organization for this bucket", $ref:
-									"#/components/schemas/Link"
-							}, owners: {
-								description:
-									"URL to retrieve owners that can read and write to this bucket.", $ref:
-									"#/components/schemas/Link"
-							}, self: {
-								description:
-									"URL for this bucket", $ref:
-									"#/components/schemas/Link"
-							}, write: {
-								description:
-									"URL to write line protocol for this bucket", $ref:
-									"#/components/schemas/Link"
+								description: "URL to retrieve labels for this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							members: {
+								description: "URL to retrieve members that can read this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							org: {
+								description: "URL to retrieve parent organization for this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							owners: {
+								description: "URL to retrieve owners that can read and write to this bucket."
+								$ref:        "#/components/schemas/Link"
+							}
+							self: {
+								description: "URL for this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							write: {
+								description: "URL to write line protocol for this bucket"
+								$ref:        "#/components/schemas/Link"
 							}
 						}
-					}, id: {
-						readOnly:
-							true, type:
-							"string"
-					}, type: {
-						readOnly:
-							true, type:
-							"string", default:
-							"user", enum: [
-							"user",
-							"system",
-						]
 					}
-					name: type:
-						"string", description: type:
-						"string", orgID: type:
-						"string", rp: type:
-						"string", schemaType: {
-						$ref:
-							"#/components/schemas/SchemaType", default:
-							"implicit"
-					}, createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, retentionRules: $ref:
-						"#/components/schemas/RetentionRules", labels: $ref:
-						"#/components/schemas/Labels"
-				}, required: [
-					"name",
-					"retentionRules",
-				]
+					id: {
+						readOnly: true
+						type:     "string"
+					}
+					type: {
+						readOnly: true
+						type:     "string"
+						default:  "user"
+						enum: ["user", "system"]
+					}
+					name: type:        "string"
+					description: type: "string"
+					orgID: type:       "string"
+					rp: type:          "string"
+					schemaType: {
+						$ref:    "#/components/schemas/SchemaType"
+						default: "implicit"
+					}
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					retentionRules: $ref: "#/components/schemas/RetentionRules"
+					labels: $ref:         "#/components/schemas/Labels"
+				}
+				required: ["name", "retentionRules"]
 			}
 			Buckets: {
 				type: "object"
 				properties: {
 					links: {
-						readOnly:
-							true, $ref:
-							"#/components/schemas/Links"
-					}, buckets: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/Bucket"
+						readOnly: true
+						$ref:     "#/components/schemas/Links"
+					}
+					buckets: {
+						type: "array"
+						items: $ref: "#/components/schemas/Bucket"
 					}
 				}
-			}, RetentionRules: {
-				type: "array"
-				description:
-					"Rules to expire or retain data.  No rules means data never expires.", items: $ref: "#/components/schemas/RetentionRule"
+			}
+			RetentionRules: {
+				type:        "array"
+				description: "Rules to expire or retain data.  No rules means data never expires."
+				items: $ref: "#/components/schemas/RetentionRule"
 			}
 			PatchBucketRequest: {
-				type: "object"
-				description:
-					"Updates to an existing bucket resource.", properties: {
-					name: type:
-						"string", description: type:
-						"string", retentionRules: $ref:
-						"#/components/schemas/PatchRetentionRules"
+				type:        "object"
+				description: "Updates to an existing bucket resource."
+				properties: {
+					name: type:           "string"
+					description: type:    "string"
+					retentionRules: $ref: "#/components/schemas/PatchRetentionRules"
 				}
-			}, PatchRetentionRules: {
-				type: "array"
-				description:
-					"Updates to rules to expire or retain data. No rules means no updates.", items: $ref: "#/components/schemas/PatchRetentionRule"
+			}
+			PatchRetentionRules: {
+				type:        "array"
+				description: "Updates to rules to expire or retain data. No rules means no updates."
+				items: $ref: "#/components/schemas/PatchRetentionRule"
 			}
 			PatchRetentionRule: {
-				type: "object"
-				description:
-					"Updates to a rule to expire or retain data.", properties: {
+				type:        "object"
+				description: "Updates to a rule to expire or retain data."
+				properties: {
 					type: {
-						type:
-							"string", default:
-							"expire", enum: [
-							"expire",
-						]
+						type:    "string"
+						default: "expire"
+						enum: ["expire"]
 					}
 					everySeconds: {
-						type:
-							"integer", format:
-							"int64", description:
-							"Duration in seconds for how long data will be kept in the database. 0 means infinite.", example:
-							86400, minimum:
-							0
-					}, shardGroupDurationSeconds: {
-						type:
-							"integer", format:
-							"int64", description:
-							"Shard duration measured in seconds."
+						type:        "integer"
+						format:      "int64"
+						description: "Duration in seconds for how long data will be kept in the database. 0 means infinite."
+						example:     86400
+						minimum:     0
 					}
-				}, required: ["type"]
+					shardGroupDurationSeconds: {
+						type:        "integer"
+						format:      "int64"
+						description: "Shard duration measured in seconds."
+					}
+				}
+				required: ["type"]
 			}
 			RetentionRule: {
 				type: "object"
 				properties: {
 					type: {
-						type:
-							"string", default:
-							"expire", enum: [
-							"expire",
-						]
+						type:    "string"
+						default: "expire"
+						enum: ["expire"]
 					}
 					everySeconds: {
-						type:
-							"integer", format:
-							"int64", description:
-							"Duration in seconds for how long data will be kept in the database. 0 means infinite.", example:
-							86400, minimum:
-							0
-					}, shardGroupDurationSeconds: {
-						type:
-							"integer", format:
-							"int64", description:
-							"Shard duration measured in seconds."
+						type:        "integer"
+						format:      "int64"
+						description: "Duration in seconds for how long data will be kept in the database. 0 means infinite."
+						example:     86400
+						minimum:     0
 					}
-				}, required: [
-					"type",
-					"everySeconds",
-				]
+					shardGroupDurationSeconds: {
+						type:        "integer"
+						format:      "int64"
+						description: "Shard duration measured in seconds."
+					}
+				}
+				required: ["type", "everySeconds"]
 			}
 			Link: {
-				type:   "string"
-				format: "uri"
-				readOnly:
-					true, description:
-					"URI of resource."
-			}, Links: {
+				type:        "string"
+				format:      "uri"
+				readOnly:    true
+				description: "URI of resource."
+			}
+			Links: {
 				type: "object"
 				properties: {
-					next: $ref:
-						"#/components/schemas/Link", self: $ref:
-						"#/components/schemas/Link", prev: $ref:
-						"#/components/schemas/Link"
-				}, required: ["self"]
+					next: $ref: "#/components/schemas/Link"
+					self: $ref: "#/components/schemas/Link"
+					prev: $ref: "#/components/schemas/Link"
+				}
+				required: ["self"]
 			}
 			Logs: {
 				type: "object"
 				properties: events: {
-					readOnly:
-						true, type:
-						"array", items: $ref:
-						"#/components/schemas/LogEvent"
+					readOnly: true
+					type:     "array"
+					items: $ref: "#/components/schemas/LogEvent"
 				}
-			}, LogEvent: {
+			}
+			LogEvent: {
 				type: "object"
 				properties: {
 					time: {
-						readOnly:
-							true, description:
-							"Time event occurred, RFC3339Nano.", type:
-							"string", format:
-							"date-time"
-					}, message: {
-						readOnly:
-							true, description:
-							"A description of the event that occurred.", type:
-							"string", example:
-							"Halt and catch fire"
-					}, runID: {
-						readOnly:
-							true, description:
-							"the ID of the task that logged", type:
-							"string"
+						readOnly:    true
+						description: "Time event occurred, RFC3339Nano."
+						type:        "string"
+						format:      "date-time"
+					}
+					message: {
+						readOnly:    true
+						description: "A description of the event that occurred."
+						type:        "string"
+						example:     "Halt and catch fire"
+					}
+					runID: {
+						readOnly:    true
+						description: "the ID of the task that logged"
+						type:        "string"
 					}
 				}
-			}, Organization: {
+			}
+			Organization: {
 				properties: {
 					links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							self:
-								"/api/v2/orgs/1", members:
-								"/api/v2/orgs/1/members", owners:
-								"/api/v2/orgs/1/owners", labels:
-								"/api/v2/orgs/1/labels", secrets:
-								"/api/v2/orgs/1/secrets", buckets:
-								"/api/v2/buckets?org=myorg", tasks:
-								"/api/v2/tasks?org=myorg", dashboards:
-								"/api/v2/dashboards?org=myorg"
-						}, properties: {
-							self: $ref:
-								"#/components/schemas/Link", members: $ref:
-								"#/components/schemas/Link", owners: $ref:
-								"#/components/schemas/Link", labels: $ref:
-								"#/components/schemas/Link", secrets: $ref:
-								"#/components/schemas/Link", buckets: $ref:
-								"#/components/schemas/Link", tasks: $ref:
-								"#/components/schemas/Link", dashboards: $ref:
-								"#/components/schemas/Link"
+						type:     "object"
+						readOnly: true
+						example: {
+							self:       "/api/v2/orgs/1"
+							members:    "/api/v2/orgs/1/members"
+							owners:     "/api/v2/orgs/1/owners"
+							labels:     "/api/v2/orgs/1/labels"
+							secrets:    "/api/v2/orgs/1/secrets"
+							buckets:    "/api/v2/buckets?org=myorg"
+							tasks:      "/api/v2/tasks?org=myorg"
+							dashboards: "/api/v2/dashboards?org=myorg"
 						}
-					}, id: {
-						readOnly:
-							true, type:
-							"string"
-					}, name: type:
-						"string", description: type:
-						"string", createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, status: {
-						description:
-							"If inactive the organization is inactive.", default:
-							"active", type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+						properties: {
+							self: $ref:       "#/components/schemas/Link"
+							members: $ref:    "#/components/schemas/Link"
+							owners: $ref:     "#/components/schemas/Link"
+							labels: $ref:     "#/components/schemas/Link"
+							secrets: $ref:    "#/components/schemas/Link"
+							buckets: $ref:    "#/components/schemas/Link"
+							tasks: $ref:      "#/components/schemas/Link"
+							dashboards: $ref: "#/components/schemas/Link"
+						}
+					}
+					id: {
+						readOnly: true
+						type:     "string"
+					}
+					name: type:        "string"
+					description: type: "string"
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					status: {
+						description: "If inactive the organization is inactive."
+						default:     "active"
+						type:        "string"
+						enum: ["active", "inactive"]
 					}
 				}
 				required: ["name"]
@@ -6723,65 +6656,68 @@ cloud: {
 			Organizations: {
 				type: "object"
 				properties: {
-					links: $ref:
-						"#/components/schemas/Links", orgs: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/Organization"
+					links: $ref: "#/components/schemas/Links"
+					orgs: {
+						type: "array"
+						items: $ref: "#/components/schemas/Organization"
 					}
 				}
-			}, PostOrganizationRequest: {
+			}
+			PostOrganizationRequest: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", description: type:
-						"string"
-				}, required: ["name"]
+					name: type:        "string"
+					description: type: "string"
+				}
+				required: ["name"]
 			}
 			PatchOrganizationRequest: {
 				type: "object"
 				properties: {
 					name: {
-						type:
-							"string", description:
-							"New name to set on the organization"
-					}, description: {
-						type:
-							"string", description:
-							"New description to set on the organization"
+						type:        "string"
+						description: "New name to set on the organization"
+					}
+					description: {
+						type:        "string"
+						description: "New description to set on the organization"
 					}
 				}
-			}, TemplateApply: {
+			}
+			TemplateApply: {
 				type: "object"
 				properties: {
-					dryRun: type:
-						"boolean", orgID: type:
-						"string", stackID: type:
-						"string", template: {
-						type:
-							"object", properties: {
-							contentType: type:
-								"string", sources: {
-								type:
-									"array", items: type: "string"
-							}, contents: $ref:
-								"#/components/schemas/Template"
+					dryRun: type:  "boolean"
+					orgID: type:   "string"
+					stackID: type: "string"
+					template: {
+						type: "object"
+						properties: {
+							contentType: type: "string"
+							sources: {
+								type: "array"
+								items: type: "string"
+							}
+							contents: $ref: "#/components/schemas/Template"
 						}
-					}, templates: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								contentType: type: "string", sources: {
-
+					}
+					templates: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								contentType: type: "string"
+								sources: {
 									type: "array"
-											items: type: "string"
-								}, contents: $ref: "#/components/schemas/Template"
+									items: type: "string"
+								}
+								contents: $ref: "#/components/schemas/Template"
 							}
 						}
-					}, envRefs: {
-						type:
-							"object", additionalProperties: oneOf: [{
+					}
+					envRefs: {
+						type: "object"
+						additionalProperties: oneOf: [{
 							type: "string"
 						}, {
 							type: "integer"
@@ -6790,23 +6726,25 @@ cloud: {
 						}, {
 							type: "boolean"
 						}]
-					}, secrets: {
-						type:
-							"object", additionalProperties: type:
-							"string"
-					}, remotes: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								url: type: "string", contentType: type: "string"
-							}, required: [
-								"url",
-							]
+					}
+					secrets: {
+						type: "object"
+						additionalProperties: type: "string"
+					}
+					remotes: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								url: type:         "string"
+								contentType: type: "string"
+							}
+							required: ["url"]
 						}
-					}, actions: {
-						type:
-							"array", items: oneOf: [{
+					}
+					actions: {
+						type: "array"
+						items: oneOf: [{
 							type: "object"
 							properties: {
 								action: {
@@ -6829,48 +6767,31 @@ cloud: {
 								properties: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:                 "#/components/schemas/TemplateKind"
 										resourceTemplateName: type: "string"
 									}
-									required: [
-										"kind",
-										"resourceTemplateName",
-									]
+									required: ["kind", "resourceTemplateName"]
 								}
 							}
 						}]
 					}
 				}
-			}, TemplateKind: {
+			}
+			TemplateKind: {
 				type: "string"
-				enum: [
-					"Bucket",
-					"Check",
-					"CheckDeadman",
-					"CheckThreshold",
-					"Dashboard",
-					"Label",
-					"NotificationEndpoint",
-					"NotificationEndpointHTTP",
-					"NotificationEndpointPagerDuty",
-					"NotificationEndpointSlack",
-					"NotificationRule",
-					"Task",
-					"Telegraf",
-					"Variable",
-				]
+				enum: ["Bucket", "Check", "CheckDeadman", "CheckThreshold", "Dashboard", "Label", "NotificationEndpoint", "NotificationEndpointHTTP", "NotificationEndpointPagerDuty", "NotificationEndpointSlack", "NotificationRule", "Task", "Telegraf", "Variable"]
 			}
 			TemplateExportByID: {
 				type: "object"
 				properties: {
-					stackID: type:
-						"string", orgIDs: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								orgID: type: "string", resourceFilters: {
-
+					stackID: type: "string"
+					orgIDs: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								orgID: type: "string"
+								resourceFilters: {
 									type: "object"
 									properties: {
 										byLabel: {
@@ -6885,34 +6806,35 @@ cloud: {
 								}
 							}
 						}
-					}, resources: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								id: type: "string", kind: $ref: "#/components/schemas/TemplateKind", name: {
-
+					}
+					resources: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								id: type:   "string"
+								kind: $ref: "#/components/schemas/TemplateKind"
+								name: {
 									type:        "string"
 									description: "if defined with id, name is used for resource exported by id. if defined independently, resources strictly matching name are exported"
 								}
-							}, required: [
-								"id",
-								"kind",
-							]
+							}
+							required: ["id", "kind"]
 						}
 					}
 				}
-			}, TemplateExportByName: {
+			}
+			TemplateExportByName: {
 				type: "object"
 				properties: {
-					stackID: type:
-						"string", orgIDs: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								orgID: type: "string", resourceFilters: {
-
+					stackID: type: "string"
+					orgIDs: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								orgID: type: "string"
+								resourceFilters: {
 									type: "object"
 									properties: {
 										byLabel: {
@@ -6927,62 +6849,52 @@ cloud: {
 								}
 							}
 						}
-					}, resources: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								kind: $ref: "#/components/schemas/TemplateKind", name: type: "string"
-							}, required: [
-								"name",
-								"kind",
-							]
+					}
+					resources: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								kind: $ref: "#/components/schemas/TemplateKind"
+								name: type: "string"
+							}
+							required: ["name", "kind"]
 						}
 					}
 				}
-			}, Template: {
+			}
+			Template: {
 				type: "array"
 				items: {
 					type: "object"
 					properties: {
-						apiVersion: type:
-							"string", kind: $ref:
-							"#/components/schemas/TemplateKind", meta: {
-							type:
-								"object", properties: name: type: "string"
-						}, spec: type:
-							"object"
+						apiVersion: type: "string"
+						kind: $ref:       "#/components/schemas/TemplateKind"
+						meta: {
+							type: "object"
+							properties: name: type: "string"
+						}
+						spec: type: "object"
 					}
 				}
-			}, TemplateEnvReferences: {
+			}
+			TemplateEnvReferences: {
 				type: "array"
 				items: {
 					type: "object"
 					properties: {
 						resourceField: {
-							type:
-								"string", description:
-								"Field the environment reference corresponds too"
-						}, envRefKey: {
-							type:
-								"string", description:
-								"Key identified as environment reference and is the key identified in the template"
-						}, value: {
-							description:
-								"Value provided to fulfill reference", nullable:
-								true, oneOf: [{
-								type: "string"
-							}, {
-								type: "integer"
-							}, {
-								type: "number"
-							}, {
-								type: "boolean"
-							}]
-						}, defaultValue: {
-							description:
-								"Default value that will be provided for the reference when no value is provided", nullable:
-								true, oneOf: [{
+							type:        "string"
+							description: "Field the environment reference corresponds too"
+						}
+						envRefKey: {
+							type:        "string"
+							description: "Key identified as environment reference and is the key identified in the template"
+						}
+						value: {
+							description: "Value provided to fulfill reference"
+							nullable:    true
+							oneOf: [{
 								type: "string"
 							}, {
 								type: "integer"
@@ -6992,36 +6904,46 @@ cloud: {
 								type: "boolean"
 							}]
 						}
-					}, required: [
-						"resourceField",
-						"envRefKey",
-					]
+						defaultValue: {
+							description: "Default value that will be provided for the reference when no value is provided"
+							nullable:    true
+							oneOf: [{
+								type: "string"
+							}, {
+								type: "integer"
+							}, {
+								type: "number"
+							}, {
+								type: "boolean"
+							}]
+						}
+					}
+					required: ["resourceField", "envRefKey"]
 				}
 			}
 			TemplateSummary: {
 				type: "object"
 				properties: {
 					sources: {
-						type:
-							"array", items: type:
-							"string"
-					}, stackID: type:
-						"string", summary: {
-						type:
-							"object", properties: {
+						type: "array"
+						items: type: "string"
+					}
+					stackID: type: "string"
+					summary: {
+						type: "object"
+						properties: {
 							buckets: {
-								type:
-									"array", items: {
-
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										id: type: "string"
-										orgID: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
+										id: type:               "string"
+										orgID: type:            "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										name: type: "string"
-										description: type: "string"
-										retentionPeriod: type: "integer"
+										name: type:             "string"
+										description: type:      "string"
+										retentionPeriod: type:  "integer"
 										labelAssociations: {
 											type: "array"
 											items: $ref: "#/components/schemas/TemplateSummaryLabel"
@@ -7029,14 +6951,15 @@ cloud: {
 										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 									}
 								}
-							}, checks: {
-								type:
-									"array", items: allOf: [{
+							}
+							checks: {
+								type: "array"
+								items: allOf: [{
 									$ref: "#/components/schemas/CheckDiscriminator"
 								}, {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										labelAssociations: {
 											type: "array"
@@ -7045,18 +6968,18 @@ cloud: {
 										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 									}
 								}]
-							}, dashboards: {
-								type:
-									"array", items: {
-
+							}
+							dashboards: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										id: type: "string"
-										orgID: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
+										id: type:               "string"
+										orgID: type:            "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										name: type: "string"
-										description: type: "string"
+										name: type:             "string"
+										description: type:      "string"
 										labelAssociations: {
 											type: "array"
 											items: $ref: "#/components/schemas/TemplateSummaryLabel"
@@ -7068,39 +6991,43 @@ cloud: {
 										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 									}
 								}
-							}, labels: {
-								type:
-									"array", items: $ref: "#/components/schemas/TemplateSummaryLabel"
-							}, labelMappings: {
-								type:
-									"array", items: {
-
+							}
+							labels: {
+								type: "array"
+								items: $ref: "#/components/schemas/TemplateSummaryLabel"
+							}
+							labelMappings: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										status: type: "string"
+										status: type:                   "string"
 										resourceTemplateMetaName: type: "string"
-										resourceName: type: "string"
-										resourceID: type: "string"
-										resourceType: type: "string"
-										labelTemplateMetaName: type: "string"
-										labelName: type: "string"
-										labelID: type: "string"
+										resourceName: type:             "string"
+										resourceID: type:               "string"
+										resourceType: type:             "string"
+										labelTemplateMetaName: type:    "string"
+										labelName: type:                "string"
+										labelID: type:                  "string"
 									}
 								}
-							}, missingEnvRefs: {
-								type:
-									"array", items: type: "string"
-							}, missingSecrets: {
-								type:
-									"array", items: type: "string"
-							}, notificationEndpoints: {
-								type:
-									"array", items: allOf: [{
+							}
+							missingEnvRefs: {
+								type: "array"
+								items: type: "string"
+							}
+							missingSecrets: {
+								type: "array"
+								items: type: "string"
+							}
+							notificationEndpoints: {
+								type: "array"
+								items: allOf: [{
 									$ref: "#/components/schemas/NotificationEndpointDiscriminator"
 								}, {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										labelAssociations: {
 											type: "array"
@@ -7109,29 +7036,29 @@ cloud: {
 										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 									}
 								}]
-							}, notificationRules: {
-								type:
-									"array", items: {
-
+							}
+							notificationRules: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										templateMetaName: type: "string"
-										name: type: "string"
-										description: type: "string"
+										kind: $ref:                     "#/components/schemas/TemplateKind"
+										templateMetaName: type:         "string"
+										name: type:                     "string"
+										description: type:              "string"
 										endpointTemplateMetaName: type: "string"
-										endpointID: type: "string"
-										endpointType: type: "string"
-										every: type: "string"
-										offset: type: "string"
-										messageTemplate: type: "string"
-										status: type: "string"
+										endpointID: type:               "string"
+										endpointType: type:             "string"
+										every: type:                    "string"
+										offset: type:                   "string"
+										messageTemplate: type:          "string"
+										status: type:                   "string"
 										statusRules: {
 											type: "array"
 											items: {
 												type: "object"
 												properties: {
-													currentLevel: type: "string"
+													currentLevel: type:  "string"
 													previousLevel: type: "string"
 												}
 											}
@@ -7141,8 +7068,8 @@ cloud: {
 											items: {
 												type: "object"
 												properties: {
-													key: type: "string"
-													value: type: "string"
+													key: type:      "string"
+													value: type:    "string"
 													operator: type: "string"
 												}
 											}
@@ -7154,33 +7081,34 @@ cloud: {
 										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 									}
 								}
-							}, tasks: {
-								type:
-									"array", items: {
-
+							}
+							tasks: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										id: type: "string"
-										name: type: "string"
-										cron: type: "string"
-										description: type: "string"
-										every: type: "string"
-										offset: type: "string"
-										query: type: "string"
-										status: type: "string"
-										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
+										id: type:               "string"
+										name: type:             "string"
+										cron: type:             "string"
+										description: type:      "string"
+										every: type:            "string"
+										offset: type:           "string"
+										query: type:            "string"
+										status: type:           "string"
+										envReferences: $ref:    "#/components/schemas/TemplateEnvReferences"
 									}
 								}
-							}, telegrafConfigs: {
-								type:
-									"array", items: allOf: [{
+							}
+							telegrafConfigs: {
+								type: "array"
+								items: allOf: [{
 									$ref: "#/components/schemas/TelegrafRequest"
 								}, {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										labelAssociations: {
 											type: "array"
@@ -7189,19 +7117,19 @@ cloud: {
 										envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 									}
 								}]
-							}, variables: {
-								type:
-									"array", items: {
-
+							}
+							variables: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
-										id: type: "string"
-										orgID: type: "string"
-										name: type: "string"
-										description: type: "string"
-										arguments: $ref: "#/components/schemas/VariableProperties"
+										id: type:               "string"
+										orgID: type:            "string"
+										name: type:             "string"
+										description: type:      "string"
+										arguments: $ref:        "#/components/schemas/VariableProperties"
 										labelAssociations: {
 											type: "array"
 											items: $ref: "#/components/schemas/TemplateSummaryLabel"
@@ -7211,65 +7139,65 @@ cloud: {
 								}
 							}
 						}
-					}, diff: {
-						type:
-							"object", properties: {
+					}
+					diff: {
+						type: "object"
+						properties: {
 							buckets: {
-								type:
-									"array", items: {
-
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
+												name: type:           "string"
+												description: type:    "string"
 												retentionRules: $ref: "#/components/schemas/RetentionRules"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
+												name: type:           "string"
+												description: type:    "string"
 												retentionRules: $ref: "#/components/schemas/RetentionRules"
 											}
 										}
 									}
 								}
-							}, checks: {
-								type:
-									"array", items: {
-
+							}
+							checks: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
-										new: $ref: "#/components/schemas/CheckDiscriminator"
-										old: $ref: "#/components/schemas/CheckDiscriminator"
+										new: $ref:              "#/components/schemas/CheckDiscriminator"
+										old: $ref:              "#/components/schemas/CheckDiscriminator"
 									}
 								}
-							}, dashboards: {
-								type:
-									"array", items: {
-
+							}
+							dashboards: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										stateStatus: type: "string"
-										id: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
 												charts: {
 													type: "array"
@@ -7280,7 +7208,7 @@ cloud: {
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
 												charts: {
 													type: "array"
@@ -7290,92 +7218,92 @@ cloud: {
 										}
 									}
 								}
-							}, labels: {
-								type:
-									"array", items: {
-
+							}
+							labels: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										stateStatus: type: "string"
-										kind: $ref: "#/components/schemas/TemplateKind"
-										id: type: "string"
+										stateStatus: type:      "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												color: type: "string"
+												name: type:        "string"
+												color: type:       "string"
 												description: type: "string"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												color: type: "string"
+												name: type:        "string"
+												color: type:       "string"
 												description: type: "string"
 											}
 										}
 									}
 								}
-							}, labelMappings: {
-								type:
-									"array", items: {
-
+							}
+							labelMappings: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										status: type: "string"
-										resourceType: type: "string"
-										resourceID: type: "string"
+										status: type:                   "string"
+										resourceType: type:             "string"
+										resourceID: type:               "string"
 										resourceTemplateMetaName: type: "string"
-										resourceName: type: "string"
-										labelID: type: "string"
-										labelTemplateMetaName: type: "string"
-										labelName: type: "string"
+										resourceName: type:             "string"
+										labelID: type:                  "string"
+										labelTemplateMetaName: type:    "string"
+										labelName: type:                "string"
 									}
 								}
-							}, notificationEndpoints: {
-								type:
-									"array", items: {
-
+							}
+							notificationEndpoints: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
-										new: $ref: "#/components/schemas/NotificationEndpointDiscriminator"
-										old: $ref: "#/components/schemas/NotificationEndpointDiscriminator"
+										new: $ref:              "#/components/schemas/NotificationEndpointDiscriminator"
+										old: $ref:              "#/components/schemas/NotificationEndpointDiscriminator"
 									}
 								}
-							}, notificationRules: {
-								type:
-									"array", items: {
-
+							}
+							notificationRules: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
-												endpointName: type: "string"
-												endpointID: type: "string"
-												endpointType: type: "string"
-												every: type: "string"
-												offset: type: "string"
+												name: type:            "string"
+												description: type:     "string"
+												endpointName: type:    "string"
+												endpointID: type:      "string"
+												endpointType: type:    "string"
+												every: type:           "string"
+												offset: type:          "string"
 												messageTemplate: type: "string"
-												status: type: "string"
+												status: type:          "string"
 												statusRules: {
 													type: "array"
 													items: {
 														type: "object"
 														properties: {
-															currentLevel: type: "string"
+															currentLevel: type:  "string"
 															previousLevel: type: "string"
 														}
 													}
@@ -7385,8 +7313,8 @@ cloud: {
 													items: {
 														type: "object"
 														properties: {
-															key: type: "string"
-															value: type: "string"
+															key: type:      "string"
+															value: type:    "string"
 															operator: type: "string"
 														}
 													}
@@ -7396,21 +7324,21 @@ cloud: {
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												description: type: "string"
-												endpointName: type: "string"
-												endpointID: type: "string"
-												endpointType: type: "string"
-												every: type: "string"
-												offset: type: "string"
+												name: type:            "string"
+												description: type:     "string"
+												endpointName: type:    "string"
+												endpointID: type:      "string"
+												endpointType: type:    "string"
+												every: type:           "string"
+												offset: type:          "string"
 												messageTemplate: type: "string"
-												status: type: "string"
+												status: type:          "string"
 												statusRules: {
 													type: "array"
 													items: {
 														type: "object"
 														properties: {
-															currentLevel: type: "string"
+															currentLevel: type:  "string"
 															previousLevel: type: "string"
 														}
 													}
@@ -7420,8 +7348,8 @@ cloud: {
 													items: {
 														type: "object"
 														properties: {
-															key: type: "string"
-															value: type: "string"
+															key: type:      "string"
+															value: type:    "string"
 															operator: type: "string"
 														}
 													}
@@ -7430,97 +7358,99 @@ cloud: {
 										}
 									}
 								}
-							}, tasks: {
-								type:
-									"array", items: {
-
+							}
+							tasks: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												cron: type: "string"
+												name: type:        "string"
+												cron: type:        "string"
 												description: type: "string"
-												every: type: "string"
-												offset: type: "string"
-												query: type: "string"
-												status: type: "string"
+												every: type:       "string"
+												offset: type:      "string"
+												query: type:       "string"
+												status: type:      "string"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
-												cron: type: "string"
+												name: type:        "string"
+												cron: type:        "string"
 												description: type: "string"
-												every: type: "string"
-												offset: type: "string"
-												query: type: "string"
-												status: type: "string"
+												every: type:       "string"
+												offset: type:      "string"
+												query: type:       "string"
+												status: type:      "string"
 											}
 										}
 									}
 								}
-							}, telegrafConfigs: {
-								type:
-									"array", items: {
-
+							}
+							telegrafConfigs: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
-										new: $ref: "#/components/schemas/TelegrafRequest"
-										old: $ref: "#/components/schemas/TelegrafRequest"
+										new: $ref:              "#/components/schemas/TelegrafRequest"
+										old: $ref:              "#/components/schemas/TelegrafRequest"
 									}
 								}
-							}, variables: {
-								type:
-									"array", items: {
-
+							}
+							variables: {
+								type: "array"
+								items: {
 									type: "object"
 									properties: {
-										kind: $ref: "#/components/schemas/TemplateKind"
-										stateStatus: type: "string"
-										id: type: "string"
+										kind: $ref:             "#/components/schemas/TemplateKind"
+										stateStatus: type:      "string"
+										id: type:               "string"
 										templateMetaName: type: "string"
 										new: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
-												args: $ref: "#/components/schemas/VariableProperties"
+												args: $ref:        "#/components/schemas/VariableProperties"
 											}
 										}
 										old: {
 											type: "object"
 											properties: {
-												name: type: "string"
+												name: type:        "string"
 												description: type: "string"
-												args: $ref: "#/components/schemas/VariableProperties"
+												args: $ref:        "#/components/schemas/VariableProperties"
 											}
 										}
 									}
 								}
 							}
 						}
-					}, errors: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								kind: $ref: "#/components/schemas/TemplateKind", reason: type: "string", fields: {
-
+					}
+					errors: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								kind: $ref:   "#/components/schemas/TemplateKind"
+								reason: type: "string"
+								fields: {
 									type: "array"
 									items: type: "string"
-								}, indexes: {
-
+								}
+								indexes: {
 									type: "array"
 									items: type: "integer"
 								}
@@ -7528,69 +7458,72 @@ cloud: {
 						}
 					}
 				}
-			}, TemplateSummaryLabel: {
+			}
+			TemplateSummaryLabel: {
 				type: "object"
 				properties: {
-					id: type:
-						"string", orgID: type:
-						"string", kind: $ref:
-						"#/components/schemas/TemplateKind", templateMetaName: type:
-						"string", name: type:
-						"string", properties: {
-						type:
-							"object", properties: {
-							color: type:
-								"string", description: type:
-								"string"
+					id: type:               "string"
+					orgID: type:            "string"
+					kind: $ref:             "#/components/schemas/TemplateKind"
+					templateMetaName: type: "string"
+					name: type:             "string"
+					properties: {
+						type: "object"
+						properties: {
+							color: type:       "string"
+							description: type: "string"
 						}
-					}, envReferences: $ref:
-						"#/components/schemas/TemplateEnvReferences"
+					}
+					envReferences: $ref: "#/components/schemas/TemplateEnvReferences"
 				}
-			}, TemplateChart: {
+			}
+			TemplateChart: {
 				type: "object"
 				properties: {
-					xPos: type:
-						"integer", yPos: type:
-						"integer", height: type:
-						"integer", width: type:
-						"integer", properties: $ref:
-						"#/components/schemas/ViewProperties"
+					xPos: type:       "integer"
+					yPos: type:       "integer"
+					height: type:     "integer"
+					width: type:      "integer"
+					properties: $ref: "#/components/schemas/ViewProperties"
 				}
-			}, Stack: {
+			}
+			Stack: {
 				type: "object"
 				properties: {
-					id: type:
-						"string", orgID: type:
-						"string", createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, events: {
-						type:
-							"array", items: {
-							type:
-								"object", properties: {
-								eventType: type: "string", name: type: "string", description: type: "string", sources: {
-
+					id: type:    "string"
+					orgID: type: "string"
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					events: {
+						type: "array"
+						items: {
+							type: "object"
+							properties: {
+								eventType: type:   "string"
+								name: type:        "string"
+								description: type: "string"
+								sources: {
 									type: "array"
 									items: type: "string"
-								}, resources: {
-
+								}
+								resources: {
 									type: "array"
 									items: {
 										type: "object"
 										properties: {
-											apiVersion: type: "string"
-											resourceID: type: "string"
-											kind: $ref: "#/components/schemas/TemplateKind"
+											apiVersion: type:       "string"
+											resourceID: type:       "string"
+											kind: $ref:             "#/components/schemas/TemplateKind"
 											templateMetaName: type: "string"
 											associations: {
 												type: "array"
 												items: {
 													type: "object"
 													properties: {
-														kind: $ref: "#/components/schemas/TemplateKind"
+														kind: $ref:     "#/components/schemas/TemplateKind"
 														metaName: type: "string"
 													}
 												}
@@ -7601,12 +7534,12 @@ cloud: {
 											}
 										}
 									}
-								}, urls: {
-
+								}
+								urls: {
 									type: "array"
 									items: type: "string"
-								}, updatedAt: {
-
+								}
+								updatedAt: {
 									type:     "string"
 									format:   "date-time"
 									readOnly: true
@@ -7615,2290 +7548,1884 @@ cloud: {
 						}
 					}
 				}
-			}, Runs: {
+			}
+			Runs: {
 				type: "object"
 				properties: {
-					links: $ref:
-						"#/components/schemas/Links", runs: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/Run"
+					links: $ref: "#/components/schemas/Links"
+					runs: {
+						type: "array"
+						items: $ref: "#/components/schemas/Run"
 					}
 				}
-			}, Run: properties: {
+			}
+			Run: properties: {
 				id: {
-					readOnly:
-						true, type:
-						"string"
-				}, taskID: {
-					readOnly:
-						true, type:
-						"string"
-				}, status: {
-					readOnly:
-						true, type:
-						"string", enum: [
-						"scheduled",
-						"started",
-						"failed",
-						"success",
-						"canceled",
-					]
+					readOnly: true
+					type:     "string"
+				}
+				taskID: {
+					readOnly: true
+					type:     "string"
+				}
+				status: {
+					readOnly: true
+					type:     "string"
+					enum: ["scheduled", "started", "failed", "success", "canceled"]
 				}
 				scheduledFor: {
-					description:
-						"Time used for run's \"now\" option, RFC3339.", type:
-						"string", format:
-						"date-time"
-				}, log: {
-					description:
-						"An array of logs associated with the run.", type:
-						"array", readOnly:
-						true, items: $ref:
-						"#/components/schemas/LogEvent"
-				}, startedAt: {
-					readOnly:
-						true, description:
-						"Time run started executing, RFC3339Nano.", type:
-						"string", format:
-						"date-time"
-				}, finishedAt: {
-					readOnly:
-						true, description:
-						"Time run finished executing, RFC3339Nano.", type:
-						"string", format:
-						"date-time"
-				}, requestedAt: {
-					readOnly:
-						true, description:
-						"Time run was manually requested, RFC3339Nano.", type:
-						"string", format:
-						"date-time"
-				}, links: {
-					type:
-						"object", readOnly:
-						true, example: {
-						self:
-							"/api/v2/tasks/1/runs/1", task:
-							"/api/v2/tasks/1", retry:
-							"/api/v2/tasks/1/runs/1/retry"
-					}, properties: {
+					description: "Time used for run's \"now\" option, RFC3339."
+					type:        "string"
+					format:      "date-time"
+				}
+				log: {
+					description: "An array of logs associated with the run."
+					type:        "array"
+					readOnly:    true
+					items: $ref: "#/components/schemas/LogEvent"
+				}
+				startedAt: {
+					readOnly:    true
+					description: "Time run started executing, RFC3339Nano."
+					type:        "string"
+					format:      "date-time"
+				}
+				finishedAt: {
+					readOnly:    true
+					description: "Time run finished executing, RFC3339Nano."
+					type:        "string"
+					format:      "date-time"
+				}
+				requestedAt: {
+					readOnly:    true
+					description: "Time run was manually requested, RFC3339Nano."
+					type:        "string"
+					format:      "date-time"
+				}
+				links: {
+					type:     "object"
+					readOnly: true
+					example: {
+						self:  "/api/v2/tasks/1/runs/1"
+						task:  "/api/v2/tasks/1"
+						retry: "/api/v2/tasks/1/runs/1/retry"
+					}
+					properties: {
 						self: {
-							type:
-								"string", format:
-								"uri"
-						}, task: {
-							type:
-								"string", format:
-								"uri"
-						}, retry: {
-							type:
-								"string", format:
-								"uri"
+							type:   "string"
+							format: "uri"
+						}
+						task: {
+							type:   "string"
+							format: "uri"
+						}
+						retry: {
+							type:   "string"
+							format: "uri"
 						}
 					}
 				}
-			}, RunManually: properties: scheduledFor: {
-				nullable:
-					true, description:
-					"Time used for run's \"now\" option, RFC3339.  Default is the server's now time.", type:
-					"string", format:
-					"date-time"
-			}, Tasks: {
+			}
+			RunManually: properties: scheduledFor: {
+				nullable:    true
+				description: "Time used for run's \"now\" option, RFC3339.  Default is the server's now time."
+				type:        "string"
+				format:      "date-time"
+			}
+			Tasks: {
 				type: "object"
 				properties: {
 					links: {
-						readOnly:
-							true, $ref:
-							"#/components/schemas/Links"
-					}, tasks: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/Task"
+						readOnly: true
+						$ref:     "#/components/schemas/Links"
+					}
+					tasks: {
+						type: "array"
+						items: $ref: "#/components/schemas/Task"
 					}
 				}
-			}, Task: {
+			}
+			Task: {
 				type: "object"
 				properties: {
 					id: {
-						readOnly:
-							true, type:
-							"string"
-					}, type: {
-						description:
-							"The type of task, this can be used for filtering tasks on list actions.", type:
-							"string"
-					}, orgID: {
-						description:
-							"The ID of the organization that owns this Task.", type:
-							"string"
-					}, org: {
-						description:
-							"The name of the organization that owns this Task.", type:
-							"string"
-					}, name: {
-						description:
-							"The name of the task.", type:
-							"string"
-					}, ownerID: {
-						description:
-							"The ID of the user who owns this Task.", type:
-							"string"
-					}, description: {
-						description:
-							"An optional description of the task.", type:
-							"string"
-					}, status: $ref:
-						"#/components/schemas/TaskStatusType", labels: $ref:
-						"#/components/schemas/Labels", authorizationID: {
-						description:
-							"The ID of the authorization used when this task communicates with the query engine.", type:
-							"string"
-					}, flux: {
-						description:
-							"The Flux script to run for this task.", type:
-							"string"
-					}, every: {
-						description:
-							"A simple task repetition schedule; parsed from Flux.", type:
-							"string"
-					}, cron: {
-						description:
-							"A task repetition schedule in the form '* * * * * *'; parsed from Flux.", type:
-							"string"
-					}, offset: {
-						description:
-							"Duration to delay after the schedule, before executing the task; parsed from flux, if set to zero it will remove this option and use 0 as the default.", type:
-							"string"
-					}, latestCompleted: {
-						description:
-							"Timestamp of latest scheduled, completed run, RFC3339.", type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, lastRunStatus: {
-						readOnly:
-							true, type:
-							"string", enum: [
-							"failed",
-							"success",
-							"canceled",
-						]
+						readOnly: true
+						type:     "string"
+					}
+					type: {
+						description: "The type of task, this can be used for filtering tasks on list actions."
+						type:        "string"
+					}
+					orgID: {
+						description: "The ID of the organization that owns this Task."
+						type:        "string"
+					}
+					org: {
+						description: "The name of the organization that owns this Task."
+						type:        "string"
+					}
+					name: {
+						description: "The name of the task."
+						type:        "string"
+					}
+					ownerID: {
+						description: "The ID of the user who owns this Task."
+						type:        "string"
+					}
+					description: {
+						description: "An optional description of the task."
+						type:        "string"
+					}
+					status: $ref: "#/components/schemas/TaskStatusType"
+					labels: $ref: "#/components/schemas/Labels"
+					authorizationID: {
+						description: "The ID of the authorization used when this task communicates with the query engine."
+						type:        "string"
+					}
+					flux: {
+						description: "The Flux script to run for this task."
+						type:        "string"
+					}
+					every: {
+						description: "A simple task repetition schedule; parsed from Flux."
+						type:        "string"
+					}
+					cron: {
+						description: "A task repetition schedule in the form '* * * * * *'; parsed from Flux."
+						type:        "string"
+					}
+					offset: {
+						description: "Duration to delay after the schedule, before executing the task; parsed from flux, if set to zero it will remove this option and use 0 as the default."
+						type:        "string"
+					}
+					latestCompleted: {
+						description: "Timestamp of latest scheduled, completed run, RFC3339."
+						type:        "string"
+						format:      "date-time"
+						readOnly:    true
+					}
+					lastRunStatus: {
+						readOnly: true
+						type:     "string"
+						enum: ["failed", "success", "canceled"]
 					}
 					lastRunError: {
-						readOnly:
-							true, type:
-							"string"
-					}, createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							self:
-								"/api/v2/tasks/1", owners:
-								"/api/v2/tasks/1/owners", members:
-								"/api/v2/tasks/1/members", labels:
-								"/api/v2/tasks/1/labels", runs:
-								"/api/v2/tasks/1/runs", logs:
-								"/api/v2/tasks/1/logs"
-						}, properties: {
-							self: $ref:
-								"#/components/schemas/Link", owners: $ref:
-								"#/components/schemas/Link", members: $ref:
-								"#/components/schemas/Link", runs: $ref:
-								"#/components/schemas/Link", logs: $ref:
-								"#/components/schemas/Link", labels: $ref:
-								"#/components/schemas/Link"
+						readOnly: true
+						type:     "string"
+					}
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					links: {
+						type:     "object"
+						readOnly: true
+						example: {
+							self:    "/api/v2/tasks/1"
+							owners:  "/api/v2/tasks/1/owners"
+							members: "/api/v2/tasks/1/members"
+							labels:  "/api/v2/tasks/1/labels"
+							runs:    "/api/v2/tasks/1/runs"
+							logs:    "/api/v2/tasks/1/logs"
+						}
+						properties: {
+							self: $ref:    "#/components/schemas/Link"
+							owners: $ref:  "#/components/schemas/Link"
+							members: $ref: "#/components/schemas/Link"
+							runs: $ref:    "#/components/schemas/Link"
+							logs: $ref:    "#/components/schemas/Link"
+							labels: $ref:  "#/components/schemas/Link"
 						}
 					}
-				}, required: [
-					"id",
-					"name",
-					"orgID",
-					"flux",
-				]
+				}
+				required: ["id", "name", "orgID", "flux"]
 			}
 			TaskStatusType: {
 				type: "string"
-				enum: [
-					"active",
-					"inactive",
-				]
+				enum: ["active", "inactive"]
 			}
 			UserResponse: {
 				properties: {
 					id: {
-						readOnly:
-							true, type:
-							"string"
-					}, oauthID: type:
-						"string", name: type:
-						"string", status: {
-						description:
-							"If inactive the user is inactive.", default:
-							"active", type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+						readOnly: true
+						type:     "string"
+					}
+					oauthID: type: "string"
+					name: type:    "string"
+					status: {
+						description: "If inactive the user is inactive."
+						default:     "active"
+						type:        "string"
+						enum: ["active", "inactive"]
 					}
 					links: {
-						type:
-							"object", readOnly:
-							true, example: self:
-							"/api/v2/users/1", properties: self: {
-							type:
-								"string", format:
-								"uri"
+						type:     "object"
+						readOnly: true
+						example: self: "/api/v2/users/1"
+						properties: self: {
+							type:   "string"
+							format: "uri"
 						}
 					}
-				}, required: ["name"]
+				}
+				required: ["name"]
 			}
 			Flags: {
-				type: "object"
-				additionalProperties:
-					true
-			}, ResourceMember: allOf: [{
-				$ref:
-					"#/components/schemas/UserResponse"
+				type:                 "object"
+				additionalProperties: true
+			}
+			ResourceMember: allOf: [{
+				$ref: "#/components/schemas/UserResponse"
 			}, {
-				type:
-					"object", properties: role: {
-					type:
-						"string", default:
-						"member", enum: ["member"]
+				type: "object"
+				properties: role: {
+					type:    "string"
+					default: "member"
+					enum: ["member"]
 				}
-			}], ResourceMembers: {
+			}]
+			ResourceMembers: {
 				type: "object"
 				properties: {
 					links: {
-						type:
-							"object", properties: self: {
-							type:
-								"string", format:
-								"uri"
+						type: "object"
+						properties: self: {
+							type:   "string"
+							format: "uri"
 						}
-					}, users: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/ResourceMember"
+					}
+					users: {
+						type: "array"
+						items: $ref: "#/components/schemas/ResourceMember"
 					}
 				}
-			}, ResourceOwner: allOf: [{
-				$ref:
-					"#/components/schemas/UserResponse"
+			}
+			ResourceOwner: allOf: [{
+				$ref: "#/components/schemas/UserResponse"
 			}, {
-				type:
-					"object", properties: role: {
-					type:
-						"string", default:
-						"owner", enum: ["owner"]
+				type: "object"
+				properties: role: {
+					type:    "string"
+					default: "owner"
+					enum: ["owner"]
 				}
-			}], ResourceOwners: {
+			}]
+			ResourceOwners: {
 				type: "object"
 				properties: {
 					links: {
-						type:
-							"object", properties: self: {
-							type:
-								"string", format:
-								"uri"
+						type: "object"
+						properties: self: {
+							type:   "string"
+							format: "uri"
 						}
-					}, users: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/ResourceOwner"
+					}
+					users: {
+						type: "array"
+						items: $ref: "#/components/schemas/ResourceOwner"
 					}
 				}
-			}, FluxSuggestions: {
+			}
+			FluxSuggestions: {
 				type: "object"
 				properties: funcs: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/FluxSuggestion"
+					type: "array"
+					items: $ref: "#/components/schemas/FluxSuggestion"
 				}
-			}, FluxSuggestion: {
+			}
+			FluxSuggestion: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", params: {
-						type:
-							"object", additionalProperties: type:
-							"string"
+					name: type: "string"
+					params: {
+						type: "object"
+						additionalProperties: type: "string"
 					}
 				}
-			}, Routes: properties: {
+			}
+			Routes: properties: {
 				authorizations: {
-					type:
-						"string", format:
-						"uri"
-				}, buckets: {
-					type:
-						"string", format:
-						"uri"
-				}, dashboards: {
-					type:
-						"string", format:
-						"uri"
-				}, external: {
-					type:
-						"object", properties: statusFeed: {
-						type:
-							"string", format:
-							"uri"
-					}
-				}, variables: {
-					type:
-						"string", format:
-						"uri"
-				}, me: {
-					type:
-						"string", format:
-						"uri"
-				}, flags: {
-					type:
-						"string", format:
-						"uri"
-				}, orgs: {
-					type:
-						"string", format:
-						"uri"
-				}, query: {
-					type:
-						"object", properties: {
-						self: {
-							type:
-								"string", format:
-								"uri"
-						}, ast: {
-							type:
-								"string", format:
-								"uri"
-						}, analyze: {
-							type:
-								"string", format:
-								"uri"
-						}, suggestions: {
-							type:
-								"string", format:
-								"uri"
-						}
-					}
-				}, setup: {
-					type:
-						"string", format:
-						"uri"
-				}, signin: {
-					type:
-						"string", format:
-						"uri"
-				}, signout: {
-					type:
-						"string", format:
-						"uri"
-				}, sources: {
-					type:
-						"string", format:
-						"uri"
-				}, system: {
-					type:
-						"object", properties: {
-						metrics: {
-							type:
-								"string", format:
-								"uri"
-						}, debug: {
-							type:
-								"string", format:
-								"uri"
-						}, health: {
-							type:
-								"string", format:
-								"uri"
-						}
-					}
-				}, tasks: {
-					type:
-						"string", format:
-						"uri"
-				}, telegrafs: {
-					type:
-						"string", format:
-						"uri"
-				}, users: {
-					type:
-						"string", format:
-						"uri"
-				}, write: {
-					type:
-						"string", format:
-						"uri"
+					type:   "string"
+					format: "uri"
 				}
-			}, Error: {
+				buckets: {
+					type:   "string"
+					format: "uri"
+				}
+				dashboards: {
+					type:   "string"
+					format: "uri"
+				}
+				external: {
+					type: "object"
+					properties: statusFeed: {
+						type:   "string"
+						format: "uri"
+					}
+				}
+				variables: {
+					type:   "string"
+					format: "uri"
+				}
+				me: {
+					type:   "string"
+					format: "uri"
+				}
+				flags: {
+					type:   "string"
+					format: "uri"
+				}
+				orgs: {
+					type:   "string"
+					format: "uri"
+				}
+				query: {
+					type: "object"
+					properties: {
+						self: {
+							type:   "string"
+							format: "uri"
+						}
+						ast: {
+							type:   "string"
+							format: "uri"
+						}
+						analyze: {
+							type:   "string"
+							format: "uri"
+						}
+						suggestions: {
+							type:   "string"
+							format: "uri"
+						}
+					}
+				}
+				setup: {
+					type:   "string"
+					format: "uri"
+				}
+				signin: {
+					type:   "string"
+					format: "uri"
+				}
+				signout: {
+					type:   "string"
+					format: "uri"
+				}
+				sources: {
+					type:   "string"
+					format: "uri"
+				}
+				system: {
+					type: "object"
+					properties: {
+						metrics: {
+							type:   "string"
+							format: "uri"
+						}
+						debug: {
+							type:   "string"
+							format: "uri"
+						}
+						health: {
+							type:   "string"
+							format: "uri"
+						}
+					}
+				}
+				tasks: {
+					type:   "string"
+					format: "uri"
+				}
+				telegrafs: {
+					type:   "string"
+					format: "uri"
+				}
+				users: {
+					type:   "string"
+					format: "uri"
+				}
+				write: {
+					type:   "string"
+					format: "uri"
+				}
+			}
+			Error: {
 				properties: {
 					code: {
-						description:
-							"code is the machine-readable error code.", readOnly:
-							true, type:
-							"string", enum: [
-							"internal error",
-							"not found",
-							"conflict",
-							"invalid",
-							"unprocessable entity",
-							"empty value",
-							"unavailable",
-							"forbidden",
-							"too many requests",
-							"unauthorized",
-							"method not allowed",
-							"request too large",
-							"unsupported media type",
-						]
+						description: "code is the machine-readable error code."
+						readOnly:    true
+						type:        "string"
+						enum: ["internal error", "not found", "conflict", "invalid", "unprocessable entity", "empty value", "unavailable", "forbidden", "too many requests", "unauthorized", "method not allowed", "request too large", "unsupported media type"]
 					}
 					message: {
-						readOnly:
-							true, description:
-							"message is a human-readable message.", type:
-							"string"
-					}, op: {
-						readOnly:
-							true, description:
-							"op describes the logical code operation during error. Useful for debugging.", type:
-							"string"
-					}, err: {
-						readOnly:
-							true, description:
-							"err is a stack of errors that occurred during processing of the request. Useful for debugging.", type:
-							"string"
+						readOnly:    true
+						description: "message is a human-readable message."
+						type:        "string"
 					}
-				}, required: [
-					"code",
-					"message",
-				]
+					op: {
+						readOnly:    true
+						description: "op describes the logical code operation during error. Useful for debugging."
+						type:        "string"
+					}
+					err: {
+						readOnly:    true
+						description: "err is a stack of errors that occurred during processing of the request. Useful for debugging."
+						type:        "string"
+					}
+				}
+				required: ["code", "message"]
 			}
 			LineProtocolError: {
 				properties: {
 					code: {
-						description:
-							"Code is the machine-readable error code.", readOnly:
-							true, type:
-							"string", enum: [
-							"internal error",
-							"not found",
-							"conflict",
-							"invalid",
-							"empty value",
-							"unavailable",
-						]
+						description: "Code is the machine-readable error code."
+						readOnly:    true
+						type:        "string"
+						enum: ["internal error", "not found", "conflict", "invalid", "empty value", "unavailable"]
 					}
 					message: {
-						readOnly:
-							true, description:
-							"Message is a human-readable message.", type:
-							"string"
-					}, op: {
-						readOnly:
-							true, description:
-							"Op describes the logical code operation during error. Useful for debugging.", type:
-							"string"
-					}, err: {
-						readOnly:
-							true, description:
-							"Err is a stack of errors that occurred during processing of the request. Useful for debugging.", type:
-							"string"
-					}, line: {
-						readOnly:
-							true, description:
-							"First line within sent body containing malformed data", type:
-							"integer", format:
-							"int32"
+						readOnly:    true
+						description: "Message is a human-readable message."
+						type:        "string"
 					}
-				}, required: [
-					"code",
-					"message",
-					"op",
-					"err",
-				]
+					op: {
+						readOnly:    true
+						description: "Op describes the logical code operation during error. Useful for debugging."
+						type:        "string"
+					}
+					err: {
+						readOnly:    true
+						description: "Err is a stack of errors that occurred during processing of the request. Useful for debugging."
+						type:        "string"
+					}
+					line: {
+						readOnly:    true
+						description: "First line within sent body containing malformed data"
+						type:        "integer"
+						format:      "int32"
+					}
+				}
+				required: ["code", "message", "op", "err"]
 			}
 			LineProtocolLengthError: {
 				properties: {
 					code: {
-						description:
-							"Code is the machine-readable error code.", readOnly:
-							true, type:
-							"string", enum: [
-							"invalid",
-						]
+						description: "Code is the machine-readable error code."
+						readOnly:    true
+						type:        "string"
+						enum: ["invalid"]
 					}
 					message: {
-						readOnly:
-							true, description:
-							"Message is a human-readable message.", type:
-							"string"
-					}, maxLength: {
-						readOnly:
-							true, description:
-							"Max length in bytes for a body of line-protocol.", type:
-							"integer", format:
-							"int32"
+						readOnly:    true
+						description: "Message is a human-readable message."
+						type:        "string"
 					}
-				}, required: [
-					"code",
-					"message",
-					"maxLength",
-				]
+					maxLength: {
+						readOnly:    true
+						description: "Max length in bytes for a body of line-protocol."
+						type:        "integer"
+						format:      "int32"
+					}
+				}
+				required: ["code", "message", "maxLength"]
 			}
 			Field: {
 				type: "object"
 				properties: {
 					value: {
-						description:
-							"value is the value of the field.  Meaning of the value is implied by the `type` key", type:
-							"string"
-					}, type: {
-						description:
-							"`type` describes the field type. `func` is a function. `field` is a field reference.", type:
-							"string", enum: [
-							"func",
-							"field",
-							"integer",
-							"number",
-							"regex",
-							"wildcard",
-						]
+						description: "value is the value of the field.  Meaning of the value is implied by the `type` key"
+						type:        "string"
+					}
+					type: {
+						description: "`type` describes the field type. `func` is a function. `field` is a field reference."
+						type:        "string"
+						enum: ["func", "field", "integer", "number", "regex", "wildcard"]
 					}
 					alias: {
-						description:
-							"Alias overrides the field name in the returned response.  Applies only if type is `func`", type:
-							"string"
-					}, args: {
-						description:
-							"Args are the arguments to the function", type:
-							"array", items: $ref:
-							"#/components/schemas/Field"
+						description: "Alias overrides the field name in the returned response.  Applies only if type is `func`"
+						type:        "string"
+					}
+					args: {
+						description: "Args are the arguments to the function"
+						type:        "array"
+						items: $ref: "#/components/schemas/Field"
 					}
 				}
-			}, BuilderConfig: {
+			}
+			BuilderConfig: {
 				type: "object"
 				properties: {
 					buckets: {
-						type:
-							"array", items: type:
-							"string"
-					}, tags: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/BuilderTagsType"
-					}, functions: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/BuilderFunctionsType"
-					}, aggregateWindow: {
-						type:
-							"object", properties: {
-							period: type:
-								"string", fillValues: type:
-								"boolean"
+						type: "array"
+						items: type: "string"
+					}
+					tags: {
+						type: "array"
+						items: $ref: "#/components/schemas/BuilderTagsType"
+					}
+					functions: {
+						type: "array"
+						items: $ref: "#/components/schemas/BuilderFunctionsType"
+					}
+					aggregateWindow: {
+						type: "object"
+						properties: {
+							period: type:     "string"
+							fillValues: type: "boolean"
 						}
 					}
 				}
-			}, BuilderTagsType: {
+			}
+			BuilderTagsType: {
 				type: "object"
 				properties: {
-					key: type:
-						"string", values: {
-						type:
-							"array", items: type:
-							"string"
-					}, aggregateFunctionType: $ref:
-						"#/components/schemas/BuilderAggregateFunctionType"
+					key: type: "string"
+					values: {
+						type: "array"
+						items: type: "string"
+					}
+					aggregateFunctionType: $ref: "#/components/schemas/BuilderAggregateFunctionType"
 				}
-			}, BuilderAggregateFunctionType: {
+			}
+			BuilderAggregateFunctionType: {
 				type: "string"
-				enum: [
-					"filter",
-					"group",
-				]
+				enum: ["filter", "group"]
 			}
 			BuilderFunctionsType: {
 				type: "object"
-				properties: name: type:
-					"string"
-			}, DashboardQuery: {
+				properties: name: type: "string"
+			}
+			DashboardQuery: {
 				type: "object"
 				properties: {
 					text: {
-						type:
-							"string", description:
-							"The text of the Flux query."
-					}, editMode: $ref:
-						"#/components/schemas/QueryEditMode", name: type:
-						"string", builderConfig: $ref:
-						"#/components/schemas/BuilderConfig"
+						type:        "string"
+						description: "The text of the Flux query."
+					}
+					editMode: $ref:      "#/components/schemas/QueryEditMode"
+					name: type:          "string"
+					builderConfig: $ref: "#/components/schemas/BuilderConfig"
 				}
-			}, QueryEditMode: {
+			}
+			QueryEditMode: {
 				type: "string"
-				enum: [
-					"builder",
-					"advanced",
-				]
+				enum: ["builder", "advanced"]
 			}
 			Axis: {
-				type: "object"
-				description:
-					"The description of a particular axis for a visualization.", properties: {
+				type:        "object"
+				description: "The description of a particular axis for a visualization."
+				properties: {
 					bounds: {
-						type:
-							"array", minItems:
-							0, maxItems:
-							2, description:
-							"The extents of an axis in the form [lower, upper]. Clients determine whether bounds are to be inclusive or exclusive of their limits", items: type:
-							"string"
-					}, label: {
-						description:
-							"Label is a description of this Axis", type:
-							"string"
-					}, prefix: {
-						description:
-							"Prefix represents a label prefix for formatting axis values.", type:
-							"string"
-					}, suffix: {
-						description:
-							"Suffix represents a label suffix for formatting axis values.", type:
-							"string"
-					}, base: {
-						description:
-							"Base represents the radix for formatting axis values.", type:
-							"string", enum: [
-							"",
-							"2",
-							"10",
-						]
+						type:        "array"
+						minItems:    0
+						maxItems:    2
+						description: "The extents of an axis in the form [lower, upper]. Clients determine whether bounds are to be inclusive or exclusive of their limits"
+						items: type: "string"
 					}
-					scale: $ref:
-						"#/components/schemas/AxisScale"
+					label: {
+						description: "Label is a description of this Axis"
+						type:        "string"
+					}
+					prefix: {
+						description: "Prefix represents a label prefix for formatting axis values."
+						type:        "string"
+					}
+					suffix: {
+						description: "Suffix represents a label suffix for formatting axis values."
+						type:        "string"
+					}
+					base: {
+						description: "Base represents the radix for formatting axis values."
+						type:        "string"
+						enum: ["", "2", "10"]
+					}
+					scale: $ref: "#/components/schemas/AxisScale"
 				}
-			}, AxisScale: {
-				description:
-					"Scale is the axis formatting scale. Supported: \"log\", \"linear\"", type: "string"
-				enum: [
-					"log",
-					"linear",
-				]
+			}
+			AxisScale: {
+				description: "Scale is the axis formatting scale. Supported: \"log\", \"linear\""
+				type:        "string"
+				enum: ["log", "linear"]
 			}
 			DashboardColor: {
-				type: "object"
-				description:
-					"Defines an encoding of data value into color space.", required: [
-					"id",
-					"type",
-					"hex",
-					"name",
-					"value",
-				]
+				type:        "object"
+				description: "Defines an encoding of data value into color space."
+				required: ["id", "type", "hex", "name", "value"]
 				properties: {
 					id: {
-						description:
-							"The unique ID of the view color.", type:
-							"string"
-					}, type: {
-						description:
-							"Type is how the color is used.", type:
-							"string", enum: [
-							"min",
-							"max",
-							"threshold",
-							"scale",
-							"text",
-							"background",
-						]
+						description: "The unique ID of the view color."
+						type:        "string"
+					}
+					type: {
+						description: "Type is how the color is used."
+						type:        "string"
+						enum: ["min", "max", "threshold", "scale", "text", "background"]
 					}
 					hex: {
-						description:
-							"The hex number of the color", type:
-							"string", maxLength:
-							7, minLength:
-							7
-					}, name: {
-						description:
-							"The user-facing name of the hex color.", type:
-							"string"
-					}, value: {
-						description:
-							"The data value mapped to this color.", type:
-							"number", format:
-							"float"
+						description: "The hex number of the color"
+						type:        "string"
+						maxLength:   7
+						minLength:   7
+					}
+					name: {
+						description: "The user-facing name of the hex color."
+						type:        "string"
+					}
+					value: {
+						description: "The data value mapped to this color."
+						type:        "number"
+						format:      "float"
 					}
 				}
-			}, RenamableField: {
-				description:
-					"Describes a field that can be renamed and made visible or invisible.", type: "object"
+			}
+			RenamableField: {
+				description: "Describes a field that can be renamed and made visible or invisible."
+				type:        "object"
 				properties: {
 					internalName: {
-						description:
-							"The calculated name of a field.", readOnly:
-							true, type:
-							"string"
-					}, displayName: {
-						description:
-							"The name that a field is renamed to by the user.", type:
-							"string"
-					}, visible: {
-						description:
-							"Indicates whether this field should be visible on the table.", type:
-							"boolean"
+						description: "The calculated name of a field."
+						readOnly:    true
+						type:        "string"
+					}
+					displayName: {
+						description: "The name that a field is renamed to by the user."
+						type:        "string"
+					}
+					visible: {
+						description: "Indicates whether this field should be visible on the table."
+						type:        "boolean"
 					}
 				}
-			}, XYViewProperties: {
+			}
+			XYViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"geom",
-					"queries",
-					"shape",
-					"axes",
-					"colors",
-					"note",
-					"showNoteWhenEmpty",
-					"position",
-				]
+				required: ["type", "geom", "queries", "shape", "axes", "colors", "note", "showNoteWhenEmpty", "position"]
 				properties: {
-					timeFormat: type:
-						"string", type: {
-						type:
-							"string", enum: [
-							"xy",
-						]
+					timeFormat: type: "string"
+					type: {
+						type: "string"
+						enum: ["xy"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, axes: $ref:
-						"#/components/schemas/Axes", staticLegend: $ref:
-						"#/components/schemas/StaticLegend", xColumn: type:
-						"string", generateXAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, xTotalTicks: type:
-						"integer", xTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, xTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, yColumn: type:
-						"string", generateYAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, yTotalTicks: type:
-						"integer", yTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, yTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, shadeBelow: type:
-						"boolean", hoverDimension: {
-						type:
-							"string", enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					axes: $ref:         "#/components/schemas/Axes"
+					staticLegend: $ref: "#/components/schemas/StaticLegend"
+					xColumn: type:      "string"
+					generateXAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					xTotalTicks: type: "integer"
+					xTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					xTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					yColumn: type: "string"
+					generateYAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					yTotalTicks: type: "integer"
+					yTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					yTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					shadeBelow: type: "boolean"
+					hoverDimension: {
+						type: "string"
+						enum: ["auto", "x", "y", "xy"]
 					}
 					position: {
-						type:
-							"string", enum: [
-							"overlaid",
-							"stacked",
-						]
+						type: "string"
+						enum: ["overlaid", "stacked"]
 					}
-					geom: $ref:
-						"#/components/schemas/XYGeom", legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					geom: $ref:               "#/components/schemas/XYGeom"
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, XYGeom: {
+			}
+			XYGeom: {
 				type: "string"
-				enum: [
-					"line",
-					"step",
-					"stacked",
-					"bar",
-					"monotoneX",
-				]
+				enum: ["line", "step", "stacked", "bar", "monotoneX"]
 			}
 			BandViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"geom",
-					"queries",
-					"shape",
-					"axes",
-					"colors",
-					"note",
-					"showNoteWhenEmpty",
-				]
+				required: ["type", "geom", "queries", "shape", "axes", "colors", "note", "showNoteWhenEmpty"]
 				properties: {
-					timeFormat: type:
-						"string", type: {
-						type:
-							"string", enum: [
-							"band",
-						]
+					timeFormat: type: "string"
+					type: {
+						type: "string"
+						enum: ["band"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, axes: $ref:
-						"#/components/schemas/Axes", staticLegend: $ref:
-						"#/components/schemas/StaticLegend", xColumn: type:
-						"string", generateXAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, xTotalTicks: type:
-						"integer", xTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, xTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, yColumn: type:
-						"string", generateYAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, yTotalTicks: type:
-						"integer", yTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, yTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, upperColumn: type:
-						"string", mainColumn: type:
-						"string", lowerColumn: type:
-						"string", hoverDimension: {
-						type:
-							"string", enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
 					}
-					geom: $ref:
-						"#/components/schemas/XYGeom", legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					axes: $ref:         "#/components/schemas/Axes"
+					staticLegend: $ref: "#/components/schemas/StaticLegend"
+					xColumn: type:      "string"
+					generateXAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					xTotalTicks: type: "integer"
+					xTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					xTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					yColumn: type: "string"
+					generateYAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					yTotalTicks: type: "integer"
+					yTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					yTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					upperColumn: type: "string"
+					mainColumn: type:  "string"
+					lowerColumn: type: "string"
+					hoverDimension: {
+						type: "string"
+						enum: ["auto", "x", "y", "xy"]
+					}
+					geom: $ref:               "#/components/schemas/XYGeom"
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, LinePlusSingleStatProperties: {
+			}
+			LinePlusSingleStatProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"shape",
-					"axes",
-					"colors",
-					"note",
-					"showNoteWhenEmpty",
-					"prefix",
-					"suffix",
-					"decimalPlaces",
-					"position",
-				]
+				required: ["type", "queries", "shape", "axes", "colors", "note", "showNoteWhenEmpty", "prefix", "suffix", "decimalPlaces", "position"]
 				properties: {
-					timeFormat: type:
-						"string", type: {
-						type:
-							"string", enum: [
-							"line-plus-single-stat",
-						]
+					timeFormat: type: "string"
+					type: {
+						type: "string"
+						enum: ["line-plus-single-stat"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, axes: $ref:
-						"#/components/schemas/Axes", staticLegend: $ref:
-						"#/components/schemas/StaticLegend", xColumn: type:
-						"string", generateXAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, xTotalTicks: type:
-						"integer", xTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, xTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, yColumn: type:
-						"string", generateYAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, yTotalTicks: type:
-						"integer", yTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, yTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, shadeBelow: type:
-						"boolean", hoverDimension: {
-						type:
-							"string", enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					axes: $ref:         "#/components/schemas/Axes"
+					staticLegend: $ref: "#/components/schemas/StaticLegend"
+					xColumn: type:      "string"
+					generateXAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					xTotalTicks: type: "integer"
+					xTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					xTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					yColumn: type: "string"
+					generateYAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					yTotalTicks: type: "integer"
+					yTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					yTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					shadeBelow: type: "boolean"
+					hoverDimension: {
+						type: "string"
+						enum: ["auto", "x", "y", "xy"]
 					}
 					position: {
-						type:
-							"string", enum: [
-							"overlaid",
-							"stacked",
-						]
+						type: "string"
+						enum: ["overlaid", "stacked"]
 					}
-					prefix: type:
-						"string", suffix: type:
-						"string", decimalPlaces: $ref:
-						"#/components/schemas/DecimalPlaces", legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					prefix: type:             "string"
+					suffix: type:             "string"
+					decimalPlaces: $ref:      "#/components/schemas/DecimalPlaces"
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, MosaicViewProperties: {
+			}
+			MosaicViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"ySeriesColumns",
-					"fillColumns",
-					"xDomain",
-					"yDomain",
-					"xAxisLabel",
-					"yAxisLabel",
-					"xPrefix",
-					"yPrefix",
-					"xSuffix",
-					"ySuffix",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "ySeriesColumns", "fillColumns", "xDomain", "yDomain", "xAxisLabel", "yAxisLabel", "xPrefix", "yPrefix", "xSuffix", "ySuffix"]
 				properties: {
-					timeFormat: type:
-						"string", type: {
-						type:
-							"string", enum: [
-							"mosaic",
-						]
+					timeFormat: type: "string"
+					type: {
+						type: "string"
+						enum: ["mosaic"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: type:
-							"string"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, xColumn: type:
-						"string", generateXAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, xTotalTicks: type:
-						"integer", xTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, xTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, yLabelColumnSeparator: type:
-						"string", yLabelColumns: {
-						type:
-							"array", items: type:
-							"string"
-					}, ySeriesColumns: {
-						type:
-							"array", items: type:
-							"string"
-					}, fillColumns: {
-						type:
-							"array", items: type:
-							"string"
-					}, xDomain: {
-						type:
-							"array", items: type:
-							"number", maxItems:
-							2
-					}, yDomain: {
-						type:
-							"array", items: type:
-							"number", maxItems:
-							2
-					}, xAxisLabel: type:
-						"string", yAxisLabel: type:
-						"string", xPrefix: type:
-						"string", xSuffix: type:
-						"string", yPrefix: type:
-						"string", ySuffix: type:
-						"string", hoverDimension: {
-						type:
-							"string", enum: [
-							"auto",
-							"x",
-							"y",
-							"xy",
-						]
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: type: "string"
 					}
-					legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					xColumn: type: "string"
+					generateXAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					xTotalTicks: type: "integer"
+					xTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					xTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					yLabelColumnSeparator: type: "string"
+					yLabelColumns: {
+						type: "array"
+						items: type: "string"
+					}
+					ySeriesColumns: {
+						type: "array"
+						items: type: "string"
+					}
+					fillColumns: {
+						type: "array"
+						items: type: "string"
+					}
+					xDomain: {
+						type: "array"
+						items: type: "number"
+						maxItems: 2
+					}
+					yDomain: {
+						type: "array"
+						items: type: "number"
+						maxItems: 2
+					}
+					xAxisLabel: type: "string"
+					yAxisLabel: type: "string"
+					xPrefix: type:    "string"
+					xSuffix: type:    "string"
+					yPrefix: type:    "string"
+					ySuffix: type:    "string"
+					hoverDimension: {
+						type: "string"
+						enum: ["auto", "x", "y", "xy"]
+					}
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, ScatterViewProperties: {
+			}
+			ScatterViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"yColumn",
-					"fillColumns",
-					"symbolColumns",
-					"xDomain",
-					"yDomain",
-					"xAxisLabel",
-					"yAxisLabel",
-					"xPrefix",
-					"yPrefix",
-					"xSuffix",
-					"ySuffix",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "yColumn", "fillColumns", "symbolColumns", "xDomain", "yDomain", "xAxisLabel", "yAxisLabel", "xPrefix", "yPrefix", "xSuffix", "ySuffix"]
 				properties: {
-					timeFormat: type:
-						"string", type: {
-						type:
-							"string", enum: [
-							"scatter",
-						]
+					timeFormat: type: "string"
+					type: {
+						type: "string"
+						enum: ["scatter"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: type:
-							"string"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, xColumn: type:
-						"string", generateXAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, xTotalTicks: type:
-						"integer", xTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, xTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, yColumn: type:
-						"string", generateYAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, yTotalTicks: type:
-						"integer", yTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, yTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, fillColumns: {
-						type:
-							"array", items: type:
-							"string"
-					}, symbolColumns: {
-						type:
-							"array", items: type:
-							"string"
-					}, xDomain: {
-						type:
-							"array", items: type:
-							"number", maxItems:
-							2
-					}, yDomain: {
-						type:
-							"array", items: type:
-							"number", maxItems:
-							2
-					}, xAxisLabel: type:
-						"string", yAxisLabel: type:
-						"string", xPrefix: type:
-						"string", xSuffix: type:
-						"string", yPrefix: type:
-						"string", ySuffix: type:
-						"string", legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: type: "string"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					xColumn: type: "string"
+					generateXAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					xTotalTicks: type: "integer"
+					xTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					xTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					yColumn: type: "string"
+					generateYAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					yTotalTicks: type: "integer"
+					yTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					yTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					fillColumns: {
+						type: "array"
+						items: type: "string"
+					}
+					symbolColumns: {
+						type: "array"
+						items: type: "string"
+					}
+					xDomain: {
+						type: "array"
+						items: type: "number"
+						maxItems: 2
+					}
+					yDomain: {
+						type: "array"
+						items: type: "number"
+						maxItems: 2
+					}
+					xAxisLabel: type:         "string"
+					yAxisLabel: type:         "string"
+					xPrefix: type:            "string"
+					xSuffix: type:            "string"
+					yPrefix: type:            "string"
+					ySuffix: type:            "string"
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, HeatmapViewProperties: {
+			}
+			HeatmapViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"yColumn",
-					"xDomain",
-					"yDomain",
-					"xAxisLabel",
-					"yAxisLabel",
-					"xPrefix",
-					"yPrefix",
-					"xSuffix",
-					"ySuffix",
-					"binSize",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "yColumn", "xDomain", "yDomain", "xAxisLabel", "yAxisLabel", "xPrefix", "yPrefix", "xSuffix", "ySuffix", "binSize"]
 				properties: {
-					timeFormat: type:
-						"string", type: {
-						type:
-							"string", enum: [
-							"heatmap",
-						]
+					timeFormat: type: "string"
+					type: {
+						type: "string"
+						enum: ["heatmap"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: type:
-							"string"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, xColumn: type:
-						"string", generateXAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, xTotalTicks: type:
-						"integer", xTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, xTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, yColumn: type:
-						"string", generateYAxisTicks: {
-						type:
-							"array", items: type:
-							"string"
-					}, yTotalTicks: type:
-						"integer", yTickStart: {
-						type:
-							"number", format:
-							"float"
-					}, yTickStep: {
-						type:
-							"number", format:
-							"float"
-					}, xDomain: {
-						type:
-							"array", items: type:
-							"number", maxItems:
-							2
-					}, yDomain: {
-						type:
-							"array", items: type:
-							"number", maxItems:
-							2
-					}, xAxisLabel: type:
-						"string", yAxisLabel: type:
-						"string", xPrefix: type:
-						"string", xSuffix: type:
-						"string", yPrefix: type:
-						"string", ySuffix: type:
-						"string", binSize: type:
-						"number", legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: type: "string"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					xColumn: type: "string"
+					generateXAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					xTotalTicks: type: "integer"
+					xTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					xTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					yColumn: type: "string"
+					generateYAxisTicks: {
+						type: "array"
+						items: type: "string"
+					}
+					yTotalTicks: type: "integer"
+					yTickStart: {
+						type:   "number"
+						format: "float"
+					}
+					yTickStep: {
+						type:   "number"
+						format: "float"
+					}
+					xDomain: {
+						type: "array"
+						items: type: "number"
+						maxItems: 2
+					}
+					yDomain: {
+						type: "array"
+						items: type: "number"
+						maxItems: 2
+					}
+					xAxisLabel: type:         "string"
+					yAxisLabel: type:         "string"
+					xPrefix: type:            "string"
+					xSuffix: type:            "string"
+					yPrefix: type:            "string"
+					ySuffix: type:            "string"
+					binSize: type:            "number"
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, SingleStatViewProperties: {
+			}
+			SingleStatViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"prefix",
-					"tickPrefix",
-					"suffix",
-					"tickSuffix",
-					"decimalPlaces",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "prefix", "tickPrefix", "suffix", "tickSuffix", "decimalPlaces"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"single-stat",
-						]
+						type: "string"
+						enum: ["single-stat"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, prefix: type:
-						"string", tickPrefix: type:
-						"string", suffix: type:
-						"string", tickSuffix: type:
-						"string", staticLegend: $ref:
-						"#/components/schemas/StaticLegend", decimalPlaces: $ref:
-						"#/components/schemas/DecimalPlaces"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					prefix: type:        "string"
+					tickPrefix: type:    "string"
+					suffix: type:        "string"
+					tickSuffix: type:    "string"
+					staticLegend: $ref:  "#/components/schemas/StaticLegend"
+					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
 				}
-			}, HistogramViewProperties: {
+			}
+			HistogramViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"xColumn",
-					"fillColumns",
-					"xDomain",
-					"xAxisLabel",
-					"position",
-					"binCount",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "xColumn", "fillColumns", "xDomain", "xAxisLabel", "position", "binCount"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"histogram",
-						]
+						type: "string"
+						enum: ["histogram"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, xColumn: type:
-						"string", fillColumns: {
-						type:
-							"array", items: type:
-							"string"
-					}, xDomain: {
-						type:
-							"array", items: {
-							type:
-								"number", format:
-								"float"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					xColumn: type: "string"
+					fillColumns: {
+						type: "array"
+						items: type: "string"
+					}
+					xDomain: {
+						type: "array"
+						items: {
+							type:   "number"
+							format: "float"
 						}
-					}, xAxisLabel: type:
-						"string", position: {
-						type:
-							"string", enum: [
-							"overlaid",
-							"stacked",
-						]
 					}
-					binCount: type:
-						"integer", legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					xAxisLabel: type: "string"
+					position: {
+						type: "string"
+						enum: ["overlaid", "stacked"]
+					}
+					binCount: type:           "integer"
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
 				}
-			}, GaugeViewProperties: {
+			}
+			GaugeViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"prefix",
-					"tickPrefix",
-					"suffix",
-					"tickSuffix",
-					"decimalPlaces",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "prefix", "tickPrefix", "suffix", "tickSuffix", "decimalPlaces"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"gauge",
-						]
+						type: "string"
+						enum: ["gauge"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, prefix: type:
-						"string", tickPrefix: type:
-						"string", suffix: type:
-						"string", tickSuffix: type:
-						"string", decimalPlaces: $ref:
-						"#/components/schemas/DecimalPlaces"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					prefix: type:        "string"
+					tickPrefix: type:    "string"
+					suffix: type:        "string"
+					tickSuffix: type:    "string"
+					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
 				}
-			}, TableViewProperties: {
+			}
+			TableViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"queries",
-					"colors",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-					"tableOptions",
-					"fieldOptions",
-					"timeFormat",
-					"decimalPlaces",
-				]
+				required: ["type", "queries", "colors", "shape", "note", "showNoteWhenEmpty", "tableOptions", "fieldOptions", "timeFormat", "decimalPlaces"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"table",
-						]
+						type: "string"
+						enum: ["table"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, tableOptions: {
-						type:
-							"object", properties: {
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					tableOptions: {
+						type: "object"
+						properties: {
 							verticalTimeAxis: {
-								description:
-									"verticalTimeAxis describes the orientation of the table by indicating whether the time axis will be displayed vertically", type:
-									"boolean"
-							}, sortBy: $ref:
-								"#/components/schemas/RenamableField", wrapping: {
-								description:
-									"Wrapping describes the text wrapping style to be used in table views", type:
-									"string", enum: [
-									"truncate",
-									"wrap",
-									"single-line",
-								]
-							}, fixFirstColumn: {
-								description:
-									"fixFirstColumn indicates whether the first column of the table should be locked", type:
-									"boolean"
+								description: "verticalTimeAxis describes the orientation of the table by indicating whether the time axis will be displayed vertically"
+								type:        "boolean"
+							}
+							sortBy: $ref: "#/components/schemas/RenamableField"
+							wrapping: {
+								description: "Wrapping describes the text wrapping style to be used in table views"
+								type:        "string"
+								enum: ["truncate", "wrap", "single-line"]
+							}
+							fixFirstColumn: {
+								description: "fixFirstColumn indicates whether the first column of the table should be locked"
+								type:        "boolean"
 							}
 						}
-					}, fieldOptions: {
-						description:
-							"fieldOptions represent the fields retrieved by the query with customization options", type:
-							"array", items: $ref:
-							"#/components/schemas/RenamableField"
-					}, timeFormat: {
-						description:
-							"timeFormat describes the display format for time values according to moment.js date formatting", type:
-							"string"
-					}, decimalPlaces: $ref:
-						"#/components/schemas/DecimalPlaces"
+					}
+					fieldOptions: {
+						description: "fieldOptions represent the fields retrieved by the query with customization options"
+						type:        "array"
+						items: $ref: "#/components/schemas/RenamableField"
+					}
+					timeFormat: {
+						description: "timeFormat describes the display format for time values according to moment.js date formatting"
+						type:        "string"
+					}
+					decimalPlaces: $ref: "#/components/schemas/DecimalPlaces"
 				}
-			}, SimpleTableViewProperties: {
+			}
+			SimpleTableViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"showAll",
-					"queries",
-					"shape",
-					"note",
-					"showNoteWhenEmpty",
-				]
+				required: ["type", "showAll", "queries", "shape", "note", "showNoteWhenEmpty"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"simple-table",
-						]
+						type: "string"
+						enum: ["simple-table"]
 					}
-					showAll: type:
-						"boolean", queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
-					}
-					note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}
-				}
-			}, MarkdownViewProperties: {
-				type: "object"
-				required: [
-					"type",
-					"shape",
-					"note",
-				]
-				properties: {
-					type: {
-						type:
-							"string", enum: [
-							"markdown",
-						]
+					showAll: type: "boolean"
+					queries: {
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
 					}
 					shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "string"
+						enum: ["chronograf-v2"]
 					}
-					note: type:
-						"string"
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
 				}
-			}, CheckViewProperties: {
+			}
+			MarkdownViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"shape",
-					"checkID",
-					"queries",
-					"colors",
-				]
+				required: ["type", "shape", "note"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"check",
-						]
+						type: "string"
+						enum: ["markdown"]
 					}
 					shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "string"
+						enum: ["chronograf-v2"]
 					}
-					checkID: type:
-						"string", check: $ref:
-						"#/components/schemas/Check", queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, legendColorizeRows: type:
-						"boolean", legendHide: type:
-						"boolean", legendOpacity: {
-						type:
-							"number", format:
-							"float"
-					}, legendOrientationThreshold: type:
-						"integer"
+					note: type: "string"
 				}
-			}, GeoViewLayer: {
+			}
+			CheckViewProperties: {
+				type: "object"
+				required: ["type", "shape", "checkID", "queries", "colors"]
+				properties: {
+					type: {
+						type: "string"
+						enum: ["check"]
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
+					}
+					checkID: type: "string"
+					check: $ref:   "#/components/schemas/Check"
+					queries: {
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
+					}
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					legendColorizeRows: type: "boolean"
+					legendHide: type:         "boolean"
+					legendOpacity: {
+						type:   "number"
+						format: "float"
+					}
+					legendOrientationThreshold: type: "integer"
+				}
+			}
+			GeoViewLayer: {
 				type: "object"
 				oneOf: [{
-					$ref:
-						"#/components/schemas/GeoCircleViewLayer"
+					$ref: "#/components/schemas/GeoCircleViewLayer"
 				}, {
-					$ref:
-						"#/components/schemas/GeoHeatMapViewLayer"
+					$ref: "#/components/schemas/GeoHeatMapViewLayer"
 				}, {
-					$ref:
-						"#/components/schemas/GeoPointMapViewLayer"
+					$ref: "#/components/schemas/GeoPointMapViewLayer"
 				}, {
-					$ref:
-						"#/components/schemas/GeoTrackMapViewLayer"
+					$ref: "#/components/schemas/GeoTrackMapViewLayer"
 				}]
-			}, GeoViewLayerProperties: {
+			}
+			GeoViewLayerProperties: {
 				type: "object"
 				required: ["type"]
 				properties: type: {
-					type:
-						"string", enum: [
-						"heatmap",
-						"circleMap",
-						"pointMap",
-						"trackMap",
-					]
+					type: "string"
+					enum: ["heatmap", "circleMap", "pointMap", "trackMap"]
 				}
 			}
 			GeoCircleViewLayer: allOf: [{
-				$ref:
-					"#/components/schemas/GeoViewLayerProperties"
+				$ref: "#/components/schemas/GeoViewLayerProperties"
 			}, {
-				type:
-					"object", required: [
-					"radiusField",
-					"radiusDimension",
-					"colorField",
-					"colorDimension",
-					"colors",
-				]
+				type: "object"
+				required: ["radiusField", "radiusDimension", "colorField", "colorDimension", "colors"]
 				properties: {
 					radiusField: {
-						type:
-							"string", description:
-							"Radius field"
-					}, radiusDimension: $ref:
-						"#/components/schemas/Axis", colorField: {
-						type:
-							"string", description:
-							"Circle color field"
-					}, colorDimension: $ref:
-						"#/components/schemas/Axis", colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref: "#/components/schemas/DashboardColor"
-					}, radius: {
-						description:
-							"Maximum radius size in pixels", type:
-							"integer"
-					}, interpolateColors: {
-						description:
-							"Interpolate circle color based on displayed value", type:
-							"boolean"
+						type:        "string"
+						description: "Radius field"
+					}
+					radiusDimension: $ref: "#/components/schemas/Axis"
+					colorField: {
+						type:        "string"
+						description: "Circle color field"
+					}
+					colorDimension: $ref: "#/components/schemas/Axis"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					radius: {
+						description: "Maximum radius size in pixels"
+						type:        "integer"
+					}
+					interpolateColors: {
+						description: "Interpolate circle color based on displayed value"
+						type:        "boolean"
 					}
 				}
-			}], GeoPointMapViewLayer: allOf: [{
-				$ref:
-					"#/components/schemas/GeoViewLayerProperties"
+			}]
+			GeoPointMapViewLayer: allOf: [{
+				$ref: "#/components/schemas/GeoViewLayerProperties"
 			}, {
-				type:
-					"object", required: [
-					"colorField",
-					"colorDimension",
-					"colors",
-				]
+				type: "object"
+				required: ["colorField", "colorDimension", "colors"]
 				properties: {
 					colorField: {
-						type:
-							"string", description:
-							"Marker color field"
-					}, colorDimension: $ref:
-						"#/components/schemas/Axis", colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref: "#/components/schemas/DashboardColor"
-					}, isClustered: {
-						description:
-							"Cluster close markers together", type:
-							"boolean"
-					}, tooltipColumns: {
-						description:
-							"An array for which columns to display in tooltip", type:
-							"array", items: type: "string"
+						type:        "string"
+						description: "Marker color field"
+					}
+					colorDimension: $ref: "#/components/schemas/Axis"
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					isClustered: {
+						description: "Cluster close markers together"
+						type:        "boolean"
+					}
+					tooltipColumns: {
+						description: "An array for which columns to display in tooltip"
+						type:        "array"
+						items: type: "string"
 					}
 				}
-			}], GeoTrackMapViewLayer: {
+			}]
+			GeoTrackMapViewLayer: {
 				allOf: [{
-					$ref:
-						"#/components/schemas/GeoViewLayerProperties"
+					$ref: "#/components/schemas/GeoViewLayerProperties"
 				}, {
-					type:
-						"object", required: [
-						"trackWidth",
-						"speed",
-						"randomColors",
-						"trackPointVisualization",
-					]
+					type: "object"
+					required: ["trackWidth", "speed", "randomColors", "trackPointVisualization"]
 				}]
 				properties: {
 					trackWidth: {
-						description:
-							"Width of the track", type:
-							"integer"
-					}, speed: {
-						description:
-							"Speed of the track animation", type:
-							"integer"
-					}, randomColors: {
-						description:
-							"Assign different colors to different tracks", type:
-							"boolean"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
+						description: "Width of the track"
+						type:        "integer"
+					}
+					speed: {
+						description: "Speed of the track animation"
+						type:        "integer"
+					}
+					randomColors: {
+						description: "Assign different colors to different tracks"
+						type:        "boolean"
+					}
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
 					}
 				}
-			}, GeoHeatMapViewLayer: allOf: [{
-				$ref:
-					"#/components/schemas/GeoViewLayerProperties"
+			}
+			GeoHeatMapViewLayer: allOf: [{
+				$ref: "#/components/schemas/GeoViewLayerProperties"
 			}, {
-				type:
-					"object", required: [
-					"intensityField",
-					"intensityDimension",
-					"radius",
-					"blur",
-					"colors",
-				]
+				type: "object"
+				required: ["intensityField", "intensityDimension", "radius", "blur", "colors"]
 				properties: {
 					intensityField: {
-						type:
-							"string", description:
-							"Intensity field"
-					}, intensityDimension: $ref:
-						"#/components/schemas/Axis", radius: {
-						description:
-							"Radius size in pixels", type:
-							"integer"
-					}, blur: {
-						description:
-							"Blur for heatmap points", type:
-							"integer"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref: "#/components/schemas/DashboardColor"
+						type:        "string"
+						description: "Intensity field"
+					}
+					intensityDimension: $ref: "#/components/schemas/Axis"
+					radius: {
+						description: "Radius size in pixels"
+						type:        "integer"
+					}
+					blur: {
+						description: "Blur for heatmap points"
+						type:        "integer"
+					}
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
 					}
 				}
-			}], GeoViewProperties: {
+			}]
+			GeoViewProperties: {
 				type: "object"
-				required: [
-					"type",
-					"shape",
-					"queries",
-					"note",
-					"showNoteWhenEmpty",
-					"center",
-					"zoom",
-					"allowPanAndZoom",
-					"detectCoordinateFields",
-					"layers",
-				]
+				required: ["type", "shape", "queries", "note", "showNoteWhenEmpty", "center", "zoom", "allowPanAndZoom", "detectCoordinateFields", "layers"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"geo",
-						]
+						type: "string"
+						enum: ["geo"]
 					}
 					queries: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardQuery"
-					}, shape: {
-						type:
-							"string", enum: [
-							"chronograf-v2",
-						]
+						type: "array"
+						items: $ref: "#/components/schemas/DashboardQuery"
+					}
+					shape: {
+						type: "string"
+						enum: ["chronograf-v2"]
 					}
 					center: {
-						description:
-							"Coordinates of the center of the map", type:
-							"object", required: [
-							"lat",
-							"lon",
-						]
+						description: "Coordinates of the center of the map"
+						type:        "object"
+						required: ["lat", "lon"]
 						properties: {
 							lat: {
-								description:
-									"Latitude of the center of the map", type:
-									"number", format:
-									"double"
-							}, lon: {
-								description:
-									"Longitude of the center of the map", type:
-									"number", format:
-									"double"
+								description: "Latitude of the center of the map"
+								type:        "number"
+								format:      "double"
+							}
+							lon: {
+								description: "Longitude of the center of the map"
+								type:        "number"
+								format:      "double"
 							}
 						}
-					}, zoom: {
-						description:
-							"Zoom level used for initial display of the map", type:
-							"number", format:
-							"double", minimum:
-							1, maximum:
-							28
-					}, allowPanAndZoom: {
-						description:
-							"If true, map zoom and pan controls are enabled on the dashboard view", type:
-							"boolean", default:
-							true
-					}, detectCoordinateFields: {
-						description:
-							"If true, search results get automatically regroupped so that lon,lat and value are treated as columns", type:
-							"boolean", default:
-							true
-					}, useS2CellID: {
-						description:
-							"If true, S2 column is used to calculate lat/lon", type:
-							"boolean"
-					}, s2Column: {
-						description:
-							"String to define the column", type:
-							"string"
-					}, latLonColumns: $ref:
-						"#/components/schemas/LatLonColumns", mapStyle: {
-						description:
-							"Define map type - regular, satellite etc.", type:
-							"string"
-					}, note: type:
-						"string", showNoteWhenEmpty: {
-						description:
-							"If true, will display note when empty", type:
-							"boolean"
-					}, colors: {
-						description:
-							"Colors define color encoding of data into a visualization", type:
-							"array", items: $ref:
-							"#/components/schemas/DashboardColor"
-					}, layers: {
-						description:
-							"List of individual layers shown in the map", type:
-							"array", items: $ref:
-							"#/components/schemas/GeoViewLayer"
+					}
+					zoom: {
+						description: "Zoom level used for initial display of the map"
+						type:        "number"
+						format:      "double"
+						minimum:     1
+						maximum:     28
+					}
+					allowPanAndZoom: {
+						description: "If true, map zoom and pan controls are enabled on the dashboard view"
+						type:        "boolean"
+						default:     true
+					}
+					detectCoordinateFields: {
+						description: "If true, search results get automatically regroupped so that lon,lat and value are treated as columns"
+						type:        "boolean"
+						default:     true
+					}
+					useS2CellID: {
+						description: "If true, S2 column is used to calculate lat/lon"
+						type:        "boolean"
+					}
+					s2Column: {
+						description: "String to define the column"
+						type:        "string"
+					}
+					latLonColumns: $ref: "#/components/schemas/LatLonColumns"
+					mapStyle: {
+						description: "Define map type - regular, satellite etc."
+						type:        "string"
+					}
+					note: type: "string"
+					showNoteWhenEmpty: {
+						description: "If true, will display note when empty"
+						type:        "boolean"
+					}
+					colors: {
+						description: "Colors define color encoding of data into a visualization"
+						type:        "array"
+						items: $ref: "#/components/schemas/DashboardColor"
+					}
+					layers: {
+						description: "List of individual layers shown in the map"
+						type:        "array"
+						items: $ref: "#/components/schemas/GeoViewLayer"
 					}
 				}
-			}, LatLonColumns: {
-				description:
-					"Object type to define lat/lon columns", type: "object"
-				required: [
-					"lat",
-					"lon",
-				]
+			}
+			LatLonColumns: {
+				description: "Object type to define lat/lon columns"
+				type:        "object"
+				required: ["lat", "lon"]
 				properties: {
-					lat: $ref:
-						"#/components/schemas/LatLonColumn", lon: $ref:
-						"#/components/schemas/LatLonColumn"
+					lat: $ref: "#/components/schemas/LatLonColumn"
+					lon: $ref: "#/components/schemas/LatLonColumn"
 				}
-			}, LatLonColumn: {
-				description:
-					"Object type for key and column definitions", type: "object"
-				required: [
-					"key",
-					"column",
-				]
+			}
+			LatLonColumn: {
+				description: "Object type for key and column definitions"
+				type:        "object"
+				required: ["key", "column"]
 				properties: {
 					key: {
-						description:
-							"Key to determine whether the column is tag/field", type:
-							"string"
-					}, column: {
-						description:
-							"Column to look up Lat/Lon", type:
-							"string"
+						description: "Key to determine whether the column is tag/field"
+						type:        "string"
+					}
+					column: {
+						description: "Column to look up Lat/Lon"
+						type:        "string"
 					}
 				}
-			}, Axes: {
-				description:
-					"The viewport for a View's visualizations", type: "object"
-				required: [
-					"x",
-					"y",
-				]
+			}
+			Axes: {
+				description: "The viewport for a View's visualizations"
+				type:        "object"
+				required: ["x", "y"]
 				properties: {
-					x: $ref:
-						"#/components/schemas/Axis", y: $ref:
-						"#/components/schemas/Axis"
+					x: $ref: "#/components/schemas/Axis"
+					y: $ref: "#/components/schemas/Axis"
 				}
-			}, StaticLegend: {
-				description:
-					"StaticLegend represents the options specific to the static legend", type: "object"
+			}
+			StaticLegend: {
+				description: "StaticLegend represents the options specific to the static legend"
+				type:        "object"
 				properties: {
-					colorizeRows: type:
-						"boolean", heightRatio: {
-						type:
-							"number", format:
-							"float"
-					}, show: type:
-						"boolean", opacity: {
-						type:
-							"number", format:
-							"float"
-					}, orientationThreshold: type:
-						"integer", valueAxis: type:
-						"string", widthRatio: {
-						type:
-							"number", format:
-							"float"
+					colorizeRows: type: "boolean"
+					heightRatio: {
+						type:   "number"
+						format: "float"
+					}
+					show: type: "boolean"
+					opacity: {
+						type:   "number"
+						format: "float"
+					}
+					orientationThreshold: type: "integer"
+					valueAxis: type:            "string"
+					widthRatio: {
+						type:   "number"
+						format: "float"
 					}
 				}
-			}, DecimalPlaces: {
-				description:
-					"Indicates whether decimal places should be enforced, and how many digits it should show.", type: "object"
+			}
+			DecimalPlaces: {
+				description: "Indicates whether decimal places should be enforced, and how many digits it should show."
+				type:        "object"
 				properties: {
 					isEnforced: {
-						description:
-							"Indicates whether decimal point setting should be enforced", type:
-							"boolean"
-					}, digits: {
-						description:
-							"The number of digits after decimal to display", type:
-							"integer", format:
-							"int32"
+						description: "Indicates whether decimal point setting should be enforced"
+						type:        "boolean"
+					}
+					digits: {
+						description: "The number of digits after decimal to display"
+						type:        "integer"
+						format:      "int32"
 					}
 				}
-			}, ConstantVariableProperties: properties: {
+			}
+			ConstantVariableProperties: properties: {
 				type: {
-					type:
-						"string", enum: [
-						"constant",
-					]
+					type: "string"
+					enum: ["constant"]
 				}
 				values: {
-					type:
-						"array", items: type:
-						"string"
+					type: "array"
+					items: type: "string"
 				}
-			}, MapVariableProperties: properties: {
+			}
+			MapVariableProperties: properties: {
 				type: {
-					type:
-						"string", enum: [
-						"map",
-					]
+					type: "string"
+					enum: ["map"]
 				}
 				values: {
-					type:
-						"object", additionalProperties: type:
-						"string"
+					type: "object"
+					additionalProperties: type: "string"
 				}
-			}, QueryVariableProperties: properties: {
+			}
+			QueryVariableProperties: properties: {
 				type: {
-					type:
-						"string", enum: [
-						"query",
-					]
+					type: "string"
+					enum: ["query"]
 				}
 				values: {
-					type:
-						"object", properties: {
-						query: type:
-							"string", language: type:
-							"string"
+					type: "object"
+					properties: {
+						query: type:    "string"
+						language: type: "string"
 					}
 				}
-			}, VariableProperties: {
+			}
+			VariableProperties: {
 				type: "object"
 				oneOf: [{
-					$ref:
-						"#/components/schemas/QueryVariableProperties"
+					$ref: "#/components/schemas/QueryVariableProperties"
 				}, {
-					$ref:
-						"#/components/schemas/ConstantVariableProperties"
+					$ref: "#/components/schemas/ConstantVariableProperties"
 				}, {
-					$ref:
-						"#/components/schemas/MapVariableProperties"
+					$ref: "#/components/schemas/MapVariableProperties"
 				}]
-			}, ViewProperties: oneOf: [{
-				$ref:
-					"#/components/schemas/LinePlusSingleStatProperties"
+			}
+			ViewProperties: oneOf: [{
+				$ref: "#/components/schemas/LinePlusSingleStatProperties"
 			}, {
-				$ref:
-					"#/components/schemas/XYViewProperties"
+				$ref: "#/components/schemas/XYViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/SingleStatViewProperties"
+				$ref: "#/components/schemas/SingleStatViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/HistogramViewProperties"
+				$ref: "#/components/schemas/HistogramViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/GaugeViewProperties"
+				$ref: "#/components/schemas/GaugeViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/TableViewProperties"
+				$ref: "#/components/schemas/TableViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/SimpleTableViewProperties"
+				$ref: "#/components/schemas/SimpleTableViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/MarkdownViewProperties"
+				$ref: "#/components/schemas/MarkdownViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/CheckViewProperties"
+				$ref: "#/components/schemas/CheckViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/ScatterViewProperties"
+				$ref: "#/components/schemas/ScatterViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/HeatmapViewProperties"
+				$ref: "#/components/schemas/HeatmapViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/MosaicViewProperties"
+				$ref: "#/components/schemas/MosaicViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/BandViewProperties"
+				$ref: "#/components/schemas/BandViewProperties"
 			}, {
-				$ref:
-					"#/components/schemas/GeoViewProperties"
-			}], View: {
-				required: [
-					"name",
-					"properties",
-				]
+				$ref: "#/components/schemas/GeoViewProperties"
+			}]
+			View: {
+				required: ["name", "properties"]
 				properties: {
 					links: {
-						type:
-							"object", readOnly:
-							true, properties: self: type:
-							"string"
-					}, id: {
-						readOnly:
-							true, type:
-							"string"
-					}, name: type:
-						"string", properties: $ref:
-						"#/components/schemas/ViewProperties"
+						type:     "object"
+						readOnly: true
+						properties: self: type: "string"
+					}
+					id: {
+						readOnly: true
+						type:     "string"
+					}
+					name: type:       "string"
+					properties: $ref: "#/components/schemas/ViewProperties"
 				}
-			}, Views: {
+			}
+			Views: {
 				type: "object"
 				properties: {
 					links: {
-						type:
-							"object", properties: self: type:
-							"string"
-					}, views: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/View"
+						type: "object"
+						properties: self: type: "string"
+					}
+					views: {
+						type: "array"
+						items: $ref: "#/components/schemas/View"
 					}
 				}
-			}, CellUpdate: {
+			}
+			CellUpdate: {
 				type: "object"
 				properties: {
 					x: {
-						type:
-							"integer", format:
-							"int32"
-					}, y: {
-						type:
-							"integer", format:
-							"int32"
-					}, w: {
-						type:
-							"integer", format:
-							"int32"
-					}, h: {
-						type:
-							"integer", format:
-							"int32"
+						type:   "integer"
+						format: "int32"
+					}
+					y: {
+						type:   "integer"
+						format: "int32"
+					}
+					w: {
+						type:   "integer"
+						format: "int32"
+					}
+					h: {
+						type:   "integer"
+						format: "int32"
 					}
 				}
-			}, CreateCell: {
+			}
+			CreateCell: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", x: {
-						type:
-							"integer", format:
-							"int32"
-					}, y: {
-						type:
-							"integer", format:
-							"int32"
-					}, w: {
-						type:
-							"integer", format:
-							"int32"
-					}, h: {
-						type:
-							"integer", format:
-							"int32"
-					}, usingView: {
-						type:
-							"string", description:
-							"Makes a copy of the provided view."
+					name: type: "string"
+					x: {
+						type:   "integer"
+						format: "int32"
+					}
+					y: {
+						type:   "integer"
+						format: "int32"
+					}
+					w: {
+						type:   "integer"
+						format: "int32"
+					}
+					h: {
+						type:   "integer"
+						format: "int32"
+					}
+					usingView: {
+						type:        "string"
+						description: "Makes a copy of the provided view."
 					}
 				}
-			}, AnalyzeQueryResponse: {
+			}
+			AnalyzeQueryResponse: {
 				type: "object"
 				properties: errors: {
-					type:
-						"array", items: {
-						type:
-							"object", properties: {
-							line: type: "integer", column: type: "integer", character: type: "integer", message: type: "string"
+					type: "array"
+					items: {
+						type: "object"
+						properties: {
+							line: type:      "integer"
+							column: type:    "integer"
+							character: type: "integer"
+							message: type:   "string"
 						}
 					}
 				}
-			}, CellWithViewProperties: {
+			}
+			CellWithViewProperties: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/Cell"
+					$ref: "#/components/schemas/Cell"
 				}, {
-					type:
-						"object", properties: {
-						name: type:
-							"string", properties: $ref:
-							"#/components/schemas/ViewProperties"
+					type: "object"
+					properties: {
+						name: type:       "string"
+						properties: $ref: "#/components/schemas/ViewProperties"
 					}
 				}]
-			}, Cell: {
+			}
+			Cell: {
 				type: "object"
 				properties: {
-					id: type:
-						"string", links: {
-						type:
-							"object", properties: {
-							self: type:
-								"string", view: type:
-								"string"
+					id: type: "string"
+					links: {
+						type: "object"
+						properties: {
+							self: type: "string"
+							view: type: "string"
 						}
-					}, x: {
-						type:
-							"integer", format:
-							"int32"
-					}, y: {
-						type:
-							"integer", format:
-							"int32"
-					}, w: {
-						type:
-							"integer", format:
-							"int32"
-					}, h: {
-						type:
-							"integer", format:
-							"int32"
-					}, viewID: {
-						type:
-							"string", description:
-							"The reference to a view from the views API."
+					}
+					x: {
+						type:   "integer"
+						format: "int32"
+					}
+					y: {
+						type:   "integer"
+						format: "int32"
+					}
+					w: {
+						type:   "integer"
+						format: "int32"
+					}
+					h: {
+						type:   "integer"
+						format: "int32"
+					}
+					viewID: {
+						type:        "string"
+						description: "The reference to a view from the views API."
 					}
 				}
-			}, CellsWithViewProperties: {
+			}
+			CellsWithViewProperties: {
 				type: "array"
 				items: $ref: "#/components/schemas/CellWithViewProperties"
 			}
@@ -9908,300 +9435,284 @@ cloud: {
 			}
 			Secrets: {
 				additionalProperties: type: "string"
-				example: apikey:
-					"abc123xyz"
-			}, SecretKeys: {
+				example: apikey:            "abc123xyz"
+			}
+			SecretKeys: {
 				type: "object"
 				properties: secrets: {
-					type:
-						"array", items: type:
-						"string"
+					type: "array"
+					items: type: "string"
 				}
-			}, SecretKeysResponse: allOf: [{
-				$ref:
-					"#/components/schemas/SecretKeys"
+			}
+			SecretKeysResponse: allOf: [{
+				$ref: "#/components/schemas/SecretKeys"
 			}, {
-				type:
-					"object", properties: links: {
-					readOnly:
-						true, type:
-						"object", properties: {
-
+				type: "object"
+				properties: links: {
+					readOnly: true
+					type:     "object"
+					properties: {
 						self: type: "string"
-						org: type: "string"
+						org: type:  "string"
 					}
 				}
-			}], CreateDashboardRequest: {
+			}]
+			CreateDashboardRequest: {
 				properties: {
 					orgID: {
-						type:
-							"string", description:
-							"The ID of the organization that owns the dashboard."
-					}, name: {
-						type:
-							"string", description:
-							"The user-facing name of the dashboard."
-					}, description: {
-						type:
-							"string", description:
-							"The user-facing description of the dashboard."
+						type:        "string"
+						description: "The ID of the organization that owns the dashboard."
 					}
-				}, required: [
-					"orgID",
-					"name",
-				]
+					name: {
+						type:        "string"
+						description: "The user-facing name of the dashboard."
+					}
+					description: {
+						type:        "string"
+						description: "The user-facing description of the dashboard."
+					}
+				}
+				required: ["orgID", "name"]
 			}
 			DashboardWithViewProperties: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/CreateDashboardRequest"
+					$ref: "#/components/schemas/CreateDashboardRequest"
 				}, {
-					type:
-						"object", properties: {
+					type: "object"
+					properties: {
 						links: {
-							type:
-								"object", example: {
-
+							type: "object"
+							example: {
 								self:    "/api/v2/dashboards/1"
 								cells:   "/api/v2/dashboards/1/cells"
 								owners:  "/api/v2/dashboards/1/owners"
 								members: "/api/v2/dashboards/1/members"
 								labels:  "/api/v2/dashboards/1/labels"
 								org:     "/api/v2/labels/1"
-							}, properties: {
-
-								self: $ref: "#/components/schemas/Link"
-								cells: $ref: "#/components/schemas/Link"
+							}
+							properties: {
+								self: $ref:    "#/components/schemas/Link"
+								cells: $ref:   "#/components/schemas/Link"
 								members: $ref: "#/components/schemas/Link"
-								owners: $ref: "#/components/schemas/Link"
-								labels: $ref: "#/components/schemas/Link"
-								org: $ref: "#/components/schemas/Link"
+								owners: $ref:  "#/components/schemas/Link"
+								labels: $ref:  "#/components/schemas/Link"
+								org: $ref:     "#/components/schemas/Link"
 							}
-						}, id: {
-							readOnly:
-								true, type:
-								"string"
-						}, meta: {
-							type:
-								"object", properties: {
-
-								createdAt: {
-									type:   "string"
-									format: "date-time"
-								}
-								updatedAt: {
-									type:   "string"
-									format: "date-time"
-								}
-							}
-						}, cells: $ref:
-							"#/components/schemas/CellsWithViewProperties", labels: $ref:
-							"#/components/schemas/Labels"
-					}
-				}]
-			}, Dashboard: {
-				type: "object"
-				allOf: [{
-					$ref:
-						"#/components/schemas/CreateDashboardRequest"
-				}, {
-					type:
-						"object", properties: {
-						links: {
-							type:
-								"object", example: {
-
-								self:    "/api/v2/dashboards/1"
-								cells:   "/api/v2/dashboards/1/cells"
-								owners:  "/api/v2/dashboards/1/owners"
-								members: "/api/v2/dashboards/1/members"
-								labels:  "/api/v2/dashboards/1/labels"
-								org:     "/api/v2/labels/1"
-							}, properties: {
-
-								self: $ref: "#/components/schemas/Link"
-								cells: $ref: "#/components/schemas/Link"
-								members: $ref: "#/components/schemas/Link"
-								owners: $ref: "#/components/schemas/Link"
-								labels: $ref: "#/components/schemas/Link"
-								org: $ref: "#/components/schemas/Link"
-							}
-						}, id: {
-							readOnly:
-								true, type:
-								"string"
-						}, meta: {
-							type:
-								"object", properties: {
-
-								createdAt: {
-									type:   "string"
-									format: "date-time"
-								}
-								updatedAt: {
-									type:   "string"
-									format: "date-time"
-								}
-							}
-						}, cells: $ref:
-							"#/components/schemas/Cells", labels: $ref:
-							"#/components/schemas/Labels"
-					}
-				}]
-			}, Dashboards: {
-				type: "object"
-				properties: {
-					links: $ref:
-						"#/components/schemas/Links", dashboards: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/Dashboard"
-					}
-				}
-			}, TelegrafRequest: {
-				type: "object"
-				properties: {
-					name: type:
-						"string", description: type:
-						"string", metadata: {
-						type:
-							"object", properties: buckets: {
-							type:
-								"array", items: type: "string"
 						}
-					}, config: type:
-						"string", orgID: type:
-						"string"
-				}
-			}, Telegraf: {
+						id: {
+							readOnly: true
+							type:     "string"
+						}
+						meta: {
+							type: "object"
+							properties: {
+								createdAt: {
+									type:   "string"
+									format: "date-time"
+								}
+								updatedAt: {
+									type:   "string"
+									format: "date-time"
+								}
+							}
+						}
+						cells: $ref:  "#/components/schemas/CellsWithViewProperties"
+						labels: $ref: "#/components/schemas/Labels"
+					}
+				}]
+			}
+			Dashboard: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/TelegrafRequest"
+					$ref: "#/components/schemas/CreateDashboardRequest"
 				}, {
-					type:
-						"object", properties: {
+					type: "object"
+					properties: {
+						links: {
+							type: "object"
+							example: {
+								self:    "/api/v2/dashboards/1"
+								cells:   "/api/v2/dashboards/1/cells"
+								owners:  "/api/v2/dashboards/1/owners"
+								members: "/api/v2/dashboards/1/members"
+								labels:  "/api/v2/dashboards/1/labels"
+								org:     "/api/v2/labels/1"
+							}
+							properties: {
+								self: $ref:    "#/components/schemas/Link"
+								cells: $ref:   "#/components/schemas/Link"
+								members: $ref: "#/components/schemas/Link"
+								owners: $ref:  "#/components/schemas/Link"
+								labels: $ref:  "#/components/schemas/Link"
+								org: $ref:     "#/components/schemas/Link"
+							}
+						}
 						id: {
-							type:
-								"string", readOnly:
-								true
-						}, links: {
-							type:
-								"object", readOnly:
-								true, example: {
-
+							readOnly: true
+							type:     "string"
+						}
+						meta: {
+							type: "object"
+							properties: {
+								createdAt: {
+									type:   "string"
+									format: "date-time"
+								}
+								updatedAt: {
+									type:   "string"
+									format: "date-time"
+								}
+							}
+						}
+						cells: $ref:  "#/components/schemas/Cells"
+						labels: $ref: "#/components/schemas/Labels"
+					}
+				}]
+			}
+			Dashboards: {
+				type: "object"
+				properties: {
+					links: $ref: "#/components/schemas/Links"
+					dashboards: {
+						type: "array"
+						items: $ref: "#/components/schemas/Dashboard"
+					}
+				}
+			}
+			TelegrafRequest: {
+				type: "object"
+				properties: {
+					name: type:        "string"
+					description: type: "string"
+					metadata: {
+						type: "object"
+						properties: buckets: {
+							type: "array"
+							items: type: "string"
+						}
+					}
+					config: type: "string"
+					orgID: type:  "string"
+				}
+			}
+			Telegraf: {
+				type: "object"
+				allOf: [{
+					$ref: "#/components/schemas/TelegrafRequest"
+				}, {
+					type: "object"
+					properties: {
+						id: {
+							type:     "string"
+							readOnly: true
+						}
+						links: {
+							type:     "object"
+							readOnly: true
+							example: {
 								self:    "/api/v2/telegrafs/1"
 								lables:  "/api/v2/telegrafs/1/labels"
 								owners:  "/api/v2/telegrafs/1/owners"
 								members: "/api/v2/telegrafs/1/members"
-							}, properties: {
-
-								self: $ref: "#/components/schemas/Link"
-								labels: $ref: "#/components/schemas/Link"
-								members: $ref: "#/components/schemas/Link"
-								owners: $ref: "#/components/schemas/Link"
 							}
-						}, labels: {
-							readOnly:
-								true, $ref:
-								"#/components/schemas/Labels"
+							properties: {
+								self: $ref:    "#/components/schemas/Link"
+								labels: $ref:  "#/components/schemas/Link"
+								members: $ref: "#/components/schemas/Link"
+								owners: $ref:  "#/components/schemas/Link"
+							}
+						}
+						labels: {
+							readOnly: true
+							$ref:     "#/components/schemas/Labels"
 						}
 					}
 				}]
-			}, Telegrafs: {
+			}
+			Telegrafs: {
 				type: "object"
 				properties: configurations: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/Telegraf"
+					type: "array"
+					items: $ref: "#/components/schemas/Telegraf"
 				}
-			}, TelegrafPlugin: {
+			}
+			TelegrafPlugin: {
 				type: "object"
 				properties: {
-					type: type:
-						"string", name: type:
-						"string", description: type:
-						"string", config: type:
-						"string"
+					type: type:        "string"
+					name: type:        "string"
+					description: type: "string"
+					config: type:      "string"
 				}
-			}, TelegrafPlugins: {
+			}
+			TelegrafPlugins: {
 				type: "object"
 				properties: {
-					version: type:
-						"string", os: type:
-						"string", plugins: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/TelegrafPlugin"
+					version: type: "string"
+					os: type:      "string"
+					plugins: {
+						type: "array"
+						items: $ref: "#/components/schemas/TelegrafPlugin"
 					}
 				}
-			}, IsOnboarding: {
+			}
+			IsOnboarding: {
 				type: "object"
 				properties: allowed: {
-					description:
-						"True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.", type:
-						"boolean"
+					description: "True means that the influxdb instance has NOT had initial setup; false means that the database has been setup."
+					type:        "boolean"
 				}
-			}, PasswordResetBody: {
-				properties: password: type:
-					"string", required: [
-					"password",
-				]
+			}
+			PasswordResetBody: {
+				properties: password: type: "string"
+				required: ["password"]
 			}
 			AddResourceMemberRequestBody: {
 				type: "object"
 				properties: {
-					id: type:
-						"string", name: type:
-						"string"
-				}, required: ["id"]
+					id: type:   "string"
+					name: type: "string"
+				}
+				required: ["id"]
 			}
 			Ready: {
 				type: "object"
 				properties: {
 					status: {
-						type:
-							"string", enum: [
-							"ready",
-						]
+						type: "string"
+						enum: ["ready"]
 					}
 					started: {
-						type:
-							"string", format:
-							"date-time", example:
-							"2019-03-13T10:09:33.891196-04:00"
-					}, up: {
-						type:
-							"string", example:
-							"14m45.911966424s"
+						type:    "string"
+						format:  "date-time"
+						example: "2019-03-13T10:09:33.891196-04:00"
+					}
+					up: {
+						type:    "string"
+						example: "14m45.911966424s"
 					}
 				}
-			}, HealthCheck: {
+			}
+			HealthCheck: {
 				type: "object"
-				required: [
-					"name",
-					"status",
-				]
+				required: ["name", "status"]
 				properties: {
-					name: type:
-						"string", message: type:
-						"string", checks: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/HealthCheck"
-					}, status: {
-						type:
-							"string", enum: [
-							"pass",
-							"fail",
-						]
+					name: type:    "string"
+					message: type: "string"
+					checks: {
+						type: "array"
+						items: $ref: "#/components/schemas/HealthCheck"
 					}
-					version: type:
-						"string", commit: type:
-						"string"
+					status: {
+						type: "string"
+						enum: ["pass", "fail"]
+					}
+					version: type: "string"
+					commit: type:  "string"
 				}
-			}, Labels: {
+			}
+			Labels: {
 				type: "array"
 				items: $ref: "#/components/schemas/Label"
 			}
@@ -10209,1382 +9720,1193 @@ cloud: {
 				type: "object"
 				properties: {
 					id: {
-						readOnly:
-							true, type:
-							"string"
-					}, orgID: {
-						readOnly:
-							true, type:
-							"string"
-					}, name: type:
-						"string", properties: {
-						type:
-							"object", additionalProperties: type:
-							"string", description:
-							"Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.", example: {
-							color:
-								"ffb3b3", description:
-								"this is a description"
+						readOnly: true
+						type:     "string"
+					}
+					orgID: {
+						readOnly: true
+						type:     "string"
+					}
+					name: type: "string"
+					properties: {
+						type: "object"
+						additionalProperties: type: "string"
+						description: "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value."
+						example: {
+							color:       "ffb3b3"
+							description: "this is a description"
 						}
 					}
 				}
-			}, LabelCreateRequest: {
+			}
+			LabelCreateRequest: {
 				type: "object"
-				required: [
-					"orgID",
-					"name",
-				]
+				required: ["orgID", "name"]
 				properties: {
-					orgID: type:
-						"string", name: type:
-						"string", properties: {
-						type:
-							"object", additionalProperties: type:
-							"string", description:
-							"Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.", example: {
-							color:
-								"ffb3b3", description:
-								"this is a description"
+					orgID: type: "string"
+					name: type:  "string"
+					properties: {
+						type: "object"
+						additionalProperties: type: "string"
+						description: "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value."
+						example: {
+							color:       "ffb3b3"
+							description: "this is a description"
 						}
 					}
 				}
-			}, LabelUpdate: {
+			}
+			LabelUpdate: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", properties: {
-						type:
-							"object", additionalProperties: type:
-							"string", description:
-							"Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.", example: {
-							color:
-								"ffb3b3", description:
-								"this is a description"
+					name: type: "string"
+					properties: {
+						type: "object"
+						additionalProperties: type: "string"
+						description: "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value."
+						example: {
+							color:       "ffb3b3"
+							description: "this is a description"
 						}
 					}
 				}
-			}, LabelMapping: {
+			}
+			LabelMapping: {
 				type: "object"
-				properties: labelID: type:
-					"string"
-			}, LabelsResponse: {
-				type: "object"
-				properties: {
-					labels: $ref:
-						"#/components/schemas/Labels", links: $ref:
-						"#/components/schemas/Links"
-				}
-			}, LabelResponse: {
+				properties: labelID: type: "string"
+			}
+			LabelsResponse: {
 				type: "object"
 				properties: {
-					label: $ref:
-						"#/components/schemas/Label", links: $ref:
-						"#/components/schemas/Links"
+					labels: $ref: "#/components/schemas/Labels"
+					links: $ref:  "#/components/schemas/Links"
 				}
-			}, ASTResponse: {
-				description:
-					"Contains the AST for the supplied Flux query", type: "object"
-				properties: ast: $ref:
-					"#/components/schemas/Package"
-			}, WritePrecision: {
+			}
+			LabelResponse: {
+				type: "object"
+				properties: {
+					label: $ref: "#/components/schemas/Label"
+					links: $ref: "#/components/schemas/Links"
+				}
+			}
+			ASTResponse: {
+				description: "Contains the AST for the supplied Flux query"
+				type:        "object"
+				properties: ast: $ref: "#/components/schemas/Package"
+			}
+			WritePrecision: {
 				type: "string"
-				enum: [
-					"ms",
-					"s",
-					"us",
-					"ns",
-				]
+				enum: ["ms", "s", "us", "ns"]
 			}
 			TaskCreateRequest: {
 				type: "object"
 				properties: {
 					orgID: {
-						description:
-							"The ID of the organization that owns this Task.", type:
-							"string"
-					}, org: {
-						description:
-							"The name of the organization that owns this Task.", type:
-							"string"
-					}, status: $ref:
-						"#/components/schemas/TaskStatusType", flux: {
-						description:
-							"The Flux script to run for this task.", type:
-							"string"
-					}, description: {
-						description:
-							"An optional description of the task.", type:
-							"string"
+						description: "The ID of the organization that owns this Task."
+						type:        "string"
 					}
-				}, required: ["flux"]
+					org: {
+						description: "The name of the organization that owns this Task."
+						type:        "string"
+					}
+					status: $ref: "#/components/schemas/TaskStatusType"
+					flux: {
+						description: "The Flux script to run for this task."
+						type:        "string"
+					}
+					description: {
+						description: "An optional description of the task."
+						type:        "string"
+					}
+				}
+				required: ["flux"]
 			}
 			TaskUpdateRequest: {
 				type: "object"
 				properties: {
-					status: $ref:
-						"#/components/schemas/TaskStatusType", flux: {
-						description:
-							"The Flux script to run for this task.", type:
-							"string"
-					}, name: {
-						description:
-							"Override the 'name' option in the flux script.", type:
-							"string"
-					}, every: {
-						description:
-							"Override the 'every' option in the flux script.", type:
-							"string"
-					}, cron: {
-						description:
-							"Override the 'cron' option in the flux script.", type:
-							"string"
-					}, offset: {
-						description:
-							"Override the 'offset' option in the flux script.", type:
-							"string"
-					}, description: {
-						description:
-							"An optional description of the task.", type:
-							"string"
+					status: $ref: "#/components/schemas/TaskStatusType"
+					flux: {
+						description: "The Flux script to run for this task."
+						type:        "string"
+					}
+					name: {
+						description: "Override the 'name' option in the flux script."
+						type:        "string"
+					}
+					every: {
+						description: "Override the 'every' option in the flux script."
+						type:        "string"
+					}
+					cron: {
+						description: "Override the 'cron' option in the flux script."
+						type:        "string"
+					}
+					offset: {
+						description: "Override the 'offset' option in the flux script."
+						type:        "string"
+					}
+					description: {
+						description: "An optional description of the task."
+						type:        "string"
 					}
 				}
-			}, FluxResponse: {
-				description:
-					"Rendered flux that backs the check or notification.", properties: flux: type:
-					"string"
-			}, CheckPatch: {
+			}
+			FluxResponse: {
+				description: "Rendered flux that backs the check or notification."
+				properties: flux: type: "string"
+			}
+			CheckPatch: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", description: type:
-						"string", status: {
-						type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+					name: type:        "string"
+					description: type: "string"
+					status: {
+						type: "string"
+						enum: ["active", "inactive"]
 					}
 				}
 			}
 			CheckDiscriminator: {
 				oneOf: [{
-					$ref:
-						"#/components/schemas/DeadmanCheck"
+					$ref: "#/components/schemas/DeadmanCheck"
 				}, {
-					$ref:
-						"#/components/schemas/ThresholdCheck"
+					$ref: "#/components/schemas/ThresholdCheck"
 				}, {
-					$ref:
-						"#/components/schemas/CustomCheck"
-				}], discriminator: {
-					propertyName:
-						"type", mapping: {
-						deadman:
-							"#/components/schemas/DeadmanCheck", threshold:
-							"#/components/schemas/ThresholdCheck", custom:
-							"#/components/schemas/CustomCheck"
+					$ref: "#/components/schemas/CustomCheck"
+				}]
+				discriminator: {
+					propertyName: "type"
+					mapping: {
+						deadman:   "#/components/schemas/DeadmanCheck"
+						threshold: "#/components/schemas/ThresholdCheck"
+						custom:    "#/components/schemas/CustomCheck"
 					}
 				}
-			}, Check: allOf: [{
-				$ref:
-					"#/components/schemas/CheckDiscriminator"
-			}], PostCheck: allOf: [{
-				$ref:
-					"#/components/schemas/CheckDiscriminator"
-			}], Checks: properties: {
+			}
+			Check: allOf: [{
+				$ref: "#/components/schemas/CheckDiscriminator"
+			}]
+			PostCheck: allOf: [{
+				$ref: "#/components/schemas/CheckDiscriminator"
+			}]
+			Checks: properties: {
 				checks: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/Check"
-				}, links: $ref:
-					"#/components/schemas/Links"
-			}, CheckBase: {
+					type: "array"
+					items: $ref: "#/components/schemas/Check"
+				}
+				links: $ref: "#/components/schemas/Links"
+			}
+			CheckBase: {
 				properties: {
 					id: {
-						readOnly:
-							true, type:
-							"string"
-					}, name: type:
-						"string", orgID: {
-						description:
-							"The ID of the organization that owns this check.", type:
-							"string"
-					}, taskID: {
-						description:
-							"The ID of the task associated with this check.", type:
-							"string"
-					}, ownerID: {
-						description:
-							"The ID of creator used to create this check.", type:
-							"string", readOnly:
-							true
-					}, createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, query: $ref:
-						"#/components/schemas/DashboardQuery", status: $ref:
-						"#/components/schemas/TaskStatusType", description: {
-						description:
-							"An optional description of the check.", type:
-							"string"
-					}, latestCompleted: {
-						description:
-							"Timestamp of latest scheduled, completed run, RFC3339.", type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, lastRunStatus: {
-						readOnly:
-							true, type:
-							"string", enum: [
-							"failed",
-							"success",
-							"canceled",
-						]
+						readOnly: true
+						type:     "string"
+					}
+					name: type: "string"
+					orgID: {
+						description: "The ID of the organization that owns this check."
+						type:        "string"
+					}
+					taskID: {
+						description: "The ID of the task associated with this check."
+						type:        "string"
+					}
+					ownerID: {
+						description: "The ID of creator used to create this check."
+						type:        "string"
+						readOnly:    true
+					}
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					query: $ref:  "#/components/schemas/DashboardQuery"
+					status: $ref: "#/components/schemas/TaskStatusType"
+					description: {
+						description: "An optional description of the check."
+						type:        "string"
+					}
+					latestCompleted: {
+						description: "Timestamp of latest scheduled, completed run, RFC3339."
+						type:        "string"
+						format:      "date-time"
+						readOnly:    true
+					}
+					lastRunStatus: {
+						readOnly: true
+						type:     "string"
+						enum: ["failed", "success", "canceled"]
 					}
 					lastRunError: {
-						readOnly:
-							true, type:
-							"string"
-					}, labels: $ref:
-						"#/components/schemas/Labels", links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							self:
-								"/api/v2/checks/1", labels:
-								"/api/v2/checks/1/labels", members:
-								"/api/v2/checks/1/members", owners:
-								"/api/v2/checks/1/owners", query:
-								"/api/v2/checks/1/query"
-						}, properties: {
+						readOnly: true
+						type:     "string"
+					}
+					labels: $ref: "#/components/schemas/Labels"
+					links: {
+						type:     "object"
+						readOnly: true
+						example: {
+							self:    "/api/v2/checks/1"
+							labels:  "/api/v2/checks/1/labels"
+							members: "/api/v2/checks/1/members"
+							owners:  "/api/v2/checks/1/owners"
+							query:   "/api/v2/checks/1/query"
+						}
+						properties: {
 							self: {
-								description:
-									"URL for this check", $ref:
-									"#/components/schemas/Link"
-							}, labels: {
-								description:
-									"URL to retrieve labels for this check", $ref:
-									"#/components/schemas/Link"
-							}, members: {
-								description:
-									"URL to retrieve members for this check", $ref:
-									"#/components/schemas/Link"
-							}, owners: {
-								description:
-									"URL to retrieve owners for this check", $ref:
-									"#/components/schemas/Link"
-							}, query: {
-								description:
-									"URL to retrieve flux script for this check", $ref:
-									"#/components/schemas/Link"
+								description: "URL for this check"
+								$ref:        "#/components/schemas/Link"
+							}
+							labels: {
+								description: "URL to retrieve labels for this check"
+								$ref:        "#/components/schemas/Link"
+							}
+							members: {
+								description: "URL to retrieve members for this check"
+								$ref:        "#/components/schemas/Link"
+							}
+							owners: {
+								description: "URL to retrieve owners for this check"
+								$ref:        "#/components/schemas/Link"
+							}
+							query: {
+								description: "URL to retrieve flux script for this check"
+								$ref:        "#/components/schemas/Link"
 							}
 						}
 					}
-				}, required: [
-					"name",
-					"orgID",
-					"query",
-				]
+				}
+				required: ["name", "orgID", "query"]
 			}
 			ThresholdCheck: allOf: [{
-				$ref:
-					"#/components/schemas/CheckBase"
+				$ref: "#/components/schemas/CheckBase"
 			}, {
-				type:
-					"object", required: [
-					"type",
-				]
+				type: "object"
+				required: ["type"]
 				properties: {
 					type: {
-						type:
-							"string", enum: ["threshold"]
-					}, thresholds: {
-						type:
-							"array", items: $ref: "#/components/schemas/Threshold"
-					}, every: {
-						description:
-							"Check repetition interval.", type:
-							"string"
-					}, offset: {
-						description:
-							"Duration to delay after the schedule, before executing check.", type:
-							"string"
-					}, tags: {
-						description:
-							"List of tags to write to each status.", type:
-							"array", items: {
-
+						type: "string"
+						enum: ["threshold"]
+					}
+					thresholds: {
+						type: "array"
+						items: $ref: "#/components/schemas/Threshold"
+					}
+					every: {
+						description: "Check repetition interval."
+						type:        "string"
+					}
+					offset: {
+						description: "Duration to delay after the schedule, before executing check."
+						type:        "string"
+					}
+					tags: {
+						description: "List of tags to write to each status."
+						type:        "array"
+						items: {
 							type: "object"
 							properties: {
-								key: type: "string"
+								key: type:   "string"
 								value: type: "string"
 							}
 						}
-					}, statusMessageTemplate: {
-						description:
-							"The template used to generate and write a status message.", type:
-							"string"
+					}
+					statusMessageTemplate: {
+						description: "The template used to generate and write a status message."
+						type:        "string"
 					}
 				}
-			}], Threshold: {
+			}]
+			Threshold: {
 				oneOf: [{
-					$ref:
-						"#/components/schemas/GreaterThreshold"
+					$ref: "#/components/schemas/GreaterThreshold"
 				}, {
-					$ref:
-						"#/components/schemas/LesserThreshold"
+					$ref: "#/components/schemas/LesserThreshold"
 				}, {
-					$ref:
-						"#/components/schemas/RangeThreshold"
-				}], discriminator: {
-					propertyName:
-						"type", mapping: {
-						greater:
-							"#/components/schemas/GreaterThreshold", lesser:
-							"#/components/schemas/LesserThreshold", range:
-							"#/components/schemas/RangeThreshold"
+					$ref: "#/components/schemas/RangeThreshold"
+				}]
+				discriminator: {
+					propertyName: "type"
+					mapping: {
+						greater: "#/components/schemas/GreaterThreshold"
+						lesser:  "#/components/schemas/LesserThreshold"
+						range:   "#/components/schemas/RangeThreshold"
 					}
 				}
-			}, DeadmanCheck: allOf: [{
-				$ref:
-					"#/components/schemas/CheckBase"
+			}
+			DeadmanCheck: allOf: [{
+				$ref: "#/components/schemas/CheckBase"
 			}, {
-				type:
-					"object", required: [
-					"type",
-				]
+				type: "object"
+				required: ["type"]
 				properties: {
 					type: {
-						type:
-							"string", enum: ["deadman"]
-					}, timeSince: {
-						description:
-							"String duration before deadman triggers.", type:
-							"string"
-					}, staleTime: {
-						description:
-							"String duration for time that a series is considered stale and should not trigger deadman.", type:
-							"string"
-					}, reportZero: {
-						description:
-							"If only zero values reported since time, trigger an alert", type:
-							"boolean"
-					}, level: $ref:
-						"#/components/schemas/CheckStatusLevel", every: {
-						description:
-							"Check repetition interval.", type:
-							"string"
-					}, offset: {
-						description:
-							"Duration to delay after the schedule, before executing check.", type:
-							"string"
-					}, tags: {
-						description:
-							"List of tags to write to each status.", type:
-							"array", items: {
-
+						type: "string"
+						enum: ["deadman"]
+					}
+					timeSince: {
+						description: "String duration before deadman triggers."
+						type:        "string"
+					}
+					staleTime: {
+						description: "String duration for time that a series is considered stale and should not trigger deadman."
+						type:        "string"
+					}
+					reportZero: {
+						description: "If only zero values reported since time, trigger an alert"
+						type:        "boolean"
+					}
+					level: $ref: "#/components/schemas/CheckStatusLevel"
+					every: {
+						description: "Check repetition interval."
+						type:        "string"
+					}
+					offset: {
+						description: "Duration to delay after the schedule, before executing check."
+						type:        "string"
+					}
+					tags: {
+						description: "List of tags to write to each status."
+						type:        "array"
+						items: {
 							type: "object"
 							properties: {
-								key: type: "string"
+								key: type:   "string"
 								value: type: "string"
 							}
 						}
-					}, statusMessageTemplate: {
-						description:
-							"The template used to generate and write a status message.", type:
-							"string"
+					}
+					statusMessageTemplate: {
+						description: "The template used to generate and write a status message."
+						type:        "string"
 					}
 				}
-			}], CustomCheck: allOf: [{
-				$ref:
-					"#/components/schemas/CheckBase"
+			}]
+			CustomCheck: allOf: [{
+				$ref: "#/components/schemas/CheckBase"
 			}, {
-				type:
-					"object", properties: type: {
-					type:
-						"string", enum: ["custom"]
-				}, required: [
-					"type",
-				]
+				type: "object"
+				properties: type: {
+					type: "string"
+					enum: ["custom"]
+				}
+				required: ["type"]
 			}]
 			ThresholdBase: properties: {
-				level: $ref:
-					"#/components/schemas/CheckStatusLevel", allValues: {
-					description:
-						"If true, only alert if all values meet threshold.", type:
-						"boolean"
+				level: $ref: "#/components/schemas/CheckStatusLevel"
+				allValues: {
+					description: "If true, only alert if all values meet threshold."
+					type:        "boolean"
 				}
-			}, GreaterThreshold: allOf: [{
-				$ref:
-					"#/components/schemas/ThresholdBase"
+			}
+			GreaterThreshold: allOf: [{
+				$ref: "#/components/schemas/ThresholdBase"
 			}, {
-				type:
-					"object", required: [
-					"type",
-					"value",
-				]
+				type: "object"
+				required: ["type", "value"]
 				properties: {
 					type: {
-						type:
-							"string", enum: ["greater"]
-					}, value: {
-						type:
-							"number", format:
-							"float"
+						type: "string"
+						enum: ["greater"]
+					}
+					value: {
+						type:   "number"
+						format: "float"
 					}
 				}
-			}], LesserThreshold: allOf: [{
-				$ref:
-					"#/components/schemas/ThresholdBase"
+			}]
+			LesserThreshold: allOf: [{
+				$ref: "#/components/schemas/ThresholdBase"
 			}, {
-				type:
-					"object", required: [
-					"type",
-					"value",
-				]
+				type: "object"
+				required: ["type", "value"]
 				properties: {
 					type: {
-						type:
-							"string", enum: ["lesser"]
-					}, value: {
-						type:
-							"number", format:
-							"float"
+						type: "string"
+						enum: ["lesser"]
+					}
+					value: {
+						type:   "number"
+						format: "float"
 					}
 				}
-			}], RangeThreshold: allOf: [{
-				$ref:
-					"#/components/schemas/ThresholdBase"
+			}]
+			RangeThreshold: allOf: [{
+				$ref: "#/components/schemas/ThresholdBase"
 			}, {
-				type:
-					"object", required: [
-					"type",
-					"min",
-					"max",
-					"within",
-				]
+				type: "object"
+				required: ["type", "min", "max", "within"]
 				properties: {
 					type: {
-						type:
-							"string", enum: ["range"]
-					}, min: {
-						type:
-							"number", format:
-							"float"
-					}, max: {
-						type:
-							"number", format:
-							"float"
-					}, within: type:
-						"boolean"
+						type: "string"
+						enum: ["range"]
+					}
+					min: {
+						type:   "number"
+						format: "float"
+					}
+					max: {
+						type:   "number"
+						format: "float"
+					}
+					within: type: "boolean"
 				}
-			}], CheckStatusLevel: {
-				description:
-					"The state to record if check matches a criteria.", type: "string"
-				enum: [
-					"UNKNOWN",
-					"OK",
-					"INFO",
-					"CRIT",
-					"WARN",
-				]
+			}]
+			CheckStatusLevel: {
+				description: "The state to record if check matches a criteria."
+				type:        "string"
+				enum: ["UNKNOWN", "OK", "INFO", "CRIT", "WARN"]
 			}
 			RuleStatusLevel: {
-				description:
-					"The state to record if check matches a criteria.", type: "string"
-				enum: [
-					"UNKNOWN",
-					"OK",
-					"INFO",
-					"CRIT",
-					"WARN",
-					"ANY",
-				]
+				description: "The state to record if check matches a criteria."
+				type:        "string"
+				enum: ["UNKNOWN", "OK", "INFO", "CRIT", "WARN", "ANY"]
 			}
 			NotificationRuleUpdate: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", description: type:
-						"string", status: {
-						type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+					name: type:        "string"
+					description: type: "string"
+					status: {
+						type: "string"
+						enum: ["active", "inactive"]
 					}
 				}
 			}
 			NotificationRuleDiscriminator: {
 				oneOf: [{
-					$ref:
-						"#/components/schemas/SlackNotificationRule"
+					$ref: "#/components/schemas/SlackNotificationRule"
 				}, {
-					$ref:
-						"#/components/schemas/SMTPNotificationRule"
+					$ref: "#/components/schemas/SMTPNotificationRule"
 				}, {
-					$ref:
-						"#/components/schemas/PagerDutyNotificationRule"
+					$ref: "#/components/schemas/PagerDutyNotificationRule"
 				}, {
-					$ref:
-						"#/components/schemas/HTTPNotificationRule"
+					$ref: "#/components/schemas/HTTPNotificationRule"
 				}, {
-					$ref:
-						"#/components/schemas/TelegramNotificationRule"
-				}], discriminator: {
-					propertyName:
-						"type", mapping: {
-						slack:
-							"#/components/schemas/SlackNotificationRule", smtp:
-							"#/components/schemas/SMTPNotificationRule", pagerduty:
-							"#/components/schemas/PagerDutyNotificationRule", http:
-							"#/components/schemas/HTTPNotificationRule", telegram:
-							"#/components/schemas/TelegramNotificationRule"
+					$ref: "#/components/schemas/TelegramNotificationRule"
+				}]
+				discriminator: {
+					propertyName: "type"
+					mapping: {
+						slack:     "#/components/schemas/SlackNotificationRule"
+						smtp:      "#/components/schemas/SMTPNotificationRule"
+						pagerduty: "#/components/schemas/PagerDutyNotificationRule"
+						http:      "#/components/schemas/HTTPNotificationRule"
+						telegram:  "#/components/schemas/TelegramNotificationRule"
 					}
 				}
-			}, NotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleDiscriminator"
-			}], PostNotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleDiscriminator"
-			}], NotificationRules: properties: {
+			}
+			NotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleDiscriminator"
+			}]
+			PostNotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleDiscriminator"
+			}]
+			NotificationRules: properties: {
 				notificationRules: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/NotificationRule"
-				}, links: $ref:
-					"#/components/schemas/Links"
-			}, NotificationRuleBase: {
+					type: "array"
+					items: $ref: "#/components/schemas/NotificationRule"
+				}
+				links: $ref: "#/components/schemas/Links"
+			}
+			NotificationRuleBase: {
 				type: "object"
-				required: [
-					"orgID",
-					"status",
-					"name",
-					"statusRules",
-					"endpointID",
-				]
+				required: ["orgID", "status", "name", "statusRules", "endpointID"]
 				properties: {
 					latestCompleted: {
-						description:
-							"Timestamp of latest scheduled, completed run, RFC3339.", type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, lastRunStatus: {
-						readOnly:
-							true, type:
-							"string", enum: [
-							"failed",
-							"success",
-							"canceled",
-						]
+						description: "Timestamp of latest scheduled, completed run, RFC3339."
+						type:        "string"
+						format:      "date-time"
+						readOnly:    true
+					}
+					lastRunStatus: {
+						readOnly: true
+						type:     "string"
+						enum: ["failed", "success", "canceled"]
 					}
 					lastRunError: {
-						readOnly:
-							true, type:
-							"string"
-					}, id: {
-						readOnly:
-							true, type:
-							"string"
-					}, endpointID: type:
-						"string", orgID: {
-						description:
-							"The ID of the organization that owns this notification rule.", type:
-							"string"
-					}, taskID: {
-						description:
-							"The ID of the task associated with this notification rule.", type:
-							"string"
-					}, ownerID: {
-						description:
-							"The ID of creator used to create this notification rule.", type:
-							"string", readOnly:
-							true
-					}, createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, status: $ref:
-						"#/components/schemas/TaskStatusType", name: {
-						description:
-							"Human-readable name describing the notification rule.", type:
-							"string"
-					}, sleepUntil: type:
-						"string", every: {
-						description:
-							"The notification repetition interval.", type:
-							"string"
-					}, offset: {
-						description:
-							"Duration to delay after the schedule, before executing check.", type:
-							"string"
-					}, runbookLink: type:
-						"string", limitEvery: {
-						description:
-							"Don't notify me more than <limit> times every <limitEvery> seconds. If set, limit cannot be empty.", type:
-							"integer"
-					}, limit: {
-						description:
-							"Don't notify me more than <limit> times every <limitEvery> seconds. If set, limitEvery cannot be empty.", type:
-							"integer"
-					}, tagRules: {
-						description:
-							"List of tag rules the notification rule attempts to match.", type:
-							"array", items: $ref:
-							"#/components/schemas/TagRule"
-					}, description: {
-						description:
-							"An optional description of the notification rule.", type:
-							"string"
-					}, statusRules: {
-						description:
-							"List of status rules the notification rule attempts to match.", type:
-							"array", minItems:
-							1, items: $ref:
-							"#/components/schemas/StatusRule"
-					}, labels: $ref:
-						"#/components/schemas/Labels", links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							self:
-								"/api/v2/notificationRules/1", labels:
-								"/api/v2/notificationRules/1/labels", members:
-								"/api/v2/notificationRules/1/members", owners:
-								"/api/v2/notificationRules/1/owners", query:
-								"/api/v2/notificationRules/1/query"
-						}, properties: {
+						readOnly: true
+						type:     "string"
+					}
+					id: {
+						readOnly: true
+						type:     "string"
+					}
+					endpointID: type: "string"
+					orgID: {
+						description: "The ID of the organization that owns this notification rule."
+						type:        "string"
+					}
+					taskID: {
+						description: "The ID of the task associated with this notification rule."
+						type:        "string"
+					}
+					ownerID: {
+						description: "The ID of creator used to create this notification rule."
+						type:        "string"
+						readOnly:    true
+					}
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					status: $ref: "#/components/schemas/TaskStatusType"
+					name: {
+						description: "Human-readable name describing the notification rule."
+						type:        "string"
+					}
+					sleepUntil: type: "string"
+					every: {
+						description: "The notification repetition interval."
+						type:        "string"
+					}
+					offset: {
+						description: "Duration to delay after the schedule, before executing check."
+						type:        "string"
+					}
+					runbookLink: type: "string"
+					limitEvery: {
+						description: "Don't notify me more than <limit> times every <limitEvery> seconds. If set, limit cannot be empty."
+						type:        "integer"
+					}
+					limit: {
+						description: "Don't notify me more than <limit> times every <limitEvery> seconds. If set, limitEvery cannot be empty."
+						type:        "integer"
+					}
+					tagRules: {
+						description: "List of tag rules the notification rule attempts to match."
+						type:        "array"
+						items: $ref: "#/components/schemas/TagRule"
+					}
+					description: {
+						description: "An optional description of the notification rule."
+						type:        "string"
+					}
+					statusRules: {
+						description: "List of status rules the notification rule attempts to match."
+						type:        "array"
+						minItems:    1
+						items: $ref: "#/components/schemas/StatusRule"
+					}
+					labels: $ref: "#/components/schemas/Labels"
+					links: {
+						type:     "object"
+						readOnly: true
+						example: {
+							self:    "/api/v2/notificationRules/1"
+							labels:  "/api/v2/notificationRules/1/labels"
+							members: "/api/v2/notificationRules/1/members"
+							owners:  "/api/v2/notificationRules/1/owners"
+							query:   "/api/v2/notificationRules/1/query"
+						}
+						properties: {
 							self: {
-								description:
-									"URL for this endpoint.", $ref:
-									"#/components/schemas/Link"
-							}, labels: {
-								description:
-									"URL to retrieve labels for this notification rule.", $ref:
-									"#/components/schemas/Link"
-							}, members: {
-								description:
-									"URL to retrieve members for this notification rule.", $ref:
-									"#/components/schemas/Link"
-							}, owners: {
-								description:
-									"URL to retrieve owners for this notification rule.", $ref:
-									"#/components/schemas/Link"
-							}, query: {
-								description:
-									"URL to retrieve flux script for this notification rule.", $ref:
-									"#/components/schemas/Link"
+								description: "URL for this endpoint."
+								$ref:        "#/components/schemas/Link"
+							}
+							labels: {
+								description: "URL to retrieve labels for this notification rule."
+								$ref:        "#/components/schemas/Link"
+							}
+							members: {
+								description: "URL to retrieve members for this notification rule."
+								$ref:        "#/components/schemas/Link"
+							}
+							owners: {
+								description: "URL to retrieve owners for this notification rule."
+								$ref:        "#/components/schemas/Link"
+							}
+							query: {
+								description: "URL to retrieve flux script for this notification rule."
+								$ref:        "#/components/schemas/Link"
 							}
 						}
 					}
 				}
-			}, TagRule: {
+			}
+			TagRule: {
 				type: "object"
 				properties: {
-					key: type:
-						"string", value: type:
-						"string", operator: {
-						type:
-							"string", enum: [
-							"equal",
-							"notequal",
-							"equalregex",
-							"notequalregex",
-						]
+					key: type:   "string"
+					value: type: "string"
+					operator: {
+						type: "string"
+						enum: ["equal", "notequal", "equalregex", "notequalregex"]
 					}
 				}
 			}
 			StatusRule: {
 				type: "object"
 				properties: {
-					currentLevel: $ref:
-						"#/components/schemas/RuleStatusLevel", previousLevel: $ref:
-						"#/components/schemas/RuleStatusLevel", count: type:
-						"integer", period: type:
-						"string"
+					currentLevel: $ref:  "#/components/schemas/RuleStatusLevel"
+					previousLevel: $ref: "#/components/schemas/RuleStatusLevel"
+					count: type:         "integer"
+					period: type:        "string"
 				}
-			}, HTTPNotificationRuleBase: {
+			}
+			HTTPNotificationRuleBase: {
 				type: "object"
 				required: ["type"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"http",
-						]
+						type: "string"
+						enum: ["http"]
 					}
-					url: type:
-						"string"
+					url: type: "string"
 				}
-			}, HTTPNotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleBase"
+			}
+			HTTPNotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
-				$ref:
-					"#/components/schemas/HTTPNotificationRuleBase"
-			}], SlackNotificationRuleBase: {
+				$ref: "#/components/schemas/HTTPNotificationRuleBase"
+			}]
+			SlackNotificationRuleBase: {
 				type: "object"
-				required: [
-					"type",
-					"messageTemplate",
-				]
+				required: ["type", "messageTemplate"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"slack",
-						]
+						type: "string"
+						enum: ["slack"]
 					}
-					channel: type:
-						"string", messageTemplate: type:
-						"string"
+					channel: type:         "string"
+					messageTemplate: type: "string"
 				}
-			}, SlackNotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleBase"
+			}
+			SlackNotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
-				$ref:
-					"#/components/schemas/SlackNotificationRuleBase"
-			}], SMTPNotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleBase"
+				$ref: "#/components/schemas/SlackNotificationRuleBase"
+			}]
+			SMTPNotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
-				$ref:
-					"#/components/schemas/SMTPNotificationRuleBase"
-			}], SMTPNotificationRuleBase: {
+				$ref: "#/components/schemas/SMTPNotificationRuleBase"
+			}]
+			SMTPNotificationRuleBase: {
 				type: "object"
-				required: [
-					"type",
-					"subjectTemplate",
-					"to",
-				]
+				required: ["type", "subjectTemplate", "to"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"smtp",
-						]
+						type: "string"
+						enum: ["smtp"]
 					}
-					subjectTemplate: type:
-						"string", bodyTemplate: type:
-						"string", to: type:
-						"string"
+					subjectTemplate: type: "string"
+					bodyTemplate: type:    "string"
+					to: type:              "string"
 				}
-			}, PagerDutyNotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleBase"
+			}
+			PagerDutyNotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
-				$ref:
-					"#/components/schemas/PagerDutyNotificationRuleBase"
-			}], PagerDutyNotificationRuleBase: {
+				$ref: "#/components/schemas/PagerDutyNotificationRuleBase"
+			}]
+			PagerDutyNotificationRuleBase: {
 				type: "object"
-				required: [
-					"type",
-					"messageTemplate",
-				]
+				required: ["type", "messageTemplate"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"pagerduty",
-						]
+						type: "string"
+						enum: ["pagerduty"]
 					}
-					messageTemplate: type:
-						"string"
+					messageTemplate: type: "string"
 				}
-			}, TelegramNotificationRule: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationRuleBase"
+			}
+			TelegramNotificationRule: allOf: [{
+				$ref: "#/components/schemas/NotificationRuleBase"
 			}, {
-				$ref:
-					"#/components/schemas/TelegramNotificationRuleBase"
-			}], TelegramNotificationRuleBase: {
+				$ref: "#/components/schemas/TelegramNotificationRuleBase"
+			}]
+			TelegramNotificationRuleBase: {
 				type: "object"
-				required: [
-					"type",
-					"messageTemplate",
-					"channel",
-				]
+				required: ["type", "messageTemplate", "channel"]
 				properties: {
 					type: {
-						description:
-							"The discriminator between other types of notification rules is \"telegram\".", type:
-							"string", enum: [
-							"telegram",
-						]
+						description: "The discriminator between other types of notification rules is \"telegram\"."
+						type:        "string"
+						enum: ["telegram"]
 					}
 					messageTemplate: {
-						description:
-							"The message template as a flux interpolated string.", type:
-							"string"
-					}, parseMode: {
-						description:
-							"Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to \"MarkdownV2\" .", type:
-							"string", enum: [
-							"MarkdownV2",
-							"HTML",
-							"Markdown",
-						]
+						description: "The message template as a flux interpolated string."
+						type:        "string"
+					}
+					parseMode: {
+						description: "Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to \"MarkdownV2\" ."
+						type:        "string"
+						enum: ["MarkdownV2", "HTML", "Markdown"]
 					}
 					disableWebPagePreview: {
-						description:
-							"Disables preview of web links in the sent messages when \"true\". Defaults to \"false\" .", type:
-							"boolean"
+						description: "Disables preview of web links in the sent messages when \"true\". Defaults to \"false\" ."
+						type:        "boolean"
 					}
 				}
-			}, NotificationEndpointUpdate: {
+			}
+			NotificationEndpointUpdate: {
 				type: "object"
 				properties: {
-					name: type:
-						"string", description: type:
-						"string", status: {
-						type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+					name: type:        "string"
+					description: type: "string"
+					status: {
+						type: "string"
+						enum: ["active", "inactive"]
 					}
 				}
 			}
 			NotificationEndpointDiscriminator: {
 				oneOf: [{
-					$ref:
-						"#/components/schemas/SlackNotificationEndpoint"
+					$ref: "#/components/schemas/SlackNotificationEndpoint"
 				}, {
-					$ref:
-						"#/components/schemas/PagerDutyNotificationEndpoint"
+					$ref: "#/components/schemas/PagerDutyNotificationEndpoint"
 				}, {
-					$ref:
-						"#/components/schemas/HTTPNotificationEndpoint"
+					$ref: "#/components/schemas/HTTPNotificationEndpoint"
 				}, {
-					$ref:
-						"#/components/schemas/TelegramNotificationEndpoint"
-				}], discriminator: {
-					propertyName:
-						"type", mapping: {
-						slack:
-							"#/components/schemas/SlackNotificationEndpoint", pagerduty:
-							"#/components/schemas/PagerDutyNotificationEndpoint", http:
-							"#/components/schemas/HTTPNotificationEndpoint", telegram:
-							"#/components/schemas/TelegramNotificationEndpoint"
+					$ref: "#/components/schemas/TelegramNotificationEndpoint"
+				}]
+				discriminator: {
+					propertyName: "type"
+					mapping: {
+						slack:     "#/components/schemas/SlackNotificationEndpoint"
+						pagerduty: "#/components/schemas/PagerDutyNotificationEndpoint"
+						http:      "#/components/schemas/HTTPNotificationEndpoint"
+						telegram:  "#/components/schemas/TelegramNotificationEndpoint"
 					}
 				}
-			}, NotificationEndpoint: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationEndpointDiscriminator"
-			}], PostNotificationEndpoint: allOf: [{
-				$ref:
-					"#/components/schemas/NotificationEndpointDiscriminator"
-			}], NotificationEndpoints: properties: {
+			}
+			NotificationEndpoint: allOf: [{
+				$ref: "#/components/schemas/NotificationEndpointDiscriminator"
+			}]
+			PostNotificationEndpoint: allOf: [{
+				$ref: "#/components/schemas/NotificationEndpointDiscriminator"
+			}]
+			NotificationEndpoints: properties: {
 				notificationEndpoints: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/NotificationEndpoint"
-				}, links: $ref:
-					"#/components/schemas/Links"
-			}, NotificationEndpointBase: {
+					type: "array"
+					items: $ref: "#/components/schemas/NotificationEndpoint"
+				}
+				links: $ref: "#/components/schemas/Links"
+			}
+			NotificationEndpointBase: {
 				type: "object"
-				required: [
-					"type",
-					"name",
-				]
+				required: ["type", "name"]
 				properties: {
-					id: type:
-						"string", orgID: type:
-						"string", userID: type:
-						"string", createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, description: {
-						description:
-							"An optional description of the notification endpoint.", type:
-							"string"
-					}, name: type:
-						"string", status: {
-						description:
-							"The status of the endpoint.", default:
-							"active", type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+					id: type:     "string"
+					orgID: type:  "string"
+					userID: type: "string"
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
 					}
-					labels: $ref:
-						"#/components/schemas/Labels", links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							self:
-								"/api/v2/notificationEndpoints/1", labels:
-								"/api/v2/notificationEndpoints/1/labels", members:
-								"/api/v2/notificationEndpoints/1/members", owners:
-								"/api/v2/notificationEndpoints/1/owners"
-						}, properties: {
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					description: {
+						description: "An optional description of the notification endpoint."
+						type:        "string"
+					}
+					name: type: "string"
+					status: {
+						description: "The status of the endpoint."
+						default:     "active"
+						type:        "string"
+						enum: ["active", "inactive"]
+					}
+					labels: $ref: "#/components/schemas/Labels"
+					links: {
+						type:     "object"
+						readOnly: true
+						example: {
+							self:    "/api/v2/notificationEndpoints/1"
+							labels:  "/api/v2/notificationEndpoints/1/labels"
+							members: "/api/v2/notificationEndpoints/1/members"
+							owners:  "/api/v2/notificationEndpoints/1/owners"
+						}
+						properties: {
 							self: {
-								description:
-									"URL for this endpoint.", $ref:
-									"#/components/schemas/Link"
-							}, labels: {
-								description:
-									"URL to retrieve labels for this endpoint.", $ref:
-									"#/components/schemas/Link"
-							}, members: {
-								description:
-									"URL to retrieve members for this endpoint.", $ref:
-									"#/components/schemas/Link"
-							}, owners: {
-								description:
-									"URL to retrieve owners for this endpoint.", $ref:
-									"#/components/schemas/Link"
+								description: "URL for this endpoint."
+								$ref:        "#/components/schemas/Link"
+							}
+							labels: {
+								description: "URL to retrieve labels for this endpoint."
+								$ref:        "#/components/schemas/Link"
+							}
+							members: {
+								description: "URL to retrieve members for this endpoint."
+								$ref:        "#/components/schemas/Link"
+							}
+							owners: {
+								description: "URL to retrieve owners for this endpoint."
+								$ref:        "#/components/schemas/Link"
 							}
 						}
-					}, type: $ref:
-						"#/components/schemas/NotificationEndpointType"
+					}
+					type: $ref: "#/components/schemas/NotificationEndpointType"
 				}
-			}, SlackNotificationEndpoint: {
+			}
+			SlackNotificationEndpoint: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/NotificationEndpointBase"
+					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
-					type:
-						"object", properties: {
+					type: "object"
+					properties: {
 						url: {
-							description:
-								"Specifies the URL of the Slack endpoint. Specify either `URL` or `Token`.", type:
-								"string"
-						}, token: {
-							description:
-								"Specifies the API token string. Specify either `URL` or `Token`.", type:
-								"string"
+							description: "Specifies the URL of the Slack endpoint. Specify either `URL` or `Token`."
+							type:        "string"
+						}
+						token: {
+							description: "Specifies the API token string. Specify either `URL` or `Token`."
+							type:        "string"
 						}
 					}
 				}]
-			}, PagerDutyNotificationEndpoint: {
+			}
+			PagerDutyNotificationEndpoint: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/NotificationEndpointBase"
+					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
-					type:
-						"object", required: [
-						"routingKey",
-					]
+					type: "object"
+					required: ["routingKey"]
 					properties: {
-						clientURL: type:
-							"string", routingKey: type:
-							"string"
+						clientURL: type:  "string"
+						routingKey: type: "string"
 					}
 				}]
-			}, HTTPNotificationEndpoint: {
+			}
+			HTTPNotificationEndpoint: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/NotificationEndpointBase"
+					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
-					type:
-						"object", required: [
-						"url",
-						"authMethod",
-						"method",
-					]
+					type: "object"
+					required: ["url", "authMethod", "method"]
 					properties: {
-						url: type:
-							"string", username: type:
-							"string", password: type:
-							"string", token: type:
-							"string", method: {
-							type:
-								"string", enum: [
-								"POST",
-								"GET",
-								"PUT",
-							]
-						}, authMethod: {
-							type:
-								"string", enum: [
-								"none",
-								"basic",
-								"bearer",
-							]
-						}, contentTemplate: type:
-							"string", headers: {
-							type:
-								"object", description:
-								"Customized headers.", additionalProperties: type: "string"
+						url: type:      "string"
+						username: type: "string"
+						password: type: "string"
+						token: type:    "string"
+						method: {
+							type: "string"
+							enum: ["POST", "GET", "PUT"]
+						}
+						authMethod: {
+							type: "string"
+							enum: ["none", "basic", "bearer"]
+						}
+						contentTemplate: type: "string"
+						headers: {
+							type:        "object"
+							description: "Customized headers."
+							additionalProperties: type: "string"
 						}
 					}
 				}]
-			}, TelegramNotificationEndpoint: {
+			}
+			TelegramNotificationEndpoint: {
 				type: "object"
 				allOf: [{
-					$ref:
-						"#/components/schemas/NotificationEndpointBase"
+					$ref: "#/components/schemas/NotificationEndpointBase"
 				}, {
-					type:
-						"object", required: [
-						"token",
-						"channel",
-					]
+					type: "object"
+					required: ["token", "channel"]
 					properties: {
 						token: {
-							description:
-								"Specifies the Telegram bot token. See https://core.telegram.org/bots#creating-a-new-bot .", type:
-								"string"
-						}, channel: {
-							description:
-								"ID of the telegram channel, a chat_id in https://core.telegram.org/bots/api#sendmessage .", type:
-								"string"
+							description: "Specifies the Telegram bot token. See https://core.telegram.org/bots#creating-a-new-bot ."
+							type:        "string"
+						}
+						channel: {
+							description: "ID of the telegram channel, a chat_id in https://core.telegram.org/bots/api#sendmessage ."
+							type:        "string"
 						}
 					}
 				}]
-			}, NotificationEndpointType: {
+			}
+			NotificationEndpointType: {
 				type: "string"
-				enum: [
-					"slack",
-					"pagerduty",
-					"http",
-					"telegram",
-				]
+				enum: ["slack", "pagerduty", "http", "telegram"]
 			}
 			DBRP: {
 				type: "object"
 				properties: {
 					id: {
-						type:
-							"string", description:
-							"the mapping identifier", readOnly:
-							true
-					}, orgID: {
-						type:
-							"string", description:
-							"the organization ID that owns this mapping."
-					}, bucketID: {
-						type:
-							"string", description:
-							"the bucket ID used as target for the translation."
-					}, database: {
-						type:
-							"string", description:
-							"InfluxDB v1 database"
-					}, retention_policy: {
-						type:
-							"string", description:
-							"InfluxDB v1 retention policy"
-					}, default: {
-						type:
-							"boolean", description:
-							"Specify if this mapping represents the default retention policy for the database specificed."
-					}, links: $ref:
-						"#/components/schemas/Links"
-				}, required: [
-					"id",
-					"orgID",
-					"bucketID",
-					"database",
-					"retention_policy",
-					"default",
-				]
+						type:        "string"
+						description: "the mapping identifier"
+						readOnly:    true
+					}
+					orgID: {
+						type:        "string"
+						description: "the organization ID that owns this mapping."
+					}
+					bucketID: {
+						type:        "string"
+						description: "the bucket ID used as target for the translation."
+					}
+					database: {
+						type:        "string"
+						description: "InfluxDB v1 database"
+					}
+					retention_policy: {
+						type:        "string"
+						description: "InfluxDB v1 retention policy"
+					}
+					default: {
+						type:        "boolean"
+						description: "Specify if this mapping represents the default retention policy for the database specificed."
+					}
+					links: $ref: "#/components/schemas/Links"
+				}
+				required: ["id", "orgID", "bucketID", "database", "retention_policy", "default"]
 			}
 			DBRPs: properties: content: {
-				type:
-					"array", items: $ref:
-					"#/components/schemas/DBRP"
-			}, DBRPUpdate: properties: {
+				type: "array"
+				items: $ref: "#/components/schemas/DBRP"
+			}
+			DBRPUpdate: properties: {
 				retention_policy: {
-					type:
-						"string", description:
-						"InfluxDB v1 retention policy"
-				}, default: type:
-					"boolean"
-			}, DBRPCreate: {
+					type:        "string"
+					description: "InfluxDB v1 retention policy"
+				}
+				default: type: "boolean"
+			}
+			DBRPCreate: {
 				type: "object"
 				properties: {
 					orgID: {
-						type:
-							"string", description:
-							"the organization ID that owns this mapping."
-					}, org: {
-						type:
-							"string", description:
-							"the organization that owns this mapping."
-					}, bucketID: {
-						type:
-							"string", description:
-							"the bucket ID used as target for the translation."
-					}, database: {
-						type:
-							"string", description:
-							"InfluxDB v1 database"
-					}, retention_policy: {
-						type:
-							"string", description:
-							"InfluxDB v1 retention policy"
-					}, default: {
-						type:
-							"boolean", description:
-							"Specify if this mapping represents the default retention policy for the database specificed."
+						type:        "string"
+						description: "the organization ID that owns this mapping."
 					}
-				}, required: [
-					"bucketID",
-					"database",
-					"retention_policy",
-				]
+					org: {
+						type:        "string"
+						description: "the organization that owns this mapping."
+					}
+					bucketID: {
+						type:        "string"
+						description: "the bucket ID used as target for the translation."
+					}
+					database: {
+						type:        "string"
+						description: "InfluxDB v1 database"
+					}
+					retention_policy: {
+						type:        "string"
+						description: "InfluxDB v1 retention policy"
+					}
+					default: {
+						type:        "boolean"
+						description: "Specify if this mapping represents the default retention policy for the database specificed."
+					}
+				}
+				required: ["bucketID", "database", "retention_policy"]
 			}
 			DBRPGet: {
 				type: "object"
 				properties: content: {
-					$ref:
-						"#/components/schemas/DBRP", required:
-						true
+					$ref:     "#/components/schemas/DBRP"
+					required: true
 				}
-			}, SchemaType: {
+			}
+			SchemaType: {
 				type: "string"
-				enum: [
-					"implicit",
-					"explicit",
-				]
+				enum: ["implicit", "explicit"]
 			}
 			DemoDataBucket: {
 				properties: {
 					links: {
-						type:
-							"object", readOnly:
-							true, example: {
-							labels:
-								"/api/v2/buckets/1/labels", members:
-								"/api/v2/buckets/1/members", org:
-								"/api/v2/orgs/2", owners:
-								"/api/v2/buckets/1/owners", self:
-								"/api/v2/buckets/1", write:
-								"/api/v2/write?org=2&bucket=1"
-						}, properties: {
+						type:     "object"
+						readOnly: true
+						example: {
+							labels:  "/api/v2/buckets/1/labels"
+							members: "/api/v2/buckets/1/members"
+							org:     "/api/v2/orgs/2"
+							owners:  "/api/v2/buckets/1/owners"
+							self:    "/api/v2/buckets/1"
+							write:   "/api/v2/write?org=2&bucket=1"
+						}
+						properties: {
 							labels: {
-								description:
-									"URL to retrieve labels for this bucket", $ref:
-									"#/components/schemas/Link"
-							}, members: {
-								description:
-									"URL to retrieve members that can read this bucket", $ref:
-									"#/components/schemas/Link"
-							}, org: {
-								description:
-									"URL to retrieve parent organization for this bucket", $ref:
-									"#/components/schemas/Link"
-							}, owners: {
-								description:
-									"URL to retrieve owners that can read and write to this bucket.", $ref:
-									"#/components/schemas/Link"
-							}, self: {
-								description:
-									"URL for this bucket", $ref:
-									"#/components/schemas/Link"
-							}, write: {
-								description:
-									"URL to write line protocol for this bucket", $ref:
-									"#/components/schemas/Link"
+								description: "URL to retrieve labels for this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							members: {
+								description: "URL to retrieve members that can read this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							org: {
+								description: "URL to retrieve parent organization for this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							owners: {
+								description: "URL to retrieve owners that can read and write to this bucket."
+								$ref:        "#/components/schemas/Link"
+							}
+							self: {
+								description: "URL for this bucket"
+								$ref:        "#/components/schemas/Link"
+							}
+							write: {
+								description: "URL to write line protocol for this bucket"
+								$ref:        "#/components/schemas/Link"
 							}
 						}
-					}, id: {
-						readOnly:
-							true, type:
-							"string"
-					}, type: {
-						readOnly:
-							true, type:
-							"string", default:
-							"demodata"
-					}, name: type:
-						"string", description: type:
-						"string", orgID: type:
-						"string", rp: type:
-						"string", schemaType: {
-						$ref:
-							"#/components/schemas/SchemaType", default:
-							"implicit"
-					}, createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, retentionRules: $ref:
-						"#/components/schemas/RetentionRules", labels: $ref:
-						"#/components/schemas/Labels"
-				}, required: [
-					"name",
-					"retentionRules",
-				]
+					}
+					id: {
+						readOnly: true
+						type:     "string"
+					}
+					type: {
+						readOnly: true
+						type:     "string"
+						default:  "demodata"
+					}
+					name: type:        "string"
+					description: type: "string"
+					orgID: type:       "string"
+					rp: type:          "string"
+					schemaType: {
+						$ref:    "#/components/schemas/SchemaType"
+						default: "implicit"
+					}
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					retentionRules: $ref: "#/components/schemas/RetentionRules"
+					labels: $ref:         "#/components/schemas/Labels"
+				}
+				required: ["name", "retentionRules"]
 			}
 			DemoDataBuckets: {
 				type: "object"
 				properties: {
 					links: {
-						readOnly:
-							true, $ref:
-							"#/components/schemas/Links"
-					}, buckets: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/DemoDataBucket"
+						readOnly: true
+						$ref:     "#/components/schemas/Links"
+					}
+					buckets: {
+						type: "array"
+						items: $ref: "#/components/schemas/DemoDataBucket"
 					}
 				}
-			}, Resource: {
+			}
+			Resource: {
 				type: "object"
 				required: ["type"]
 				properties: {
 					type: {
-						type:
-							"string", enum: [
-							"authorizations",
-							"buckets",
-							"dashboards",
-							"orgs",
-							"tasks",
-							"telegrafs",
-							"users",
-							"variables",
-							"secrets",
-							"labels",
-							"views",
-							"documents",
-							"notificationRules",
-							"notificationEndpoints",
-							"checks",
-							"dbrp",
-							"flows",
-							"annotations",
-							"functions",
-						]
+						type: "string"
+						enum: ["authorizations", "buckets", "dashboards", "orgs", "tasks", "telegrafs", "users", "variables", "secrets", "labels", "views", "documents", "notificationRules", "notificationEndpoints", "checks", "dbrp", "flows", "annotations", "functions"]
 					}
 					id: {
-						type:
-							"string", nullable:
-							true, description:
-							"If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type."
-					}, name: {
-						type:
-							"string", nullable:
-							true, description:
-							"Optional name of the resource if the resource has a name field."
-					}, orgID: {
-						type:
-							"string", nullable:
-							true, description:
-							"If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type."
-					}, org: {
-						type:
-							"string", nullable:
-							true, description:
-							"Optional name of the organization of the organization with orgID."
+						type:        "string"
+						nullable:    true
+						description: "If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type."
+					}
+					name: {
+						type:        "string"
+						nullable:    true
+						description: "Optional name of the resource if the resource has a name field."
+					}
+					orgID: {
+						type:        "string"
+						nullable:    true
+						description: "If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type."
+					}
+					org: {
+						type:        "string"
+						nullable:    true
+						description: "Optional name of the organization of the organization with orgID."
 					}
 				}
-			}, Permission: {
-				required: [
-					"action",
-					"resource",
-				]
+			}
+			Permission: {
+				required: ["action", "resource"]
 				properties: {
 					action: {
-						type:
-							"string", enum: [
-							"read",
-							"write",
-						]
+						type: "string"
+						enum: ["read", "write"]
 					}
-					resource: $ref:
-						"#/components/schemas/Resource"
+					resource: $ref: "#/components/schemas/Resource"
 				}
-			}, Authorization: {
-				required: [
-					"orgID",
-					"permissions",
-				]
+			}
+			Authorization: {
+				required: ["orgID", "permissions"]
 				allOf: [{
-					$ref:
-						"#/components/schemas/AuthorizationUpdateRequest"
+					$ref: "#/components/schemas/AuthorizationUpdateRequest"
 				}, {
-					type:
-						"object", properties: {
+					type: "object"
+					properties: {
 						createdAt: {
-							type:
-								"string", format:
-								"date-time", readOnly:
-								true
-						}, updatedAt: {
-							type:
-								"string", format:
-								"date-time", readOnly:
-								true
-						}, orgID: {
-							type:
-								"string", description:
-								"ID of org that authorization is scoped to."
-						}, permissions: {
-							type:
-								"array", minItems:
-								1, description:
-								"List of permissions for an auth.  An auth must have at least one Permission.", items: $ref: "#/components/schemas/Permission"
-						}, id: {
-							readOnly:
-								true, type:
-								"string"
-						}, token: {
-							readOnly:
-								true, type:
-								"string", description:
-								"Passed via the Authorization Header and Token Authentication type."
-						}, userID: {
-							readOnly:
-								true, type:
-								"string", description:
-								"ID of user that created and owns the token."
-						}, user: {
-							readOnly:
-								true, type:
-								"string", description:
-								"Name of user that created and owns the token."
-						}, org: {
-							readOnly:
-								true, type:
-								"string", description:
-								"Name of the org token is scoped to."
-						}, links: {
-							type:
-								"object", readOnly:
-								true, example: {
-
+							type:     "string"
+							format:   "date-time"
+							readOnly: true
+						}
+						updatedAt: {
+							type:     "string"
+							format:   "date-time"
+							readOnly: true
+						}
+						orgID: {
+							type:        "string"
+							description: "ID of org that authorization is scoped to."
+						}
+						permissions: {
+							type:        "array"
+							minItems:    1
+							description: "List of permissions for an auth.  An auth must have at least one Permission."
+							items: $ref: "#/components/schemas/Permission"
+						}
+						id: {
+							readOnly: true
+							type:     "string"
+						}
+						token: {
+							readOnly:    true
+							type:        "string"
+							description: "Passed via the Authorization Header and Token Authentication type."
+						}
+						userID: {
+							readOnly:    true
+							type:        "string"
+							description: "ID of user that created and owns the token."
+						}
+						user: {
+							readOnly:    true
+							type:        "string"
+							description: "Name of user that created and owns the token."
+						}
+						org: {
+							readOnly:    true
+							type:        "string"
+							description: "Name of the org token is scoped to."
+						}
+						links: {
+							type:     "object"
+							readOnly: true
+							example: {
 								self: "/api/v2/authorizations/1"
 								user: "/api/v2/users/12"
-							}, properties: {
-
+							}
+							properties: {
 								self: {
 									readOnly: true
 									$ref:     "#/components/schemas/Link"
@@ -11597,623 +10919,526 @@ cloud: {
 						}
 					}
 				}]
-			}, Authorizations: {
+			}
+			Authorizations: {
 				type: "object"
 				properties: {
 					links: {
-						readOnly:
-							true, $ref:
-							"#/components/schemas/Links"
-					}, authorizations: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/Authorization"
+						readOnly: true
+						$ref:     "#/components/schemas/Links"
+					}
+					authorizations: {
+						type: "array"
+						items: $ref: "#/components/schemas/Authorization"
 					}
 				}
-			}, User: {
+			}
+			User: {
 				properties: {
 					id: {
-						readOnly:
-							true, type:
-							"string"
-					}, oauthID: type:
-						"string", name: type:
-						"string", status: {
-						description:
-							"If inactive the user is inactive.", default:
-							"active", type:
-							"string", enum: [
-							"active",
-							"inactive",
-						]
+						readOnly: true
+						type:     "string"
+					}
+					oauthID: type: "string"
+					name: type:    "string"
+					status: {
+						description: "If inactive the user is inactive."
+						default:     "active"
+						type:        "string"
+						enum: ["active", "inactive"]
 					}
 					role: {
-						type:
-							"string", enum: [
-							"owner",
-							"member",
-						]
+						type: "string"
+						enum: ["owner", "member"]
 					}
-					org_id: type:
-						"string"
-				}, required: ["name"]
+					org_id: type: "string"
+				}
+				required: ["name"]
 			}
 			Users: {
 				type: "object"
 				properties: {
 					links: {
-						type:
-							"object", properties: self: {
-							type:
-								"string", format:
-								"uri"
+						type: "object"
+						properties: self: {
+							type:   "string"
+							format: "uri"
 						}
-					}, users: {
-						type:
-							"array", items: $ref:
-							"#/components/schemas/UserResponse"
+					}
+					users: {
+						type: "array"
+						items: $ref: "#/components/schemas/UserResponse"
 					}
 				}
-			}, OnboardingRequest: {
+			}
+			OnboardingRequest: {
 				type: "object"
 				properties: {
-					username: type:
-						"string", password: type:
-						"string", org: type:
-						"string", bucket: type:
-						"string", retentionPeriodHrs: {
-						type:
-							"integer", deprecated:
-							true
-					}, retentionPeriodSeconds: type:
-						"integer", limit: $ref:
-						"#/components/schemas/Limit"
-				}, required: [
-					"username",
-					"org",
-					"bucket",
-				]
+					username: type: "string"
+					password: type: "string"
+					org: type:      "string"
+					bucket: type:   "string"
+					retentionPeriodHrs: {
+						type:       "integer"
+						deprecated: true
+					}
+					retentionPeriodSeconds: type: "integer"
+					limit: $ref:                  "#/components/schemas/Limit"
+				}
+				required: ["username", "org", "bucket"]
 			}
 			OnboardingResponse: {
 				type: "object"
 				properties: {
-					user: $ref:
-						"#/components/schemas/UserResponse", org: $ref:
-						"#/components/schemas/Organization", bucket: $ref:
-						"#/components/schemas/Bucket", auth: $ref:
-						"#/components/schemas/Authorization"
+					user: $ref:   "#/components/schemas/UserResponse"
+					org: $ref:    "#/components/schemas/Organization"
+					bucket: $ref: "#/components/schemas/Bucket"
+					auth: $ref:   "#/components/schemas/Authorization"
 				}
-			}, Limit: {
-				type: "object"
-				description:
-					"These are org limits similar to those configured in/by quartz.", properties: {
-					orgID: type:
-						"string", rate: {
-						type:
-							"object", properties: {
+			}
+			Limit: {
+				type:        "object"
+				description: "These are org limits similar to those configured in/by quartz."
+				properties: {
+					orgID: type: "string"
+					rate: {
+						type: "object"
+						properties: {
 							readKBs: {
-								type:
-									"integer", description:
-									"Query limit in kb/sec. 0 is unlimited."
-							}, concurrentReadRequests: {
-								type:
-									"integer", description:
-									"Allowed concurrent queries. 0 is unlimited."
-							}, writeKBs: {
-								type:
-									"integer", description:
-									"Write limit in kb/sec. 0 is unlimited."
-							}, concurrentWriteRequests: {
-								type:
-									"integer", description:
-									"Allowed concurrent writes. 0 is unlimited."
-							}, cardinality: {
-								type:
-									"integer", description:
-									"Allowed organization total cardinality. 0 is unlimited."
-							}, concurrentDeleteRequests: {
-								type:
-									"integer", description:
-									"Allowed organization concurrent outstanding delete requests."
-							}, deleteRequestsPerSecond: {
-								type:
-									"integer", description:
-									"Allowed organization delete request rate."
+								type:        "integer"
+								description: "Query limit in kb/sec. 0 is unlimited."
 							}
-						}, required: [
-							"readKBs",
-							"concurrentReadRequests",
-							"writeKBs",
-							"concurrentWriteRequests",
-							"cardinality",
-						]
+							concurrentReadRequests: {
+								type:        "integer"
+								description: "Allowed concurrent queries. 0 is unlimited."
+							}
+							writeKBs: {
+								type:        "integer"
+								description: "Write limit in kb/sec. 0 is unlimited."
+							}
+							concurrentWriteRequests: {
+								type:        "integer"
+								description: "Allowed concurrent writes. 0 is unlimited."
+							}
+							cardinality: {
+								type:        "integer"
+								description: "Allowed organization total cardinality. 0 is unlimited."
+							}
+							concurrentDeleteRequests: {
+								type:        "integer"
+								description: "Allowed organization concurrent outstanding delete requests."
+							}
+							deleteRequestsPerSecond: {
+								type:        "integer"
+								description: "Allowed organization delete request rate."
+							}
+						}
+						required: ["readKBs", "concurrentReadRequests", "writeKBs", "concurrentWriteRequests", "cardinality"]
 					}
 					bucket: {
-						type:
-							"object", properties: {
-							maxBuckets: type:
-								"integer", maxRetentionDuration: {
-								type:
-									"integer", description:
-									"Max bucket retention duration in nanoseconds. 0 is unlimited."
+						type: "object"
+						properties: {
+							maxBuckets: type: "integer"
+							maxRetentionDuration: {
+								type:        "integer"
+								description: "Max bucket retention duration in nanoseconds. 0 is unlimited."
 							}
-						}, required: [
-							"maxBuckets",
-							"maxRetentionDuration",
-						]
+						}
+						required: ["maxBuckets", "maxRetentionDuration"]
 					}
 					task: {
-						type:
-							"object", properties: maxTasks: type:
-							"integer", required: [
-							"maxTasks",
-						]
+						type: "object"
+						properties: maxTasks: type: "integer"
+						required: ["maxTasks"]
 					}
 					dashboard: {
-						type:
-							"object", properties: maxDashboards: type:
-							"integer", required: [
-							"maxDashboards",
-						]
+						type: "object"
+						properties: maxDashboards: type: "integer"
+						required: ["maxDashboards"]
 					}
 					check: {
-						type:
-							"object", properties: maxChecks: type:
-							"integer", required: [
-							"maxChecks",
-						]
+						type: "object"
+						properties: maxChecks: type: "integer"
+						required: ["maxChecks"]
 					}
 					notificationRule: {
-						type:
-							"object", properties: {
-							maxNotifications: type:
-								"integer", blockedNotificationRules: {
-								type:
-									"string", description:
-									"comma separated list of notification rules", example:
-									"http,pagerduty"
+						type: "object"
+						properties: {
+							maxNotifications: type: "integer"
+							blockedNotificationRules: {
+								type:        "string"
+								description: "comma separated list of notification rules"
+								example:     "http,pagerduty"
 							}
-						}, required: [
-							"maxNotifications",
-							"blockNotificationRules",
-						]
+						}
+						required: ["maxNotifications", "blockNotificationRules"]
 					}
 					notificationEndpoint: {
-						type:
-							"object", properties: blockedNotificationEndpoints: {
-							type:
-								"string", description:
-								"comma separated list of notification endpoints", example:
-								"http,pagerduty"
-						}, required: [
-							"blockNotificationEndpoints",
-						]
+						type: "object"
+						properties: blockedNotificationEndpoints: {
+							type:        "string"
+							description: "comma separated list of notification endpoints"
+							example:     "http,pagerduty"
+						}
+						required: ["blockNotificationEndpoints"]
 					}
 					features: {
-						type:
-							"object", properties: allowDelete: {
-							type:
-								"boolean", description:
-								"allow delete predicate endpoint"
+						type: "object"
+						properties: allowDelete: {
+							type:        "boolean"
+							description: "allow delete predicate endpoint"
 						}
 					}
-				}, required: [
-					"rate",
-					"bucket",
-					"task",
-					"dashboard",
-					"check",
-					"notificationRule",
-					"notificationEndpoint",
-				]
+				}
+				required: ["rate", "bucket", "task", "dashboard", "check", "notificationRule", "notificationEndpoint"]
 			}
 			Variable: {
 				type: "object"
-				required: [
-					"name",
-					"orgID",
-					"arguments",
-				]
+				required: ["name", "orgID", "arguments"]
 				properties: {
 					links: {
-						type:
-							"object", readOnly:
-							true, properties: {
+						type:     "object"
+						readOnly: true
+						properties: {
 							self: {
-								type:
-									"string", format:
-									"uri"
-							}, org: {
-								type:
-									"string", format:
-									"uri"
-							}, labels: {
-								type:
-									"string", format:
-									"uri"
+								type:   "string"
+								format: "uri"
+							}
+							org: {
+								type:   "string"
+								format: "uri"
+							}
+							labels: {
+								type:   "string"
+								format: "uri"
 							}
 						}
-					}, id: {
-						readOnly:
-							true, type:
-							"string"
-					}, orgID: type:
-						"string", name: type:
-						"string", description: type:
-						"string", selected: {
-						type:
-							"array", items: type:
-							"string"
-					}, sort_order: type:
-						"integer", labels: $ref:
-						"#/components/schemas/Labels", arguments: $ref:
-						"#/components/schemas/VariableProperties", createdAt: {
-						type:
-							"string", format:
-							"date-time"
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time"
+					}
+					id: {
+						readOnly: true
+						type:     "string"
+					}
+					orgID: type:       "string"
+					name: type:        "string"
+					description: type: "string"
+					selected: {
+						type: "array"
+						items: type: "string"
+					}
+					sort_order: type: "integer"
+					labels: $ref:     "#/components/schemas/Labels"
+					arguments: $ref:  "#/components/schemas/VariableProperties"
+					createdAt: {
+						type:   "string"
+						format: "date-time"
+					}
+					updatedAt: {
+						type:   "string"
+						format: "date-time"
 					}
 				}
-			}, Variables: {
+			}
+			Variables: {
 				type: "object"
 				example: variables: [{
-					id:
-						"1221432", name:
-						":ok:", selected: [
-						"hello",
-					], arguments: {
-						type:
-							"constant", values: [
-							"howdy",
-							"hello",
-							"hi",
-							"yo",
-							"oy",
-						]
+					id:   "1221432"
+					name: ":ok:"
+					selected: ["hello"]
+					arguments: {
+						type: "constant"
+						values: ["howdy", "hello", "hi", "yo", "oy"]
 					}
 				}, {
-					id:
-						"1221432", name:
-						":ok:", selected: [
-						"c",
-					], arguments: {
-						type:
-							"map", values: {
-
+					id:   "1221432"
+					name: ":ok:"
+					selected: ["c"]
+					arguments: {
+						type: "map"
+						values: {
 							a: "fdjaklfdjkldsfjlkjdsa"
 							b: "dfaksjfkljekfajekdljfas"
 							c: "fdjksajfdkfeawfeea"
 						}
 					}
 				}, {
-					id:
-						"1221432", name:
-						":ok:", selected: [
-						"host",
-					], arguments: {
-						type:
-							"query", query:
-							"from(bucket: \"foo\") |> showMeasurements()", language:
-							"flux"
+					id:   "1221432"
+					name: ":ok:"
+					selected: ["host"]
+					arguments: {
+						type:     "query"
+						query:    "from(bucket: \"foo\") |> showMeasurements()"
+						language: "flux"
 					}
-				}], properties: variables: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/Variable"
+				}]
+				properties: variables: {
+					type: "array"
+					items: $ref: "#/components/schemas/Variable"
 				}
-			}, ColumnDataType: {
+			}
+			ColumnDataType: {
 				type: "string"
-				enum: [
-					"integer",
-					"float",
-					"boolean",
-					"string",
-					"unsigned",
-				]
+				enum: ["integer", "float", "boolean", "string", "unsigned"]
 			}
 			ColumnSemanticType: {
-				type: "string"
-				nullable:
-					false, enum: [
-					"timestamp",
-					"tag",
-					"field",
-				]
+				type:     "string"
+				nullable: false
+				enum: ["timestamp", "tag", "field"]
 			}
 			MeasurementSchema: {
-				description:
-					"The schema definition for a single measurement", type: "object"
+				description: "The schema definition for a single measurement"
+				type:        "object"
 				example: {
-					id: "1a3c5e7f9b0a8642"
-					orgID:
-						"0a3c5e7f9b0a0001", bucketID:
-						"ba3c5e7f9b0a0010", name: "cpu"
+					id:       "1a3c5e7f9b0a8642"
+					orgID:    "0a3c5e7f9b0a0001"
+					bucketID: "ba3c5e7f9b0a0010"
+					name:     "cpu"
 					columns: [{
-						name:
-							"time", type:
-							"timestamp"
+						name: "time"
+						type: "timestamp"
 					}, {
-						name:
-							"host", type:
-							"tag"
+						name: "host"
+						type: "tag"
 					}, {
-						name:
-							"region", type:
-							"tag"
+						name: "region"
+						type: "tag"
 					}, {
-						name:
-							"usage_user", type:
-							"field", dataType:
-							"float"
+						name:     "usage_user"
+						type:     "field"
+						dataType: "float"
 					}, {
-						name:
-							"usage_user", type:
-							"field", dataType:
-							"float"
-					}], createdAt:
-						"2021-01-21T00:48:40.993Z", updatedAt:
-						"2021-01-21T00:48:40.993Z"
-				}, required: [
-					"id",
-					"name",
-					"columns",
-					"createdAt",
-					"updatedAt",
-				]
+						name:     "usage_user"
+						type:     "field"
+						dataType: "float"
+					}]
+					createdAt: "2021-01-21T00:48:40.993Z"
+					updatedAt: "2021-01-21T00:48:40.993Z"
+				}
+				required: ["id", "name", "columns", "createdAt", "updatedAt"]
 				properties: {
 					id: {
-						type:
-							"string", readOnly:
-							true
-					}, orgID: {
-						type:
-							"string", description:
-							"ID of organization that the measurement schema is associated with."
-					}, bucketID: {
-						type:
-							"string", description:
-							"ID of the bucket that the measurement schema is associated with."
-					}, name: {
-						type:
-							"string", nullable:
-							false
-					}, columns: {
-						description:
-							"An ordered collection of column definitions", type:
-							"array", items: $ref:
-							"#/components/schemas/MeasurementSchemaColumn"
-					}, createdAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
-					}, updatedAt: {
-						type:
-							"string", format:
-							"date-time", readOnly:
-							true
+						type:     "string"
+						readOnly: true
+					}
+					orgID: {
+						type:        "string"
+						description: "ID of organization that the measurement schema is associated with."
+					}
+					bucketID: {
+						type:        "string"
+						description: "ID of the bucket that the measurement schema is associated with."
+					}
+					name: {
+						type:     "string"
+						nullable: false
+					}
+					columns: {
+						description: "An ordered collection of column definitions"
+						type:        "array"
+						items: $ref: "#/components/schemas/MeasurementSchemaColumn"
+					}
+					createdAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
+					}
+					updatedAt: {
+						type:     "string"
+						format:   "date-time"
+						readOnly: true
 					}
 				}
-			}, MeasurementSchemaColumn: {
-				description:
-					"Definition of a measurement column", example: {
+			}
+			MeasurementSchemaColumn: {
+				description: "Definition of a measurement column"
+				example: {
 					name: "time"
 					type: "timestamp"
 				}
 				type: "object"
-				required: [
-					"name",
-					"type",
-				]
+				required: ["name", "type"]
 				properties: {
-					name: type:
-						"string", type: $ref:
-						"#/components/schemas/ColumnSemanticType", dataType: $ref:
-						"#/components/schemas/ColumnDataType"
+					name: type:     "string"
+					type: $ref:     "#/components/schemas/ColumnSemanticType"
+					dataType: $ref: "#/components/schemas/ColumnDataType"
 				}
-			}, MeasurementSchemaCreateRequest: {
-				description:
-					"Create a new measurement schema", type: "object"
+			}
+			MeasurementSchemaCreateRequest: {
+				description: "Create a new measurement schema"
+				type:        "object"
 				example: {
 					name: "cpu"
 					columns: [{
-						name:
-							"time", type:
-							"timestamp"
+						name: "time"
+						type: "timestamp"
 					}, {
-						name:
-							"host", type:
-							"tag"
+						name: "host"
+						type: "tag"
 					}, {
-						name:
-							"region", type:
-							"tag"
+						name: "region"
+						type: "tag"
 					}, {
-						name:
-							"usage_user", type:
-							"field", dataType:
-							"float"
+						name:     "usage_user"
+						type:     "field"
+						dataType: "float"
 					}, {
-						name:
-							"usage_user", type:
-							"field", dataType:
-							"float"
+						name:     "usage_user"
+						type:     "field"
+						dataType: "float"
 					}]
-				}, required: [
-					"name",
-					"columns",
-				]
+				}
+				required: ["name", "columns"]
 				properties: {
-					name: type:
-						"string", columns: {
-						description:
-							"An ordered collection of column definitions", type:
-							"array", items: $ref:
-							"#/components/schemas/MeasurementSchemaColumn"
+					name: type: "string"
+					columns: {
+						description: "An ordered collection of column definitions"
+						type:        "array"
+						items: $ref: "#/components/schemas/MeasurementSchemaColumn"
 					}
 				}
-			}, MeasurementSchemaList: {
-				description:
-					"A list of measurement schemas returning summary information", example: measurementSchemas: [{
-					id:
-						"1a3c5e7f9b0a8642", orgID:
-						"0a3c5e7f9b0a0001", bucketID:
-						"ba3c5e7f9b0a0010", name:
-						"cpu", createdAt:
-						"2021-01-21T00:48:40.993Z", updatedAt:
-						"2021-01-21T00:48:40.993Z"
+			}
+			MeasurementSchemaList: {
+				description: "A list of measurement schemas returning summary information"
+				example: measurementSchemas: [{
+					id:        "1a3c5e7f9b0a8642"
+					orgID:     "0a3c5e7f9b0a0001"
+					bucketID:  "ba3c5e7f9b0a0010"
+					name:      "cpu"
+					createdAt: "2021-01-21T00:48:40.993Z"
+					updatedAt: "2021-01-21T00:48:40.993Z"
 				}, {
-					id:
-						"1a3c5e7f9b0a8643", orgID:
-						"0a3c5e7f9b0a0001", bucketID:
-						"ba3c5e7f9b0a0010", name:
-						"memory", createdAt:
-						"2021-01-21T00:48:40.993Z", updatedAt:
-						"2021-01-21T00:48:40.993Z"
+					id:        "1a3c5e7f9b0a8643"
+					orgID:     "0a3c5e7f9b0a0001"
+					bucketID:  "ba3c5e7f9b0a0010"
+					name:      "memory"
+					createdAt: "2021-01-21T00:48:40.993Z"
+					updatedAt: "2021-01-21T00:48:40.993Z"
 				}, {
-						id:
-							"1a3c5e7f9b0a8644", orgID:
-							"0a3c5e7f9b0a0001", bucketID:
-							"ba3c5e7f9b0a0010", name:
-							"disk", createdAt:
-							"2021-01-21T00:48:40.993Z", updatedAt:
-							"2021-01-21T00:48:40.993Z"
-				}], type: "object"
-				required: [
-					"measurementSchemas",
-				]
+					id:        "1a3c5e7f9b0a8644"
+					orgID:     "0a3c5e7f9b0a0001"
+					bucketID:  "ba3c5e7f9b0a0010"
+					name:      "disk"
+					createdAt: "2021-01-21T00:48:40.993Z"
+					updatedAt: "2021-01-21T00:48:40.993Z"
+				}]
+				type: "object"
+				required: ["measurementSchemas"]
 				properties: measurementSchemas: {
-					type:
-						"array", items: $ref:
-						"#/components/schemas/MeasurementSchema"
+					type: "array"
+					items: $ref: "#/components/schemas/MeasurementSchema"
 				}
-			}, MeasurementSchemaUpdateRequest: {
-				description:
-					"Update an existing measurement schema", type: "object"
+			}
+			MeasurementSchemaUpdateRequest: {
+				description: "Update an existing measurement schema"
+				type:        "object"
 				example: columns: [{
-					name:
-						"time", type:
-						"timestamp"
+					name: "time"
+					type: "timestamp"
 				}, {
-					name:
-						"host", type:
-						"tag"
+					name: "host"
+					type: "tag"
 				}, {
-					name:
-						"region", type:
-						"tag"
+					name: "region"
+					type: "tag"
 				}, {
-					name:
-						"usage_user", type:
-						"field", dataType:
-						"float"
+					name:     "usage_user"
+					type:     "field"
+					dataType: "float"
 				}, {
-					name:
-						"usage_user", type:
-						"field", dataType:
-						"float"
-				}], required: [
-					"columns",
-				]
+					name:     "usage_user"
+					type:     "field"
+					dataType: "float"
+				}]
+				required: ["columns"]
 				properties: columns: {
-					description:
-						"An ordered collection of column definitions", type:
-						"array", items: $ref:
-						"#/components/schemas/MeasurementSchemaColumn"
+					description: "An ordered collection of column definitions"
+					type:        "array"
+					items: $ref: "#/components/schemas/MeasurementSchemaColumn"
 				}
 			}
-		}, responses: ServerError: {
-			description:
-				"Non 2XX error response from server.", content: "application/json": schema: $ref:
-				"#/components/schemas/Error"
-		}, securitySchemes: {
+		}
+		responses: ServerError: {
+			description: "Non 2XX error response from server."
+			content: "application/json": schema: $ref: "#/components/schemas/Error"
+		}
+		securitySchemes: {
 			TokenAuthentication: {
-				type:   "http"
-				scheme: "token"
-				bearerFormat:
-					"InfluxDB token string", description:
+				type:         "http"
+				scheme:       "token"
+				bearerFormat: "InfluxDB token string"
+				description: """
+					### Token authentication scheme
+
+					InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.
+
+					Include your API token in an `Authorization: Token INFLUX_TOKEN` HTTP header with each request.
+
+					#### Example
+
+					`curl https://us-east-1-1.aws.cloud2.influxdata.com/
+					   --header "Authorization: Token INFLUX_API_TOKEN"`
+
+					Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token).
+
+					For more information and examples, see the following:
+					  - [`/authorizations`](#tag/Authorizations) endpoint.
+					  - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication).
+					  - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens).
+					  - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token).
+
 					"""
-						### Token authentication scheme
-
-						InfluxDB API tokens ensure secure interaction between users and data. A token belongs to an organization and identifies InfluxDB permissions within the organization.
-
-						Include your API token in an `Authorization: Token INFLUX_TOKEN` HTTP header with each request.
-
-						#### Example
-
-						`curl https://us-east-1-1.aws.cloud2.influxdata.com/
-						   --header \"Authorization: Token INFLUX_API_TOKEN\"`
-
-						Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token).
-
-						For more information and examples, see the following:
-						  - [`/authorizations`](#tag/Authorizations) endpoint.
-						  - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication).
-						  - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens).
-						  - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token).
-
-						"""
 			}
-
 			BasicAuthentication: {
 				type:   "http"
 				scheme: "basic"
-				description:
+				description: """
+					### Basic authentication scheme
+
+					Use the HTTP Basic authentication scheme with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme):
+					  - **username**: InfluxDB Cloud username
+					  - **password**: InfluxDB Cloud API token
+
+					#### Example
+
+					`curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
+					      --user "exampleuser@influxdata.com":"INFLUX_API_TOKEN"`
+
+					Replace the following:
+					- *`exampleuser@influxdata.com`*: the email address that you signed up with
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
+
+					For more information and examples, see how to [authenticate with a username and password](https://docs.influxdata.com/influxdb/cloud/reference/api/influxdb-1x/).
+
 					"""
-						### Basic authentication scheme
-
-						Use the HTTP Basic authentication scheme with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme):
-						  - **username**: InfluxDB Cloud username
-						  - **password**: InfluxDB Cloud API token
-
-						#### Example
-
-						`curl --get \"https://europe-west1-1.gcp.cloud2.influxdata.com/query\"
-						      --user \"exampleuser@influxdata.com\":\"INFLUX_API_TOKEN\"`
-
-						Replace the following:
-						- *`exampleuser@influxdata.com`*: the email address that you signed up with
-						- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
-
-						For more information and examples, see how to [authenticate with a username and password](https://docs.influxdata.com/influxdb/cloud/reference/api/influxdb-1x/).
-
-						"""
 			}
-
 			QuerystringAuthentication: {
 				type: "apiKey"
 				in:   "query"
 				name: "u=&p="
-				description:
+				description: """
+					### Querystring authentication scheme
+
+					Use InfluxDB 1.x API parameters to provide credentials through the query string.
+
+					Username and password schemes require the following credentials:
+					- **username**: InfluxDB Cloud username
+					- **password**: InfluxDB Cloud API token
+
+					#### Example
+
+					`curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
+					      --data-urlencode "u=exampleuser@influxdata.com"
+					      --data-urlencode "p=INFLUX_API_TOKEN"`
+
+					Replace the following:
+					- *`exampleuser@influxdata.com`*: the email address that you signed up with
+					- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
+
+					For more information and examples, see how to [authenticate with a username and password scheme](https://docs.influxdata.com/influxdb/cloud/reference/api/influxdb-1x/).
+
 					"""
-						### Querystring authentication scheme
-
-						Use InfluxDB 1.x API parameters to provide credentials through the query string.
-
-						Username and password schemes require the following credentials:
-						- **username**: InfluxDB Cloud username
-						- **password**: InfluxDB Cloud API token
-
-						#### Example
-
-						`curl --get \"https://europe-west1-1.gcp.cloud2.influxdata.com/query\"
-						      --data-urlencode \"u=exampleuser@influxdata.com\"
-						      --data-urlencode \"p=INFLUX_API_TOKEN\"`
-
-						Replace the following:
-						- *`exampleuser@influxdata.com`*: the email address that you signed up with
-						- *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
-
-						For more information and examples, see how to [authenticate with a username and password scheme](https://docs.influxdata.com/influxdb/cloud/reference/api/influxdb-1x/).
-
-						"""
 			}
 		}
 	}
-
 	security: [{
 		TokenAuthentication: []
 	}, {
