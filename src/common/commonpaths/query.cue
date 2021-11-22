@@ -28,11 +28,10 @@ query: post: {
 	parameters: [{
 		commonparameters.TraceSpan.#Ref
 	}, {
-		in:
-			"header", name:
-			"Accept-Encoding", description:
-			"Indicates the content encoding (usually a compression algorithm) that the client can understand.", schema: {
-
+		in:          "header"
+		name:        "Accept-Encoding"
+		description: "Indicates the content encoding (usually a compression algorithm) that the client can understand."
+		schema: {
 			type:        "string"
 			description: "The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data."
 			default:     "identity"
@@ -42,10 +41,9 @@ query: post: {
 			]
 		}
 	}, {
-		in:
-			"header", name:
-			"Content-Type", schema: {
-
+		in:   "header"
+		name: "Content-Type"
+		schema: {
 			type: "string"
 			enum: [
 				"application/json",
@@ -53,20 +51,20 @@ query: post: {
 			]
 		}
 	}, {
-		in:
-			"query", name:
-			"org", description:
-			"Specifies the name of the organization executing the query. Takes either the ID or Name. If both `orgID` and `org` are specified, `org` takes precedence.", schema: type: "string"
+		in:          "query"
+		name:        "org"
+		description: "Specifies the name of the organization executing the query. Takes either the ID or Name. If both `orgID` and `org` are specified, `org` takes precedence."
+		schema: type: "string"
 	}, {
-		in:
-			"query", name:
-			"orgID", description:
-			"Specifies the ID of the organization executing the query. If both `orgID` and `org` are specified, `org` takes precedence.", schema: type: "string"
-	}], requestBody: {
-		description:
-			"Flux query or specification to execute", content: {
-			"application/json": schema: commonschemas.Query.#Ref, "application/vnd.flux": {
-
+		in:          "query"
+		name:        "orgID"
+		description: "Specifies the ID of the organization executing the query. If both `orgID` and `org` are specified, `org` takes precedence.", schema: type: "string"
+	}]
+	requestBody: {
+		description: "Flux query or specification to execute"
+		content: {
+			"application/json": schema: commonschemas.Query.#Ref
+			"application/vnd.flux": {
 				schema: type: "string"
 				example: """
 					from(bucket: \"example-bucket\")
@@ -80,9 +78,8 @@ query: post: {
 
 	responses: {
 		"200": {
-			description:
-				"Success. Returns query results.", headers: {
-
+			description: "Success. Returns query results."
+			headers: {
 				"Content-Encoding": {
 					description: "Lists any encodings (usually compression algorithms) that have been applied to the response payload."
 					schema: {
@@ -91,7 +88,6 @@ query: post: {
 		The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
 
 		"""
-
 						default: "identity"
 						enum: [
 							"gzip",
@@ -107,7 +103,6 @@ query: post: {
 					}
 				}
 			}, content: {
-
 				"text/csv": schema: {
 					type: "string"
 					example: """
@@ -121,18 +116,20 @@ query: post: {
 					format: "binary"
 				}
 			}
-		}, "429": {
-			description:
-				"Token is temporarily over quota. The Retry-After header describes when to try the read again.", headers: "Retry-After": {
+		}
+		"429": {
+			description: "Token is temporarily over quota. The Retry-After header describes when to try the read again."
+			headers: "Retry-After": {
 				description: "A non-negative decimal integer indicating the seconds to delay after the response is received."
 				schema: {
 					type:   "integer"
 					format: "int32"
 				}
 			}
-		}, default: {
-			description:
-				"Error processing query", content: "application/json": schema: commonschemas.Error.#Ref
+		}
+		default: {
+			description: "Error processing query"
+			content: "application/json": schema: commonschemas.Error.#Ref
 		}
 	}
 }
