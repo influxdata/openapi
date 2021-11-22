@@ -1,91 +1,42 @@
-#!/bin/sh
+#!/bin/bash
 
 CONTRACTS=${CONTRACTS:-/openapi/contracts}
 
 mkdir -p $CONTRACTS
 
-INFLUXDB_DOCS_URL=https://docs.influxdata.com/influxdb
+SERVICES='
+	cloud
+	oss
+	common
+	priv/cloud-priv
+	priv/quartz-oem
+	priv/unity
+	svc-invocable-scripts
+	svc-mapsd
+	svc-datasourcesd
+	priv/svc-annotationd
+	priv/svc-annotationd-oss
+	priv/svc-notebooksd
+	priv/svc-pinneditemsd
+'
 
-(
-	cd src
-	for FORMAT in yml json; do
-		cue export -e oss -f -t "docsurl=$INFLUXDB_DOCS_URL" -o "$CONTRACTS/oss.$FORMAT"
-	done
-)
+echo generating all >&2
+# generate all the API definitions at once so we don't do the validation work many times
+(cd ./src && cue export -e '{"all": all}' -f -o $CONTRACTS/.all.yml)
+trap "rm $CONTRACTS/.all.yml" 0
 
-# generate cloud contract
-sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/cloud.yml |
-sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
-sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > ./src/.cloud_gen.yml && \
-swagger-cli bundle src/.cloud_gen.yml --type yaml | \
-(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/cloud|g" > ${CONTRACTS}/cloud.yml) && \
-swagger-cli bundle ${CONTRACTS}/cloud.yml --outfile ${CONTRACTS}/cloud.yml --type yaml
-swagger-cli bundle src/.cloud_gen.yml --outfile ${CONTRACTS}/cloud.json --type json && \
-rm src/.cloud_gen.yml
+cd $CONTRACTS
+RESULTS=''
+for c in $SERVICES; do
+	# TODO use a more consistent relationship between identifier
+	# and destination path so we don't need this logic.
+	id=$(basename $c)
+	out="./$(dirname $c)/$(echo $id | sed 's/^svc-//').yml"
+	echo generating $out >&2
+	cue export -e "all.\"$id\"" -f -o $out .all.yml
+	APIS="$APIS $out"
+done
 
-# generate common-only contract
-sed -e '/#REF_COMMON_PATHS/{r ./src/common/_paths.yml' -e 'd}' src/common.yml |
-sed -e '/#REF_COMMON_PARAMETERS/{r ./src/common/_parameters.yml' -e 'd}' |
-sed -e '/#REF_COMMON_SCHEMAS/{r ./src/common/_schemas.yml' -e 'd}' > src/.common_gen.yml && \
-swagger-cli bundle src/.common_gen.yml --type yaml | \
-(sed -e "s|{{% INFLUXDB_DOCS_URL %}}|${INFLUXDB_DOCS_URL}/common|g" > ${CONTRACTS}/common.yml) && \
-swagger-cli bundle ${CONTRACTS}/common.yml --outfile ${CONTRACTS}/common.yml --type yaml
-rm src/.common_gen.yml
-
-# generate platform-specific contracts
-swagger-cli bundle src/oss.yml --outfile ${CONTRACTS}/oss-diff.yml --type yaml
-swagger-cli bundle src/cloud.yml --outfile ${CONTRACTS}/cloud-diff.yml --type yaml
-
-## private apis
-
-# generate cloud-priv contract
-swagger-cli bundle src/cloud-priv.yml --outfile ${CONTRACTS}/priv/cloud-priv.yml --type yaml
-
-# generate quartz-oem contract
-swagger-cli bundle src/quartz-oem.yml --outfile ${CONTRACTS}/priv/quartz-oem.yml --type yaml
-
-# generate unity contract
-swagger-cli bundle src/unity.yml --outfile ${CONTRACTS}/priv/unity.yml --type yaml
-
-# The following server replacements are intended to simplify definition maintenance and should
-# only be used if there is no difference between an internal service api and it's external one.
-# Once there are differences, this may change, but until that time, this should work well.
-
-## public external service contracts
-
-# invocable-scripts
-sed -e "s|^  - url: '/'|  - url: '/api/v2'|" src/svc-invocable-scripts.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/invocable-scripts.yml --type yaml && \
-rm src/.svc.yml
-
-# mapsd
-sed -e "s|^  - url: /api/v1|  - url: /api/v2/maps|" src/svc-mapsd.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/mapsd.yml --type yaml && \
-rm src/.svc.yml
-
-# datasourcesd
-sed -e "s|^  - url: '/'|  - url: /api/v2/datasources|" src/svc-datasourcesd.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/datasourcesd.yml --type yaml && \
-rm src/.svc.yml
-
-## private external service contracts
-
-# annotationd
-sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-annotationd.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/annotationd.yml --type yaml && \
-rm src/.svc.yml
-
-# annotationd-oss
-sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-annotationd-oss.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/annotationd-oss.yml --type yaml && \
-rm src/.svc.yml
-
-# notebooksd
-sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-notebooksd.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/notebooksd.yml --type yaml && \
-rm src/.svc.yml
-
-# pinneditemsd
-sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-pinneditemsd.yml > ./src/.svc.yml && \
-swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/pinneditemsd.yml --type yaml && \
-rm src/.svc.yml
+for api in $APIS; do
+	swagger-cli validate $api
+done
