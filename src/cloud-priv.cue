@@ -8,7 +8,7 @@ import "github.com/influxdata/openapi/src/cloud/cloudschemas"
 
 import "github.com/influxdata/openapi/src/cloud/cloudpaths"
 
-#_: all: "cloud-priv": {
+all: "cloud-priv": {
 	openapi: "3.0.0"
 	info: {
 		title:   "IDPE-exclusive API endpoints"

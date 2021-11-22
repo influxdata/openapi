@@ -10,6 +10,6 @@ Permission: {
 				"write",
 			]
 		}
-		resource: Resource.#Ref
+		resource: *Resource.#Ref | Resource
 	}
 }
