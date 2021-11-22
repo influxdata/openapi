@@ -27,7 +27,7 @@ MeasurementSchemaList: {
 	type: "object"
 	required: ["measurementSchemas"]
 	properties: measurementSchemas: {
-		type: "array"
+		type:  "array"
 		items: MeasurementSchema.#Ref
 	}
 }

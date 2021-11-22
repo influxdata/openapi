@@ -1,7 +1,9 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 cancel: post: {
 	operationId: "PostCancel"
 	description: "Cancel an account"

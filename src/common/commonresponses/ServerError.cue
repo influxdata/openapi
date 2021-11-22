@@ -1,6 +1,9 @@
 package commonresponses
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 ServerError: {
 	description: *"Unexpected error" | string

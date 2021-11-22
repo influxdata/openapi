@@ -1,8 +1,11 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonparameters"
+
+)
 
 dashboards: {
 	post: {

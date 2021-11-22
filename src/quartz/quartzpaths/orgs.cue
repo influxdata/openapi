@@ -1,8 +1,11 @@
 package quartzpaths
 
-import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+import (
+	"github.com/influxdata/openapi/src/quartz/quartzschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 orgs: {
 	get: {

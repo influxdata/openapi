@@ -1,8 +1,11 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+	"github.com/influxdata/openapi/src/cloud/cloudschemas"
+
+)
 
 import cloudpathspkg "github.com/influxdata/openapi/src/cloud/cloudpaths"
 

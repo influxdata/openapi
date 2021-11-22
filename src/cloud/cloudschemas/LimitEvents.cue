@@ -1,13 +1,16 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 LimitEvents: {
 	type: "object"
 	properties: {
 		links: commonschemas.Links.#Ref
 		events: {
-			type: "array"
+			type:  "array"
 			items: LimitEvent.#Ref
 		}
 	}

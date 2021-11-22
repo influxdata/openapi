@@ -1,12 +1,15 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+import (
+	"github.com/influxdata/openapi/src/quartz/quartzschemas"
 
-import "github.com/influxdata/openapi/src/quartz/quartzpaths"
+	"github.com/influxdata/openapi/src/quartz/quartzpaths"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 all: "quartz-oem": {
 	openapi: "3.0.0"

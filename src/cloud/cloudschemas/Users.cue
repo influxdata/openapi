@@ -1,6 +1,9 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 Users: {
 	type: "object"
@@ -13,7 +16,7 @@ Users: {
 			}
 		}
 		users: {
-			type: "array"
+			type:  "array"
 			items: commonschemas.UserResponse.#Ref
 		}
 	}

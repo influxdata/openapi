@@ -1,8 +1,11 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 flags: get: {
 	tags: [

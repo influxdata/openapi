@@ -1,9 +1,11 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
+)
 billing_invoices_invoiceId: get: {
 	operationId: "GetInvoicesId"
 	tags: [

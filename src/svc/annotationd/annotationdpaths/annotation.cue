@@ -1,8 +1,11 @@
 package annotationdpaths
 
-import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 annotation: {
 	get: {

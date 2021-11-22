@@ -295,15 +295,15 @@ package old
 		}
 		schemas: {
 			NotebookParams: properties: {
-				name: type: "string"
+				name: type:  "string"
 				orgID: type: "string"
-				spec: type: "object"
+				spec: type:  "object"
 			}
 			Notebook: properties: {
-				id: type: "string"
-				name: type: "string"
+				id: type:    "string"
+				name: type:  "string"
 				orgID: type: "string"
-				spec: type: "object"
+				spec: type:  "object"
 				createdAt: {
 					type:   "string"
 					format: "date-time"
@@ -323,17 +323,17 @@ package old
 			}
 			ShareParams: properties: {
 				notebookID: type: "string"
-				orgID: type: "string"
-				token: type: "string"
-				region: type: "string"
+				orgID: type:      "string"
+				token: type:      "string"
+				region: type:     "string"
 			}
 			Share: properties: {
-				id: type: "string"
-				orgID: type: "string"
+				id: type:         "string"
+				orgID: type:      "string"
 				notebookID: type: "string"
-				accessID: type: "string"
-				token: type: "object"
-				region: type: "string"
+				accessID: type:   "string"
+				token: type:      "object"
+				region: type:     "string"
 				createdAt: {
 					type:   "string"
 					format: "date-time"

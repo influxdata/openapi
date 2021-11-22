@@ -1,11 +1,13 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/unity/unityschemas"
+import (
+	"github.com/influxdata/openapi/src/unity/unityschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
+)
 orgs_orgId_invites: {
 	get: {
 		operationId: "GetInvites"

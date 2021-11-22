@@ -1,16 +1,19 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/unity/unityschemas"
+import (
+	"github.com/influxdata/openapi/src/unity/unityschemas"
 
-import "github.com/influxdata/openapi/src/unity/unitypaths"
+	"github.com/influxdata/openapi/src/unity/unitypaths"
 
-import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+	"github.com/influxdata/openapi/src/quartz/quartzschemas"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonparameters"
+
+)
 
 all: unity: {
 	openapi: "3.0.0"

@@ -1,6 +1,9 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 experimental_sampledata_buckets_members: {
 	post: {

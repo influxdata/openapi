@@ -1,6 +1,6 @@
 package annotationdschemas
 
 StreamList: {
-	type: "array"
+	type:  "array"
 	items: ReadStream.#Ref
 }

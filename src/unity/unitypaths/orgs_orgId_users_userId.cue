@@ -1,9 +1,11 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
+)
 orgs_orgId_users_userId: delete: {
 	operationId: "DeleteOrgsIdUserId"
 	tags: [

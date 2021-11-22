@@ -1,9 +1,11 @@
 package mapsdpaths
 
-import "github.com/influxdata/openapi/src/svc/mapsd/mapsdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/mapsd/mapsdschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 mapToken: get: {
 	operationId: "getMapboxToken"
 	responses: {

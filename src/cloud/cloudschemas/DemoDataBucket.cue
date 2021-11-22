@@ -1,6 +1,9 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 DemoDataBucket: {
 	properties: {
@@ -70,7 +73,7 @@ DemoDataBucket: {
 			readOnly: true
 		}
 		retentionRules: commonschemas.RetentionRules.#Ref
-		labels: commonschemas.Labels.#Ref
+		labels:         commonschemas.Labels.#Ref
 	}
 	required: ["name", "retentionRules"]
 }

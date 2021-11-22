@@ -1,8 +1,11 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+	"github.com/influxdata/openapi/src/cloud/cloudschemas"
+
+)
 
 tenants: post: {
 	summary: "This is a temporary, experimental, soon to be depricated API for Quartz"

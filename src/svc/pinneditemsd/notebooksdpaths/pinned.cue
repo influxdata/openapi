@@ -1,11 +1,13 @@
 package notebooksdpaths
 
-import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
 
-import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
+	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 pinned: {
 	get: {
 		summary:     "get all pinned items"

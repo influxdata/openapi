@@ -1,10 +1,13 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+	"github.com/influxdata/openapi/src/cloud/cloudschemas"
+
+)
 
 measurements: {
 	summary: "Bucket schemas"

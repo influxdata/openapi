@@ -1,10 +1,13 @@
 package annotationdosspaths
 
-import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
 
-import "github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
+	"github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 annotations: {
 	post: {

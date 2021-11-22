@@ -1,8 +1,11 @@
 package osspaths
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+import (
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 restore_sql: post: {
 	operationId: "PostRestoreSQL"

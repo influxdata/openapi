@@ -1,8 +1,11 @@
 package commonpaths
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+import (
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 tasks_taskID_runs: {
 	get: {

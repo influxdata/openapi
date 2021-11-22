@@ -11478,7 +11478,7 @@ oss: {
 			DBRPGet: {
 				type: "object"
 				properties: content: {
-					$ref: "#/components/schemas/DBRP"
+					$ref:     "#/components/schemas/DBRP"
 					required: true
 				}
 			}

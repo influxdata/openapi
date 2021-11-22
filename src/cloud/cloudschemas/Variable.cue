@@ -1,6 +1,9 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 Variable: {
 	type: "object"
@@ -40,7 +43,7 @@ Variable: {
 			items: type: "string"
 		}
 		sort_order: type: "integer"
-		labels: commonschemas.Labels.#Ref
+		labels:    commonschemas.Labels.#Ref
 		arguments: commonschemas.VariableProperties.#Ref
 		createdAt: {
 			type:   "string"

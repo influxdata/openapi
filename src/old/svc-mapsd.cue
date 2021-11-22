@@ -16,8 +16,8 @@ package old
 				description: "A temp token for Mapbox"
 				content: "application/json": schema: $ref: "#/components/schemas/Token"
 			}
-			"401": $ref: "#/components/responses/ServerError"
-			"500": $ref: "#/components/responses/ServerError"
+			"401": $ref:   "#/components/responses/ServerError"
+			"500": $ref:   "#/components/responses/ServerError"
 			default: $ref: "#/components/responses/ServerError"
 		}
 	}

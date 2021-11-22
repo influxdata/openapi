@@ -25,7 +25,7 @@ MeasurementSchemaUpdateRequest: {
 	properties: columns: {
 		description: "An ordered collection of column definitions"
 
-		type: "array"
+		type:  "array"
 		items: MeasurementSchemaColumn.#Ref
 	}
 }

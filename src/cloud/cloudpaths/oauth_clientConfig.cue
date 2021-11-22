@@ -1,8 +1,11 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+	"github.com/influxdata/openapi/src/cloud/cloudschemas"
+
+)
 
 oauth_clientConfig: get: {
 	tags: [

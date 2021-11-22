@@ -1,6 +1,9 @@
 package commonresponses
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 ResourceNotFoundError: {
 	// This represents the body of a 404 error from the server.

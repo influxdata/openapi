@@ -1,12 +1,15 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
 
-import "github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptspaths"
+	"github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptspaths"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 all: "svc-invocable-scripts": {
 	openapi: "3.0.0"

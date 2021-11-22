@@ -29,7 +29,7 @@ package old
 					content: "application/json": schema: {
 						type: "object"
 						properties: {
-							id: type: "string"
+							id: type:       "string"
 							endpoint: $ref: "#/components/schemas/ListenerEndpoint"
 						}
 					}
@@ -38,7 +38,7 @@ package old
 				requestBody: content: "application/json": schema: {
 					type: "object"
 					properties: {
-						name: type: "string"
+						name: type:   "string"
 						config: type: "object"
 					}
 				}
@@ -77,7 +77,7 @@ package old
 					readOnly: true
 				}
 				orgID: type: "string"
-				name: type: "string"
+				name: type:  "string"
 				config: {
 					type:        "object"
 					description: "an object containing the configuration for the plugin"
@@ -109,12 +109,12 @@ package old
 			type:        "object"
 			description: "describes a route for an incoming request to a specific telegraf instance and port on a pod"
 			properties: {
-				id: type: "integer"
-				orgID: type: "string"
-				serviceID: type: "string"
+				id: type:           "integer"
+				orgID: type:        "string"
+				serviceID: type:    "string"
 				datasourceID: type: "string"
-				externalURL: type: "string"
-				internalIP: type: "string"
+				externalURL: type:  "string"
+				internalIP: type:   "string"
 				internalPort: type: "integer"
 			}
 		}
@@ -123,9 +123,9 @@ package old
 			type:        "object"
 			description: "describes a telegraf instance we want to be running, maps 1:1 with k8s services, which should typically be backed by one pod. "
 			properties: {
-				id: type: "integer"
-				name: type: "string"
-				orgID: type: "string"
+				id: type:           "integer"
+				name: type:         "string"
+				orgID: type:        "string"
 				datasourceID: type: "integer"
 				nextFreePort: {
 					type:        "integer"

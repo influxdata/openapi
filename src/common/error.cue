@@ -1,6 +1,9 @@
 package common
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 #DefaultError: default: {
 	description: "Unexpected error"

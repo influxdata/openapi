@@ -99,9 +99,9 @@ package old
 		}
 		schemas: {
 			PinnedItem: properties: {
-				id: type: "string"
-				orgID: type: "string"
-				type: type: "string"
+				id: type:     "string"
+				orgID: type:  "string"
+				type: type:   "string"
 				userID: type: "string"
 				createdAt: {
 					type:   "string"

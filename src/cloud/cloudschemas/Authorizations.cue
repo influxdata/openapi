@@ -1,6 +1,9 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 Authorizations: {
 	type: "object"
@@ -10,7 +13,7 @@ Authorizations: {
 			commonschemas.Links.#Ref
 		}
 		authorizations: {
-			type: "array"
+			type:  "array"
 			items: Authorization.#Ref
 		}
 	}

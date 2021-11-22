@@ -1,6 +1,9 @@
 package commonpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 templates_export: post: {
 	operationId: "ExportTemplate"

@@ -1449,7 +1449,7 @@ unity: {
 						type:        "number"
 						description: "account balance"
 					}
-					region: type: "string"
+					region: type:        "string"
 					paymentMethod: $ref: "#/components/schemas/PaymentMethod"
 					balanceUpdatedAt: {
 						type:        "string"
@@ -1609,7 +1609,7 @@ unity: {
 						type:        "number"
 					}
 					email: type: "string"
-					role: $ref: "#/components/schemas/Role"
+					role: $ref:  "#/components/schemas/Role"
 					expiresAt: {
 						description: "when the invite will expire"
 						readOnly:    true
@@ -1788,9 +1788,9 @@ unity: {
 						type:        "string"
 					}
 					firstName: type: "string"
-					lastName: type: "string"
-					email: type: "string"
-					role: $ref: "#/components/schemas/Role"
+					lastName: type:  "string"
+					email: type:     "string"
+					role: $ref:      "#/components/schemas/Role"
 				}
 				required: [
 					"id",
@@ -1936,12 +1936,12 @@ unity: {
 						readOnly:    true
 						description: "ID of the org for which these rates apply"
 					}
-					rate: $ref: "#/components/schemas/RateLimits"
-					bucket: $ref: "#/components/schemas/BucketLimits"
-					task: $ref: "#/components/schemas/TaskLimits"
-					dashboard: $ref: "#/components/schemas/DashboardLimits"
-					check: $ref: "#/components/schemas/CheckLimits"
-					notificationRule: $ref: "#/components/schemas/NotificationRuleLimits"
+					rate: $ref:                 "#/components/schemas/RateLimits"
+					bucket: $ref:               "#/components/schemas/BucketLimits"
+					task: $ref:                 "#/components/schemas/TaskLimits"
+					dashboard: $ref:            "#/components/schemas/DashboardLimits"
+					check: $ref:                "#/components/schemas/CheckLimits"
+					notificationRule: $ref:     "#/components/schemas/NotificationRuleLimits"
 					notificationEndpoint: $ref: "#/components/schemas/NotificationEndpointLimits"
 				}
 				required: [

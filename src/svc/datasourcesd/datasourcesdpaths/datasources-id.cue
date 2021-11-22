@@ -1,6 +1,9 @@
 package datasourcesdpaths
 
-import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+
+)
 
 "datasources-id": {
 	delete: {

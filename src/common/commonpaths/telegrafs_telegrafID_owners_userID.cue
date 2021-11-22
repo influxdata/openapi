@@ -1,8 +1,11 @@
 package commonpaths
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+import (
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 telegrafs_telegrafID_owners_userID: delete: {
 	operationId: "DeleteTelegrafsIDOwnersID"

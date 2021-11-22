@@ -8,7 +8,7 @@ OrgSettings: {
 			description: "the influxDB ID of the created organization"
 		}
 		settings: {
-			type: "array"
+			type:  "array"
 			items: OrgSetting.#Ref
 		}
 	}

@@ -1,9 +1,11 @@
 package notebooksdpaths
 
-import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
+import (
+	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 pinned_id: {
 	delete: {
 		summary:     "deletes a single Pinned Item by its ID"

@@ -334,7 +334,7 @@ package old
 						type: "object"
 						additionalProperties: type: "string"
 					}
-					stream: type: "string"
+					stream: type:   "string"
 					streamID: type: "string"
 					startTime: {
 						type:   "string"
@@ -370,7 +370,7 @@ package old
 							items: {
 								type: "object"
 								properties: {
-									id: type: "string"
+									id: type:      "string"
 									summary: type: "string"
 									message: type: "string"
 									stickers: {
@@ -401,7 +401,7 @@ package old
 				type: "object"
 				properties: {
 					stream: type: "string"
-					id: type: "string"
+					id: type:     "string"
 				}
 			}]
 			AnnotationCreateList: {
@@ -456,15 +456,15 @@ package old
 			Stream: {
 				type: "object"
 				properties: {
-					stream: type: "string"
+					stream: type:      "string"
 					description: type: "string"
 				}
 			}
 			ReadStream: {
 				type: "object"
 				properties: {
-					id: type: "string"
-					stream: type: "string"
+					id: type:          "string"
+					stream: type:      "string"
 					description: type: "string"
 					createdAt: {
 						type:   "string"

@@ -1,16 +1,19 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
 
-import "github.com/influxdata/openapi/src/svc/annotationd/annotationdpaths"
+	"github.com/influxdata/openapi/src/svc/annotationd/annotationdpaths"
 
-import "github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
+	"github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
 
-import "github.com/influxdata/openapi/src/svc/annotationd-oss/annotationdosspaths"
+	"github.com/influxdata/openapi/src/svc/annotationd-oss/annotationdosspaths"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 all: "svc-annotationd-oss": {
 	openapi: "3.0.0"

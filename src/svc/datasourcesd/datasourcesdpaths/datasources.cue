@@ -1,6 +1,9 @@
 package datasourcesdpaths
 
-import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+
+)
 
 datasources: {
 	get: {
@@ -8,7 +11,7 @@ datasources: {
 		responses: "200": {
 			description: "OK"
 			content: "application/json": schema: {
-				type: "array"
+				type:  "array"
 				items: datasourcesdschemas.Datasource.#Ref
 			}
 		}
@@ -21,7 +24,7 @@ datasources: {
 			content: "application/json": schema: {
 				type: "object"
 				properties: {
-					id: type:       "string"
+					id: type: "string"
 					endpoint: datasourcesdschemas.ListenerEndpoint.#Ref
 				}
 			}

@@ -1,6 +1,6 @@
 package annotationdschemas
 
 AnnotationEventList: {
-	type: "array"
+	type:  "array"
 	items: AnnotationEvent.#Ref
 }

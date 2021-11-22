@@ -1,14 +1,17 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
 
-import "github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
+	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
 
-import "github.com/influxdata/openapi/src/svc/pinneditemsd/notebooksdpaths"
+	"github.com/influxdata/openapi/src/svc/pinneditemsd/notebooksdpaths"
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 all: "svc-pinneditemsd": {
 	openapi: "3.0.0"

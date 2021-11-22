@@ -1,8 +1,11 @@
 package osspaths
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+import (
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 backup_kv: get: {
 	operationId: "GetBackupKV"

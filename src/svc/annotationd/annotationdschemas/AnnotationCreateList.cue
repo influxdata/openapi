@@ -1,6 +1,6 @@
 package annotationdschemas
 
 AnnotationCreateList: {
-	type: "array"
+	type:  "array"
 	items: AnnotationCreate.#Ref
 }

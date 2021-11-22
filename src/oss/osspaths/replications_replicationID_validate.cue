@@ -1,8 +1,11 @@
 package osspaths
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+import (
+	"github.com/influxdata/openapi/src/common/commonparameters"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 replications_replicationID_validate: post: {
 	operationId: "PostValidateReplicationByID"

@@ -1,9 +1,11 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
+
+)
 
 import commonpkg "github.com/influxdata/openapi/src/common"
-
 
 all: common: {
 	let common1 = commonpkg & {

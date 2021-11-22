@@ -1,6 +1,9 @@
 package ossschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 LegacyAuthorizationPostRequest: {
 	required: ["orgID", "permissions"]

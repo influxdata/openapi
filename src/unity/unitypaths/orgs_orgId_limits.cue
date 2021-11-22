@@ -1,9 +1,11 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/quartz/quartzschemas"
+import (
+	"github.com/influxdata/openapi/src/quartz/quartzschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 orgs_orgId_limits: {
 	get: {
 		operationId: "GetOrgsIdLimits"

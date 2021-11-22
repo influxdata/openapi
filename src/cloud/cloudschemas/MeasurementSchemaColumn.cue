@@ -9,8 +9,8 @@ MeasurementSchemaColumn: {
 	type: "object"
 	required: ["name", "type"]
 	properties: {
-		name: type:     "string"
-		type: ColumnSemanticType.#Ref
+		name: type: "string"
+		type:     ColumnSemanticType.#Ref
 		dataType: ColumnDataType.#Ref
 	}
 }

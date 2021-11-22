@@ -1,6 +1,9 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 Authorization: {
 	required: ["orgID", "permissions"]
@@ -27,7 +30,7 @@ Authorization: {
 				type:        "array"
 				minItems:    1
 				description: "List of permissions for an auth.  An auth must have at least one Permission."
-				items: *Permission.#Ref | Permission
+				items:       *Permission.#Ref | Permission
 			}
 			id: {
 				readOnly: true

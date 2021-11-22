@@ -1,9 +1,11 @@
 package notebooksdpaths
 
-import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 api_share_id: get: {
 	summary:     "get a notebook by an accessID"
 	operationId: "getSharedNotebook"

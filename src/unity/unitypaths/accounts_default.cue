@@ -1,9 +1,11 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/unity/unityschemas"
+import (
+	"github.com/influxdata/openapi/src/unity/unityschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 accounts_default: put: {
 	operationId: "PutDefaultAccount"
 	tags: [

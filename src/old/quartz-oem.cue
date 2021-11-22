@@ -437,12 +437,12 @@ package old
 						readOnly:    true
 						description: "ID of the org for which these rates apply"
 					}
-					rate: $ref: "#/components/schemas/RateLimits"
-					bucket: $ref: "#/components/schemas/BucketLimits"
-					task: $ref: "#/components/schemas/TaskLimits"
-					dashboard: $ref: "#/components/schemas/DashboardLimits"
-					check: $ref: "#/components/schemas/CheckLimits"
-					notificationRule: $ref: "#/components/schemas/NotificationRuleLimits"
+					rate: $ref:                 "#/components/schemas/RateLimits"
+					bucket: $ref:               "#/components/schemas/BucketLimits"
+					task: $ref:                 "#/components/schemas/TaskLimits"
+					dashboard: $ref:            "#/components/schemas/DashboardLimits"
+					check: $ref:                "#/components/schemas/CheckLimits"
+					notificationRule: $ref:     "#/components/schemas/NotificationRuleLimits"
 					notificationEndpoint: $ref: "#/components/schemas/NotificationEndpointLimits"
 				}
 				required: [

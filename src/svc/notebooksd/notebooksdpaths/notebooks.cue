@@ -1,11 +1,13 @@
 package notebooksdpaths
 
-import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
 
-import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 notebooks: {
 	get: {
 		summary:     "get all Notebook records in org"

@@ -1,6 +1,6 @@
 package quartzschemas
 
 Organizations: {
-	type: "array"
+	type:  "array"
 	items: Organization.#Ref
 }

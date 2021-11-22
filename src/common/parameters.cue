@@ -1,6 +1,9 @@
 package common
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+import (
+	"github.com/influxdata/openapi/src/common/commonparameters"
+
+)
 
 #Parameters: {
 	...

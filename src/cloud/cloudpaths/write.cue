@@ -1,17 +1,20 @@
 package cloudpaths
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/common/commonparameters"
+	"github.com/influxdata/openapi/src/common/commonparameters"
+
+)
 
 write: post: {
 	operationId: "PostWrite"
 	tags: [
 		"Write",
 	]
-	summary: "Write data"
+	summary:     "Write data"
 	description: """
 		Writes data to a bucket.
 

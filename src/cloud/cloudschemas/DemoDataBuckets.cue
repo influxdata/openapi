@@ -1,6 +1,9 @@
 package cloudschemas
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
+
+)
 
 DemoDataBuckets: {
 	type: "object"
@@ -10,7 +13,7 @@ DemoDataBuckets: {
 			commonschemas.Links.#Ref
 		}
 		buckets: {
-			type: "array"
+			type:  "array"
 			items: DemoDataBucket.#Ref
 		}
 	}

@@ -1,12 +1,15 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/common/commonschemas"
+import (
+	"github.com/influxdata/openapi/src/common/commonschemas"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
-import "github.com/influxdata/openapi/src/cloud/cloudschemas"
+	"github.com/influxdata/openapi/src/cloud/cloudschemas"
 
-import "github.com/influxdata/openapi/src/cloud/cloudpaths"
+	"github.com/influxdata/openapi/src/cloud/cloudpaths"
+
+)
 
 all: "cloud-priv": {
 	openapi: "3.0.0"

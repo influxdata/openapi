@@ -1,8 +1,11 @@
 package contracts
 
-import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
 
-import "github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
+	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
+
+)
 
 all: "svc-datasourcesd": {
 	openapi: "3.0.0"

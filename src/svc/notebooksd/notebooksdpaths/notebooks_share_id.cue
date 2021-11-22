@@ -1,11 +1,13 @@
 package notebooksdpaths
 
-import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
+import (
+	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
 
-import "github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
+	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 notebooks_share_id: {
 	delete: {
 		summary:     "deletes a single Share by its ID"

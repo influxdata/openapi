@@ -45,7 +45,7 @@ Variables: {
 		}
 	}]
 	properties: variables: {
-		type: "array"
+		type:  "array"
 		items: Variable.#Ref
 	}
 }

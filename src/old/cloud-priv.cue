@@ -310,14 +310,14 @@ package old
 				properties: {
 					username: type: "string"
 					password: type: "string"
-					org: type: "string"
-					bucket: type: "string"
+					org: type:      "string"
+					bucket: type:   "string"
 					retentionPeriodHrs: {
 						type:       "integer"
 						deprecated: true
 					}
 					retentionPeriodSeconds: type: "integer"
-					limit: $ref: "#/components/schemas/Limit"
+					limit: $ref:                  "#/components/schemas/Limit"
 				}
 				required: [
 					"username",
@@ -335,7 +335,7 @@ package old
 								type:     "string"
 							}
 							oauthID: type: "string"
-							name: type: "string"
+							name: type:    "string"
 							status: {
 								description: "If inactive the user is inactive."
 								default:     "active"
@@ -375,13 +375,13 @@ package old
 									dashboards: "/api/v2/dashboards?org=myorg"
 								}
 								properties: {
-									self: $ref: "#/components/schemas/Link"
-									members: $ref: "#/components/schemas/Link"
-									owners: $ref: "#/components/schemas/Link"
-									labels: $ref: "#/components/schemas/Link"
-									secrets: $ref: "#/components/schemas/Link"
-									buckets: $ref: "#/components/schemas/Link"
-									tasks: $ref: "#/components/schemas/Link"
+									self: $ref:       "#/components/schemas/Link"
+									members: $ref:    "#/components/schemas/Link"
+									owners: $ref:     "#/components/schemas/Link"
+									labels: $ref:     "#/components/schemas/Link"
+									secrets: $ref:    "#/components/schemas/Link"
+									buckets: $ref:    "#/components/schemas/Link"
+									tasks: $ref:      "#/components/schemas/Link"
 									dashboards: $ref: "#/components/schemas/Link"
 								}
 							}
@@ -389,7 +389,7 @@ package old
 								readOnly: true
 								type:     "string"
 							}
-							name: type: "string"
+							name: type:        "string"
 							description: type: "string"
 							createdAt: {
 								type:     "string"
@@ -468,10 +468,10 @@ package old
 									"system",
 								]
 							}
-							name: type: "string"
+							name: type:        "string"
 							description: type: "string"
-							orgID: type: "string"
-							rp: type: "string"
+							orgID: type:       "string"
+							rp: type:          "string"
 							schemaType: {
 								default: "implicit"
 								type:    "string"
@@ -853,8 +853,8 @@ package old
 			LimitStatuses: {
 				type: "object"
 				properties: {
-					read: $ref: "#/components/schemas/LimitStatus"
-					write: $ref: "#/components/schemas/LimitStatus"
+					read: $ref:        "#/components/schemas/LimitStatus"
+					write: $ref:       "#/components/schemas/LimitStatus"
 					cardinality: $ref: "#/components/schemas/LimitStatus"
 				}
 				required: [
@@ -1016,7 +1016,7 @@ package old
 			OrgSetting: {
 				type: "object"
 				properties: {
-					key: type: "string"
+					key: type:   "string"
 					value: type: "string"
 				}
 			}

@@ -1,7 +1,9 @@
 package unitypaths
 
-import "github.com/influxdata/openapi/src/common/commonresponses"
+import (
+	"github.com/influxdata/openapi/src/common/commonresponses"
 
+)
 usage_billing_stats: get: {
 	operationId: "GetUsageBilling"
 	tags: [
