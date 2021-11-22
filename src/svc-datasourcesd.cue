@@ -2,9 +2,7 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
-
 	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdpaths"
-
 )
 
 all: "svc-datasourcesd": {

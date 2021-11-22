@@ -2,7 +2,6 @@ package notebooksdrequestBodies
 
 import (
 	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
-
 )
 NotebookParams: {
 	description: "Notebook record"

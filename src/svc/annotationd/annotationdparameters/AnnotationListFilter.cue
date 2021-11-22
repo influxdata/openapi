@@ -2,7 +2,6 @@ package annotationdparameters
 
 import (
 	"github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
-
 )
 
 AnnotationListFilter: {

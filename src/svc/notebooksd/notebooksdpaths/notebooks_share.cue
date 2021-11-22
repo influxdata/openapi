@@ -2,11 +2,8 @@ package notebooksdpaths
 
 import (
 	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdschemas"
-
 	"github.com/influxdata/openapi/src/svc/notebooksd/notebooksdrequestBodies"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 notebooks_share: {
 	get: {

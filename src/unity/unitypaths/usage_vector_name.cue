@@ -2,9 +2,7 @@ package unitypaths
 
 import (
 	"github.com/influxdata/openapi/src/unity/unityschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 usage_vector_name: get: {
 	operationId: "GetUsagetype"

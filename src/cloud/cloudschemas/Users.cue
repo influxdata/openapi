@@ -2,7 +2,6 @@ package cloudschemas
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 )
 
 Users: {

@@ -2,9 +2,7 @@ package unitypaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 )
 orgs_orgId_users_userId: delete: {
 	operationId: "DeleteOrgsIdUserId"

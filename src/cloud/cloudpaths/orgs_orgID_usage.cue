@@ -2,7 +2,6 @@ package cloudpaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 orgs_orgID_usage: get: {

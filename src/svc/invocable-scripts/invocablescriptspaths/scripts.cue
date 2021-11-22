@@ -2,9 +2,7 @@ package invocablescriptspaths
 
 import (
 	"github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 scripts: {

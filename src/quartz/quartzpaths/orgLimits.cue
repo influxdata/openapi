@@ -2,9 +2,7 @@ package quartzpaths
 
 import (
 	"github.com/influxdata/openapi/src/quartz/quartzschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 orgLimits: {

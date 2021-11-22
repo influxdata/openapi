@@ -2,13 +2,9 @@ package cloudpaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 	"github.com/influxdata/openapi/src/cloud/cloudschemas"
-
 )
 
 setup: {

@@ -2,9 +2,7 @@ package cloudpaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 )
 
 tasks: {

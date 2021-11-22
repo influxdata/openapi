@@ -2,11 +2,8 @@ package annotationdosspaths
 
 import (
 	"github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
-
 	"github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 streams: {

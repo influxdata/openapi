@@ -2,7 +2,6 @@ package notebooksdpaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 api_share_id_query_pipeid: get: {
 	summary:     "run the pipe's query and return the result"

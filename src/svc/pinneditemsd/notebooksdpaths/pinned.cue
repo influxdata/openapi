@@ -2,11 +2,8 @@ package notebooksdpaths
 
 import (
 	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
-
 	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 pinned: {
 	get: {

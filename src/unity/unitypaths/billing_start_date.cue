@@ -2,9 +2,7 @@ package unitypaths
 
 import (
 	"github.com/influxdata/openapi/src/unity/unityschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 billing_start_date: get: {
 	operationId: "GetBillingStartDate"

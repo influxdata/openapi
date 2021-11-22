@@ -2,7 +2,6 @@ package unitypaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 cancel: post: {
 	operationId: "PostCancel"

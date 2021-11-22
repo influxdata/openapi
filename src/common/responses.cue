@@ -2,7 +2,6 @@ package common
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 #Responses: {

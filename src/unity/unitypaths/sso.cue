@@ -2,9 +2,7 @@ package unitypaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 )
 sso: get: {
 	operationId: "GetConnection"

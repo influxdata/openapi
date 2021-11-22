@@ -2,7 +2,6 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 import commonpkg "github.com/influxdata/openapi/src/common"

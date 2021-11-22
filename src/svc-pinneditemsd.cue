@@ -2,15 +2,10 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdschemas"
-
 	"github.com/influxdata/openapi/src/svc/pinneditemsd/pinneditemsdrequestBodies"
-
 	"github.com/influxdata/openapi/src/svc/pinneditemsd/notebooksdpaths"
-
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 all: "svc-pinneditemsd": {

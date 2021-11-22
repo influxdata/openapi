@@ -2,9 +2,7 @@ package cloudpaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 )
 
 orgs_orgID_secrets_secretID: delete: {

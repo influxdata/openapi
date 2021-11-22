@@ -2,7 +2,6 @@ package commonresponses
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 )
 
 ServerError: {

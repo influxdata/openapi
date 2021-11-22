@@ -2,13 +2,9 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/cloud/cloudschemas"
-
 	"github.com/influxdata/openapi/src/cloud/cloudpaths"
-
 )
 
 all: "cloud-priv": {

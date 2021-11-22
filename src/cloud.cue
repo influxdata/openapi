@@ -2,9 +2,7 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/cloud/cloudschemas"
-
 )
 
 import cloudpathspkg "github.com/influxdata/openapi/src/cloud/cloudpaths"

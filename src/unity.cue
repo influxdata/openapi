@@ -2,17 +2,11 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/unity/unityschemas"
-
 	"github.com/influxdata/openapi/src/unity/unitypaths"
-
 	"github.com/influxdata/openapi/src/quartz/quartzschemas"
-
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 )
 
 all: unity: {

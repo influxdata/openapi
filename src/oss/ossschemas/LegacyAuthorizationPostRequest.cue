@@ -2,7 +2,6 @@ package ossschemas
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 )
 
 LegacyAuthorizationPostRequest: {

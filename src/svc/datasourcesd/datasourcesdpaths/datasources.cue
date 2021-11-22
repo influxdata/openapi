@@ -2,7 +2,6 @@ package datasourcesdpaths
 
 import (
 	"github.com/influxdata/openapi/src/svc/datasourcesd/datasourcesdschemas"
-
 )
 
 datasources: {

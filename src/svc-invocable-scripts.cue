@@ -2,13 +2,9 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptsschemas"
-
 	"github.com/influxdata/openapi/src/svc/invocable-scripts/invocablescriptspaths"
-
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 all: "svc-invocable-scripts": {

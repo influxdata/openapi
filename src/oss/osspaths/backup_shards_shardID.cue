@@ -2,11 +2,8 @@ package osspaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonparameters"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 backup_shards_shardID: get: {

@@ -2,7 +2,6 @@ package unitypaths
 
 import (
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 account: delete: {
 	operationId: "DeleteAccount"

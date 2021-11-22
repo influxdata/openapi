@@ -2,15 +2,10 @@ package contracts
 
 import (
 	"github.com/influxdata/openapi/src/svc/annotationd/annotationdschemas"
-
 	"github.com/influxdata/openapi/src/svc/annotationd/annotationdpaths"
-
 	"github.com/influxdata/openapi/src/svc/annotationd/annotationdparameters"
-
 	"github.com/influxdata/openapi/src/common/commonschemas"
-
 	"github.com/influxdata/openapi/src/common/commonresponses"
-
 )
 
 all: "svc-annotationd": {
