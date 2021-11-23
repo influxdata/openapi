@@ -31,8 +31,9 @@ paths:
           $ref: '#/components/responses/ServerError'
   /account:
     delete:
+      deprecated: true
       operationId: DeleteAccount
-      summary: Self-delete account
+      summary: 'Use DELETE /accounts/{accountId} instead.'
       requestBody:
         content:
           application/json; charset=utf-8:
@@ -64,26 +65,81 @@ paths:
               schema:
                 type: array
                 items:
-                  properties:
-                    id:
-                      type: number
-                      description: account id in quartz
-                    isActive:
-                      type: boolean
-                      description: is this the currently active account in the session?
-                    isDefault:
-                      type: boolean
-                      description: is this the user's default account?
-                    name:
-                      type: string
-                      description: name of the account
-                  required:
-                    - id
-                    - isActive
-                    - isDefault
-                    - name
+                  $ref: '#/components/schemas/Account'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/accounts/{accountId}':
+    delete:
+      operationId: SelfDeleteAccountById
+      tags:
+        - Accounts
+      summary: Self-delete account by id
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to delete.
+      responses:
+        '204':
+          description: Account deleted
+        '401':
+          description: Unauthorized/Account doesn't exist
+          $ref: '#/components/responses/ServerError'
+        '405':
+          description: Account is not deletable
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+    patch:
+      operationId: PatchAccountsId
+      tags:
+        - Accounts
+      summary: Update an account
+      requestBody:
+        description: Account update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: name of the account
+              required:
+                - name
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to update.
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -1117,6 +1173,25 @@ components:
       required:
         - code
         - message
+    Account:
+      properties:
+        id:
+          type: number
+          description: account id in quartz
+        isActive:
+          type: boolean
+          description: is this the currently active account in the session?
+        isDefault:
+          type: boolean
+          description: is this the user's default account?
+        name:
+          type: string
+          description: name of the account
+      required:
+        - id
+        - isActive
+        - isDefault
+        - name
     Marketplace:
       properties:
         name:
