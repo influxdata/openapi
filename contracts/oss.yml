@@ -1032,6 +1032,8 @@ paths:
         - **InfluxDB URL** – _See [InfluxDB URLs](https://docs.influxdata.com/influxdb/v2.1/reference/urls/)_.
         - data in [line protocol](https://docs.influxdata.com/influxdb/v2.1/reference/syntax/line-protocol) format.
 
+        InfluxDB Cloud enforces rate and size limits different from InfluxDB OSS. For details, see Responses.
+
         For more information and examples, see the following:
         - [Write data with the InfluxDB API](https://docs.influxdata.com/influxdb/v2.1/write-data/developer-tools/api).
         - [Optimize writes to InfluxDB](https://docs.influxdata.com/influxdb/v2.1/write-data/best-practices/optimize-writes/).
@@ -1153,14 +1155,21 @@ paths:
                     message: bucket "air_sensor" not found
         '413':
           description: |
-            This indicates that the request is too large. InfluxDB rejected the batch and did not write any data. Cloud: The payload exceeded the 50MB size limit. For cloud, the content type will be text/html OSS: Returns this error only if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error. For OSS, the content type will be application/json
+            The request payload is too large. InfluxDB rejected the batch and did not write any data.
+            #### InfluxDB Cloud:
+             - returns this error if the payload exceeds the 50MB size limit.
+             - returns `Content-Type: text/html` for this error.
+
+            #### InfluxDB OSS:
+             - returns this error only if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
+             - returns `Content-Type: application/json` for this error.
           content:
             text/html:
               schema:
                 type: string
               examples:
                 dataExceedsSizeLimit:
-                  summary: Cloud response
+                  summary: InfluxDB Cloud response
                   value: |
                     <html>
                       <head><title>413 Request Entity Too Large</title></head>
@@ -1175,11 +1184,11 @@ paths:
                 $ref: '#/components/schemas/LineProtocolLengthError'
               examples:
                 dataExceedsSizeLimitOSS:
-                  summary: OSS response
+                  summary: InfluxDB OSS response
                   value: |
                     {"code":"request too large","message":"unable to read data: points batch is too large"}
         '429':
-          description: 'Cloud only: the token is temporarily over quota. The Retry-After header describes when to try the write again.'
+          description: InfluxDB Cloud only. The token is temporarily over quota. The Retry-After header describes when to try the write again.
           headers:
             Retry-After:
               description: A non-negative decimal integer indicating the seconds to delay after the response is received.
