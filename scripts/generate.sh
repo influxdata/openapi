@@ -91,3 +91,8 @@ rm src/.svc.yml
 sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-pinneditemsd.yml > ./src/.svc.yml && \
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/pinneditemsd.yml --type yaml && \
 rm src/.svc.yml
+
+# fluxdocsd
+sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-fluxdocsd.yml > ./src/.svc.yml && \
+swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/fluxdocsd.yml --type yaml && \
+rm src/.svc.yml
