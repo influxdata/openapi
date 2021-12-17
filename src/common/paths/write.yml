@@ -7,13 +7,16 @@ post:
     Writes data to a bucket.
 
     To write data into InfluxDB, you need the following:
-    - **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
+
+    - **organization name or ID** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
     - **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for
      instructions on viewing your bucket ID._
     - **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
      for instructions on viewing your API token._
     - **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
     - data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.
+
+    InfluxDB Cloud enforces rate and size limits different from InfluxDB OSS. For details, see Responses.
 
     For more information and examples, see the following:
     - [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).
@@ -35,7 +38,7 @@ post:
         To make an API request with a GZIP payload, send `Content-Encoding: gzip` as a request header.
       schema:
         type: string
-        description: The header value specifies that the line protocol in the request body is encoded with gzip or not encoded with identity.
+        description: The content coding. Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.
         default: identity
         enum:
           - gzip
@@ -103,7 +106,7 @@ post:
             $ref: "../../common/schemas/LineProtocolError.yml"
           examples:
             measurementSchemaFieldTypeConflict:
-              summary: Example of a field type conflict thrown by an explicit bucket schema
+              summary: Field type conflict thrown by an explicit bucket schema
               value: {
                "code": "invalid",
                "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
@@ -114,13 +117,48 @@ post:
       $ref: "../../common/responses/ResourceNotFoundError.yml"
     "413":
       description: >
-        All request data was rejected and not written.
-        InfluxDB OSS only returns this error if the
-        [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
+       The request payload is too large.
+       InfluxDB rejected the batch and did not write any data.
+
+       #### InfluxDB Cloud:
+        - returns this error if the payload exceeds the 50MB size limit.
+        - returns `Content-Type: text/html` for this error.
+
+       #### InfluxDB OSS:
+        - returns this error only if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.
+        - returns `Content-Type: application/json` for this error.
       content:
+        text/html:
+          schema:
+            type: string
+          examples:
+            dataExceedsSizeLimit:
+              summary: InfluxDB Cloud response
+              value: |
+                <html>
+                  <head><title>413 Request Entity Too Large</title></head>
+                  <body>
+                    <center><h1>413 Request Entity Too Large</h1></center>
+                    <hr>
+                    <center>nginx</center>
+                  </body>
+                </html>
         application/json:
           schema:
             $ref: "../../common/schemas/LineProtocolLengthError.yml"
+          examples:
+            dataExceedsSizeLimitOSS:
+              summary: InfluxDB OSS response
+              value: |
+                {"code":"request too large","message":"unable to read data: points batch is too large"}
+    "429":
+      description: "InfluxDB Cloud only. The token is temporarily over quota. The Retry-After header describes when to try the write again."
+      headers:
+        Retry-After:
+          description: A non-negative decimal integer indicating the seconds to delay after the response is received.
+          schema:
+            type: integer
+            format: int32
     "500":
       $ref: "../../common/responses/InternalServerError.yml"
     "503":
