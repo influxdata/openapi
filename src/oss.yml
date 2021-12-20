@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  title: Influx OSS API Service
+  title: InfluxDB OSS API Service
   version: 2.0.0
   description: |
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
@@ -9,10 +9,13 @@ servers:
 tags:
   - name: Authentication
     description: |
-      Use one of the following schemes to authenticate to the InfluxDB API:
-      - [Token authentication](#section/Authentication/TokenAuthentication)
-      - [Basic authentication](#section/Authentication/BasicAuthentication)
-      - [Querystring authentication](#section/Authentication/QuerystringAuthentication)
+      The InfluxDB `/api/v2` API requires authentication for all requests.
+      Use InfluxDB API tokens to authenticate requests to the `/api/v2` API.
+
+
+      For examples and more information, see
+      [Token authentication](#section/Authentication/TokenAuthentication)
+
       <!-- ReDoc-Inject: <security-definitions> -->
     x-traitTag: true
   - name: Quick start
@@ -281,90 +284,62 @@ components:
     ServerError:
       $ref: './common/responses/ServerError.yml'
   securitySchemes:
+    # TODO: Uncomment when Bearer auth is also available in Cloud:
+    # BearerAuthentication:
+    #   type: http
+    #   scheme: "bearer"
+    #   description: |
+    #     Use the [Bearer authentication](#section/Authentication/BearerAuthentication)
+    #     scheme to authenticate to the InfluxDB API.
+    #
+    #
+    #     In your API requests, send an `Authorization` header.
+    #     For the header value, provide the word `Bearer` followed by a space and an InfluxDB API token.
+    #
+    #
+    #     ### Syntax
+    #
+    #     `Authorization: Bearer YOUR_INFLUX_TOKEN`
+    #
+    #
+    #     For more information and examples, see the following:
+    #       - [`/authorizations`](#tag/Authorizations) endpoint.
+    #       - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
+    #       - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
     TokenAuthentication:
-      type: http
-      scheme: token
-      bearerFormat: InfluxDB Token String
+      type: apiKey
+      name: Authorization
+      in: header
       description: |
-        ### Token authentication scheme
+        Use the [Token authentication](#section/Authentication/TokenAuthentication)
+        scheme to authenticate to the InfluxDB API.
 
-        InfluxDB API tokens enable authentication and authorization of API clients.
-        A token belongs to an organization and identifies InfluxDB permissions within the organization.
 
-        Include your API token in an `Authorization: Token` HTTP header with each request.
+        In your API requests, send an `Authorization` header.
+        For the header value, provide the word `Token` followed by a space and an InfluxDB API token.
+        The word `Token` is case-sensitive.
 
-        #### Example
 
-          `curl http://localhost:8086/ping
-             --header "Authorization: Token INFLUX_API_TOKEN"`
+        ### Syntax
 
-        Replace *`INFLUX_API_TOKEN`* with your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
+        `Authorization: Token YOUR_INFLUX_TOKEN`
+
 
         For more information and examples, see the following:
           - [`/authorizations`](#tag/Authorizations) endpoint.
           - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
           - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-          - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
     BasicAuthentication:
       type: http
       scheme: basic
       description: |
-        ### Basic authentication scheme
-
-        Use HTTP Basic Auth with clients that support the InfluxDB 1.x convention of username and password (that don't support the `Authorization: Token` scheme).
+        Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it.
 
         Username and password schemes require the following credentials:
-          - **username**: 1.x username (this is separate from the UI login username)
-          - **password**: 1.x password or InfluxDB API token
+          - **username**
+          - **password**
 
-        #### API token example
-
-        `curl --get "http://localhost:8086/query"
-              --user "1.x_USERNAME":"INFLUX_API_TOKEN"`
-
-        #### 1.x password example
-
-        `curl --get "http://localhost:8086/query"
-              --user "1.x_USERNAME":"1.x_PASSWORD"`
-
-        Replace the following:
-        - *`1.x_USERNAME`*: your InfluxDB v1.x username
-        - *`1.x_PASSWORD`*: your InfluxDB v1.x password
-        - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
-
-        For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
-    QuerystringAuthentication:
-      type: apiKey
-      in: query
-      name: u=&p=
-      description: |
-        ### Querystring authentication scheme
-
-        Use InfluxDB 1.x API parameters to provide credentials through the query string.
-
-        Username and password schemes require the following credentials:
-          - **username**: 1.x username (this is separate from the UI login username)
-          - **password**: 1.x password or InfluxDB API token
-
-        #### API token example
-
-        `curl --get "http://localhost:8086/query"
-              --data-urlencode "u=1.x_USERNAME"
-              --data-urlencode "p=INFLUX_API_TOKEN"`
-
-        #### 1.x password example
-
-        `curl --get "http://localhost:8086/query"
-              --data-urlencode "u=1.x_USERNAME"
-              --data-urlencode "p=1.x_PASSWORD"`
-
-        Replace the following:
-        - *`1.x_USERNAME`*: your InfluxDB v1.x username
-        - *`1.x_PASSWORD`*: your InfluxDB v1.x password
-        - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
-
-        For more information and examples, see how to [authenticate with a username and password scheme]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/)
 security:
-- TokenAuthentication: []
-- BasicAuthentication: []
-- QuerystringAuthentication: []
+  - TokenAuthentication: []
+  # TODO: Uncomment when Bearer auth is also available in Cloud:
+  # - BearerAuthentication: []
