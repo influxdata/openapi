@@ -89,6 +89,7 @@
         "Buckets",
         "Cells",
         "Checks",
+        "Config",
         "DBRPs",
         "Dashboards",
         "Delete",
@@ -1763,17 +1764,6 @@
           "413": {
             "description": "The request payload is too large. InfluxDB rejected the batch and did not write any data.\n#### InfluxDB Cloud:\n - returns this error if the payload exceeds the 50MB size limit.\n - returns `Content-Type: text/html` for this error.\n\n#### InfluxDB OSS:\n - returns this error only if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.\n - returns `Content-Type: application/json` for this error.\n",
             "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "examples": {
-                  "dataExceedsSizeLimit": {
-                    "summary": "InfluxDB Cloud response",
-                    "value": "<html>\n  <head><title>413 Request Entity Too Large</title></head>\n  <body>\n    <center><h1>413 Request Entity Too Large</h1></center>\n    <hr>\n    <center>nginx</center>\n  </body>\n</html>\n"
-                  }
-                }
-              },
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LineProtocolLengthError"
@@ -1782,6 +1772,17 @@
                   "dataExceedsSizeLimitOSS": {
                     "summary": "InfluxDB OSS response",
                     "value": "{\"code\":\"request too large\",\"message\":\"unable to read data: points batch is too large\"}\n"
+                  }
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "dataExceedsSizeLimit": {
+                    "summary": "InfluxDB Cloud response",
+                    "value": "<html>\n  <head><title>413 Request Entity Too Large</title></head>\n  <body>\n    <center><h1>413 Request Entity Too Large</h1></center>\n    <hr>\n    <center>nginx</center>\n  </body>\n</html>\n"
                   }
                 }
               }
@@ -10924,6 +10925,533 @@
         }
       }
     },
+    "/config": {
+      "get": {
+        "operationId": "GetConfig",
+        "tags": [
+          "Config"
+        ],
+        "summary": "Get the run-time configuration of the instance",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run-time configuration of the instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/remotes": {
+      "get": {
+        "operationId": "GetRemoteConnections",
+        "tags": [
+          "RemoteConnections"
+        ],
+        "summary": "List all remote connections",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "orgID",
+            "description": "The organization ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "remoteURL",
+            "schema": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of remote connections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoteConnections"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "PostRemoteConnection",
+        "tags": [
+          "RemoteConnections"
+        ],
+        "summary": "Register a new remote connection",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoteConnectionCreationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Remote connection saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoteConnection"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/remotes/{remoteID}": {
+      "get": {
+        "operationId": "GetRemoteConnectionByID",
+        "tags": [
+          "RemoteConnections"
+        ],
+        "summary": "Retrieve a remote connection",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "remoteID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remote connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoteConnection"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "PatchRemoteConnectionByID",
+        "tags": [
+          "RemoteConnections"
+        ],
+        "summary": "Update a remote connection",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "remoteID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoteConnectionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated information saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoteConnection"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteRemoteConnectionByID",
+        "tags": [
+          "RemoteConnections"
+        ],
+        "summary": "Delete a remote connection",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "remoteID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Remote connection info deleted."
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/replications": {
+      "get": {
+        "operationId": "GetReplications",
+        "tags": [
+          "Replications"
+        ],
+        "summary": "List all replications",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "orgID",
+            "description": "The organization ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "remoteID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "localBucketID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of replications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Replications"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "PostReplication",
+        "tags": [
+          "Replications"
+        ],
+        "summary": "Register a new replication",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "validate",
+            "description": "If true, validate the replication, but don't save it.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplicationCreationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Replication saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Replication"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Replication validated, but not saved"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/replications/{replicationID}": {
+      "get": {
+        "operationId": "GetReplicationByID",
+        "tags": [
+          "Replications"
+        ],
+        "summary": "Retrieve a replication",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "replicationID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Replication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Replication"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "PatchReplicationByID",
+        "tags": [
+          "Replications"
+        ],
+        "summary": "Update a replication",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "replicationID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "validate",
+            "description": "If true, validate the updated information, but don't save it.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplicationUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated information saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Replication"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Updated replication validated, but not saved"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteReplicationByID",
+        "tags": [
+          "Replications"
+        ],
+        "summary": "Delete a replication",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "replicationID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Replication deleted."
+          },
+          "404": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/replications/{replicationID}/validate": {
+      "post": {
+        "operationId": "PostValidateReplicationByID",
+        "tags": [
+          "Replications"
+        ],
+        "summary": "Validate a replication",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "replicationID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Replication is valid"
+          },
+          "400": {
+            "description": "Replication failed validation",
+            "$ref": "#/components/responses/ServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
     "/dashboards": {
       "post": {
         "operationId": "PostDashboards",
@@ -18790,13 +19318,13 @@
         "type": "object",
         "description": "A color mapping is an object that maps time series data to a UI color scheme to allow the UI to render graphs consistent colors across reloads.",
         "additionalProperties": {
-          "type": "int"
+          "type": "string"
         },
         "example": {
-          "series_id_1": 0,
-          "series_id_2": 1,
-          "measurement_birdmigration_europe": 0,
-          "configcat_deployments-autopromotionblocker": 0
+          "series_id_1": "#edf529",
+          "series_id_2": "#edf529",
+          "measurement_birdmigration_europe": "#663cd0",
+          "configcat_deployments-autopromotionblocker": "#663cd0"
         }
       },
       "Authorization": {
@@ -19700,6 +20228,252 @@
           "oldId",
           "newId"
         ]
+      },
+      "Config": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "type": "object"
+          }
+        }
+      },
+      "RemoteConnection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "orgID": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "remoteURL": {
+            "type": "string",
+            "format": "uri"
+          },
+          "remoteOrgID": {
+            "type": "string"
+          },
+          "allowInsecureTLS": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "orgID",
+          "remoteURL",
+          "remoteOrgID",
+          "allowInsecureTLS"
+        ]
+      },
+      "RemoteConnections": {
+        "type": "object",
+        "properties": {
+          "remotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RemoteConnection"
+            }
+          }
+        }
+      },
+      "RemoteConnectionCreationRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "orgID": {
+            "type": "string"
+          },
+          "remoteURL": {
+            "type": "string",
+            "format": "uri"
+          },
+          "remoteAPIToken": {
+            "type": "string"
+          },
+          "remoteOrgID": {
+            "type": "string"
+          },
+          "allowInsecureTLS": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "name",
+          "orgID",
+          "remoteURL",
+          "remoteAPIToken",
+          "remoteOrgID",
+          "allowInsecureTLS"
+        ]
+      },
+      "RemoteConnectionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "remoteURL": {
+            "type": "string",
+            "format": "uri"
+          },
+          "remoteAPIToken": {
+            "type": "string"
+          },
+          "remoteOrgID": {
+            "type": "string"
+          },
+          "allowInsecureTLS": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "Replication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "orgID": {
+            "type": "string"
+          },
+          "remoteID": {
+            "type": "string"
+          },
+          "localBucketID": {
+            "type": "string"
+          },
+          "remoteBucketID": {
+            "type": "string"
+          },
+          "maxQueueSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "currentQueueSizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latestResponseCode": {
+            "type": "integer"
+          },
+          "latestErrorMessage": {
+            "type": "string"
+          },
+          "dropNonRetryableData": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "remoteID",
+          "orgID",
+          "localBucketID",
+          "remoteBucketID",
+          "maxQueueSizeBytes",
+          "currentQueueSizeBytes"
+        ]
+      },
+      "Replications": {
+        "type": "object",
+        "properties": {
+          "replications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Replication"
+            }
+          }
+        }
+      },
+      "ReplicationCreationRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "orgID": {
+            "type": "string"
+          },
+          "remoteID": {
+            "type": "string"
+          },
+          "localBucketID": {
+            "type": "string"
+          },
+          "remoteBucketID": {
+            "type": "string"
+          },
+          "maxQueueSizeBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 33554430,
+            "default": 67108860
+          },
+          "dropNonRetryableData": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "name",
+          "orgID",
+          "remoteID",
+          "localBucketID",
+          "remoteBucketID",
+          "maxQueueSizeBytes"
+        ]
+      },
+      "ReplicationUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "remoteID": {
+            "type": "string"
+          },
+          "remoteBucketID": {
+            "type": "string"
+          },
+          "maxQueueSizeBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 33554430
+          },
+          "dropNonRetryableData": {
+            "type": "boolean"
+          }
+        }
       }
     },
     "responses": {
