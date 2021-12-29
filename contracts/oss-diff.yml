@@ -56,8 +56,8 @@ tags:
 
       For more information and examples, see the following:
         - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
-        - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token).
+        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
+        - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
 x-tagGroups:
   - name: Overview
     tags:
@@ -82,6 +82,7 @@ x-tagGroups:
   - name: System information endpoints
     tags:
       - Health
+      - Metrics
       - Ping
       - Ready
       - Routes
@@ -97,6 +98,7 @@ x-tagGroups:
       - Dashboards
       - Delete
       - Health
+      - Metrics
       - Labels
       - Legacy Authorizations
       - NotificationEndpoints
@@ -137,7 +139,7 @@ paths:
         - $ref: '#/paths/~1ready/get/parameters/0'
       responses:
         '200':
-          description: The instance is healthy
+          description: The instance is healthy.
           content:
             application/json:
               schema:
@@ -164,11 +166,56 @@ paths:
                   commit:
                     type: string
         '503':
-          description: The instance is unhealthy
+          description: The instance is unhealthy.
           content:
             application/json:
               schema:
                 $ref: '#/paths/~1health/get/responses/200/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /metrics:
+    get:
+      operationId: GetMetrics
+      tags:
+        - Metrics
+      summary: Get metrics of an instance
+      servers:
+        - url: ''
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      responses:
+        '200':
+          description: |
+            Payload body contains metrics about the InfluxDB instance.
+
+            Metrics are formatted in the
+            Prometheus [plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats).
+            Each metric is identified by its name and a set of optional key-value pairs.
+
+            The following descriptors precede each metric:
+
+            - *`HELP`*: description of the metric
+            - *`TYPE`*: type of the metric (e.g. `counter`, `gauge`, `histogram`, or `summary`)
+          content:
+            text/plain:
+              schema:
+                type: Prometheus text-based exposition
+                externalDocs:
+                  description: Prometheus exposition formats
+                  url: 'https://prometheus.io/docs/instrumenting/exposition_formats'
+              examples:
+                expositionResponse:
+                  summary: Metrics in plain text
+                  value: |
+                    # HELP go_threads Number of OS threads created.
+                    # TYPE go_threads gauge
+                    go_threads 19
+                    # HELP http_api_request_duration_seconds Time taken to respond to HTTP request
+                    # TYPE http_api_request_duration_seconds histogram
+                    http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.005"} 4
+                    http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.01"} 4
+                    http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.025"} 5
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -1947,7 +1994,7 @@ paths:
         - $ref: '#/paths/~1ready/get/parameters/0'
       responses:
         '200':
-          description: Run-time configuration of the instance
+          description: Payload body contains the run-time configuration of the InfluxDB instance.
           content:
             application/json:
               schema:
@@ -5338,7 +5385,7 @@ components:
         For more information and examples, see the following:
           - [`/authorizations`](#tag/Authorizations) endpoint.
           - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-          - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens).
+          - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
     BasicAuthentication:
       type: http
       scheme: basic

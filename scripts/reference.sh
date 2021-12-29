@@ -21,6 +21,7 @@ swagrag \
   -api-title "Complete InfluxDB OSS API" \
   | sed -e 's|^  /api/v2/health|  /health|' \
   | sed -e 's|^  /api/v2/legacy|  /legacy|' \
+  | sed -e 's|^  /api/v2/metrics|  /metrics|' \
   | sed -e 's|^  /api/v2/ping|  /ping|' \
   | sed -e 's|^  /api/v2/ready|  /ready|' \
   > ${TCONTRACTS}/ref/oss.yml

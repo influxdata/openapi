@@ -5993,7 +5993,7 @@ components:
         For more information and examples, see the following:
           - [`/authorizations`](#tag/Authorizations) endpoint.
           - [Authorize API requests](https://docs.influxdata.com/influxdb/v2.1/api-guide/api_intro/#authentication).
-          - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens).
+          - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens/).
       in: header
       name: Authorization
       type: apiKey
@@ -7050,7 +7050,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Config'
-          description: Run-time configuration of the instance
+          description: Payload body contains the run-time configuration of the InfluxDB
+            instance.
         "401":
           $ref: '#/components/responses/ServerError'
         default:
@@ -8120,13 +8121,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthCheck'
-          description: The instance is healthy
+          description: The instance is healthy.
         "503":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthCheck'
-          description: The instance is unhealthy
+          description: The instance is unhealthy.
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
@@ -8527,6 +8528,51 @@ paths:
       summary: Update a password
       tags:
       - Users
+  /metrics:
+    get:
+      operationId: GetMetrics
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      responses:
+        "200":
+          content:
+            text/plain:
+              examples:
+                expositionResponse:
+                  summary: Metrics in plain text
+                  value: |
+                    # HELP go_threads Number of OS threads created.
+                    # TYPE go_threads gauge
+                    go_threads 19
+                    # HELP http_api_request_duration_seconds Time taken to respond to HTTP request
+                    # TYPE http_api_request_duration_seconds histogram
+                    http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.005"} 4
+                    http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.01"} 4
+                    http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.025"} 5
+              schema:
+                externalDocs:
+                  description: Prometheus exposition formats
+                  url: https://prometheus.io/docs/instrumenting/exposition_formats
+                type: Prometheus text-based exposition
+          description: |
+            Payload body contains metrics about the InfluxDB instance.
+
+            Metrics are formatted in the
+            Prometheus [plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats).
+            Each metric is identified by its name and a set of optional key-value pairs.
+
+            The following descriptors precede each metric:
+
+            - *`HELP`*: description of the metric
+            - *`TYPE`*: type of the metric (e.g. `counter`, `gauge`, `histogram`, or `summary`)
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      servers:
+      - url: ""
+      summary: Get metrics of an instance
+      tags:
+      - Metrics
   /api/v2/notificationEndpoints:
     get:
       operationId: GetNotificationEndpoints
@@ -13137,7 +13183,7 @@ paths:
         "204":
           description: InfluxDB validated the request data format and accepted the
             data for writing to the bucket. `204` doesn't indicate a successful write
-            operation since writes are asynchronous. See [how to check for write errors](https://docs.influxdata.com/influxdb/v2.1/write-data/troubleshoot).
+            operation since writes are asynchronous. See [how to check for write errors](https://docs.influxdata.com/influxdb/v2.1/write-data/troubleshoot/).
         "400":
           content:
             application/json:
@@ -13241,7 +13287,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Internal server error.
         "503":
-          description: The server is temporarily unavailable to accept writes.  The
+          description: The server is temporarily unavailable to accept writes. The
             `Retry-After` header describes when to try the write again.
           headers:
             Retry-After:
@@ -13308,8 +13354,8 @@ tags:
 
     For more information and examples, see the following:
       - [Authorize API requests](https://docs.influxdata.com/influxdb/v2.1/api-guide/api_intro/#authentication).
-      - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens).
-      - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.1/security/tokens/create-token).
+      - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens/).
+      - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.1/security/tokens/create-token/).
   name: Authorizations
 x-tagGroups:
 - name: Overview
@@ -13335,6 +13381,7 @@ x-tagGroups:
 - name: System information endpoints
   tags:
   - Health
+  - Metrics
   - Ping
   - Ready
   - Routes
@@ -13350,6 +13397,7 @@ x-tagGroups:
   - Dashboards
   - Delete
   - Health
+  - Metrics
   - Labels
   - Legacy Authorizations
   - NotificationEndpoints
