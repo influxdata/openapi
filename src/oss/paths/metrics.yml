@@ -1,0 +1,44 @@
+get:
+  operationId: GetMetrics
+  tags:
+    - Metrics
+  summary: Get metrics of an instance
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+  responses:
+    "200":
+      description: |
+        Payload body contains metrics about the InfluxDB instance.
+
+        Metrics are formatted in the
+        Prometheus [plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats).
+        Each metric is identified by its name and a set of optional key-value pairs.
+
+        The following descriptors precede each metric:
+
+        - *`HELP`*: description of the metric
+        - *`TYPE`*: type of the metric (e.g. `counter`, `gauge`, `histogram`, or `summary`)
+      content:
+        text/plain:
+            schema:
+              type: "Prometheus text-based exposition"
+              externalDocs:
+                description: Prometheus exposition formats
+                url: https://prometheus.io/docs/instrumenting/exposition_formats
+            examples:
+              expositionResponse:
+                summary: Metrics in plain text
+                value: |
+                  # HELP go_threads Number of OS threads created.
+                  # TYPE go_threads gauge
+                  go_threads 19
+                  # HELP http_api_request_duration_seconds Time taken to respond to HTTP request
+                  # TYPE http_api_request_duration_seconds histogram
+                  http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.005"} 4
+                  http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.01"} 4
+                  http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.025"} 5
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'
