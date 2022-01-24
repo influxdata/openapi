@@ -140,6 +140,32 @@ paths:
           $ref: '#/components/responses/ServerError'
         '500':
           $ref: '#/components/responses/ServerError'
+    put:
+      summary: update the run status of a Subscription by its ID
+      operationId: putSubscriptionStatus
+      tags:
+        - Subscriptions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/SubscriptionStatus'
+      responses:
+        '200':
+          description: returns the Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionStatus'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
   requestBodies:
     SubscriptionParams:
@@ -149,17 +175,35 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/SubscriptionParams'
+    SubscriptionStatus:
+      description: Subscription run status
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SubscriptionStatus'
   schemas:
+    JsonSpec:
+      type: object
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
     SubscriptionParams:
       properties:
         protocol:
+          type: string
+        name:
           type: string
         orgID:
           type: string
         brokerHost:
           type: string
         brokerPort:
-          type: string
+          type: number
         brokerUsername:
           type: string
         brokerPassword:
@@ -173,18 +217,70 @@ components:
         dataFormat:
           type: string
         jsonMeasurementKey:
-          type: string
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
         jsonFieldKeys:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonSpec'
         jsonTagKeys:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonSpec'
         jsonTimestamp:
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+        stringMeasurement:
+          type: object
+          properties:
+            pattern:
+              type: string
+        stringFields:
+          type: array
+          items:
+            type: object
+            properties:
+              pattern:
+                type: string
+              name:
+                type: string
+        stringTags:
+          type: array
+          items:
+            type: object
+            properties:
+              pattern:
+                type: string
+              name:
+                type: string
+        stringTimestamp:
+          type: object
+          properties:
+            pattern:
+              type: string
+        bucket:
           type: string
-        stringLineProtocol:
+        token:
           type: string
+        qos:
+          type: number
     Subscription:
       properties:
         id:
+          type: string
+        name:
           type: string
         protocol:
           type: string
@@ -195,7 +291,7 @@ components:
         brokerHost:
           type: string
         brokerPort:
-          type: string
+          type: number
         brokerUsername:
           type: string
         topic:
@@ -203,17 +299,65 @@ components:
         dataFormat:
           type: string
         jsonMeasurementKey:
-          type: string
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
         jsonFieldKeys:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonSpec'
         jsonTagKeys:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/JsonSpec'
         jsonTimestamp:
-          type: string
-        stringLineProtocol:
-          type: string
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+        stringMeasurement:
+          type: object
+          properties:
+            pattern:
+              type: string
+        stringFields:
+          type: array
+          items:
+            type: object
+            properties:
+              pattern:
+                type: string
+              name:
+                type: string
+        stringTags:
+          type: array
+          items:
+            type: object
+            properties:
+              pattern:
+                type: string
+              name:
+                type: string
+        stringTimestamp:
+          type: object
+          properties:
+            pattern:
+              type: string
         status:
           type: string
+        bucket:
+          type: string
+        qos:
+          type: number
         createdAt:
           type: string
           format: date-time
@@ -230,6 +374,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Subscription'
+    SubscriptionStatus:
+      properties:
+        status:
+          type: string
+          enum:
+            - RUNNING
+            - STOPPED
     Error:
       properties:
         code:
