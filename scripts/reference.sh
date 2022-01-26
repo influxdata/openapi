@@ -12,6 +12,7 @@ swagrag \
   -file ${CONTRACTS}/invocable-scripts.yml \
   -api-title "Complete InfluxDB Cloud API" \
   | sed -e 's|^  /api/v2/ping|  /ping|' \
+  | sed -e 's|^  /api/v2/:|  /api/v2:|' \
   > ${TCONTRACTS}/ref/cloud.yml
 
 echo "Aggregating oss swaggers"
@@ -24,6 +25,7 @@ swagrag \
   | sed -e 's|^  /api/v2/metrics|  /metrics|' \
   | sed -e 's|^  /api/v2/ping|  /ping|' \
   | sed -e 's|^  /api/v2/ready|  /ready|' \
+  | sed -e 's|^  /api/v2/:|  /api/v2:|' \
   > ${TCONTRACTS}/ref/oss.yml
 
 diff -r ${CONTRACTS}/ref ${TCONTRACTS}/ref/
