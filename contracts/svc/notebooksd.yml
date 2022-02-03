@@ -48,6 +48,86 @@ paths:
           $ref: '#/components/responses/ServerError'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/notebooks/{notebookID}/versions/{id}':
+    get:
+      summary: get version by the notebook ID and the version ID
+      operationId: getNotebooksVersionById
+      tags:
+        - Notebooks
+        - Versions
+      parameters:
+        - name: notebookID
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns the Notebook record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notebook'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/notebooks/{id}/versions':
+    get:
+      summary: get notebook version by the notebook ID
+      operationId: getNotebookVersions
+      tags:
+        - Notebooks
+        - Versions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: returns the Notebook record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionHistories'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: create a published notebook version for a notebook by its ID
+      operationId: publishNotebookVersion
+      tags:
+        - Notebooks
+        - Version
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/notebooks/{id}':
     get:
       summary: get single Notebook by its ID
@@ -328,6 +408,9 @@ components:
       properties:
         id:
           type: string
+        isDirty:
+          type: boolean
+          description: flag set to determine whether a notebook has been published or not?
         name:
           type: string
         orgID:
@@ -337,6 +420,8 @@ components:
         createdAt:
           type: string
           format: date-time
+        createdBy:
+          type: string
         updatedAt:
           type: string
           format: date-time
@@ -384,6 +469,26 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Share'
+    VersionHistory:
+      properties:
+        id:
+          type: string
+          description: the ID of the published version
+        publishedAt:
+          type: string
+          format: date-time
+          description: the time the data was published
+        publishedBy:
+          type: string
+          description: the name of the person that published the notebook
+      required:
+        - id
+        - publishedAt
+        - publishedBy
+    VersionHistories:
+      type: array
+      items:
+        $ref: '#/components/schemas/VersionHistory'
     Error:
       properties:
         code:
