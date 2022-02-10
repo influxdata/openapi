@@ -1014,7 +1014,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgLimits'
+                $ref: '#/components/schemas/OperatorOrgLimits'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1044,14 +1044,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrgLimits'
+              $ref: '#/components/schemas/OperatorOrgLimits'
       responses:
         '200':
           description: Organization Limits
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgLimits'
+                $ref: '#/components/schemas/OperatorOrgLimits'
         '400':
           description: Invalid request
           $ref: '#/components/responses/ServerError'
@@ -1218,6 +1218,68 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OperatorAccount'
+    OperatorOrgLimits:
+      type: object
+      properties:
+        orgID:
+          type: string
+          readOnly: true
+          description: ID of the org for which these rates apply
+        rate:
+          $ref: '#/components/schemas/OperatorRateLimits'
+        bucket:
+          $ref: '#/components/schemas/BucketLimits'
+        task:
+          $ref: '#/components/schemas/TaskLimits'
+        dashboard:
+          $ref: '#/components/schemas/DashboardLimits'
+        check:
+          $ref: '#/components/schemas/CheckLimits'
+        notificationRule:
+          $ref: '#/components/schemas/NotificationRuleLimits'
+        notificationEndpoint:
+          $ref: '#/components/schemas/NotificationEndpointLimits'
+      required:
+        - orgID
+        - rate
+        - bucket
+        - task
+        - dashboard
+        - check
+        - notificationRule
+        - notificationEndpoint
+    OperatorRateLimits:
+      description: Usage rate limits
+      type: object
+      properties:
+        queryTime:
+          description: Query Time limit in nanoseconds
+          example: 1500000000000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 3000000000000
+        readKBs:
+          description: KB of data query'd per second
+          example: 1000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 10000
+        writeKBs:
+          description: KB of data written per second
+          example: 17
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 10000
+        cardinality:
+          description: Max cardinality of data
+          example: 10000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 1000000
     MarketplaceSubscription:
       properties:
         marketplace:
