@@ -64,26 +64,51 @@ paths:
               schema:
                 type: array
                 items:
-                  properties:
-                    id:
-                      type: number
-                      description: account id in quartz
-                    isActive:
-                      type: boolean
-                      description: is this the currently active account in the session?
-                    isDefault:
-                      type: boolean
-                      description: is this the user's default account?
-                    name:
-                      type: string
-                      description: name of the account
-                  required:
-                    - id
-                    - isActive
-                    - isDefault
-                    - name
+                  $ref: '#/components/schemas/Account'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/accounts/{accountId}':
+    patch:
+      operationId: PatchAccountsId
+      tags:
+        - Accounts
+      summary: Update an account
+      requestBody:
+        description: Account update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: name of the account
+              required:
+                - name
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to update.
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -529,6 +554,9 @@ paths:
           $ref: '#/components/responses/ServerError'
         '422':
           description: Missing information
+          $ref: '#/components/responses/ServerError'
+        '429':
+          description: Too many requests
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -986,7 +1014,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgLimits'
+                $ref: '#/components/schemas/OperatorOrgLimits'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1016,14 +1044,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrgLimits'
+              $ref: '#/components/schemas/OperatorOrgLimits'
       responses:
         '200':
           description: Organization Limits
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrgLimits'
+                $ref: '#/components/schemas/OperatorOrgLimits'
         '400':
           description: Invalid request
           $ref: '#/components/responses/ServerError'
@@ -1101,19 +1129,37 @@ components:
             - unsupported media type
         message:
           readOnly: true
-          description: message is a human-readable message.
+          description: Human-readable message.
           type: string
         op:
           readOnly: true
-          description: op describes the logical code operation during error. Useful for debugging.
+          description: Describes the logical code operation when the error occurred. Useful for debugging.
           type: string
         err:
           readOnly: true
-          description: err is a stack of errors that occurred during processing of the request. Useful for debugging.
+          description: Stack of errors that occurred during processing of the request. Useful for debugging.
           type: string
       required:
         - code
-        - message
+    Account:
+      properties:
+        id:
+          type: number
+          description: account id in quartz
+        isActive:
+          type: boolean
+          description: is this the currently active account in the session?
+        isDefault:
+          type: boolean
+          description: is this the user's default account?
+        name:
+          type: string
+          description: name of the account
+      required:
+        - id
+        - isActive
+        - isDefault
+        - name
     Marketplace:
       properties:
         name:
@@ -1136,6 +1182,9 @@ components:
         id:
           type: number
           description: account id in quartz
+        name:
+          type: string
+          description: account name
         type:
           $ref: '#/components/schemas/AccountType'
         zuoraAccountId:
@@ -1158,6 +1207,7 @@ components:
           description: 'which marketplace, nil if none'
       required:
         - id
+        - name
         - account
         - balance
         - billingContact
@@ -1168,6 +1218,68 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OperatorAccount'
+    OperatorOrgLimits:
+      type: object
+      properties:
+        orgID:
+          type: string
+          readOnly: true
+          description: ID of the org for which these rates apply
+        rate:
+          $ref: '#/components/schemas/OperatorRateLimits'
+        bucket:
+          $ref: '#/components/schemas/BucketLimits'
+        task:
+          $ref: '#/components/schemas/TaskLimits'
+        dashboard:
+          $ref: '#/components/schemas/DashboardLimits'
+        check:
+          $ref: '#/components/schemas/CheckLimits'
+        notificationRule:
+          $ref: '#/components/schemas/NotificationRuleLimits'
+        notificationEndpoint:
+          $ref: '#/components/schemas/NotificationEndpointLimits'
+      required:
+        - orgID
+        - rate
+        - bucket
+        - task
+        - dashboard
+        - check
+        - notificationRule
+        - notificationEndpoint
+    OperatorRateLimits:
+      description: Usage rate limits
+      type: object
+      properties:
+        queryTime:
+          description: Query Time limit in nanoseconds
+          example: 1500000000000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 3000000000000
+        readKBs:
+          description: KB of data query'd per second
+          example: 1000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 10000
+        writeKBs:
+          description: KB of data written per second
+          example: 17
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 10000
+        cardinality:
+          description: Max cardinality of data
+          example: 10000
+          oneOf:
+            - $ref: '#/components/schemas/RestrictedLimit'
+            - $ref: '#/components/schemas/Limit'
+              maximum: 1000000
     MarketplaceSubscription:
       properties:
         marketplace:
@@ -1566,9 +1678,18 @@ components:
             - aws
             - gcm
             - azure
+        clusterHost:
+          type: string
+          description: the url of the current cluster
         isRegionBeta:
           type: boolean
           description: whether the region associated with the account is a beta region
+        regionCode:
+          type: string
+          description: the code associated with the region
+        regionName:
+          type: string
+          description: the name of the region
         isOperator:
           type: boolean
           description: whether the user is an operator
@@ -1579,13 +1700,20 @@ components:
             - read-only
             - read-write
           description: role permission whether this operator is "read-only" | "read-write"
+        paygCreditStartDate:
+          type: string
+          nullable: true
+          description: 'a timestamp indicates if an account is part of the payg credit experiment, nil if not'
       required:
         - id
         - accountType
         - billingProvider
+        - clusterHost
         - email
         - isOperator
         - isRegionBeta
+        - regionCode
+        - regionName
     OrgUsers:
       type: array
       items:

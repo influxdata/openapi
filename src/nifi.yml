@@ -1,0 +1,452 @@
+openapi: 3.0.0
+info:
+  title: nifid
+  version: 1.0.0
+servers:
+  - url: /
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  requestBodies:
+    SubscriptionParams:
+      description: Subscription record
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SubscriptionParams"
+    SubscriptionStatus:
+      description: Subscription run status
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SubscriptionStatus"
+  schemas:
+    JsonSpec:
+      type: object
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+    StringObjectParams:
+      type: object
+      properties:
+        pattern:
+          type: string
+        name:
+          type: string
+    SubscriptionParams:
+      properties:
+        protocol:
+          type: string
+        name:
+          type: string
+        orgID:
+          type: string
+        brokerHost:
+          type: string
+        brokerPort:
+          type: number
+        brokerUsername:
+          type: string
+        brokerPassword:
+          type: string
+        brokerCert:
+          type: string
+        brokerKey:
+          type: string
+        topic:
+          type: string
+        dataFormat:
+          type: string
+        jsonMeasurementKey:
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+        jsonFieldKeys:
+          type: array
+          items:
+            $ref: "#/components/schemas/JsonSpec"
+        jsonTagKeys:
+          type: array
+          items:
+            $ref: "#/components/schemas/JsonSpec"
+        jsonTimestamp:
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+        stringMeasurement:
+          type: object
+          properties:
+            pattern:
+              type: string
+            name:
+              type: string
+        stringFields:
+          type: array
+          items:
+            $ref: "#/components/schemas/StringObjectParams"
+        stringTags:
+          type: array
+          items:
+            $ref: "#/components/schemas/StringObjectParams"
+        stringTimestamp:
+          type: object
+          properties:
+            pattern:
+              type: string
+            name:
+              type: string
+        bucket:
+          type: string
+        token:
+          type: string
+        qos:
+          type: number
+    Subscription:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        protocol:
+          type: string
+        orgID:
+          type: string
+        processGroupId:
+          type: string
+        brokerHost:
+          type: string
+        brokerPort:
+          type: number
+        brokerUsername:
+          type: string
+        topic:
+          type: string
+        dataFormat:
+          type: string
+        jsonMeasurementKey:
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+        jsonFieldKeys:
+          type: array
+          items:
+            $ref: "#/components/schemas/JsonSpec"
+        jsonTagKeys:
+          type: array
+          items:
+            $ref: "#/components/schemas/JsonSpec"
+        jsonTimestamp:
+          type: object
+          properties:
+            path:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+        stringMeasurement:
+          type: object
+          properties:
+            pattern:
+              type: string
+            name:
+              type: string
+        stringFields:
+          type: array
+          items:
+            $ref: "#/components/schemas/StringObjectParams"
+        stringTags:
+          type: array
+          items:
+            $ref: "#/components/schemas/StringObjectParams"
+        stringTimestamp:
+          type: object
+          properties:
+            pattern:
+              type: string
+            name:
+              type: string
+        status:
+          type: string
+        bucket:
+          type: string
+        qos:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SubscriptionArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/Subscription"
+    Subscriptions:
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Subscription"
+    SubscriptionStatus:
+      properties:
+        status:
+          type: string
+          enum:
+            - RUNNING
+            - STOPPED
+    Error:
+      properties:
+        code:
+          description: code is the machine-readable error code.
+          readOnly: true
+          type: string
+          enum:
+            - internal error
+            - not found
+            - conflict
+            - invalid
+            - unprocessable entity
+            - empty value
+            - unavailable
+            - forbidden
+            - too many requests
+            - unauthorized
+            - method not allowed
+            - request too large
+        message:
+          description: message is a human-readable message.
+          readOnly: true
+          type: string
+        op:
+          readOnly: true
+          description: op describes the logical code operation during error. Useful for
+            debugging.
+          type: string
+        err:
+          readOnly: true
+          description: err is a stack of errors that occurred during processing of the
+            request. Useful for debugging.
+          type: string
+  responses:
+    NoContent:
+      description: No content
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAllowed:
+      description: Method not allowed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+security:
+  - bearerAuth: []
+paths:
+  /broker/sub:
+    post:
+      summary: creates a Subscription
+      operationId: createSubscription
+      tags:
+        - Subscriptions
+      requestBody:
+        $ref: "#/components/requestBodies/SubscriptionParams"
+      responses:
+        "200":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    get:
+      summary: get all Subscription records in org
+      operationId: getAllSubscriptions
+      tags:
+        - Subscriptions
+      responses:
+        "200":
+          description: returns all Subscription records in org
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscriptions"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  "/broker/sub/{id}":
+    put:
+      summary: update a single Subscription by its ID
+      operationId: putSubscription
+      tags:
+        - Subscriptions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: "#/components/requestBodies/SubscriptionParams"
+      responses:
+        "200":
+          description: returns the Subscription record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    delete:
+      summary: deletes a single Subscription by its ID
+      operationId: deleteSubscription
+      tags:
+        - Subscriptions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    get:
+      summary: get single Subscription by its ID
+      operationId: getSubscription
+      tags:
+        - Subscriptions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: returns the Subscription record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  "/broker/sub/{id}/status":
+    get:
+      summary: get single Subscription status by its ID
+      operationId: getSubscriptionStatus
+      tags:
+        - Subscriptions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: returns the Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    put:
+      summary: update the run status of a Subscription by its ID
+      operationId: putSubscriptionStatus
+      tags:
+        - Subscriptions
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: "#/components/requestBodies/SubscriptionStatus"
+      responses:
+        "200":
+          description: returns the Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionStatus"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+tags: []
