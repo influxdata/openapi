@@ -1,0 +1,81 @@
+get:
+  operationId: GetDebugPprofMutex
+  tags:
+    - Debug
+  summary: Get the mutual exclusion (mutex) runtime profile
+  description: |
+    Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
+    lock contentions.
+    The profile contains stack traces of holders of contended mutual exclusions (mutexes).
+  x-codeSamples:
+    - lang: 'Shell'
+      label: 'Shell: go tool pprof'
+      source: |
+        # Analyze the profile in interactive mode.
+
+        go tool pprof http://localhost:8086/debug/pprof/mutex
+
+        # `pprof` returns the following prompt:
+        #   Entering interactive mode (type "help" for commands, "o" for options)
+        #   (pprof)
+
+        #  At the prompt, get the top N entries.
+
+        (pprof) top10
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: debug
+      description: |
+        - `0`: (Default) Return the report as a gzip-compressed protocol buffer.
+        - `1`: Return a response body with the report formatted as human-readable text.
+          The report contains comments that translate addresses to function names and line numbers for debugging.
+
+        `debug=1` is mutually exclusive with the `seconds` query parameter.
+      schema:
+        type: integer
+        format: int64
+        enum:
+          - 0
+          - 1
+    - in: query
+      name: seconds
+      description: |
+        Number of seconds to collect statistics.
+
+        `seconds` is mutually exclusive with `debug=1`.
+      schema:
+        type: string
+        format: int64
+  responses:
+    "200":
+      description: |
+        [Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible
+        with [pprof](https://github.com/google/pprof) analysis and visualization tools.
+        If debug is enabled (`?debug=1`), response body contains a human-readable profile.
+      content:
+        application/octet-stream:
+          schema:
+            description: |
+              [Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.
+            type: string
+            format: binary
+            externalDocs:
+              description: Golang pprof package
+              url: https://pkg.go.dev/net/http/pprof
+        text/plain:
+            schema:
+              description: |
+                Response body contains a report formatted in plain text.
+                The report contains comments that translate addresses to
+                function names and line numbers for debugging.
+              type: string
+              format: "Go runtime profile"
+              externalDocs:
+                description: Golang pprof package
+                url: https://pkg.go.dev/net/http/pprof
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'

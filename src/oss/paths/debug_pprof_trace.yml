@@ -1,0 +1,44 @@
+get:
+  operationId: GetDebugPprofTrace
+  tags:
+    - Debug
+  summary: Get the runtime execution trace
+  description: |
+    Trace execution events for the current program.
+  x-codeSamples:
+    - lang: 'Shell'
+      label: 'Shell: go tool trace'
+      source: |
+        # Download the trace file.
+
+        curl http://localhost:8086/debug/pprof/trace -o trace
+
+        # Analyze the trace.
+
+        go tool trace ./trace
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: seconds
+      description: Number of seconds to collect profile data.
+      schema:
+        type: string
+        format: int64
+  responses:
+    "200":
+      description: |
+        [Trace file](https://pkg.go.dev/runtime/trace) compatible
+        with the [Golang `trace` command](https://pkg.go.dev/cmd/trace).
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+            externalDocs:
+              description: Golang trace package
+              url: https://pkg.go.dev/runtime/trace
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'

@@ -1,0 +1,85 @@
+get:
+  operationId: GetDebugPprofAllProfiles
+  tags:
+    - Debug
+  summary: Get all runtime profiles
+  description: |
+    Get reports for the following [Go runtime profiles](https://pkg.go.dev/runtime/pprof):
+
+    - **allocs**: All past memory allocations
+    - **block**: Stack traces that led to blocking on synchronization primitives
+    - **cpu**: (Optional) Program counters sampled from the executing stack.
+      Include by passing the `cpu` query parameter with a [duration]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#duration) value.
+      Equivalent to the report from [`GET /debug/pprof/profile?seconds=NUMBER_OF_SECONDS`](#operation/GetDebugPprofProfile).
+    - **goroutine**: All current goroutines
+    - **heap**: Memory allocations for live objects
+    - **mutex**: Holders of contended mutexes
+    - **threadcreate**: Stack traces that led to the creation of new OS threads
+  x-codeSamples:
+    - lang: 'Shell'
+      label: 'Shell: Get all profiles'
+      source: |
+        # Download and extract a `tar.gz` of all profiles after 10 seconds of CPU sampling.
+
+        curl "http://localhost:8086/debug/pprof/all?cpu=10s" | tar -xz
+
+        # x profiles/cpu.pb.gz
+        # x profiles/goroutine.pb.gz
+        # x profiles/block.pb.gz
+        # x profiles/mutex.pb.gz
+        # x profiles/heap.pb.gz
+        # x profiles/allocs.pb.gz
+        # x profiles/threadcreate.pb.gz
+
+        # Analyze a profile.
+
+        go tool pprof profiles/heap.pb.gz
+    - lang: 'Shell'
+      label: 'Shell: Get all profiles except CPU'
+      source: |
+        # Download and extract a `tar.gz` of all profiles except CPU.
+
+        curl http://localhost:8086/debug/pprof/all | tar -xz
+
+        # x profiles/goroutine.pb.gz
+        # x profiles/block.pb.gz
+        # x profiles/mutex.pb.gz
+        # x profiles/heap.pb.gz
+        # x profiles/allocs.pb.gz
+        # x profiles/threadcreate.pb.gz
+
+        # Analyze a profile.
+
+        go tool pprof profiles/heap.pb.gz
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: cpu
+      description: >
+        Collects and returns CPU profiling data for the specified [duration]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#duration).
+      schema:
+        type: string
+        format: duration
+        externalDocs:
+          description: InfluxDB duration
+          url: https://docs.influxdata.com/influxdb/v2.1/reference/glossary/#duration
+  responses:
+    "200":
+      description: |
+        [Go runtime profile](https://pkg.go.dev/runtime/pprof) reports.
+      content:
+        application/octet-stream:
+          schema:
+            description: |
+              GZIP compressed TAR file (`.tar.gz`) that contains
+              [Go runtime profile](https://pkg.go.dev/runtime/pprof) reports.
+            type: string
+            format: binary
+            externalDocs:
+              description: Golang pprof package
+              url: https://pkg.go.dev/net/http/pprof
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'

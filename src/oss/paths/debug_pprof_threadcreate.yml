@@ -1,0 +1,93 @@
+get:
+  operationId: GetDebugPprofThreadCreate
+  tags:
+    - Debug
+  summary: Get the threadcreate runtime profile
+  description: |
+    Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
+    stack traces that led to the creation of new OS threads.
+  x-codeSamples:
+    - lang: 'Shell'
+      label: 'Shell: go tool pprof'
+      source: |
+        # Analyze the profile in interactive mode.
+
+        go tool pprof http://localhost:8086/debug/pprof/threadcreate
+
+        # `pprof` returns the following prompt:
+        #   Entering interactive mode (type "help" for commands, "o" for options)
+        #   (pprof)
+
+        #  At the prompt, get the top N entries.
+
+        (pprof) top10
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: debug
+      description: |
+        - `0`: (Default) Return the report as a gzip-compressed protocol buffer.
+        - `1`: Return a response body with the report formatted as human-readable text.
+          The report contains comments that translate addresses to function names and line numbers for debugging.
+
+        `debug=1` is mutually exclusive with the `seconds` query parameter.
+      schema:
+        type: integer
+        format: int64
+        enum:
+          - 0
+          - 1
+    - in: query
+      name: seconds
+      description: |
+        Number of seconds to collect statistics.
+
+        `seconds` is mutually exclusive with `debug=1`.
+      schema:
+        type: string
+        format: int64
+  responses:
+    "200":
+      description: |
+        [Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible
+        with [pprof](https://github.com/google/pprof) analysis and visualization tools.
+        If debug is enabled (`?debug=1`), response body contains a human-readable profile.
+      content:
+        application/octet-stream:
+          schema:
+            description: |
+              [Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.
+            type: string
+            format: binary
+            externalDocs:
+              description: Golang pprof package
+              url: https://pkg.go.dev/net/http/pprof
+        text/plain:
+            schema:
+              description: |
+                Response body contains a report formatted in plain text.
+                The report contains comments that translate addresses to
+                function names and line numbers for debugging.
+              type: string
+              format: "Go runtime profile"
+              externalDocs:
+                description: Golang pprof package
+                url: https://pkg.go.dev/net/http/pprof
+            examples:
+              profileDebugResponse:
+                summary: Profile in plain text
+                value: |
+                  threadcreate profile: total 26
+                  25 @
+                  #	0x0
+
+                  1 @ 0x403dda8 0x403e54b 0x403e810 0x403a90c 0x406c0a1
+                  #	0x403dda7	runtime.allocm+0xc7			/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:1877
+                  #	0x403e54a	runtime.newm+0x2a			/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:2201
+                  #	0x403e80f	runtime.startTemplateThread+0x8f	/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:2271
+                  #	0x403a90b	runtime.main+0x1cb			/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:234
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'

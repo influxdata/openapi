@@ -1,0 +1,109 @@
+get:
+  operationId: GetDebugPprofHeap
+  tags:
+    - Debug
+  summary: Get the heap runtime profile
+  description: |
+    Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
+    memory allocations for live objects.
+
+    To run **garbage collection** before sampling,
+    pass the `gc` query parameter with a value of `1`.
+  x-codeSamples:
+    - lang: 'Shell'
+      label: 'Shell: go tool pprof'
+      source: |
+        # Analyze the profile in interactive mode.
+
+        go tool pprof http://localhost:8086/debug/pprof/heap
+
+        # `pprof` returns the following prompt:
+        #   Entering interactive mode (type "help" for commands, "o" for options)
+        #   (pprof)
+
+        # At the prompt, get the top N memory-intensive nodes.
+
+        (pprof) top10
+
+        # pprof displays the list:
+        #   Showing nodes accounting for 142.46MB, 85.43% of 166.75MB total
+        #   Dropped 895 nodes (cum <= 0.83MB)
+        #   Showing top 10 nodes out of 143
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: debug
+      description: |
+        - `0`: (Default) Return the report as a gzip-compressed protocol buffer.
+        - `1`: Return a response body with the report formatted as human-readable text.
+          The report contains comments that translate addresses to function names and line numbers for debugging.
+
+        `debug=1` is mutually exclusive with the `seconds` query parameter.
+      schema:
+        type: integer
+        format: int64
+        enum:
+          - 0
+          - 1
+    - in: query
+      name: seconds
+      description: |
+        Number of seconds to collect statistics.
+
+        `seconds` is mutually exclusive with `debug=1`.
+      schema:
+        type: string
+        format: int64
+    - in: query
+      name: gc
+      description: |
+        - `0`: (Default) don't force garbage collection before sampling.
+        - `1`: Force garbage collection before sampling.
+      schema:
+        type: integer
+        format: int64
+        enum:
+          - 0
+          - 1
+  responses:
+    "200":
+      description: |
+        [Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible
+        with [pprof](https://github.com/google/pprof) analysis and visualization tools.
+        If debug is enabled (`?debug=1`), response body contains a human-readable profile.
+      content:
+        application/octet-stream:
+          schema:
+            description: |
+              [Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.
+            type: string
+            format: binary
+            externalDocs:
+              description: Golang pprof package
+              url: https://pkg.go.dev/net/http/pprof
+        text/plain:
+            schema:
+              description: |
+                Response body contains a report formatted in plain text.
+                The report contains comments that translate addresses to
+                function names and line numbers for debugging.
+              type: string
+              format: "Go runtime profile"
+              externalDocs:
+                description: Golang pprof package
+                url: https://pkg.go.dev/net/http/pprof
+            examples:
+              profileDebugResponse:
+                summary: Profile in plain text
+                value: |
+                  heap profile: 12431: 137356528 [149885081: 846795139976] @ heap/8192
+                  23: 17711104 [46: 35422208] @ 0x4c6df65 0x4ce03ec 0x4cdf3c5 0x4c6f4db 0x4c9edbc 0x4bdefb3 0x4bf822a 0x567d158 0x567ced9 0x406c0a1
+                  #	0x4c6df64	github.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*entry).add+0x1a4					/Users/me/github/influxdb/tsdb/engine/tsm1/cache.go:97
+                  #	0x4ce03eb	github.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*partition).write+0x2ab				/Users/me/github/influxdb/tsdb/engine/tsm1/ring.go:229
+                  #	0x4cdf3c4	github.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*ring).write+0xa4					/Users/me/github/influxdb/tsdb/engine/tsm1/ring.go:95
+                  #	0x4c6f4da	github.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*Cache).WriteMulti+0x31a				/Users/me/github/influxdb/tsdb/engine/tsm1/cache.go:343
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'
