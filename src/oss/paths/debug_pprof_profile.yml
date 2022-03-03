@@ -1,0 +1,52 @@
+get:
+  operationId: GetDebugPprofProfile
+  tags:
+    - Debug
+  summary: Get the CPU runtime profile
+  description: |
+    Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
+    program counters on the executing stack.
+  x-codeSamples:
+    - lang: 'Shell'
+      label: 'Shell: go tool pprof'
+      source: |
+        # Download the profile report.
+
+        curl http://localhost:8086/debug/pprof/profile -o cpu
+
+        # Analyze the profile in interactive mode.
+
+        go tool pprof ./cpu
+
+        # At the prompt, get the top N functions most often running
+        # or waiting during the sample period.
+
+        (pprof) top10
+  servers:
+    - url: ''
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: seconds
+      description: Number of seconds to collect profile data. Default is `30` seconds.
+      schema:
+        type: string
+        format: int64
+  responses:
+    "200":
+      description: |
+        [Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible
+        with [pprof](https://github.com/google/pprof) analysis and visualization tools.
+      content:
+        application/octet-stream:
+          schema:
+            description: |
+              [Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.
+            type: string
+            format: binary
+            externalDocs:
+              description: Golang pprof package
+              url: https://pkg.go.dev/net/http/pprof
+    default:
+      description: Unexpected error
+      $ref: '../../common/responses/ServerError.yml'

@@ -13,7 +13,7 @@
   "tags": [
     {
       "name": "Authentication",
-      "description": "The InfluxDB `/api/v2` API requires authentication for all requests.\nUse InfluxDB API tokens to authenticate requests to the `/api/v2` API.\n\n\nFor examples and more information, see\n[Token authentication](#section/Authentication/TokenAuthentication)\n\n<!-- ReDoc-Inject: <security-definitions> -->\n",
+      "description": "The InfluxDB `/api/v2` API requires authentication for all requests.\nUse InfluxDB API tokens to authenticate requests to the `/api/v2` API.\n\nFor examples and more information, see\n[Token authentication](#section/Authentication/TokenAuthentication)\n\n<!-- ReDoc-Inject: <security-definitions> -->\n",
       "x-traitTag": true
     },
     {
@@ -36,7 +36,11 @@
     },
     {
       "name": "Authorizations",
-      "description": "Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access. Optionally, you can restrict an authorization and its token to a specific user.\n\nFor more information and examples, see the following:\n  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).\n  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n"
+      "description": "Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access.\nOptionally, you can restrict an authorization and its token to a specific user.\n\nFor more information and examples, see the following:\n  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).\n  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n"
+    },
+    {
+      "name": "Debug",
+      "description": "Routes under `/debug/pprof` generate profiling and trace reports\nyou can use to analyze the Go runtime of InfluxDB.\n[Go runtime profiles](https://pkg.go.dev/runtime/pprof) are\ncollections of stack traces that show call sequences\nleading to instances of a particular event, such as allocation.\nFor more information about **pprof profile** and **trace** reports, see the following resources:\n  - [Google pprof tool](https://github.com/google/pprof)\n  - [Golang diagnostics](https://go.dev/doc/diagnostics)\n"
     }
   ],
   "x-tagGroups": [
@@ -8263,6 +8267,742 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/debug/pprof/all": {
+      "get": {
+        "operationId": "GetDebugPprofAllProfiles",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get all runtime profiles",
+        "description": "Get reports for the following [Go runtime profiles](https://pkg.go.dev/runtime/pprof):\n\n- **allocs**: All past memory allocations\n- **block**: Stack traces that led to blocking on synchronization primitives\n- **cpu**: (Optional) Program counters sampled from the executing stack.\n  Include by passing the `cpu` query parameter with a [duration]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#duration) value.\n  Equivalent to the report from [`GET /debug/pprof/profile?seconds=NUMBER_OF_SECONDS`](#operation/GetDebugPprofProfile).\n- **goroutine**: All current goroutines\n- **heap**: Memory allocations for live objects\n- **mutex**: Holders of contended mutexes\n- **threadcreate**: Stack traces that led to the creation of new OS threads\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: Get all profiles",
+            "source": "# Download and extract a `tar.gz` of all profiles after 10 seconds of CPU sampling.\n\ncurl \"http://localhost:8086/debug/pprof/all?cpu=10s\" | tar -xz\n\n# x profiles/cpu.pb.gz\n# x profiles/goroutine.pb.gz\n# x profiles/block.pb.gz\n# x profiles/mutex.pb.gz\n# x profiles/heap.pb.gz\n# x profiles/allocs.pb.gz\n# x profiles/threadcreate.pb.gz\n\n# Analyze a profile.\n\ngo tool pprof profiles/heap.pb.gz\n"
+          },
+          {
+            "lang": "Shell",
+            "label": "Shell: Get all profiles except CPU",
+            "source": "# Download and extract a `tar.gz` of all profiles except CPU.\n\ncurl http://localhost:8086/debug/pprof/all | tar -xz\n\n# x profiles/goroutine.pb.gz\n# x profiles/block.pb.gz\n# x profiles/mutex.pb.gz\n# x profiles/heap.pb.gz\n# x profiles/allocs.pb.gz\n# x profiles/threadcreate.pb.gz\n\n# Analyze a profile.\n\ngo tool pprof profiles/heap.pb.gz\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "cpu",
+            "description": "Collects and returns CPU profiling data for the specified [duration]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#duration).\n",
+            "schema": {
+              "type": "string",
+              "format": "duration",
+              "externalDocs": {
+                "description": "InfluxDB duration",
+                "url": "https://docs.influxdata.com/influxdb/v2.1/reference/glossary/#duration"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) reports.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "GZIP compressed TAR file (`.tar.gz`) that contains\n[Go runtime profile](https://pkg.go.dev/runtime/pprof) reports.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/allocs": {
+      "get": {
+        "operationId": "GetDebugPprofAllocs",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the memory allocations runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nall past memory allocations.\n**allocs** is the same as the **heap** profile,\nbut changes the default [pprof](https://pkg.go.dev/runtime/pprof)\ndisplay to __-alloc_space__,\nthe total number of bytes allocated since the program began (including garbage-collected bytes).\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Analyze the profile in interactive mode.\n\ngo tool pprof http://localhost:8086/debug/pprof/allocs\n\n# `pprof` returns the following prompt:\n#   Entering interactive mode (type \"help\" for commands, \"o\" for options)\n#   (pprof)\n\n# At the prompt, get the top N memory allocations.\n\n(pprof) top10\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "debug",
+            "description": "- `0`: (Default) Return the report as a gzip-compressed protocol buffer.\n- `1`: Return a response body with the report formatted as human-readable text.\n  The report contains comments that translate addresses to function names and line numbers for debugging.\n\n`debug=1` is mutually exclusive with the `seconds` query parameter.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect statistics.\n\n`seconds` is mutually exclusive with `debug=1`.\n",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\nIf debug is enabled (`?debug=1`), response body contains a human-readable profile.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "description": "Response body contains a report formatted in plain text.\nThe report contains comments that translate addresses to\nfunction names and line numbers for debugging.\n",
+                  "type": "string",
+                  "format": "Go runtime profile",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/block": {
+      "get": {
+        "operationId": "GetDebugPprofBlock",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the block runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nstack traces that led to blocking on synchronization primitives.\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Analyze the profile in interactive mode.\n\ngo tool pprof http://localhost:8086/debug/pprof/block\n\n# `pprof` returns the following prompt:\n#   Entering interactive mode (type \"help\" for commands, \"o\" for options)\n#   (pprof)\n\n#  At the prompt, get the top N entries.\n\n(pprof) top10\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "debug",
+            "description": "- `0`: (Default) Return the report as a gzip-compressed protocol buffer.\n- `1`: Return a response body with the report formatted as human-readable text.\n  The report contains comments that translate addresses to function names and line numbers for debugging.\n\n`debug=1` is mutually exclusive with the `seconds` query parameter.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect statistics.\n\n`seconds` is mutually exclusive with `debug=1`.\n",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\nIf debug is enabled (`?debug=1`), response body contains a human-readable profile.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "description": "Response body contains a report formatted in plain text.\nThe report contains comments that translate addresses to\nfunction names and line numbers for debugging.\n",
+                  "type": "string",
+                  "format": "Go runtime profile",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/cmdline": {
+      "get": {
+        "operationId": "GetDebugPprofCmdline",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the command line invocation",
+        "description": "Get the command line that invoked InfluxDB.\n",
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Command line invocation.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "Command line"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/goroutine": {
+      "get": {
+        "operationId": "GetDebugPprofGoroutine",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the goroutines runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nall current goroutines.\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Analyze the profile in interactive mode.\n\ngo tool pprof http://localhost:8086/debug/pprof/goroutine\n\n# `pprof` returns the following prompt:\n#   Entering interactive mode (type \"help\" for commands, \"o\" for options)\n#   (pprof)\n\n#  At the prompt, get the top N entries.\n\n(pprof) top10\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "debug",
+            "description": "- `0`: (Default) Return the report as a gzip-compressed protocol buffer.\n- `1`: Return a response body with the report formatted as human-readable text.\n  The report contains comments that translate addresses to function names and line numbers for debugging.\n\n`debug=1` is mutually exclusive with the `seconds` query parameter.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect statistics.\n\n`seconds` is mutually exclusive with `debug=1`.\n",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\nIf debug is enabled (`?debug=1`), response body contains a human-readable profile.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "description": "Response body contains a report formatted in plain text.\nThe report contains comments that translate addresses to\nfunction names and line numbers for debugging.\n",
+                  "type": "string",
+                  "format": "Go runtime profile",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/heap": {
+      "get": {
+        "operationId": "GetDebugPprofHeap",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the heap runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nmemory allocations for live objects.\n\nTo run **garbage collection** before sampling,\npass the `gc` query parameter with a value of `1`.\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Analyze the profile in interactive mode.\n\ngo tool pprof http://localhost:8086/debug/pprof/heap\n\n# `pprof` returns the following prompt:\n#   Entering interactive mode (type \"help\" for commands, \"o\" for options)\n#   (pprof)\n\n# At the prompt, get the top N memory-intensive nodes.\n\n(pprof) top10\n\n# pprof displays the list:\n#   Showing nodes accounting for 142.46MB, 85.43% of 166.75MB total\n#   Dropped 895 nodes (cum <= 0.83MB)\n#   Showing top 10 nodes out of 143\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "debug",
+            "description": "- `0`: (Default) Return the report as a gzip-compressed protocol buffer.\n- `1`: Return a response body with the report formatted as human-readable text.\n  The report contains comments that translate addresses to function names and line numbers for debugging.\n\n`debug=1` is mutually exclusive with the `seconds` query parameter.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect statistics.\n\n`seconds` is mutually exclusive with `debug=1`.\n",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          },
+          {
+            "in": "query",
+            "name": "gc",
+            "description": "- `0`: (Default) don't force garbage collection before sampling.\n- `1`: Force garbage collection before sampling.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\nIf debug is enabled (`?debug=1`), response body contains a human-readable profile.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "description": "Response body contains a report formatted in plain text.\nThe report contains comments that translate addresses to\nfunction names and line numbers for debugging.\n",
+                  "type": "string",
+                  "format": "Go runtime profile",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                },
+                "examples": {
+                  "profileDebugResponse": {
+                    "summary": "Profile in plain text",
+                    "value": "heap profile: 12431: 137356528 [149885081: 846795139976] @ heap/8192\n23: 17711104 [46: 35422208] @ 0x4c6df65 0x4ce03ec 0x4cdf3c5 0x4c6f4db 0x4c9edbc 0x4bdefb3 0x4bf822a 0x567d158 0x567ced9 0x406c0a1\n#\t0x4c6df64\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*entry).add+0x1a4\t\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/cache.go:97\n#\t0x4ce03eb\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*partition).write+0x2ab\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/ring.go:229\n#\t0x4cdf3c4\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*ring).write+0xa4\t\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/ring.go:95\n#\t0x4c6f4da\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*Cache).WriteMulti+0x31a\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/cache.go:343\n"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/mutex": {
+      "get": {
+        "operationId": "GetDebugPprofMutex",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the mutual exclusion (mutex) runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nlock contentions.\nThe profile contains stack traces of holders of contended mutual exclusions (mutexes).\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Analyze the profile in interactive mode.\n\ngo tool pprof http://localhost:8086/debug/pprof/mutex\n\n# `pprof` returns the following prompt:\n#   Entering interactive mode (type \"help\" for commands, \"o\" for options)\n#   (pprof)\n\n#  At the prompt, get the top N entries.\n\n(pprof) top10\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "debug",
+            "description": "- `0`: (Default) Return the report as a gzip-compressed protocol buffer.\n- `1`: Return a response body with the report formatted as human-readable text.\n  The report contains comments that translate addresses to function names and line numbers for debugging.\n\n`debug=1` is mutually exclusive with the `seconds` query parameter.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect statistics.\n\n`seconds` is mutually exclusive with `debug=1`.\n",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\nIf debug is enabled (`?debug=1`), response body contains a human-readable profile.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "description": "Response body contains a report formatted in plain text.\nThe report contains comments that translate addresses to\nfunction names and line numbers for debugging.\n",
+                  "type": "string",
+                  "format": "Go runtime profile",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/profile": {
+      "get": {
+        "operationId": "GetDebugPprofProfile",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the CPU runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nprogram counters on the executing stack.\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Download the profile report.\n\ncurl http://localhost:8086/debug/pprof/profile -o cpu\n\n# Analyze the profile in interactive mode.\n\ngo tool pprof ./cpu\n\n# At the prompt, get the top N functions most often running\n# or waiting during the sample period.\n\n(pprof) top10\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect profile data. Default is `30` seconds.",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/threadcreate": {
+      "get": {
+        "operationId": "GetDebugPprofThreadCreate",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the threadcreate runtime profile",
+        "description": "Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of\nstack traces that led to the creation of new OS threads.\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool pprof",
+            "source": "# Analyze the profile in interactive mode.\n\ngo tool pprof http://localhost:8086/debug/pprof/threadcreate\n\n# `pprof` returns the following prompt:\n#   Entering interactive mode (type \"help\" for commands, \"o\" for options)\n#   (pprof)\n\n#  At the prompt, get the top N entries.\n\n(pprof) top10\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "debug",
+            "description": "- `0`: (Default) Return the report as a gzip-compressed protocol buffer.\n- `1`: Return a response body with the report formatted as human-readable text.\n  The report contains comments that translate addresses to function names and line numbers for debugging.\n\n`debug=1` is mutually exclusive with the `seconds` query parameter.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect statistics.\n\n`seconds` is mutually exclusive with `debug=1`.\n",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report compatible\nwith [pprof](https://github.com/google/pprof) analysis and visualization tools.\nIf debug is enabled (`?debug=1`), response body contains a human-readable profile.\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "description": "[Go runtime profile](https://pkg.go.dev/runtime/pprof) report in protocol buffer format.\n",
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "description": "Response body contains a report formatted in plain text.\nThe report contains comments that translate addresses to\nfunction names and line numbers for debugging.\n",
+                  "type": "string",
+                  "format": "Go runtime profile",
+                  "externalDocs": {
+                    "description": "Golang pprof package",
+                    "url": "https://pkg.go.dev/net/http/pprof"
+                  }
+                },
+                "examples": {
+                  "profileDebugResponse": {
+                    "summary": "Profile in plain text",
+                    "value": "threadcreate profile: total 26\n25 @\n#\t0x0\n\n1 @ 0x403dda8 0x403e54b 0x403e810 0x403a90c 0x406c0a1\n#\t0x403dda7\truntime.allocm+0xc7\t\t\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:1877\n#\t0x403e54a\truntime.newm+0x2a\t\t\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:2201\n#\t0x403e80f\truntime.startTemplateThread+0x8f\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:2271\n#\t0x403a90b\truntime.main+0x1cb\t\t\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:234\n"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/debug/pprof/trace": {
+      "get": {
+        "operationId": "GetDebugPprofTrace",
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Get the runtime execution trace",
+        "description": "Trace execution events for the current program.\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "Shell: go tool trace",
+            "source": "# Download the trace file.\n\ncurl http://localhost:8086/debug/pprof/trace -o trace\n\n# Analyze the trace.\n\ngo tool trace ./trace\n"
+          }
+        ],
+        "servers": [
+          {
+            "url": ""
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Number of seconds to collect profile data.",
+            "schema": {
+              "type": "string",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[Trace file](https://pkg.go.dev/runtime/trace) compatible\nwith the [Golang `trace` command](https://pkg.go.dev/cmd/trace).\n",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "externalDocs": {
+                    "description": "Golang trace package",
+                    "url": "https://pkg.go.dev/runtime/trace"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
