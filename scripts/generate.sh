@@ -87,6 +87,11 @@ sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-notebooksd.yml > ./src
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/notebooksd.yml --type yaml && \
 rm src/.svc.yml
 
+# nifid
+sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-nifid.yml > ./src/.svc.yml && \
+swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/nifid.yml --type yaml && \
+rm src/.svc.yml
+
 # pinneditemsd
 sed -e "s|^  - url: /|  - url: '/api/v2private'|" src/svc-pinneditemsd.yml > ./src/.svc.yml && \
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/priv/pinneditemsd.yml --type yaml && \
