@@ -144,6 +144,118 @@ paths:
         default:
           description: unexpected error
           $ref: '#/components/responses/ServerError'
+    patch:
+      tags:
+        - Limits
+      summary: Patch limit
+      parameters:
+        - in: path
+          name: orgID
+          description: The identifier of the organization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: fields in the limit that require updates
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: These are org limits similar to those configured in/by quartz.
+              properties:
+                orgID:
+                  type: string
+                rate:
+                  type: object
+                  properties:
+                    queryTime:
+                      type: integer
+                      description: Query Time in nanoseconds
+                    readKBs:
+                      type: integer
+                      description: Query limit in kb/sec. 0 is unlimited.
+                    concurrentReadRequests:
+                      type: integer
+                      description: Allowed concurrent queries. 0 is unlimited.
+                    writeKBs:
+                      type: integer
+                      description: Write limit in kb/sec. 0 is unlimited.
+                    concurrentWriteRequests:
+                      type: integer
+                      description: Allowed concurrent writes. 0 is unlimited.
+                    cardinality:
+                      type: integer
+                      description: Allowed organization total cardinality. 0 is unlimited.
+                    concurrentDeleteRequests:
+                      type: integer
+                      description: Allowed organization concurrent outstanding delete requests.
+                    deleteRequestsPerSecond:
+                      type: integer
+                      description: Allowed organization delete request rate.
+                bucket:
+                  type: object
+                  properties:
+                    maxBuckets:
+                      type: integer
+                    maxRetentionDuration:
+                      type: integer
+                      description: Max bucket retention duration in nanoseconds. 0 is unlimited.
+                task:
+                  type: object
+                  properties:
+                    maxTasks:
+                      type: integer
+                  required:
+                    - maxTasks
+                dashboard:
+                  type: object
+                  properties:
+                    maxDashboards:
+                      type: integer
+                  required:
+                    - maxDashboards
+                check:
+                  type: object
+                  properties:
+                    maxChecks:
+                      type: integer
+                  required:
+                    - maxChecks
+                notificationRule:
+                  type: object
+                  properties:
+                    maxNotifications:
+                      type: integer
+                    blockedNotificationRules:
+                      type: string
+                      description: comma separated list of notification rules
+                      example: 'http,pagerduty'
+                notificationEndpoint:
+                  type: object
+                  properties:
+                    blockedNotificationEndpoints:
+                      type: string
+                      description: comma separated list of notification endpoints
+                      example: 'http,pagerduty'
+                  required:
+                    - blockNotificationEndpoints
+      responses:
+        '200':
+          description: The updated limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Limit'
+        '422':
+          description: Request body could not be processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+        default:
+          description: unexpected error
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgID}/limits/status':
     get:
       tags:
