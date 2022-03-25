@@ -1,0 +1,53 @@
+put:
+  operationId: PutProvisionUser
+  tags:
+    - ProvisionUser
+  summary: Create/Add a user to an existing org. Creates a user if doesn't exist. Idempotent
+  parameters:
+    - $ref: "../../common/parameters/TraceSpan.yml"
+  requestBody:
+    description: User to create and org id to add user to
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/ProvisionUserRequest.yml"
+  responses:
+    "201":
+      description: User created
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ProvisionUserResponse.yml"
+    "400":
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/responses/ServerError.yml"
+      description: Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names.
+    "401":
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/responses/ServerError.yml"
+      description: Credentials not provided or insufficient credentials to provision a user
+    "422":
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/responses/ServerError.yml"
+      description:  |
+        Unprocessable Entity
+                  - Org with ID does not exist.
+        Conflict
+                  - user with ID exists with different name
+                  - user name already in use with different id
+    "501":
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/responses/ServerError.yml"
+      description: Internal Server Error. Request can be retried.
+    default:
+      $ref: "../../common/responses/ServerError.yml"
+      description: Unexpected error
