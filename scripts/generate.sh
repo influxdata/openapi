@@ -65,6 +65,11 @@ sed -e "s|^  - url: /api/v1|  - url: /api/v2/maps|" src/svc-mapsd.yml > ./src/.s
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/mapsd.yml --type yaml && \
 rm src/.svc.yml
 
+# uiproxyd
+sed -e "s|^  - url: /api/v1|  - url: /api/v2/maps|" src/svc-uiproxyd.yml > ./src/.svc.yml && \
+swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/uiproxyd.yml --type yaml && \
+rm src/.svc.yml
+
 # datasourcesd
 sed -e "s|^  - url: '/'|  - url: /api/v2/datasources|" src/svc-datasourcesd.yml > ./src/.svc.yml && \
 swagger-cli bundle src/.svc.yml --outfile ${CONTRACTS}/datasourcesd.yml --type yaml && \
