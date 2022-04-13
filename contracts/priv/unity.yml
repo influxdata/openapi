@@ -507,6 +507,25 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  '/orgs':
+    get:
+      operationId: GetOrganizations
+      tags:
+        - Organizations
+      summary: Get the list of Organizations for the current user and account
+      responses:
+        '200':
+          description: Organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organizations'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites':
     get:
       operationId: GetInvites
@@ -884,7 +903,7 @@ paths:
                       organizations:
                         type: array
                         description: organizations in the account
-                        $ref: '#/components/schemas/Organizations'
+                        $ref: '#/components/schemas/OperatorOrganizations'
                   - required:
                       - organizations
         '401':
@@ -991,7 +1010,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organizations'
+                $ref: '#/components/schemas/OperatorOrganizations'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1020,7 +1039,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Organization'
+                  - $ref: '#/components/schemas/OperatorOrganization'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1834,7 +1853,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OrgUser'
-    Organization:
+    OperatorOrganization:
       type: object
       properties:
         idpeId:
@@ -1864,10 +1883,10 @@ components:
         - region
         - provider
         - date
-    Organizations:
+    OperatorOrganizations:
       type: array
       items:
-        $ref: '#/components/schemas/Organization'
+        $ref: '#/components/schemas/OperatorOrganization'
     RelatedAccount:
       description: Subset of Account data related to the organization
       type: object
@@ -1891,6 +1910,55 @@ components:
         - balance
         - type
         - updatedAt
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the org
+        name:
+          type: string
+          description: name of the org
+        description:
+          type: string
+          description: the description of the organization
+        creationDate:
+          type: string
+          format: date-time
+          description: the date the organization was created
+        regionCode:
+          type: string
+          description: the code associated with the region
+        regionName:
+          type: string
+          description: the name of the region
+        provider:
+          type: string
+          description: provider of the org
+        isRegionBeta:
+          type: boolean
+          description: is the region of the organization in beta
+        clusterHost:
+          type: string
+          description: the url of the current cluster
+        isActive:
+          type: boolean
+          description: is this the currently active organization in the session?
+        isDefault:
+          type: boolean
+          description: is this the user's default organization in this account?
+      required:
+        - id
+        - clusterHost
+        - isRegionBeta
+        - regionCode
+        - regionName
+        - isActive
+        - isDefault
+    Organizations:
+      type: array
+      items:
+        $ref: '#/components/schemas/Organization'
     OrgLimits:
       type: object
       properties:
