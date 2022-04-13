@@ -151,6 +151,27 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /identity:
+    get:
+      operationId: GetIdentity
+      tags:
+        - Identity
+        - User
+        - Account
+        - Organization
+      responses:
+        '200':
+          description: 'identity represented by the active user, account, and org'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identity'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   /marketplace:
     get:
       operationId: GetMarketplace
@@ -1512,6 +1533,85 @@ components:
         isPaygCreditActive:
           description: whether the user is a part of the payg credit
           type: boolean
+    Identity:
+      properties:
+        user:
+          $ref: '#/components/schemas/IdentityUser'
+        account:
+          $ref: '#/components/schemas/IdentityAccount'
+        org:
+          $ref: '#/components/schemas/IdentityOrganization'
+      required:
+        - user
+        - account
+        - org
+    IdentityUser:
+      properties:
+        id:
+          type: string
+          description: user's id in idpe
+        email:
+          type: string
+          description: user's email
+        firstName:
+          type: string
+          nullable: true
+          description: user's first name
+        lastName:
+          type: string
+          nullable: true
+          description: user's last name
+        operatorRole:
+          type: string
+          nullable: true
+          enum:
+            - read-only
+            - read-write
+          description: role permission whether this operator is "read-only" | "read-write"
+        accountCount:
+          type: integer
+          description: number of accounts the user belongs to
+        orgCount:
+          type: integer
+          description: number of orgs the user belongs to within their active account
+      required:
+        - id
+        - email
+        - accountCount
+        - orgCount
+    IdentityAccount:
+      properties:
+        id:
+          type: number
+          description: account id in quartz
+        name:
+          type: string
+          description: name of the account
+        type:
+          $ref: '#/components/schemas/AccountType'
+        paygCreditStartDate:
+          type: string
+          nullable: true
+          description: 'an ISO8601 timestamp indicating if an account is part of the payg credit experiment, nil if not'
+      required:
+        - id
+        - name
+        - type
+    IdentityOrganization:
+      properties:
+        id:
+          type: string
+          description: idpe ID of the org
+        name:
+          type: string
+          description: name of the org
+        clusterHost:
+          type: string
+          description: the url of the current cluster
+      required:
+        - id
+        - name
+        - clusterHost
     Invite:
       properties:
         id:
