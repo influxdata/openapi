@@ -507,6 +507,92 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /orgs:
+    get:
+      operationId: GetOrganizations
+      tags:
+        - Organizations
+      summary: Get the list of Organizations for the current user and account
+      responses:
+        '200':
+          description: Organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSummaries'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/orgs/{orgId}':
+    get:
+      operationId: GetOrgsId
+      tags:
+        - Organizations
+      summary: Get an organization
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE ID of the organization to get.
+      responses:
+        '200':
+          description: Organization returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+    patch:
+      operationId: PatchOrgsId
+      tags:
+        - Organizations
+      summary: Update an organization
+      requestBody:
+        description: Organization update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Name of the organization
+                description:
+                  type: string
+                  description: Description of the organization
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE ID of the organization to update.
+      responses:
+        '200':
+          description: Organization updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites':
     get:
       operationId: GetInvites
@@ -884,7 +970,7 @@ paths:
                       organizations:
                         type: array
                         description: organizations in the account
-                        $ref: '#/components/schemas/Organizations'
+                        $ref: '#/components/schemas/OperatorOrganizations'
                   - required:
                       - organizations
         '401':
@@ -991,7 +1077,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organizations'
+                $ref: '#/components/schemas/OperatorOrganizations'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1020,7 +1106,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Organization'
+                  - $ref: '#/components/schemas/OperatorOrganization'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1834,7 +1920,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OrgUser'
-    Organization:
+    OperatorOrganization:
       type: object
       properties:
         idpeId:
@@ -1864,10 +1950,10 @@ components:
         - region
         - provider
         - date
-    Organizations:
+    OperatorOrganizations:
       type: array
       items:
-        $ref: '#/components/schemas/Organization'
+        $ref: '#/components/schemas/OperatorOrganization'
     RelatedAccount:
       description: Subset of Account data related to the organization
       type: object
@@ -1891,6 +1977,65 @@ components:
         - balance
         - type
         - updatedAt
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          description: IDPE Id of the org
+        name:
+          type: string
+          description: name of the org
+        description:
+          type: string
+          description: the description of the organization
+        creationDate:
+          type: string
+          format: date-time
+          description: the date the organization was created
+        regionCode:
+          type: string
+          description: the canonical code for the region where the organization is hosted
+        regionName:
+          type: string
+          description: the name of the region where the organization is hosted
+        provider:
+          type: string
+          description: provider of the org
+        isRegionBeta:
+          type: boolean
+          description: is the region of the organization in beta
+        clusterHost:
+          type: string
+          description: the url of the current cluster
+      required:
+        - id
+        - clusterHost
+        - isRegionBeta
+        - regionCode
+        - regionName
+    OrganizationSummaries:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: IDPE ID of the org
+          name:
+            type: string
+            description: name of the org
+          isActive:
+            type: boolean
+            description: is this the currently active organization in the session?
+          isDefault:
+            type: boolean
+            description: is this the user's default organization in this account?
+        required:
+          - id
+          - name
+          - isActive
+          - isDefault
     OrgLimits:
       type: object
       properties:
