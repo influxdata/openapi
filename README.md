@@ -149,7 +149,7 @@ For information on what to do when platform APIs drift, see [src/README](./src/R
 ### Add tag content or describe a group of paths
 
 API reference docs
-([OSS](https://docs.influxdata.com/influxdb/v2.2/api/,
+([OSS](https://docs.influxdata.com/influxdb/v2.2/api/),
 [Cloud](https://docs.influxdata.com/influxdb/cloud/api/))
 rely on the following tag elements and vendor extensions:
 
