@@ -2,7 +2,17 @@ get:
   operationId: GetMetrics
   tags:
     - Metrics
-  summary: Get metrics of an instance
+  summary: Retrieve workload performance metrics
+  description: |
+    Returns metrics about the workload performance of an InfluxDB instance.
+
+    Use this endpoint to get performance, resource, and usage metrics.
+          
+    #### Related guides
+    
+    - For the list of metrics categories, see [InfluxDB OSS metrics]({{% INFLUXDB_DOCS_URL %}}/reference/internals/metrics/).
+    - Learn how to use InfluxDB to [scrape Prometheus metrics]({{% INFLUXDB_DOCS_URL %}}write-data/developer-tools/scrape-prometheus-metrics/).
+    - Learn how InfluxDB [parses the Prometheus exposition format]({{% INFLUXDB_DOCS_URL %}}/reference/prometheus-metrics/).
   servers:
     - url: ''
   parameters:
@@ -10,16 +20,14 @@ get:
   responses:
     "200":
       description: |
-        Payload body contains metrics about the InfluxDB instance.
-
-        Metrics are formatted in the
-        Prometheus [plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats).
-        Each metric is identified by its name and a set of optional key-value pairs.
-
+        Success. The response body contains metrics in
+        [Prometheus plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats)
+        Metrics contain a name, an optional set of key-value pairs, and a value.
+    
         The following descriptors precede each metric:
-
-        - *`HELP`*: description of the metric
-        - *`TYPE`*: type of the metric (e.g. `counter`, `gauge`, `histogram`, or `summary`)
+        
+        - `HELP`: description of the metric
+        - `TYPE`: [Prometheus metric type](https://prometheus.io/docs/concepts/metric_types/) (`counter`, `gauge`, `histogram`, or `summary`)  
       content:
         text/plain:
             schema:
@@ -40,6 +48,8 @@ get:
                   http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.005"} 4
                   http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.01"} 4
                   http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.025"} 5
+    "4xx":
+      description: Bad request.
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'

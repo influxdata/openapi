@@ -218,7 +218,8 @@
     "/ping": {
       "get": {
         "operationId": "GetPing",
-        "summary": "Checks the status of InfluxDB instance and version of InfluxDB.",
+        "summary": "Get the status and version of the instance",
+        "description": "Returns the status and InfluxDB version of the instance.",
         "servers": [
           {
             "url": ""
@@ -229,7 +230,7 @@
         ],
         "responses": {
           "204": {
-            "description": "OK",
+            "description": "OK.\nHeaders contain InfluxDB version information.\n",
             "headers": {
               "X-Influxdb-Build": {
                 "schema": {
@@ -249,7 +250,8 @@
       },
       "head": {
         "operationId": "HeadPing",
-        "summary": "Checks the status of InfluxDB instance and version of InfluxDB.",
+        "summary": "Get the status and version of the instance",
+        "description": "Returns the status and InfluxDB version of the instance.",
         "servers": [
           {
             "url": ""
@@ -260,7 +262,7 @@
         ],
         "responses": {
           "204": {
-            "description": "OK",
+            "description": "OK.\nHeaders contain InfluxDB version information.\n",
             "headers": {
               "X-Influxdb-Build": {
                 "schema": {
@@ -1590,15 +1592,20 @@
           "Write"
         ],
         "summary": "Write data",
-        "description": "Writes data to a bucket.\n\nTo write data into InfluxDB, you need the following:\n\n- **organization name or ID** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._\n- **bucket** – _See [View buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/) for\n instructions on viewing your bucket ID._\n- **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n for instructions on viewing your API token._\n- **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.\n- data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol) format.\n\nInfluxDB Cloud enforces rate and size limits different from InfluxDB OSS. For details, see Responses.\n\nFor more information and examples, see the following:\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
+        "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\nInfluxDB parses and validates line protocol in the request body,\nresponds with success or failure, and then handles the write asynchronously.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`\n\n`BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
         "requestBody": {
-          "description": "Data in line protocol format.",
+          "description": "Data in line protocol format.\n\nTo send compressed data, do the following:\n  \n  1. Use [GZIP](https://www.gzip.org/) to compress the line protocol data.\n  2. In your request, send the compressed data and the \n     `Content-Encoding: gzip` header.     \n\n#### Related guides\n\n- [Best practices for optimizing writes]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n",
           "required": true,
           "content": {
             "text/plain": {
               "schema": {
                 "type": "string",
                 "format": "byte"
+              },
+              "examples": {
+                "plain-utf8": {
+                  "value": "airSensors,sensor_id=TLM0201 temperature=73.97038159354763,humidity=35.23103248356096,co=0.48445310567793615 1630424257000000000\nairSensors,sensor_id=TLM0202 temperature=75.30007505999716,humidity=35.651929918691714,co=0.5141876544505826 1630424257000000000\n"
+                }
               }
             }
           }
@@ -1610,10 +1617,10 @@
           {
             "in": "header",
             "name": "Content-Encoding",
-            "description": "The value tells InfluxDB what compression is applied to the line protocol in the request payload.\nTo make an API request with a GZIP payload, send `Content-Encoding: gzip` as a request header.\n",
+            "description": "The compression applied to the line protocol in the request payload.\nTo send a GZIP payload, pass `Content-Encoding: gzip` header.\n",
             "schema": {
               "type": "string",
-              "description": "Content coding. Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.",
+              "description": "Content coding.\nUse `gzip` for compressed data or `identity` for unmodified, uncompressed data.\n",
               "default": "identity",
               "enum": [
                 "gzip",
@@ -1624,7 +1631,7 @@
           {
             "in": "header",
             "name": "Content-Type",
-            "description": "Format of the data in the request body.\nTo make an API request with a line protocol payload, send `Content-Type: text/plain; charset=utf-8` as a request header.\n",
+            "description": "The format of the data in the request body.\nTo send a line protocol payload, pass `Content-Type: text/plain; charset=utf-8`.\n",
             "schema": {
               "type": "string",
               "description": "`text/plain` is the content type for line protocol. `UTF-8` is the default character set.\n",
@@ -1638,7 +1645,7 @@
           {
             "in": "header",
             "name": "Content-Length",
-            "description": "Size of the entity-body, in bytes, sent to the database. If the length is greater than the database's `max body` configuration option, the server responds with status code `413`.",
+            "description": "The size of the entity-body, in bytes, sent to InfluxDB.\nIf the length is greater than the `max body` configuration option,\nthe server responds with status code `413`.\n",
             "schema": {
               "type": "integer",
               "description": "The length in decimal number of octets."
@@ -1647,7 +1654,7 @@
           {
             "in": "header",
             "name": "Accept",
-            "description": "Content type that the client can understand. Writes only return a response body if they fail, e.g. due to a formatting problem or quota limit.\n#### InfluxDB Cloud\n  - returns only `application/json` for format and limit errors.\n  - returns only `text/html` for some quota limit errors.\n\n\n#### InfluxDB OSS\n  - returns only `application/json` for format and limit errors.\n\n\nFor more information about write errors, see how to [troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).\n",
+            "description": "The content type that the client can understand.\nWrites only return a response body if they fail--for example,\ndue to a formatting problem or quota limit.\n\n#### InfluxDB Cloud\n\n  - Returns only `application/json` for format and limit errors.\n  - Returns only `text/html` for some quota limit errors.\n\n#### InfluxDB OSS\n\n  - Returns only `application/json` for format and limit errors.\n\n#### Related guides\n  - [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).\n",
             "schema": {
               "type": "string",
               "description": "Error content type.",
@@ -1660,17 +1667,17 @@
           {
             "in": "query",
             "name": "org",
-            "description": "Destination organization for writes. The database writes all points in the batch to this organization. If you provide both `orgID` and `org` parameters, `org` takes precedence.",
+            "description": "The destination organization for writes.\nThe database writes all points in the batch to this organization.\nIf you provide both `orgID` and `org` parameters, `org` takes precedence.\n",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Organization name or ID."
+              "description": "The organization name or ID."
             }
           },
           {
             "in": "query",
             "name": "orgID",
-            "description": "ID of the destination organization for writes. If both `orgID` and `org` are specified, `org` takes precedence.",
+            "description": "The ID of the destination organization for writes.\nIf both `orgID` and `org` are specified, `org` takes precedence.\n",
             "schema": {
               "type": "string"
             }
@@ -1678,17 +1685,17 @@
           {
             "in": "query",
             "name": "bucket",
-            "description": "Destination bucket for writes.",
+            "description": "The destination bucket for writes.",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "All points within batch are written to this bucket."
+              "description": "InfluxDB writes all points in the batch to this bucket."
             }
           },
           {
             "in": "query",
             "name": "precision",
-            "description": "Precision for unix timestamps in the line protocol of the request payload.",
+            "description": "The precision for unix timestamps in the line protocol batch.",
             "schema": {
               "$ref": "#/components/schemas/WritePrecision"
             }
@@ -1696,10 +1703,10 @@
         ],
         "responses": {
           "204": {
-            "description": "InfluxDB validated the request data format and accepted the data for writing to the bucket. Because data is written to InfluxDB asynchronously, data may not yet be written to a bucket. If some of your data didn’t write to the bucket, see [how to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)."
+            "description": "Success. InfluxDB validated the request and the data format and\naccepted the data for writing to the bucket.\nBecause data is written to InfluxDB asynchronously, data may not yet be written to a bucket.\n\n#### Related guides\n\n- [How to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).\n"
           },
           "400": {
-            "description": "Bad request. Line protocol data in the request is malformed. The response body contains the first malformed line in the data. InfluxDB rejected the batch and did not write any data.",
+            "description": "Bad request. The line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data.\nInfluxDB rejected the batch and did not write any data.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1756,7 +1763,7 @@
             }
           },
           "413": {
-            "description": "The request payload is too large. InfluxDB rejected the batch and did not write any data.\n#### InfluxDB Cloud:\n  - returns this error if the request exceeds the maximum [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits).\n  - returns `Content-Type: text/html` for this error.\n\n#### InfluxDB OSS:\n  - returns this error only if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.\n  - returns `Content-Type: application/json` for this error.\n",
+            "description": "The request payload is too large.\nInfluxDB rejected the batch and did not write any data.\n\n#### InfluxDB Cloud:\n\n - Returns this error if the payload exceeds the 50MB size limit.\n - Returns `Content-Type: text/html` for this error.\n\n#### InfluxDB OSS:\n \n - Returns this error only if the [Go (golang) `ioutil.ReadAll()`](https://pkg.go.dev/io/ioutil#ReadAll) function raises an error.\n - Returns `Content-Type: application/json` for this error.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1783,7 +1790,7 @@
             }
           },
           "429": {
-            "description": "#### InfluxDB Cloud:\n  - returns this error if a **read** or **write** request exceeds your\n    plan's [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum\n    [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits).\n  - returns `Retry-After` header that describes when to try the write again.\n\n#### InfluxDB OSS:\n  - doesn't return this error.\n",
+            "description": "Too many requests.\n\n#### InfluxDB Cloud\n\n  - Returns this error if a **read** or **write** request exceeds your\n    plan's [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum\n    [global limit](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#global-limits).\n  - Returns `Retry-After` header that describes when to try the write again.\n\n#### InfluxDB OSS\n\n  - Doesn't return this error.\n",
             "headers": {
               "Retry-After": {
                 "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
@@ -1813,7 +1820,7 @@
             }
           },
           "503": {
-            "description": "#### InfluxDB Cloud:\n  - returns this error if series cardinality exceeds your plan's\n    [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas).\n    See [how to resolve high series cardinality]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/resolve-high-cardinality/).\n\n#### InfluxDB OSS:\n  - returns this error if\n    the server is temporarily unavailable to accept writes.\n  - returns `Retry-After` header that describes when to try the write again.\n",
+            "description": "Service unavailable.\n\n#### InfluxDB Cloud\n\n  - Returns this error if series cardinality exceeds your plan's\n    [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas).\n    See [how to resolve high series cardinality]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/resolve-high-cardinality/).\n\n#### InfluxDB OSS\n\n  - Returns this error if\n    the server is temporarily unavailable to accept writes.\n  - Returns `Retry-After` header that describes when to try the write again.\n",
             "headers": {
               "Retry-After": {
                 "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
@@ -2180,7 +2187,7 @@
         "tags": [
           "Dashboards"
         ],
-        "summary": "Retrieve a Dashboard",
+        "summary": "Retrieve a dashboard",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -2204,7 +2211,7 @@
                 "properties"
               ]
             },
-            "description": "Includes the cell view properties in the response if set to `properties`"
+            "description": "If `properties`, includes the cell view properties in the response."
           }
         ],
         "responses": {
