@@ -3,8 +3,54 @@ post:
   tags:
     - Delete
   summary: Delete data
+  description: |
+    Deletes data from a bucket.
+
+    Use this endpoint to delete points from a bucket in a specified time range.
+
+    #### InfluxDB Cloud
+
+    - Does the following when you send a delete request:
+
+      1. Validates the request and queues the delete.
+      2. Returns _success_ if queued; _error_ otherwise.
+      3. Handles the delete asynchronously.
+
+    #### InfluxDB OSS
+
+    - Validates the request, handles the delete synchronously,
+      and then responds with success or failure.
+
+    #### Required permissions
+
+    - `write-buckets` or `write-bucket BUCKET_ID`.
+
+      `BUCKET_ID` is the ID of the destination bucket.
+
+    #### Rate limits (with InfluxDB Cloud)
+
+    `write` rate limits apply.
+    For more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).
+
+    #### Related guides
+
+    - [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).
+    - Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).
+    - Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)
+      and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).
   requestBody:
-    description: Deletes data from an InfluxDB bucket.
+    description: |
+      Time range parameters and an optional **delete predicate expression**.
+
+      To select points to delete within the specified time range, pass a
+      **delete predicate expression** in the `predicate` property of the request body.
+      If you don't pass a `predicate`, InfluxDB deletes all data with timestamps
+      in the specified time range.
+
+      #### Related guides
+
+      - [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).
+      - Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).
     required: true
     content:
       application/json:
@@ -14,51 +60,81 @@ post:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
       name: org
-      description: Specifies the organization to delete data from.
+      description: |
+        The organization to delete data from.
+        If you pass both `orgID` and `org`, they must both be valid.
+
+        #### InfluxDB Cloud
+
+        - Doesn't require `org` or `orgID`.
+        - Deletes data from the bucket in the organization associated with the authorization (API token).
+
+        #### InfluxDB OSS
+
+        - Requires either `org` or `orgID`.
       schema:
         type: string
-        description: Only points from this organization are deleted.
+        description: The organization name or ID.
     - in: query
       name: bucket
-      description: Specifies the bucket to delete data from.
+      description: |
+        The name or ID of the bucket to delete data from.
+        If you pass both `bucket` and `bucketID`, `bucketID` takes precedence.
       schema:
         type: string
-        description: Only points from this bucket are deleted.
+        description: The bucket name or ID.
     - in: query
       name: orgID
-      description: Specifies the organization ID of the resource.
+      description: |
+        The ID of the organization to delete data from.
+        If you pass both `orgID` and `org`, they must both be valid.
+
+        #### InfluxDB Cloud
+
+        - Doesn't require `org` or `orgID`.
+        - Deletes data from the bucket in the organization associated with the authorization (API token).
+
+        #### InfluxDB OSS
+
+        - Requires either `org` or `orgID`.
       schema:
         type: string
+        description: The organization ID.
     - in: query
       name: bucketID
-      description: Specifies the bucket ID to delete data from.
+      description: |
+        The ID of the bucket to delete data from.
+        If you pass both `bucket` and `bucketID`, `bucketID` takes precedence.
       schema:
         type: string
-        description: Only points from this bucket ID are deleted.
+        description: The bucket ID.
   responses:
     "204":
-      description: delete has been accepted
+      description: |
+        Success.
+
+        #### InfluxDB Cloud
+
+        - Validated and queued the request.
+        - Handles the delete asynchronously - the deletion might not have completed yet.
+
+        An HTTP `2xx` status code acknowledges that the write or delete is queued.
+        To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,
+        wait for a response before you send the next request.
+
+        Because writes are asynchronous, data might not yet be written
+        when you receive the response.
+
+        #### InfluxDB OSS
+
+        - Deleted the data.
     "400":
-      description: Invalid request.
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
     "404":
-      description: the bucket or organization is not found.
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
-    "403":
-      description: no token was sent or does not have sufficient permissions.
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: internal server error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"

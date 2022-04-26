@@ -4,21 +4,24 @@ post:
     - Query
   summary: Query data
   description: |
-    Retrieves data from InfluxDB buckets.
+    Retrieves data from buckets.
 
-    To query data, you need the following:
-    - **organization** – _See [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/#view-your-organization-id) for instructions on viewing your organization ID._
-    - **API token** – _See [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
-     for instructions on viewing your API token._
-    - **InfluxDB URL** – _See [InfluxDB URLs]({{% INFLUXDB_DOCS_URL %}}/reference/urls/)_.
-    - **Flux query** – _See [Flux](https://docs.influxdata.com/flux/v0.x/)._
+    Use this endpoint to send a Flux query request and retreive data from a bucket.
 
-    For more information and examples, see [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).
+    #### Rate limits (with InfluxDB Cloud)
+
+    `read` rate limits apply.
+    For more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).
+
+    #### Related guides
+
+    - [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).
+    - [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: header
       name: Accept-Encoding
-      description: Indicates the content encoding (usually a compression algorithm) that the client can understand.
+      description: The content encoding (usually a compression algorithm) that the client can understand.
       schema:
         type: string
         description: The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.
@@ -35,12 +38,32 @@ post:
           - application/vnd.flux
     - in: query
       name: org
-      description: Name of the organization executing the query. Accepts either the ID or Name. If you provide both `orgID` and `org`, `org` takes precedence.
+      description: |
+        The name or ID of the organization executing the query.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `org` or `orgID`.
+        - Queries the bucket in the organization associated with the authorization (API token).
+
+        #### InfluxDB OSS
+
+        - Requires either `org` or `orgID`.
       schema:
         type: string
     - in: query
       name: orgID
-      description: ID of the organization executing the query. If you provide both `orgID` and `org`, `org` takes precedence.
+      description: |
+        The ID of the organization executing the query.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `org` or `orgID`.
+        - Queries the bucket in the organization associated with the authorization (API token).
+
+        #### InfluxDB OSS
+
+        - Requires either `org` or `orgID`.
       schema:
         type: string
   requestBody:
@@ -58,20 +81,20 @@ post:
               |> filter(fn: (r) => r._measurement == "example-measurement")
   responses:
     "200":
-      description: Success. Returns query results.
+      description: Success. The response body contains query results.
       headers:
         Content-Encoding:
-          description: Lists any encodings (usually compression algorithms) that have been applied to the response payload.
+          description: Lists encodings (usually compression algorithms) that have been applied to the response payload.
           schema:
             type: string
             description: |
-              Content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
+              The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
             default: identity
             enum:
               - gzip
               - identity
         Trace-Id:
-          description: If generated, trace ID of the request.
+          description: The trace ID, if generated, of the request.
           schema:
             type: string
             description: Trace ID of a request.
@@ -101,9 +124,13 @@ post:
           schema:
             type: integer
             format: int32
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: Error processing query
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"

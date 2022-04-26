@@ -7,14 +7,34 @@ post:
     Writes data to a bucket.
 
     Use this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.
-    InfluxDB parses and validates line protocol in the request body,
-    responds with success or failure, and then handles the write asynchronously.
+
+    #### InfluxDB Cloud
+
+    - Takes the following steps when you send a write request:
+
+      1. Validates the request and queues the write.
+      2. If the write is queued, responds with an HTTP `204` status code.
+      3. Handles the write asynchronously and reaches eventual consistency.
+
+      An HTTP `2xx` status code acknowledges that the write or delete is queued.
+      To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,
+      wait for a response before you send the next request.
+
+      Because writes are asynchronous, data might not yet be written
+      when you receive the response.
+
+    #### InfluxDB OSS
+
+    - Validates the request, handles the write synchronously,
+      and then responds with success or failure.
+    - If all points were written successfully, returns `204`,
+      otherwise returns the first line that failed.
 
     #### Required permissions
 
-    - `write-buckets` or `write-bucket BUCKET_ID`
+    - `write-buckets` or `write-bucket BUCKET_ID`.
 
-    `BUCKET_ID` is the ID of the destination bucket.
+      `BUCKET_ID` is the ID of the destination bucket.
 
     #### Rate limits (with InfluxDB Cloud)
 
@@ -116,8 +136,18 @@ post:
       name: org
       description: |
         The destination organization for writes.
-        The database writes all points in the batch to this organization.
-        If you provide both `orgID` and `org` parameters, `org` takes precedence.
+        InfluxDB writes all points in the batch to this organization.
+        If you pass both `orgID` and `org`, they must both be valid.
+
+        #### InfluxDB Cloud
+
+        - Doesn't require `org` or `orgID`.
+        - Writes to the bucket in the organization associated with the authorization (API token).
+
+        #### InfluxDB OSS
+
+        - Requires either `org` or `orgID`.
+        - InfluxDB writes all points in the batch to this organization.
       required: true
       schema:
         type: string
@@ -126,16 +156,30 @@ post:
       name: orgID
       description: |
         The ID of the destination organization for writes.
-        If both `orgID` and `org` are specified, `org` takes precedence.
+        If you pass both `orgID` and `org`, they must both be valid.
+
+        #### InfluxDB Cloud
+
+        - Doesn't require `org` or `orgID`.
+        - Writes to the bucket in the organization associated with the authorization (API token).
+
+
+        #### InfluxDB OSS
+
+        - Requires either `org` or `orgID`.
+        - InfluxDB writes all points in the batch to this organization.
+
       schema:
         type: string
     - in: query
       name: bucket
-      description: The destination bucket for writes.
+      description: |
+        The destination bucket for writes.
+        InfluxDB writes all points in the batch to this bucket.
       required: true
       schema:
         type: string
-        description: InfluxDB writes all points in the batch to this bucket.
+        description: The bucket name or ID.
     - in: query
       name: precision
       description: The precision for unix timestamps in the line protocol batch.
@@ -144,16 +188,24 @@ post:
   responses:
     "204":
       description: |
-        Success. InfluxDB validated the request and the data format and
-        accepted the data for writing to the bucket.
-        Because data is written to InfluxDB asynchronously, data may not yet be written to a bucket.
+        Success.
+
+        #### InfluxDB Cloud
+
+        - Validated and queued the request.
+        - Handles the write asynchronously - the write might not have completed yet.
+
+        #### InfluxDB OSS
+
+        - Successfully wrote all points in the batch.
 
         #### Related guides
 
         - [How to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).
     "400":
       description: |
-        Bad request. The line protocol data in the request is malformed.
+        Bad request.
+        The line protocol data in the request is malformed.
         The response body contains the first malformed line in the data.
         InfluxDB rejected the batch and did not write any data.
       content:
@@ -167,10 +219,6 @@ post:
                "code": "invalid",
                "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
               }
-    "401":
-      $ref: "../../common/responses/AuthorizationError.yml"
-    "404":
-      $ref: "../../common/responses/ResourceNotFoundError.yml"
     "413":
       description: |
        The request payload is too large.
@@ -231,8 +279,6 @@ post:
           schema:
             type: integer
             format: int32
-    "500":
-      $ref: "../../common/responses/InternalServerError.yml"
     "503":
       description: |
         Service unavailable.
@@ -254,5 +300,11 @@ post:
           schema:
             type: integer
             format: int32
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      $ref: "../../common/responses/ServerError.yml"
+      $ref: "../responses/ServerError.yml"
