@@ -114,3 +114,53 @@ Everything (nearly) in the `contracts` directory is generated and should not be 
 ### Notes:
 
 There are some limitations to this work. It is important at this time to ensure any definitions consumable from our UI are compatible with, and consumable by [oats](https://github.com/influxdata/oats). One of the OpenAPI v3 compatible specifications `oats` cannot currently handle is the `servers` override, so we keep them in separate swagger files. This is exemplified in `cloud-priv.yml` and it's `servers` key; the major difference between `cloud-priv.yml` and `cloud.yml`.
+
+## How to contribute
+
+To update and generate contracts, do the following:
+
+1. Clone this repository (influxdata/openapi).
+2. If you haven't already, [install and run Docker](https://docs.docker.com/get-docker/).
+3. Review the [guidelines](#guidelines).
+4. Edit [`src`](./src) files.
+5. With Docker running, run `make generate-all` to generate new API contracts.
+6. Commit the result, including the generated `./contracts` files, and create a pull request.
+
+### Guidelines
+
+Follow these guidelines to add or update specifications:
+
+- [Add or update paths and operations](#add-or-update-paths-and-operations)
+- [Add or update service definitions](#add-or-update-service-definitions)
+- [What to do when Cloud and OSS diverge](#what-to-do-when-cloud-and-oss-diverge)
+
+### Add or update paths and operations
+
+If you're adding or updating paths and operations (`get`, `post`, etc.), follow our [path template](./docs/templates/pathTemplate.yml) for `summary`, `description`, and `example` elements.
+
+### Add or update service definitions
+
+To add a service API definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product API maintainers to copy the service-specific ("internal") paths and components into the respective API definition (cloud, cloud-priv, or oss) without modifying references. For more information on how to add a new service api defnition, see [src/svc/README](./src/svc/README.md).
+
+### What to do when Cloud and OSS diverge
+
+For information on what to do when platform APIs drift, see [src/README](./src/README.md).
+
+### Add tag content or describe a group of paths
+
+API reference docs
+([OSS](https://docs.influxdata.com/influxdb/v2.2/api/),
+[Cloud](https://docs.influxdata.com/influxdb/cloud/api/))
+rely on the following tag elements and vendor extensions:
+
+- `description` Tag field: describes related endpoints (Paths) and their common
+  features.
+- `x-traitTag: true` Tag field: renders sections with information about general API features and use.
+- `x-tagGroups` Root element: renders endpoint (Path) groups in navigation menus.
+
+To edit these elements, see the platform-specific files:
+
+- `src/[platform]/tags.yml`
+- `src/[platform]/tag-groups.yml`
+
+For more information, see [influxdata/docs-v2 /api-docs README](https://github.com/influxdata/docs-v2/blob/master/api-docs/README.md).
