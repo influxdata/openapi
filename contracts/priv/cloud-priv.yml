@@ -408,6 +408,34 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
+  /provision/delete:
+    post:
+      operationId: PostProvisionDelete
+      tags:
+        - ProvisionDelete
+      description: 'Delete an organization, associated resources, and all users belonging only to that single organization. Idempotent.'
+      requestBody:
+        description: Organization ID to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionDeleteRequest'
+      responses:
+        '204':
+          description: Organization deleted
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Organization ID not provided
+        '401':
+          $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to delete an organization
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: Invalid organization ID
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
   /provision/user:
     put:
       operationId: PutProvisionUser
@@ -853,6 +881,14 @@ components:
         - user
         - orgID
         - role
+    ProvisionDeleteRequest:
+      type: object
+      properties:
+        orgID:
+          type: string
+          description: organization id to delete
+      required:
+        - orgID
     ProvisionUserResponse:
       type: object
       properties:
