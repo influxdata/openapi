@@ -1,8 +1,8 @@
 # When APIs Drift
 
-Within this (`src`) directory, you will find all API resource definitions. OSS/Cloud specific resources are defined in the `src/oss` and `src/cloud` directories respectively. When a shared type drifts, it will need to be removed from `common` and placed into the resource type's directory within the platform (cloud/oss) specific directory. Caution should be exercized so as to avoid stale references in complex resource types.
+Within this (`src`) directory, you will find all API resource definitions. OSS/Cloud specific resources are defined in the `src/oss` and `src/cloud` directories respectively. When a shared type drifts, it will need to be removed from `common` and placed into the resource type's directory within the platform (cloud/oss) specific directory. Caution should be exercised to avoid stale references in complex resource types.
 
-For example if it there was some cloud only changes to the `AddResourceMemberRequestBody` type, one would:
+If there was some cloud only changes to the `AddResourceMemberRequestBody` type, one would:
 ```sh
 # copy the type to the platform where the type has changed
 copy src/common/schemas/AddResourceMemberRequestBody.yml src/cloud/schemas/AddResourceMemberRequestBody.yml
