@@ -1118,6 +1118,27 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /operator/providers:
+    get:
+      operationId: GetProvidersInfo
+      tags:
+        - Operators
+        - Regions
+        - Providers
+      summary: Get a list of providers and their regions
+      responses:
+        '200':
+          description: Provider and Region Info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorProvidersResponse'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   /operator/orgs:
     get:
       operationId: GetOrganizations
@@ -1141,6 +1162,20 @@ paths:
               $ref: '#/components/schemas/AccountType'
           required: false
           description: A list of account types to filter on
+        - in: query
+          name: providers
+          schema:
+            type: array
+            items: string
+          required: false
+          description: An option list of providers to filter on
+        - in: query
+          name: regions
+          schema:
+            type: array
+            items: string
+          required: false
+          description: An option list of regions to filter on
       responses:
         '200':
           description: Organization
@@ -1438,6 +1473,43 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OperatorAccount'
+    OperatorProvider:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: name of the provider
+        title:
+          type: string
+          description: title of the provider
+        isAvailable:
+          type: boolean
+          description: the availability of the provider
+      required:
+        - provider
+        - title
+        - isAvailable
+    OperatorProviders:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperatorProvider'
+    OperatorProvidersResponse:
+      type: object
+      properties:
+        providers:
+          $ref: '#/components/schemas/OperatorProviders'
+        regions:
+          type: object
+          properties:
+            Azure:
+              $ref: '#/components/schemas/OperatorRegions'
+            AWS:
+              $ref: '#/components/schemas/OperatorRegions'
+            GCM:
+              $ref: '#/components/schemas/OperatorRegions'
+      required:
+        - providers
+        - regions
     OperatorOrgLimits:
       type: object
       properties:
@@ -1500,6 +1572,42 @@ components:
             - $ref: '#/components/schemas/RestrictedLimit'
             - $ref: '#/components/schemas/Limit'
               maximum: 1000000
+    OperatorRegion:
+      type: object
+      properties:
+        region:
+          type: string
+          description: the name of the region
+        title:
+          type: string
+          description: the title of the region
+        provider:
+          type: string
+          description: the provider the region belong to
+        priority:
+          type: integer
+          description: the order priority of the region
+        isAvailable:
+          type: boolean
+          description: the availability of the provider
+        isBeta:
+          type: boolean
+          description: determines if the region is in beta
+        isPrivate:
+          type: boolean
+          description: determines if the region is a private region
+      required:
+        - region
+        - title
+        - provider
+        - priority
+        - isAvailable
+        - isBeta
+        - isPrivate
+    OperatorRegions:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperatorRegion'
     MarketplaceSubscription:
       properties:
         marketplace:
