@@ -1509,6 +1509,179 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /legacy/query:
+    servers:
+      - url: /private
+    get:
+      operationId: GetLegacyQuery
+      tags:
+        - Legacy Query
+      summary: Query with the 1.x compatibility API
+      description: Queries InfluxDB using InfluxQL.
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: |
+              Media type that the client can understand.
+
+              **Note**: With `application/csv`, query results include [unix timestamps]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#unix-timestamp) instead of RFC3339 timestamps.
+            default: application/json
+            enum:
+              - application/json
+              - application/csv
+              - text/csv
+              - application/x-msgpack
+        - in: header
+          name: Accept-Encoding
+          description: The content encoding (usually a compression algorithm) that the client can understand.
+          schema:
+            type: string
+            description: 'The content coding. Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.'
+            default: identity
+            enum:
+              - gzip
+              - identity
+        - in: header
+          name: Content-Type
+          schema:
+            type: string
+            enum:
+              - application/json
+        - in: query
+          name: u
+          description: The InfluxDB 1.x username to authenticate the request.
+          schema:
+            type: string
+        - in: query
+          name: p
+          description: The InfluxDB 1.x password to authenticate the request.
+          schema:
+            type: string
+        - in: query
+          name: db
+          required: true
+          description: |
+            The database to query data from.
+            This is mapped to an InfluxDB [bucket]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
+            For more information, see [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/api/influxdb-1x/dbrp/).
+          schema:
+            type: string
+        - in: query
+          name: rp
+          description: |
+            The retention policy to query data from.
+            This is mapped to an InfluxDB [bucket]({{% INFLUXDB_DOCS_URL %}}/influxdb/v2.2/reference/glossary/#bucket).
+            For more information, see [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/api/influxdb-1x/dbrp/).
+          schema:
+            type: string
+        - in: query
+          name: q
+          required: true
+          description: 'The InfluxQL query to execute. To execute multiple queries, delimit queries with a semicolon (`;`).'
+          schema:
+            type: string
+        - in: query
+          name: epoch
+          description: 'Return results with [unix (epoch) timestamps]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#unix-timestamp) in the specified precision instead of RFC3339 timestamps with nanosecond precision.'
+          schema:
+            type: string
+            enum:
+              - ns
+              - u
+              - µ
+              - ms
+              - s
+              - m
+              - h
+      responses:
+        '200':
+          description: Query results
+          headers:
+            Content-Encoding:
+              description: Lists encodings (usually compression algorithms) that have been applied to the response payload.
+              schema:
+                type: string
+                description: |
+                  The content coding:
+                    - `gzip`: compressed data
+                    - `identity`: unmodified, uncompressed data.
+                default: identity
+                enum:
+                  - gzip
+                  - identity
+            Trace-Id:
+              description: 'The trace ID, if generated, of the request.'
+              schema:
+                type: string
+                description: Trace ID of a request.
+          content:
+            text/csv:
+              schema:
+                description: CSV Response to InfluxQL Query
+                type: string
+                example: |
+                  name,tags,time,test_field,test_tag test_measurement,,1603740794286107366,1,tag_value test_measurement,,1603740870053205649,2,tag_value test_measurement,,1603741221085428881,3,tag_value
+            application/csv:
+              schema:
+                $ref: '#/paths/~1legacy~1query/get/responses/200/content/text~1csv/schema'
+            application/json:
+              schema:
+                description: JSON Response to InfluxQL Query
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        statement_id:
+                          type: integer
+                        series:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              columns:
+                                type: array
+                                items:
+                                  type: string
+                              values:
+                                type: array
+                                items:
+                                  type: array
+                                  items: {}
+            application/x-msgpack:
+              schema:
+                type: string
+                format: binary
+        '429':
+          description: |
+            #### InfluxDB Cloud:
+              - returns this error if a **read** or **write** request exceeds your
+                plan's [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas)
+                or if a **delete** request exceeds the maximum
+                [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits)
+              - returns `Retry-After` header that describes when to try the write again.
+
+            #### InfluxDB OSS:
+              - doesn't return this error.
+          headers:
+            Retry-After:
+              description: A non-negative decimal integer indicating the seconds to delay after the response is received.
+              schema:
+                type: integer
+                format: int32
+        default:
+          description: Error processing query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
   /variables:
     get:
       operationId: GetVariables
