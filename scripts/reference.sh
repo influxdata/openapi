@@ -8,7 +8,7 @@ mkdir -p $TCONTRACTS/ref
 echo "Aggregating cloud swaggers"
 swagrag \
   -file ${CONTRACTS}/cloud.yml \
-  -file ${CONTRACTS}/legacy-diff.yml \
+  -file ${CONTRACTS}/legacy.yml \
   -file ${CONTRACTS}/mapsd.yml \
   -file ${CONTRACTS}/invocable-scripts.yml \
   -api-title "Complete InfluxDB Cloud API" \
@@ -19,7 +19,7 @@ swagrag \
 echo "Aggregating oss swaggers"
 swagrag \
   -file ${CONTRACTS}/oss.yml \
-  -file ${CONTRACTS}/legacy-diff.yml \
+  -file ${CONTRACTS}/legacy.yml \
   -file ${CONTRACTS}/mapsd.yml \
   -api-title "Complete InfluxDB OSS API" \
   | sed -e 's|^  /api/v2/debug|  /debug|' \

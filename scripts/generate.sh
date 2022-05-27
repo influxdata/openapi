@@ -43,7 +43,7 @@ swagger-cli bundle ${CONTRACTS}/common.yml --outfile ${CONTRACTS}/common.yml --t
 rm src/.common_gen.yml
 
 # generate legacy-only contract
-swagger-cli bundle src/legacy.yml --outfile ${CONTRACTS}/legacy-diff.yml --type yaml
+swagger-cli bundle src/legacy.yml --outfile ${CONTRACTS}/legacy.yml --type yaml
 
 # generate platform-specific contracts
 swagger-cli bundle src/oss.yml --outfile ${CONTRACTS}/oss-diff.yml --type yaml
