@@ -1,0 +1,124 @@
+openapi: 3.0.0
+info:
+  title: uiproxyd
+  version: 1.0.0
+servers:
+  - url: /api/v2private
+paths:
+  /uiproxy/mapToken:
+    get:
+      summary: Get a mapbox token
+      operationId: getMapboxToken
+      responses:
+        '200':
+          description: Used to get a 1 hour temp token for Mapbox using secret token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+  /uiproxy/sfdc-support:
+    post:
+      summary: Creates a new issue in the SFDC support queue
+      operationId: postSFDCSupport
+      requestBody:
+        required: true
+        description: User input to create an SFDC Support Ticket
+        content:
+          application/json:
+            schema:
+              properties:
+                description:
+                  type: string
+                email:
+                  type: string
+                severity:
+                  type: string
+                subject:
+                  type: string
+      responses:
+        '204':
+          description: Success. The support request was created by SalesForce
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+    Error:
+      properties:
+        code:
+          description: code is the machine-readable error code.
+          readOnly: true
+          type: string
+          enum:
+            - internal error
+            - not found
+            - conflict
+            - invalid
+            - unprocessable entity
+            - empty value
+            - unavailable
+            - forbidden
+            - too many requests
+            - unauthorized
+            - method not allowed
+            - request too large
+            - unsupported media type
+        message:
+          readOnly: true
+          description: Human-readable message.
+          type: string
+        op:
+          readOnly: true
+          description: Describes the logical code operation when the error occurred. Useful for debugging.
+          type: string
+        err:
+          readOnly: true
+          description: Stack of errors that occurred during processing of the request. Useful for debugging.
+          type: string
+      required:
+        - code
+  requestBodies: ./svc/uiproxyd/requestBodies/SFDCSupportParams.yml
+  responses:
+    ServerError:
+      description: Non 2XX error response from server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationError:
+      description: |
+        Unauthorized. The error may indicate one of the following:
+
+          * The `Authorization: Token` header is missing or malformed.
+          * The API token value is missing from the header.
+          * The token does not have sufficient permissions to write to this organization and bucket.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tokenNotAuthorized:
+              summary: Token is not authorized to access a resource
+              value:
+                code: unauthorized
+                message: unauthorized access
+    InternalServerError:
+      description: |
+        Internal server error.
+        The server encountered an unexpected situation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

@@ -144,6 +144,118 @@ paths:
         default:
           description: unexpected error
           $ref: '#/components/responses/ServerError'
+    patch:
+      tags:
+        - Limits
+      summary: Patch limit
+      parameters:
+        - in: path
+          name: orgID
+          description: The identifier of the organization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: fields in the limit that require updates
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: These are org limits similar to those configured in/by quartz.
+              properties:
+                orgID:
+                  type: string
+                rate:
+                  type: object
+                  properties:
+                    queryTime:
+                      type: integer
+                      description: Query Time in nanoseconds
+                    readKBs:
+                      type: integer
+                      description: Query limit in kb/sec. 0 is unlimited.
+                    concurrentReadRequests:
+                      type: integer
+                      description: Allowed concurrent queries. 0 is unlimited.
+                    writeKBs:
+                      type: integer
+                      description: Write limit in kb/sec. 0 is unlimited.
+                    concurrentWriteRequests:
+                      type: integer
+                      description: Allowed concurrent writes. 0 is unlimited.
+                    cardinality:
+                      type: integer
+                      description: Allowed organization total cardinality. 0 is unlimited.
+                    concurrentDeleteRequests:
+                      type: integer
+                      description: Allowed organization concurrent outstanding delete requests.
+                    deleteRequestsPerSecond:
+                      type: integer
+                      description: Allowed organization delete request rate.
+                bucket:
+                  type: object
+                  properties:
+                    maxBuckets:
+                      type: integer
+                    maxRetentionDuration:
+                      type: integer
+                      description: Max bucket retention duration in nanoseconds. 0 is unlimited.
+                task:
+                  type: object
+                  properties:
+                    maxTasks:
+                      type: integer
+                  required:
+                    - maxTasks
+                dashboard:
+                  type: object
+                  properties:
+                    maxDashboards:
+                      type: integer
+                  required:
+                    - maxDashboards
+                check:
+                  type: object
+                  properties:
+                    maxChecks:
+                      type: integer
+                  required:
+                    - maxChecks
+                notificationRule:
+                  type: object
+                  properties:
+                    maxNotifications:
+                      type: integer
+                    blockedNotificationRules:
+                      type: string
+                      description: comma separated list of notification rules
+                      example: 'http,pagerduty'
+                notificationEndpoint:
+                  type: object
+                  properties:
+                    blockedNotificationEndpoints:
+                      type: string
+                      description: comma separated list of notification endpoints
+                      example: 'http,pagerduty'
+                  required:
+                    - blockNotificationEndpoints
+      responses:
+        '200':
+          description: The updated limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Limit'
+        '422':
+          description: Request body could not be processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+        default:
+          description: unexpected error
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgID}/limits/status':
     get:
       tags:
@@ -236,6 +348,214 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /provision:
+    put:
+      operationId: PutProvision
+      tags:
+        - Provision
+      description: 'Create a new user, organization, and bucket. Idempotent. Requests can be retried.'
+      requestBody:
+        description: Create user and org with supplied IDs
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionResponse'
+          description: 'The user name and ID, the org name and ID, the token for user if requested'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: 'Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names, and invalid limits'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Insufficient credentials to create an organization
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: |
+            Unprocessable Entity
+                      - Retention seconds that are higher than max allowed.
+            Conflict
+                      - user with ID exists with different name
+                      - org with ID exists with different name
+                      - user name already in use with different id
+                      - org name already in use with differnet id
+        '501':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+  /provision/delete:
+    post:
+      operationId: PostProvisionDelete
+      tags:
+        - ProvisionDelete
+      description: 'Delete an organization, associated resources, and all users belonging only to that single organization. Idempotent.'
+      requestBody:
+        description: Organization ID to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionDeleteRequest'
+      responses:
+        '204':
+          description: Organization deleted
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Organization ID not provided
+        '401':
+          $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to delete an organization
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: Invalid organization ID
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+  /provision/user:
+    put:
+      operationId: PutProvisionUser
+      tags:
+        - ProvisionUser
+      summary: Create/Add a user to an existing org. Creates a user if doesn't exist. Idempotent
+      parameters:
+        - in: header
+          name: Zap-Trace-Span
+          description: OpenTracing span context
+          example:
+            trace_id: '1'
+            span_id: '1'
+            baggage:
+              key: value
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: User to create and org id to add user to
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvisionUserResponse'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: 'Bad request. Data in request is invalid. Examples include Invalid IDs, invalid names.'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to provision a user
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: |
+            Unprocessable Entity
+                      - Org with ID does not exist.
+            Conflict
+                      - user with ID exists with different name
+                      - user name already in use with different id
+        '501':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError'
+          description: Internal Server Error. Request can be retried.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+  /provision/suspend:
+    post:
+      operationId: PostProvisionSuspend
+      tags:
+        - ProvisionSuspend
+      description: Suspend an organization. Idempotent.
+      requestBody:
+        description: Organization ID to suspend
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionSuspendRequest'
+      responses:
+        '204':
+          description: Organization suspended
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Organization ID not provided
+        '401':
+          $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to suspend an organization
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: Invalid organization ID
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+  /provision/unsuspend:
+    post:
+      operationId: PostProvisionUnsuspend
+      tags:
+        - ProvisionUnsuspend
+      description: Unsuspend an organization. Idempotent.
+      requestBody:
+        description: Organization ID to unsuspend
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionSuspendRequest'
+      responses:
+        '204':
+          description: Organization unsuspendd
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Organization ID not provided
+        '401':
+          $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to unsuspend an organization
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: Invalid organization ID
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
 components:
   schemas:
     OnboardingRequest:
@@ -574,6 +894,82 @@ components:
                     user:
                       readOnly: true
                       $ref: '#/components/schemas/Link'
+    ProvisionRequest:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Identity'
+        org:
+          $ref: '#/components/schemas/Identity'
+        config:
+          type: object
+          properties:
+            bucket:
+              type: string
+              description: name of non system bucket
+            retentionPeriodSeconds:
+              type: integer
+              description: retention period of non system bucket
+            limit:
+              $ref: '#/components/schemas/Limit'
+        returnToken:
+          type: boolean
+          description: if true will return the auth token in the response
+      required:
+        - user
+        - org
+        - config
+    ProvisionUserRequest:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Identity'
+        orgID:
+          type: string
+          description: organization id to add user to
+        role:
+          type: string
+          description: Role of the User
+          enum:
+            - owner
+            - member
+      required:
+        - user
+        - orgID
+        - role
+    ProvisionDeleteRequest:
+      type: object
+      properties:
+        orgID:
+          type: string
+          description: organization id to delete
+      required:
+        - orgID
+    ProvisionUserResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Identity'
+        org:
+          $ref: '#/components/schemas/Identity'
+    ProvisionSuspendRequest:
+      type: object
+      properties:
+        orgID:
+          type: string
+          description: organization id to suspend or unsuspend
+      required:
+        - orgID
+    ProvisionResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Identity'
+        org:
+          $ref: '#/components/schemas/IdentityWithLinks'
+        token:
+          type: string
+          description: the token for the created user
     InvalidRequestError:
       properties:
         code:
@@ -662,6 +1058,22 @@ components:
         - domain
         - redirectURL
         - state
+    Identity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    IdentityWithLinks:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        links:
+          $ref: '#/components/schemas/Links'
     LimitEvent:
       type: object
       properties:

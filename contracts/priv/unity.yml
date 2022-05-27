@@ -29,6 +29,32 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  '/users/{userIdpeId}':
+    get:
+      operationId: GetUser
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userIdpeId
+          schema:
+            type: string
+          required: true
+          description: The IDPE ID of the user
+      summary: Get the profile for the current user
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   /account:
     delete:
       operationId: DeleteAccount
@@ -64,7 +90,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Account'
+                  $ref: '#/components/schemas/UserAccount'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -72,6 +98,32 @@ paths:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
   '/accounts/{accountId}':
+    get:
+      operationId: GetAccountsId
+      tags:
+        - Accounts
+      summary: Get an account
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to get.
+      responses:
+        '200':
+          description: The Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
     patch:
       operationId: PatchAccountsId
       tags:
@@ -148,6 +200,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BillingInfo'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /identity:
+    get:
+      operationId: GetIdentity
+      tags:
+        - Identity
+        - User
+        - Account
+        - Organization
+      responses:
+        '200':
+          description: 'identity represented by the active user, account, and org'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identity'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -486,6 +559,110 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /orgs:
+    get:
+      operationId: GetOrganizations
+      tags:
+        - Organizations
+      summary: Get the list of Organizations for the current user and account
+      responses:
+        '200':
+          description: Organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSummaries'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/orgs/{orgId}':
+    get:
+      operationId: GetOrgsId
+      tags:
+        - Organizations
+      summary: Get an organization
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE ID of the organization to get.
+      responses:
+        '200':
+          description: Organization returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+    patch:
+      operationId: PatchOrgsId
+      tags:
+        - Organizations
+      summary: Update an organization
+      requestBody:
+        description: Organization update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Name of the organization
+                description:
+                  type: string
+                  description: Description of the organization
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE ID of the organization to update.
+      responses:
+        '200':
+          description: Organization updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /orgs/default:
+    put:
+      operationId: PutDefaultOrganization
+      tags:
+        - Organization
+      requestBody:
+        description: The organization to set as the user's default organization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationDefaultRequest'
+      responses:
+        '204':
+          description: default account set
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}/invites':
     get:
       operationId: GetInvites
@@ -816,6 +993,14 @@ paths:
             type: string
           required: false
           description: The partial email of any user in an account
+        - in: query
+          name: accountTypes
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AccountType'
+          required: false
+          description: A list of account types to filter on
       responses:
         '200':
           description: Account
@@ -855,7 +1040,7 @@ paths:
                       organizations:
                         type: array
                         description: organizations in the account
-                        $ref: '#/components/schemas/Organizations'
+                        $ref: '#/components/schemas/OperatorOrganizations'
                   - required:
                       - organizations
         '401':
@@ -933,6 +1118,27 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /operator/providers:
+    get:
+      operationId: GetProvidersInfo
+      tags:
+        - Operators
+        - Regions
+        - Providers
+      summary: Get a list of providers and their regions
+      responses:
+        '200':
+          description: Provider and Region Info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorProvidersResponse'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   /operator/orgs:
     get:
       operationId: GetOrganizations
@@ -948,13 +1154,35 @@ paths:
             type: string
           required: false
           description: The partial idpe id of the org being searched
+        - in: query
+          name: accountTypes
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/AccountType'
+          required: false
+          description: A list of account types to filter on
+        - in: query
+          name: providers
+          schema:
+            type: array
+            items: string
+          required: false
+          description: An option list of providers to filter on
+        - in: query
+          name: regions
+          schema:
+            type: array
+            items: string
+          required: false
+          description: An option list of regions to filter on
       responses:
         '200':
           description: Organization
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organizations'
+                $ref: '#/components/schemas/OperatorOrganizations'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -983,7 +1211,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/Organization'
+                  - $ref: '#/components/schemas/OperatorOrganization'
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
@@ -1146,6 +1374,33 @@ components:
         id:
           type: number
           description: account id in quartz
+        name:
+          type: string
+          description: name of the account
+        type:
+          type: string
+          enum:
+            - contract
+            - free
+            - pay_as_you_go
+          description: the type of the account
+        billing_provider:
+          type: string
+          nullable: true
+          enum:
+            - aws
+            - azure
+            - gcm
+            - zuora
+          description: the billing provider of the account. null if a free account
+      required:
+        - id
+        - name
+    UserAccount:
+      properties:
+        id:
+          type: number
+          description: account id in quartz
         isActive:
           type: boolean
           description: is this the currently active account in the session?
@@ -1201,7 +1456,7 @@ components:
           description: billing contact for the account
         users:
           type: array
-          $ref: '#/components/schemas/Users'
+          $ref: '#/components/schemas/OperatorUsers'
         marketplaceSubscription:
           $ref: '#/components/schemas/MarketplaceSubscription'
           description: 'which marketplace, nil if none'
@@ -1218,6 +1473,43 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OperatorAccount'
+    OperatorProvider:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: name of the provider
+        title:
+          type: string
+          description: title of the provider
+        isAvailable:
+          type: boolean
+          description: the availability of the provider
+      required:
+        - provider
+        - title
+        - isAvailable
+    OperatorProviders:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperatorProvider'
+    OperatorProvidersResponse:
+      type: object
+      properties:
+        providers:
+          $ref: '#/components/schemas/OperatorProviders'
+        regions:
+          type: object
+          properties:
+            Azure:
+              $ref: '#/components/schemas/OperatorRegions'
+            AWS:
+              $ref: '#/components/schemas/OperatorRegions'
+            GCM:
+              $ref: '#/components/schemas/OperatorRegions'
+      required:
+        - providers
+        - regions
     OperatorOrgLimits:
       type: object
       properties:
@@ -1280,6 +1572,42 @@ components:
             - $ref: '#/components/schemas/RestrictedLimit'
             - $ref: '#/components/schemas/Limit'
               maximum: 1000000
+    OperatorRegion:
+      type: object
+      properties:
+        region:
+          type: string
+          description: the name of the region
+        title:
+          type: string
+          description: the title of the region
+        provider:
+          type: string
+          description: the provider the region belong to
+        priority:
+          type: integer
+          description: the order priority of the region
+        isAvailable:
+          type: boolean
+          description: the availability of the provider
+        isBeta:
+          type: boolean
+          description: determines if the region is in beta
+        isPrivate:
+          type: boolean
+          description: determines if the region is a private region
+      required:
+        - region
+        - title
+        - provider
+        - priority
+        - isAvailable
+        - isBeta
+        - isPrivate
+    OperatorRegions:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperatorRegion'
     MarketplaceSubscription:
       properties:
         marketplace:
@@ -1315,12 +1643,6 @@ components:
         lastName:
           type: string
           description: user's last name
-        operator:
-          type: boolean
-          description: whether or not the user is an operator
-        sfdcContactId:
-          type: string
-          description: the contact id of the user in salesforce
       required:
         - firstName
         - id
@@ -1496,6 +1818,89 @@ components:
         isPaygCreditActive:
           description: whether the user is a part of the payg credit
           type: boolean
+    Identity:
+      properties:
+        user:
+          $ref: '#/components/schemas/IdentityUser'
+        account:
+          $ref: '#/components/schemas/IdentityAccount'
+        org:
+          $ref: '#/components/schemas/IdentityOrganization'
+      required:
+        - user
+        - account
+        - org
+    IdentityUser:
+      properties:
+        id:
+          type: string
+          description: user's id in idpe
+        email:
+          type: string
+          description: user's email
+        firstName:
+          type: string
+          nullable: true
+          description: user's first name
+        lastName:
+          type: string
+          nullable: true
+          description: user's last name
+        operatorRole:
+          type: string
+          nullable: true
+          enum:
+            - read-only
+            - read-write
+          description: role permission whether this operator is "read-only" | "read-write"
+        accountCount:
+          type: integer
+          description: number of accounts the user belongs to
+        orgCount:
+          type: integer
+          description: number of orgs the user belongs to within their active account
+      required:
+        - id
+        - email
+        - accountCount
+        - orgCount
+    IdentityAccount:
+      properties:
+        id:
+          type: number
+          description: account id in quartz
+        name:
+          type: string
+          description: name of the account
+        type:
+          $ref: '#/components/schemas/AccountType'
+        accountCreatedAt:
+          type: string
+          description: an ISO8601 timestamp that indicates when the account was created
+        paygCreditStartDate:
+          type: string
+          nullable: true
+          description: 'an ISO8601 timestamp indicating if an account is part of the payg credit experiment, nil if not'
+      required:
+        - id
+        - accountCreatedAt
+        - name
+        - type
+    IdentityOrganization:
+      properties:
+        id:
+          type: string
+          description: idpe ID of the org
+        name:
+          type: string
+          description: name of the org
+        clusterHost:
+          type: string
+          description: the url of the current cluster
+      required:
+        - id
+        - name
+        - clusterHost
     Invite:
       properties:
         id:
@@ -1700,12 +2105,16 @@ components:
             - read-only
             - read-write
           description: role permission whether this operator is "read-only" | "read-write"
+        accountCreatedAt:
+          type: string
+          description: an ISO8601 timestamp that indicates when the account was created
         paygCreditStartDate:
           type: string
           nullable: true
-          description: 'a timestamp indicates if an account is part of the payg credit experiment, nil if not'
+          description: 'an ISO8601 timestamp indicates if an account is part of the payg credit experiment, nil if not'
       required:
         - id
+        - accountCreatedAt
         - accountType
         - billingProvider
         - clusterHost
@@ -1718,7 +2127,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/OrgUser'
-    Organization:
+    OperatorOrganization:
       type: object
       properties:
         idpeId:
@@ -1748,10 +2157,42 @@ components:
         - region
         - provider
         - date
-    Organizations:
+    OperatorOrganizations:
       type: array
       items:
-        $ref: '#/components/schemas/Organization'
+        $ref: '#/components/schemas/OperatorOrganization'
+    OperatorUser:
+      properties:
+        email:
+          type: string
+          description: user's email
+        firstName:
+          type: string
+          description: user's first name
+        id:
+          type: string
+          description: user's id in quartz
+        idpeId:
+          type: string
+          description: user's id in idpe
+        lastName:
+          type: string
+          description: user's last name
+        operator:
+          type: boolean
+          description: whether or not the user is an operator
+        sfdcContactId:
+          type: string
+          description: the contact id of the user in salesforce
+      required:
+        - firstName
+        - id
+        - idpeId
+        - lastName
+    OperatorUsers:
+      type: array
+      items:
+        $ref: '#/components/schemas/OperatorUser'
     RelatedAccount:
       description: Subset of Account data related to the organization
       type: object
@@ -1775,6 +2216,72 @@ components:
         - balance
         - type
         - updatedAt
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          description: IDPE Id of the org
+        name:
+          type: string
+          description: name of the org
+        description:
+          type: string
+          description: the description of the organization
+        creationDate:
+          type: string
+          format: date-time
+          description: the date the organization was created
+        regionCode:
+          type: string
+          description: the canonical code for the region where the organization is hosted
+        regionName:
+          type: string
+          description: the name of the region where the organization is hosted
+        provider:
+          type: string
+          description: provider of the org
+        isRegionBeta:
+          type: boolean
+          description: is the region of the organization in beta
+        clusterHost:
+          type: string
+          description: the url of the current cluster
+      required:
+        - id
+        - clusterHost
+        - isRegionBeta
+        - regionCode
+        - regionName
+    OrganizationSummaries:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: IDPE ID of the org
+          name:
+            type: string
+            description: name of the org
+          isActive:
+            type: boolean
+            description: is this the currently active organization in the session?
+          isDefault:
+            type: boolean
+            description: is this the user's default organization in this account?
+        required:
+          - id
+          - name
+          - isActive
+          - isDefault
+    OrganizationDefaultRequest:
+      properties:
+        id:
+          type: string
+          description: IDPE id of the organization
+      required:
+        - id
     OrgLimits:
       type: object
       properties:

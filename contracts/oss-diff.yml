@@ -6,145 +6,15 @@ info:
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
 servers:
   - url: /api/v2
-tags:
-  - name: Authentication
-    description: |
-      The InfluxDB `/api/v2` API requires authentication for all requests.
-      Use InfluxDB API tokens to authenticate requests to the `/api/v2` API.
-
-      For examples and more information, see
-      [Token authentication](#section/Authentication/TokenAuthentication)
-
-      <!-- ReDoc-Inject: <security-definitions> -->
-    x-traitTag: true
-  - name: Quick start
-    x-traitTag: true
-    description: |
-      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
-
-      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
-  - name: Response codes
-    x-traitTag: true
-    description: |
-      The InfluxDB API uses standard HTTP status codes for success and failure responses.
-      The response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.
-
-      API operations may return the following HTTP status codes:
-
-      | &nbsp;Code&nbsp; | Status                   | Description      |
-      |:-----------:|:------------------------ |:--------------------- |
-      | `200`       | Success                  |                       |
-      | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
-      | `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
-      | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)</li> |
-      | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
-      | `413`       | Request entity too large | Request payload exceeds the size limit. |
-      | `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
-      | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
-      | `500`       | Internal server error    |                       |
-      | `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |
-  - name: Query
-    description: |
-      Retrieve data, analyze queries, and get query suggestions.
-  - name: Write
-    description: |
-      Write time series data to buckets.
-  - name: Authorizations
-    description: |
-      Create and manage API tokens. An **authorization** associates a list of permissions to an **organization** and provides a token for API access.
-      Optionally, you can restrict an authorization and its token to a specific user.
-
-      For more information and examples, see the following:
-        - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
-        - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
-  - name: Debug
-    description: |
-      Routes under `/debug/pprof` generate profiling and trace reports
-      you can use to analyze the Go runtime of InfluxDB.
-      [Go runtime profiles](https://pkg.go.dev/runtime/pprof) are
-      collections of stack traces that show call sequences
-      leading to instances of a particular event, such as allocation.
-      For more information about **pprof profile** and **trace** reports, see the following resources:
-        - [Google pprof tool](https://github.com/google/pprof)
-        - [Golang diagnostics](https://go.dev/doc/diagnostics)
-x-tagGroups:
-  - name: Overview
-    tags:
-      - Quick start
-      - Authentication
-      - Response codes
-  - name: Data I/O endpoints
-    tags:
-      - Write
-      - Query
-  - name: Resource endpoints
-    tags:
-      - Buckets
-      - Dashboards
-      - Tasks
-      - Resources
-  - name: Security and access endpoints
-    tags:
-      - Authorizations
-      - Organizations
-      - Users
-  - name: System information endpoints
-    tags:
-      - Health
-      - Metrics
-      - Ping
-      - Ready
-      - Routes
-  - name: All endpoints
-    tags:
-      - Authorizations
-      - Backup
-      - Buckets
-      - Cells
-      - Checks
-      - Config
-      - DBRPs
-      - Dashboards
-      - Delete
-      - Health
-      - Metrics
-      - Labels
-      - Legacy Authorizations
-      - NotificationEndpoints
-      - NotificationRules
-      - Organizations
-      - Ping
-      - Query
-      - Ready
-      - RemoteConnections
-      - Replications
-      - Resources
-      - Restore
-      - Routes
-      - Rules
-      - Scraper Targets
-      - Secrets
-      - Setup
-      - Signin
-      - Signout
-      - Sources
-      - Tasks
-      - Telegraf Plugins
-      - Telegrafs
-      - Templates
-      - Users
-      - Variables
-      - Write
 paths:
   /debug/pprof/all:
     get:
       operationId: GetDebugPprofAllProfiles
       tags:
         - Debug
-      summary: Get all runtime profiles
+      summary: Retrieve all runtime profiles
       description: |
-        Get reports for the following [Go runtime profiles](https://pkg.go.dev/runtime/pprof):
+        Collects samples and returns reports for the following [Go runtime profiles](https://pkg.go.dev/runtime/pprof):
 
         - **allocs**: All past memory allocations
         - **block**: Stack traces that led to blocking on synchronization primitives
@@ -222,15 +92,15 @@ paths:
                   url: 'https://pkg.go.dev/net/http/pprof'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/allocs:
     get:
       operationId: GetDebugPprofAllocs
       tags:
         - Debug
-      summary: Get the memory allocations runtime profile
+      summary: Retrieve the memory allocations runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
+        Returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
         all past memory allocations.
         **allocs** is the same as the **heap** profile,
         but changes the default [pprof](https://pkg.go.dev/runtime/pprof)
@@ -307,16 +177,16 @@ paths:
                   url: 'https://pkg.go.dev/net/http/pprof'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/block:
     get:
       operationId: GetDebugPprofBlock
       tags:
         - Debug
-      summary: Get the block runtime profile
+      summary: Retrieve the block runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
-        stack traces that led to blocking on synchronization primitives.
+        Collects samples and returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof)
+        report of stack traces that led to blocking on synchronization primitives.
       x-codeSamples:
         - lang: Shell
           label: 'Shell: go tool pprof'
@@ -388,15 +258,15 @@ paths:
                   url: 'https://pkg.go.dev/net/http/pprof'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/cmdline:
     get:
       operationId: GetDebugPprofCmdline
       tags:
         - Debug
-      summary: Get the command line invocation
+      summary: Retrieve the command line invocation
       description: |
-        Get the command line that invoked InfluxDB.
+        Returns the command line that invoked InfluxDB.
       servers:
         - url: ''
       parameters:
@@ -411,16 +281,16 @@ paths:
                 format: Command line
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/goroutine:
     get:
       operationId: GetDebugPprofGoroutine
       tags:
         - Debug
-      summary: Get the goroutines runtime profile
+      summary: Retrieve the goroutines runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
-        all current goroutines.
+        Collects statistics and returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof)
+        report of all current goroutines.
       x-codeSamples:
         - lang: Shell
           label: 'Shell: go tool pprof'
@@ -444,8 +314,9 @@ paths:
           name: debug
           description: |
             - `0`: (Default) Return the report as a gzip-compressed protocol buffer.
-            - `1`: Return a response body with the report formatted as human-readable text.
-              The report contains comments that translate addresses to function names and line numbers for debugging.
+            - `1`: Return a response body with the report formatted as
+                   human-readable text with comments that translate addresses to
+                   function names and line numbers for debugging.
 
             `debug=1` is mutually exclusive with the `seconds` query parameter.
           schema:
@@ -492,16 +363,16 @@ paths:
                   url: 'https://pkg.go.dev/net/http/pprof'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/heap:
     get:
       operationId: GetDebugPprofHeap
       tags:
         - Debug
-      summary: Get the heap runtime profile
+      summary: Retrieve the heap runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
-        memory allocations for live objects.
+        Collects statistics and returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof)
+        report of memory allocations for live objects.
 
         To run **garbage collection** before sampling,
         pass the `gc` query parameter with a value of `1`.
@@ -596,15 +467,15 @@ paths:
                   value: "heap profile: 12431: 137356528 [149885081: 846795139976] @ heap/8192\n23: 17711104 [46: 35422208] @ 0x4c6df65 0x4ce03ec 0x4cdf3c5 0x4c6f4db 0x4c9edbc 0x4bdefb3 0x4bf822a 0x567d158 0x567ced9 0x406c0a1\n#\t0x4c6df64\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*entry).add+0x1a4\t\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/cache.go:97\n#\t0x4ce03eb\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*partition).write+0x2ab\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/ring.go:229\n#\t0x4cdf3c4\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*ring).write+0xa4\t\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/ring.go:95\n#\t0x4c6f4da\tgithub.com/influxdata/influxdb/v2/tsdb/engine/tsm1.(*Cache).WriteMulti+0x31a\t\t\t\t/Users/me/github/influxdb/tsdb/engine/tsm1/cache.go:343\n"
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/mutex:
     get:
       operationId: GetDebugPprofMutex
       tags:
         - Debug
-      summary: Get the mutual exclusion (mutex) runtime profile
+      summary: Retrieve the mutual exclusion (mutex) runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
+        Collects statistics and returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
         lock contentions.
         The profile contains stack traces of holders of contended mutual exclusions (mutexes).
       x-codeSamples:
@@ -678,16 +549,16 @@ paths:
                   url: 'https://pkg.go.dev/net/http/pprof'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/profile:
     get:
       operationId: GetDebugPprofProfile
       tags:
         - Debug
-      summary: Get the CPU runtime profile
+      summary: Retrieve the CPU runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
-        program counters on the executing stack.
+        Collects statistics and returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof)
+        report of program counters on the executing stack.
       x-codeSamples:
         - lang: Shell
           label: 'Shell: go tool pprof'
@@ -731,16 +602,16 @@ paths:
                   url: 'https://pkg.go.dev/net/http/pprof'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/threadcreate:
     get:
       operationId: GetDebugPprofThreadCreate
       tags:
         - Debug
-      summary: Get the threadcreate runtime profile
+      summary: Retrieve the threadcreate runtime profile
       description: |
-        Get a [Go runtime profile](https://pkg.go.dev/runtime/pprof) report of
-        stack traces that led to the creation of new OS threads.
+        Collects statistics and returns a [Go runtime profile](https://pkg.go.dev/runtime/pprof)
+        report of stack traces that led to the creation of new OS threads.
       x-codeSamples:
         - lang: Shell
           label: 'Shell: go tool pprof'
@@ -816,15 +687,15 @@ paths:
                   value: "threadcreate profile: total 26\n25 @\n#\t0x0\n\n1 @ 0x403dda8 0x403e54b 0x403e810 0x403a90c 0x406c0a1\n#\t0x403dda7\truntime.allocm+0xc7\t\t\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:1877\n#\t0x403e54a\truntime.newm+0x2a\t\t\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:2201\n#\t0x403e80f\truntime.startTemplateThread+0x8f\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:2271\n#\t0x403a90b\truntime.main+0x1cb\t\t\t/Users/me/.gvm/gos/go1.17/src/runtime/proc.go:234\n"
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /debug/pprof/trace:
     get:
       operationId: GetDebugPprofTrace
       tags:
         - Debug
-      summary: Get the runtime execution trace
+      summary: Retrieve the runtime execution trace
       description: |
-        Trace execution events for the current program.
+        Collects profile data and returns trace execution events for the current program.
       x-codeSamples:
         - lang: Shell
           label: 'Shell: go tool trace'
@@ -861,20 +732,23 @@ paths:
                   url: 'https://pkg.go.dev/runtime/trace'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /health:
     get:
       operationId: GetHealth
       tags:
         - Health
-      summary: Get the health of an instance
+      summary: Retrieve the health of the instance
+      description: Returns the health of the instance.
       servers:
         - url: ''
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       responses:
         '200':
-          description: The instance is healthy.
+          description: |
+            The instance is healthy.
+            The response body contains the health check items and status.
           content:
             application/json:
               schema:
@@ -908,13 +782,23 @@ paths:
                 $ref: '#/paths/~1health/get/responses/200/content/application~1json/schema'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /metrics:
     get:
       operationId: GetMetrics
       tags:
         - Metrics
-      summary: Get metrics of an instance
+      summary: Retrieve workload performance metrics
+      description: |
+        Returns metrics about the workload performance of an InfluxDB instance.
+
+        Use this endpoint to get performance, resource, and usage metrics.
+
+        #### Related guides
+
+        - For the list of metrics categories, see [InfluxDB OSS metrics]({{% INFLUXDB_DOCS_URL %}}/reference/internals/metrics/).
+        - Learn how to use InfluxDB to [scrape Prometheus metrics]({{% INFLUXDB_DOCS_URL %}}write-data/developer-tools/scrape-prometheus-metrics/).
+        - Learn how InfluxDB [parses the Prometheus exposition format]({{% INFLUXDB_DOCS_URL %}}/reference/prometheus-metrics/).
       servers:
         - url: ''
       parameters:
@@ -922,16 +806,14 @@ paths:
       responses:
         '200':
           description: |
-            Payload body contains metrics about the InfluxDB instance.
-
-            Metrics are formatted in the
-            Prometheus [plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats).
-            Each metric is identified by its name and a set of optional key-value pairs.
+            Success. The response body contains metrics in
+            [Prometheus plain-text exposition format](https://prometheus.io/docs/instrumenting/exposition_formats)
+            Metrics contain a name, an optional set of key-value pairs, and a value.
 
             The following descriptors precede each metric:
 
-            - *`HELP`*: description of the metric
-            - *`TYPE`*: type of the metric (e.g. `counter`, `gauge`, `histogram`, or `summary`)
+            - `HELP`: description of the metric
+            - `TYPE`: [Prometheus metric type](https://prometheus.io/docs/concepts/metric_types/) (`counter`, `gauge`, `histogram`, or `summary`)
           content:
             text/plain:
               schema:
@@ -954,7 +836,7 @@ paths:
                     http_api_request_duration_seconds_bucket{handler="platform",method="GET",path="/:fallback_path",response_code="200",status="2XX",user_agent="curl",le="0.025"} 5
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /ready:
     get:
       operationId: GetReady
@@ -996,7 +878,7 @@ paths:
                     example: 14m45.911966424s
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /users:
     get:
       operationId: GetUsers
@@ -1043,7 +925,7 @@ paths:
                 $ref: '#/components/schemas/Users'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     post:
       operationId: PostUsers
       tags:
@@ -1067,7 +949,7 @@ paths:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/users/{userID}':
     get:
       operationId: GetUsersID
@@ -1091,7 +973,7 @@ paths:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     patch:
       operationId: PatchUsersID
       tags:
@@ -1121,7 +1003,7 @@ paths:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteUsersID
       tags:
@@ -1140,7 +1022,7 @@ paths:
           description: User deleted
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /setup:
     get:
       operationId: GetSetup
@@ -1185,7 +1067,7 @@ paths:
                 $ref: '#/components/schemas/OnboardingResponse'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /authorizations:
     get:
       operationId: GetAuthorizations
@@ -1231,7 +1113,7 @@ paths:
                       $ref: '#/components/schemas/Authorization'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     post:
       operationId: PostAuthorizations
       tags:
@@ -1255,10 +1137,10 @@ paths:
                 $ref: '#/components/schemas/Authorization'
         '400':
           description: Invalid request
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -1282,7 +1164,7 @@ paths:
                 $ref: '#/components/schemas/Authorization'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     patch:
       operationId: PatchAuthorizationsID
       tags:
@@ -1312,7 +1194,7 @@ paths:
                 $ref: '#/components/schemas/Authorization'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteAuthorizationsID
       tags:
@@ -1331,7 +1213,7 @@ paths:
           description: Authorization deleted
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /variables:
     get:
       operationId: GetVariables
@@ -1359,10 +1241,10 @@ paths:
                 $ref: '#/components/schemas/Variables'
         '400':
           description: Invalid request
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
           description: Internal server error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     post:
       operationId: PostVariables
       summary: Create a variable
@@ -1386,7 +1268,7 @@ paths:
                 $ref: '#/components/schemas/Variable'
         default:
           description: Internal server error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/variables/{variableID}':
     get:
       operationId: GetVariablesID
@@ -1410,10 +1292,10 @@ paths:
                 $ref: '#/components/schemas/Variable'
         '404':
           description: Variable not found
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
           description: Internal server error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteVariablesID
       tags:
@@ -1432,7 +1314,7 @@ paths:
           description: Variable deleted
         default:
           description: Internal server error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     patch:
       operationId: PatchVariablesID
       summary: Update a variable
@@ -1462,7 +1344,7 @@ paths:
                 $ref: '#/components/schemas/Variable'
         default:
           description: Internal server error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     put:
       operationId: PutVariablesID
       summary: Replace a variable
@@ -1492,7 +1374,7 @@ paths:
                 $ref: '#/components/schemas/Variable'
         default:
           description: Internal server error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /sources:
     post:
       operationId: PostSources
@@ -1520,7 +1402,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     get:
       operationId: GetSources
       tags:
@@ -1545,7 +1427,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/sources/{sourceID}':
     delete:
       operationId: DeleteSourcesID
@@ -1568,13 +1450,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     patch:
       operationId: PatchSourcesID
       tags:
@@ -1607,13 +1489,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     get:
       operationId: GetSourcesID
       tags:
@@ -1639,13 +1521,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/sources/{sourceID}/health':
     get:
       operationId: GetSourcesIDHealth
@@ -1678,7 +1560,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/sources/{sourceID}/buckets':
     get:
       operationId: GetSourcesIDBuckets
@@ -1719,13 +1601,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   /scrapers:
     get:
       operationId: GetScrapers
@@ -1789,7 +1671,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}':
     get:
       operationId: GetScrapersID
@@ -1816,7 +1698,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     delete:
       operationId: DeleteScrapersID
       tags:
@@ -1838,7 +1720,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     patch:
       operationId: PatchScrapersID
       summary: Update a scraper target
@@ -1871,7 +1753,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/labels':
     get:
       operationId: GetScrapersIDLabels
@@ -1903,7 +1785,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     post:
       operationId: PostScrapersIDLabels
       tags:
@@ -1961,7 +1843,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/labels/{labelID}':
     delete:
       operationId: DeleteScrapersIDLabelsID
@@ -1990,13 +1872,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/members':
     get:
       operationId: GetScrapersIDMembers
@@ -2034,7 +1916,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     post:
       operationId: PostScrapersIDMembers
       tags:
@@ -2075,7 +1957,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/members/{userID}':
     delete:
       operationId: DeleteScrapersIDMembersID
@@ -2104,7 +1986,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/owners':
     get:
       operationId: GetScrapersIDOwners
@@ -2142,7 +2024,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     post:
       operationId: PostScrapersIDOwners
       tags:
@@ -2190,7 +2072,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/owners/{userID}':
     delete:
       operationId: DeleteScrapersIDOwnersID
@@ -2219,7 +2101,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   /backup/kv:
     get:
       operationId: GetBackupKV
@@ -2239,7 +2121,7 @@ paths:
                 format: binary
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /backup/metadata:
     get:
       operationId: GetBackupMetadata
@@ -2278,7 +2160,7 @@ paths:
                 $ref: '#/components/schemas/MetadataBackup'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/backup/shards/{shardID}':
     get:
       operationId: GetBackupShardId
@@ -2334,10 +2216,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /restore/kv:
     post:
       operationId: PostRestoreKV
@@ -2388,7 +2270,7 @@ paths:
           description: KV store successfully overwritten.
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /restore/sql:
     post:
       operationId: PostRestoreSQL
@@ -2429,7 +2311,7 @@ paths:
           description: SQL store successfully overwritten.
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/restore/bucket/{bucketID}':
     post:
       operationId: PostRestoreBucketID
@@ -2470,7 +2352,7 @@ paths:
                 format: byte
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /restore/bucketMetadata:
     post:
       operationId: PostRestoreBucketMetadata
@@ -2495,7 +2377,7 @@ paths:
                 $ref: '#/components/schemas/RestoredBucketMappings'
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/restore/shards/{shardID}':
     post:
       operationId: PostRestoreShardId
@@ -2542,26 +2424,41 @@ paths:
           description: TSM snapshot successfully restored.
         default:
           description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /config:
     get:
       operationId: GetConfig
       tags:
         - Config
-      summary: Get the run-time configuration of the instance
+      summary: Retrieve runtime configuration
+      description: |
+        Returns the active runtime configuration of the InfluxDB instance.
+
+        In InfluxDB v2.2+, use this endpoint to view your active runtime configuration,
+        including flags and environment variables.
+
+        #### Related guides
+
+        - [View your runtime server configuration]({{% INFLUXDB_DOCS_URL %}}/reference/config-options/#view-your-runtime-server-configuration)
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       responses:
         '200':
-          description: Payload body contains the run-time configuration of the InfluxDB instance.
+          description: |
+            Success.
+            The response body contains the active runtime configuration of the InfluxDB instance.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Config'
         '401':
-          $ref: '#/components/responses/ServerError'
+          description: Non 2XX error response from server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /remotes:
     get:
       operationId: GetRemoteConnections
@@ -2593,9 +2490,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/RemoteConnections'
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     post:
       operationId: PostRemoteConnection
       tags:
@@ -2615,9 +2512,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/RemoteConnection'
         '400':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/remotes/{remoteID}':
     get:
       operationId: GetRemoteConnectionByID
@@ -2639,9 +2536,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/RemoteConnection'
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     patch:
       operationId: PatchRemoteConnectionByID
       tags:
@@ -2668,11 +2565,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/RemoteConnection'
         '400':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteRemoteConnectionByID
       tags:
@@ -2689,9 +2586,9 @@ paths:
         '204':
           description: Remote connection info deleted.
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /replications:
     get:
       operationId: GetReplications
@@ -2726,9 +2623,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Replications'
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     post:
       operationId: PostReplication
       tags:
@@ -2758,9 +2655,9 @@ paths:
         '204':
           description: 'Replication validated, but not saved'
         '400':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/replications/{replicationID}':
     get:
       operationId: GetReplicationByID
@@ -2782,9 +2679,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Replication'
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     patch:
       operationId: PatchReplicationByID
       tags:
@@ -2819,11 +2716,11 @@ paths:
         '204':
           description: 'Updated replication validated, but not saved'
         '400':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteReplicationByID
       tags:
@@ -2840,9 +2737,9 @@ paths:
         '204':
           description: Replication deleted.
         '404':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   '/replications/{replicationID}/validate':
     post:
       operationId: PostValidateReplicationByID
@@ -2861,9 +2758,9 @@ paths:
           description: Replication is valid
         '400':
           description: Replication failed validation
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
         default:
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/paths/~1config/get/responses/401'
   /dashboards:
     post:
       operationId: PostDashboards
@@ -3367,6 +3264,8 @@ paths:
                                                 - stacked
                                                 - bar
                                                 - monotoneX
+                                                - stepBefore
+                                                - stepAfter
                                             legendColorizeRows:
                                               type: boolean
                                             legendHide:
@@ -4568,7 +4467,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -4643,7 +4542,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -4723,7 +4622,39 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - unprocessable entity
+                      - empty value
+                      - unavailable
+                      - forbidden
+                      - too many requests
+                      - unauthorized
+                      - method not allowed
+                      - request too large
+                      - unsupported media type
+                  message:
+                    readOnly: true
+                    description: Human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: Describes the logical code operation when the error occurred. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                required:
+                  - code
     post:
       operationId: PostTasks
       tags:
@@ -4770,54 +4701,46 @@ paths:
                     readOnly: true
                     type: string
                   type:
-                    description: 'Type of the task, useful for filtering a task list.'
+                    description: 'The type of the task, useful for filtering a task list.'
                     type: string
                   orgID:
-                    description: ID of the organization that owns the task.
+                    description: The ID of the organization that owns the task.
                     type: string
                   org:
-                    description: Name of the organization that owns the task.
+                    description: The name of the organization that owns the task.
                     type: string
                   name:
-                    description: Name of the task.
+                    description: The name of the task.
                     type: string
                   ownerID:
-                    description: ID of the user who owns this Task.
+                    description: The ID of the user who owns this Task.
                     type: string
                   description:
-                    description: Description of the task.
+                    description: The description of the task.
                     type: string
                   status:
                     $ref: '#/paths/~1tasks/post/requestBody/content/application~1json/schema/properties/status'
                   labels:
                     $ref: '#/components/schemas/Variable/properties/labels'
                   authorizationID:
-                    description: ID of the authorization used when the task communicates with the query engine.
+                    description: The ID of the authorization used when the task communicates with the query engine.
                     type: string
                   flux:
-                    description: Flux script to run for this task.
+                    description: The Flux script to run for this task.
                     type: string
                   every:
-                    description: |-
-                      Interval at which the task runs. `every` also determines when the task first runs, depending on the specified time.
-                      Value is a [duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)).
+                    description: 'An interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
                     type: string
                     format: duration
                   cron:
-                    description: |-
-                      [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. Cron scheduling is based on system time.
-                      Value is a [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview).
+                    description: '[Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB bases cron runs on the system time.'
                     type: string
                   offset:
-                    description: |-
-                      [Duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.
-                      The value is a [duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals).
+                    description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
                     type: string
                     format: duration
                   latestCompleted:
-                    description: |-
-                      Timestamp of the latest scheduled and completed run.
-                      Value is a timestamp in [RFC3339 date/time format](https://docs.influxdata.com/flux/v0.x/data-types/basic/time/#time-syntax).
+                    description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/flux/v0.x/data-types/basic/time/#time-syntax)) of the latest scheduled and completed run.'
                     type: string
                     format: date-time
                     readOnly: true
@@ -4872,7 +4795,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/get/responses/default/content/application~1json/schema'
 components:
   parameters: null
   schemas:
@@ -5868,45 +5791,7 @@ components:
           type: integer
           format: int64
           minimum: 0
-  responses:
-    ServerError:
-      description: Non 2XX error response from server.
-      content:
-        application/json:
-          schema:
-            properties:
-              code:
-                description: code is the machine-readable error code.
-                readOnly: true
-                type: string
-                enum:
-                  - internal error
-                  - not found
-                  - conflict
-                  - invalid
-                  - unprocessable entity
-                  - empty value
-                  - unavailable
-                  - forbidden
-                  - too many requests
-                  - unauthorized
-                  - method not allowed
-                  - request too large
-                  - unsupported media type
-              message:
-                readOnly: true
-                description: Human-readable message.
-                type: string
-              op:
-                readOnly: true
-                description: Describes the logical code operation when the error occurred. Useful for debugging.
-                type: string
-              err:
-                readOnly: true
-                description: Stack of errors that occurred during processing of the request. Useful for debugging.
-                type: string
-            required:
-              - code
+  responses: null
   securitySchemes:
     TokenAuthentication:
       type: apiKey
