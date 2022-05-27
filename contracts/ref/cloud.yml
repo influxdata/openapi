@@ -55,6 +55,41 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+            properties:
+              code:
+                description: code is the machine-readable error code.
+                enum:
+                - internal error
+                - not found
+                - conflict
+                - invalid
+                - unprocessable entity
+                - empty value
+                - unavailable
+                - forbidden
+                - too many requests
+                - unauthorized
+                - method not allowed
+                - request too large
+                - unsupported media type
+                readOnly: true
+                type: string
+              err:
+                description: Stack of errors that occurred during processing of the
+                  request. Useful for debugging.
+                readOnly: true
+                type: string
+              message:
+                description: Human-readable message.
+                readOnly: true
+                type: string
+              op:
+                description: Describes the logical code operation when the error occurred.
+                  Useful for debugging.
+                readOnly: true
+                type: string
+            required:
+            - code
       description: Non 2XX error response from server.
   schemas:
     ASTResponse:
@@ -1917,6 +1952,38 @@ components:
         type:
           $ref: '#/components/schemas/NodeType'
       type: object
+    InfluxqlCsvResponse:
+      description: CSV Response to InfluxQL Query
+      example: |
+        name,tags,time,test_field,test_tag test_measurement,,1603740794286107366,1,tag_value test_measurement,,1603740870053205649,2,tag_value test_measurement,,1603741221085428881,3,tag_value
+      type: string
+    InfluxqlJsonResponse:
+      description: JSON Response to InfluxQL Query
+      properties:
+        results:
+          items:
+            properties:
+              series:
+                items:
+                  properties:
+                    columns:
+                      items:
+                        type: string
+                      type: array
+                    name:
+                      type: string
+                    values:
+                      items:
+                        items: {}
+                        type: array
+                      type: array
+                  type: object
+                type: array
+              statement_id:
+                type: integer
+            type: object
+          type: array
+      type: object
     IntegerLiteral:
       description: Represents integer numbers
       properties:
@@ -2041,6 +2108,97 @@ components:
       - lat
       - lon
       type: object
+    LegacyAuthorizationPostRequest:
+      allOf:
+      - properties:
+          description:
+            description: A description of the token.
+            type: string
+          status:
+            default: active
+            description: Status of the token. If `inactive`, requests using the token
+              will be rejected.
+            enum:
+            - active
+            - inactive
+            type: string
+      - properties:
+          orgID:
+            description: ID of org that authorization is scoped to.
+            type: string
+          permissions:
+            description: List of permissions for an auth.  An auth must have at least
+              one Permission.
+            items:
+              properties:
+                action:
+                  enum:
+                  - read
+                  - write
+                  type: string
+                resource:
+                  properties:
+                    id:
+                      description: If ID is set that is a permission for a specific
+                        resource. if it is not set it is a permission for all resources
+                        of that resource type.
+                      type: string
+                    name:
+                      description: Optional name of the resource if the resource has
+                        a name field.
+                      type: string
+                    org:
+                      description: Optional name of the organization of the organization
+                        with orgID.
+                      type: string
+                    orgID:
+                      description: If orgID is set that is a permission for all resources
+                        owned my that org. if it is not set it is a permission for
+                        all resources of that resource type.
+                      type: string
+                    type:
+                      enum:
+                      - authorizations
+                      - buckets
+                      - dashboards
+                      - orgs
+                      - sources
+                      - tasks
+                      - telegrafs
+                      - users
+                      - variables
+                      - scrapers
+                      - secrets
+                      - labels
+                      - views
+                      - documents
+                      - notificationRules
+                      - notificationEndpoints
+                      - checks
+                      - dbrp
+                      - notebooks
+                      - annotations
+                      - remotes
+                      - replications
+                      type: string
+                  required:
+                  - type
+                  type: object
+              required:
+              - action
+              - resource
+            minItems: 1
+            type: array
+          token:
+            description: Token (name) of the authorization
+            type: string
+          userID:
+            description: ID of user that authorization is scoped to.
+            type: string
+        type: object
+      required:
+      - orgID
+      - permissions
     LesserThreshold:
       allOf:
       - $ref: '#/components/schemas/ThresholdBase'
@@ -12120,6 +12278,432 @@ paths:
       summary: Write data
       tags:
       - Write
+  /legacy/authorizations:
+    get:
+      operationId: GetLegacyAuthorizations
+      parameters:
+      - $ref: '#/paths/~1query/get/parameters/0'
+      - description: Only show legacy authorizations that belong to a user ID.
+        in: query
+        name: userID
+        schema:
+          type: string
+      - description: Only show legacy authorizations that belong to a user name.
+        in: query
+        name: user
+        schema:
+          type: string
+      - description: Only show legacy authorizations that belong to an organization
+          ID.
+        in: query
+        name: orgID
+        schema:
+          type: string
+      - description: Only show legacy authorizations that belong to a organization
+          name.
+        in: query
+        name: org
+        schema:
+          type: string
+      - description: Only show legacy authorizations with a specified token (auth
+          name).
+        in: query
+        name: token
+        schema:
+          type: string
+      - description: Only show legacy authorizations with a specified auth ID.
+        in: query
+        name: authID
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  authorizations:
+                    items:
+                      $ref: '#/paths/~1legacy~1authorizations/post/responses/201/content/application~1json/schema'
+                    type: array
+                  links:
+                    properties:
+                      next:
+                        description: URI of resource.
+                        format: uri
+                        readOnly: true
+                        type: string
+                      prev:
+                        $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                      self:
+                        $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                    readOnly: true
+                    required:
+                    - self
+                    type: object
+                type: object
+          description: A list of legacy authorizations
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: List all legacy authorizations
+      tags:
+      - Legacy Authorizations
+    post:
+      operationId: PostLegacyAuthorizations
+      parameters:
+      - $ref: '#/paths/~1query/get/parameters/0'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegacyAuthorizationPostRequest'
+        description: Legacy authorization to create
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/LegacyAuthorizationPostRequest/allOf/0'
+                - properties:
+                    createdAt:
+                      format: date-time
+                      readOnly: true
+                      type: string
+                    id:
+                      readOnly: true
+                      type: string
+                    links:
+                      example:
+                        self: /api/v2/authorizations/1
+                        user: /api/v2/users/12
+                      properties:
+                        self:
+                          $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                          readOnly: true
+                        user:
+                          $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                          readOnly: true
+                      readOnly: true
+                      type: object
+                    org:
+                      description: Name of the organization that the token is scoped
+                        to.
+                      readOnly: true
+                      type: string
+                    orgID:
+                      description: ID of the organization that the authorization is
+                        scoped to.
+                      type: string
+                    permissions:
+                      description: List of permissions for an authorization.  An authorization
+                        must have at least one permission.
+                      items:
+                        $ref: '#/components/schemas/LegacyAuthorizationPostRequest/allOf/1/properties/permissions/items'
+                      minItems: 1
+                      type: array
+                    token:
+                      description: Token used to authenticate API requests.
+                      readOnly: true
+                      type: string
+                    updatedAt:
+                      format: date-time
+                      readOnly: true
+                      type: string
+                    user:
+                      description: Name of the user that created and owns the token.
+                      readOnly: true
+                      type: string
+                    userID:
+                      description: ID of the user that created and owns the token.
+                      readOnly: true
+                      type: string
+                  type: object
+                required:
+                - orgID
+                - permissions
+          description: Legacy authorization created
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Invalid request
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Create a legacy authorization
+      tags:
+      - Legacy Authorizations
+    servers:
+    - url: /private
+  /legacy/authorizations/{authID}:
+    delete:
+      operationId: DeleteLegacyAuthorizationsID
+      parameters:
+      - $ref: '#/paths/~1query/get/parameters/0'
+      - description: The ID of the legacy authorization to delete.
+        in: path
+        name: authID
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Legacy authorization deleted
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Delete a legacy authorization
+      tags:
+      - Legacy Authorizations
+    get:
+      operationId: GetLegacyAuthorizationsID
+      parameters:
+      - $ref: '#/paths/~1query/get/parameters/0'
+      - description: The ID of the legacy authorization to get.
+        in: path
+        name: authID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1legacy~1authorizations/post/responses/201/content/application~1json/schema'
+          description: Legacy authorization details
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Retrieve a legacy authorization
+      tags:
+      - Legacy Authorizations
+    patch:
+      operationId: PatchLegacyAuthorizationsID
+      parameters:
+      - $ref: '#/paths/~1query/get/parameters/0'
+      - description: The ID of the legacy authorization to update.
+        in: path
+        name: authID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegacyAuthorizationPostRequest/allOf/0'
+        description: Legacy authorization to update
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1legacy~1authorizations/post/responses/201/content/application~1json/schema'
+          description: The active or inactive legacy authorization
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Update a legacy authorization to be active or inactive
+      tags:
+      - Legacy Authorizations
+    servers:
+    - url: /private
+  /legacy/authorizations/{authID}/password:
+    post:
+      operationId: PostLegacyAuthorizationsIDPassword
+      parameters:
+      - $ref: '#/paths/~1query/get/parameters/0'
+      - description: The ID of the legacy authorization to update.
+        in: path
+        name: authID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+              required:
+              - password
+        description: New password
+        required: true
+      responses:
+        "204":
+          description: Legacy authorization password set
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
+      summary: Set a legacy authorization password
+      tags:
+      - Legacy Authorizations
+    servers:
+    - url: /private
+  /query:
+    get:
+      description: Queries InfluxDB using InfluxQL.
+      operationId: GetLegacyQuery
+      parameters:
+      - description: OpenTracing span context
+        example:
+          baggage:
+            key: value
+          span_id: "1"
+          trace_id: "1"
+        in: header
+        name: Zap-Trace-Span
+        required: false
+        schema:
+          type: string
+      - in: header
+        name: Accept
+        schema:
+          default: application/json
+          description: |
+            Media type that the client can understand.
+
+            **Note**: With `application/csv`, query results include [unix timestamps]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#unix-timestamp) instead of RFC3339 timestamps.
+          enum:
+          - application/json
+          - application/csv
+          - text/csv
+          - application/x-msgpack
+          type: string
+      - description: The content encoding (usually a compression algorithm) that the
+          client can understand.
+        in: header
+        name: Accept-Encoding
+        schema:
+          default: identity
+          description: The content coding. Use `gzip` for compressed data or `identity`
+            for unmodified, uncompressed data.
+          enum:
+          - gzip
+          - identity
+          type: string
+      - in: header
+        name: Content-Type
+        schema:
+          enum:
+          - application/json
+          type: string
+      - description: The InfluxDB 1.x username to authenticate the request.
+        in: query
+        name: u
+        schema:
+          type: string
+      - description: The InfluxDB 1.x password to authenticate the request.
+        in: query
+        name: p
+        schema:
+          type: string
+      - description: |
+          The database to query data from.
+          This is mapped to an InfluxDB [bucket]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
+          For more information, see [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/api/influxdb-1x/dbrp/).
+        in: query
+        name: db
+        required: true
+        schema:
+          type: string
+      - description: |
+          The retention policy to query data from.
+          This is mapped to an InfluxDB [bucket]({{% INFLUXDB_DOCS_URL %}}/influxdb/v2.2/reference/glossary/#bucket).
+          For more information, see [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/api/influxdb-1x/dbrp/).
+        in: query
+        name: rp
+        schema:
+          type: string
+      - description: The InfluxQL query to execute. To execute multiple queries, delimit
+          queries with a semicolon (`;`).
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+      - description: Return results with [unix (epoch) timestamps]({{% INFLUXDB_DOCS_URL
+          %}}/reference/glossary/#unix-timestamp) in the specified precision instead
+          of RFC3339 timestamps with nanosecond precision.
+        in: query
+        name: epoch
+        schema:
+          enum:
+          - ns
+          - u
+          - µ
+          - ms
+          - s
+          - m
+          - h
+          type: string
+      responses:
+        "200":
+          content:
+            application/csv:
+              schema:
+                $ref: '#/components/schemas/InfluxqlCsvResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfluxqlJsonResponse'
+            application/x-msgpack:
+              schema:
+                format: binary
+                type: string
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/InfluxqlCsvResponse'
+          description: Query results
+          headers:
+            Content-Encoding:
+              description: Lists encodings (usually compression algorithms) that have
+                been applied to the response payload.
+              schema:
+                default: identity
+                description: |
+                  The content coding:
+                    - `gzip`: compressed data
+                    - `identity`: unmodified, uncompressed data.
+                enum:
+                - gzip
+                - identity
+                type: string
+            Trace-Id:
+              description: The trace ID, if generated, of the request.
+              schema:
+                description: Trace ID of a request.
+                type: string
+        "429":
+          description: |
+            #### InfluxDB Cloud:
+              - returns this error if a **read** or **write** request exceeds your
+                plan's [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas)
+                or if a **delete** request exceeds the maximum
+                [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits)
+              - returns `Retry-After` header that describes when to try the write again.
+
+            #### InfluxDB OSS:
+              - doesn't return this error.
+          headers:
+            Retry-After:
+              description: A non-negative decimal integer indicating the seconds to
+                delay after the response is received.
+              schema:
+                format: int32
+                type: integer
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+          description: Error processing query
+      summary: Query with the 1.x compatibility API
+      tags:
+      - Legacy Query
 security:
 - TokenAuthentication: []
 servers:
