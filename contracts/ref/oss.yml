@@ -134,41 +134,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-            properties:
-              code:
-                description: code is the machine-readable error code.
-                enum:
-                - internal error
-                - not found
-                - conflict
-                - invalid
-                - unprocessable entity
-                - empty value
-                - unavailable
-                - forbidden
-                - too many requests
-                - unauthorized
-                - method not allowed
-                - request too large
-                - unsupported media type
-                readOnly: true
-                type: string
-              err:
-                description: Stack of errors that occurred during processing of the
-                  request. Useful for debugging.
-                readOnly: true
-                type: string
-              message:
-                description: Human-readable message.
-                readOnly: true
-                type: string
-              op:
-                description: Describes the logical code operation when the error occurred.
-                  Useful for debugging.
-                readOnly: true
-                type: string
-            required:
-            - code
       description: Non 2XX error response from server.
   schemas:
     ASTResponse:
@@ -1365,6 +1330,7 @@ components:
     Error:
       properties:
         code:
+          $ref: '#/components/schemas/ErrorCode'
           description: code is the machine-readable error code.
           enum:
           - internal error
@@ -1398,6 +1364,24 @@ components:
           type: string
       required:
       - code
+    ErrorCode:
+      description: code is the machine-readable error code.
+      enum:
+      - internal error
+      - not found
+      - conflict
+      - invalid
+      - unprocessable entity
+      - empty value
+      - unavailable
+      - forbidden
+      - too many requests
+      - unauthorized
+      - method not allowed
+      - request too large
+      - unsupported media type
+      readOnly: true
+      type: string
     Expression:
       oneOf:
       - $ref: '#/components/schemas/ArrayExpression'
@@ -2234,18 +2218,7 @@ components:
       type: object
     LegacyAuthorizationPostRequest:
       allOf:
-      - properties:
-          description:
-            description: A description of the token.
-            type: string
-          status:
-            default: active
-            description: Status of the token. If `inactive`, requests using the token
-              will be rejected.
-            enum:
-            - active
-            - inactive
-            type: string
+      - $ref: '#/components/schemas/AuthorizationUpdateRequest'
       - properties:
           orgID:
             description: ID of org that authorization is scoped to.
@@ -2254,63 +2227,7 @@ components:
             description: List of permissions for an auth.  An auth must have at least
               one Permission.
             items:
-              properties:
-                action:
-                  enum:
-                  - read
-                  - write
-                  type: string
-                resource:
-                  properties:
-                    id:
-                      description: If ID is set that is a permission for a specific
-                        resource. if it is not set it is a permission for all resources
-                        of that resource type.
-                      type: string
-                    name:
-                      description: Optional name of the resource if the resource has
-                        a name field.
-                      type: string
-                    org:
-                      description: Optional name of the organization of the organization
-                        with orgID.
-                      type: string
-                    orgID:
-                      description: If orgID is set that is a permission for all resources
-                        owned my that org. if it is not set it is a permission for
-                        all resources of that resource type.
-                      type: string
-                    type:
-                      enum:
-                      - authorizations
-                      - buckets
-                      - dashboards
-                      - orgs
-                      - sources
-                      - tasks
-                      - telegrafs
-                      - users
-                      - variables
-                      - scrapers
-                      - secrets
-                      - labels
-                      - views
-                      - documents
-                      - notificationRules
-                      - notificationEndpoints
-                      - checks
-                      - dbrp
-                      - notebooks
-                      - annotations
-                      - remotes
-                      - replications
-                      type: string
-                  required:
-                  - type
-                  type: object
-              required:
-              - action
-              - resource
+              $ref: '#/components/schemas/Permission'
             minItems: 1
             type: array
           token:
@@ -3216,6 +3133,53 @@ components:
           type: string
         resource:
           $ref: '#/components/schemas/Resource'
+          properties:
+            id:
+              description: If ID is set that is a permission for a specific resource.
+                if it is not set it is a permission for all resources of that resource
+                type.
+              type: string
+            name:
+              description: Optional name of the resource if the resource has a name
+                field.
+              type: string
+            org:
+              description: Optional name of the organization of the organization with
+                orgID.
+              type: string
+            orgID:
+              description: If orgID is set that is a permission for all resources
+                owned my that org. if it is not set it is a permission for all resources
+                of that resource type.
+              type: string
+            type:
+              enum:
+              - authorizations
+              - buckets
+              - dashboards
+              - orgs
+              - sources
+              - tasks
+              - telegrafs
+              - users
+              - variables
+              - scrapers
+              - secrets
+              - labels
+              - views
+              - documents
+              - notificationRules
+              - notificationEndpoints
+              - checks
+              - dbrp
+              - notebooks
+              - annotations
+              - remotes
+              - replications
+              type: string
+          required:
+          - type
+          type: object
       required:
       - action
       - resource
@@ -14368,23 +14332,11 @@ paths:
                 properties:
                   authorizations:
                     items:
-                      $ref: '#/paths/~1legacy~1authorizations/post/responses/201/content/application~1json/schema'
+                      $ref: '#/components/schemas/Authorization'
                     type: array
                   links:
-                    properties:
-                      next:
-                        description: URI of resource.
-                        format: uri
-                        readOnly: true
-                        type: string
-                      prev:
-                        $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-                      self:
-                        $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
+                    $ref: '#/components/schemas/Links'
                     readOnly: true
-                    required:
-                    - self
-                    type: object
                 type: object
           description: A list of legacy authorizations
         default:
@@ -14409,65 +14361,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/LegacyAuthorizationPostRequest/allOf/0'
-                - properties:
-                    createdAt:
-                      format: date-time
-                      readOnly: true
-                      type: string
-                    id:
-                      readOnly: true
-                      type: string
-                    links:
-                      example:
-                        self: /api/v2/authorizations/1
-                        user: /api/v2/users/12
-                      properties:
-                        self:
-                          $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-                          readOnly: true
-                        user:
-                          $ref: '#/paths/~1legacy~1authorizations/get/responses/200/content/application~1json/schema/properties/links/properties/next'
-                          readOnly: true
-                      readOnly: true
-                      type: object
-                    org:
-                      description: Name of the organization that the token is scoped
-                        to.
-                      readOnly: true
-                      type: string
-                    orgID:
-                      description: ID of the organization that the authorization is
-                        scoped to.
-                      type: string
-                    permissions:
-                      description: List of permissions for an authorization.  An authorization
-                        must have at least one permission.
-                      items:
-                        $ref: '#/components/schemas/LegacyAuthorizationPostRequest/allOf/1/properties/permissions/items'
-                      minItems: 1
-                      type: array
-                    token:
-                      description: Token used to authenticate API requests.
-                      readOnly: true
-                      type: string
-                    updatedAt:
-                      format: date-time
-                      readOnly: true
-                      type: string
-                    user:
-                      description: Name of the user that created and owns the token.
-                      readOnly: true
-                      type: string
-                    userID:
-                      description: ID of the user that created and owns the token.
-                      readOnly: true
-                      type: string
-                  type: object
-                required:
-                - orgID
-                - permissions
+                $ref: '#/components/schemas/Authorization'
           description: Legacy authorization created
         "400":
           $ref: '#/components/responses/ServerError'
@@ -14515,7 +14409,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1legacy~1authorizations/post/responses/201/content/application~1json/schema'
+                $ref: '#/components/schemas/Authorization'
           description: Legacy authorization details
         default:
           $ref: '#/components/responses/ServerError'
@@ -14537,7 +14431,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LegacyAuthorizationPostRequest/allOf/0'
+              $ref: '#/components/schemas/AuthorizationUpdateRequest'
         description: Legacy authorization to update
         required: true
       responses:
@@ -14545,7 +14439,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1legacy~1authorizations/post/responses/201/content/application~1json/schema'
+                $ref: '#/components/schemas/Authorization'
           description: The active or inactive legacy authorization
         default:
           $ref: '#/components/responses/ServerError'
@@ -14733,7 +14627,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/ServerError/content/application~1json/schema'
+                $ref: '#/components/schemas/Error'
           description: Error processing query
       summary: Query with the 1.x compatibility API
       tags:
