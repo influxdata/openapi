@@ -500,6 +500,37 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
+  /provision/user/delete:
+    post:
+      operationId: PostProvisionUserDelete
+      tags:
+        - ProvisionUserDelete
+      description: Delete a user from an organization. Deletes the user if they are part of no other organization. Idempotent.
+      requestBody:
+        description: The request includes the User ID and the Org ID to delete the user from and whether to transfer user resources to an optional new owner.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionUserDeleteRequest'
+      responses:
+        '204':
+          description: User deleted
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Bad request. Data in request is invalid. Examples include missing IDs or invalid resource option.
+        '401':
+          $ref: '#/components/responses/ServerError'
+          description: Credentials not provided or insufficient credentials to delete a user.
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: Unprocessable entry. Examples include invalid IDs or new owner ID being the same as current owner ID.
+        '501':
+          $ref: '#/components/responses/ServerError'
+          description: TaskOption of "transfer" is currently not implemented.
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
   /provision/suspend:
     post:
       operationId: PostProvisionSuspend
@@ -937,6 +968,35 @@ components:
         - user
         - orgID
         - role
+    ProvisionUserDeleteRequest:
+      type: object
+      properties:
+        userID:
+          type: string
+          description: user id to delete
+        orgID:
+          type: string
+          description: organization id the user should be deleted from
+        newOwnerID:
+          type: string
+          description: user id of the owner that user-owned resources should be transferred to. should be omitted if not transferring resources.
+        tokenOption:
+          type: string
+          enum:
+            - transfer
+            - delete
+          default: transfer
+          description: delete or transfer tokens
+        taskOption:
+          type: string
+          enum:
+            - transfer
+            - delete
+          default: transfer
+          description: delete or transfer tasks
+      required:
+        - userID
+        - orgID
     ProvisionDeleteRequest:
       type: object
       properties:
