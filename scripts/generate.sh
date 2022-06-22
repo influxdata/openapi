@@ -2,7 +2,7 @@
 
 CONTRACTS=${CONTRACTS:-contracts}
 INFLUXDB_DOCS_URL=https://docs.influxdata.com/influxdb
-OSS_VERSION=v2.2
+OSS_VERSION=v2.3
 
 mkdir -p $CONTRACTS
 
