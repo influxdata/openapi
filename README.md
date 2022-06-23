@@ -2,6 +2,28 @@
 
 [Jump to API contracts.](./contracts)
 
+- [Influx API Definitions](#influx-api-definitions)
+  - [Overview](#overview)
+  - [FAQs](#faqs)
+    - [What is an "internal" vs "external" API?](#what-is-an-internal-vs-external-api)
+    - [What is a "private" vs "public" API?](#what-is-a-private-vs-public-api)
+    - [Is the API versioned?](#is-the-api-versioned)
+    - [What is a gateway?](#what-is-a-gateway)
+    - [What is the flow of an external request?](#what-is-the-flow-of-an-external-request)
+    - [What is the flow of an internal request?](#what-is-the-flow-of-an-internal-request)
+    - [Why is the API spec maintained separately from the code?](#why-is-the-api-spec-maintained-separately-from-the-code)
+    - [Other swagger definitions?](#other-swagger-definitions)
+  - [How to use](#how-to-use)
+    - [Prologue](#prologue)
+    - [Example (consumer)](#example-consumer)
+    - [Notes](#notes)
+  - [How to contribute](#how-to-contribute)
+    - [Guidelines](#guidelines)
+    - [Add and update paths and operations](#add-and-update-paths-and-operations)
+    - [Add and update service definitions](#add-and-update-service-definitions)
+    - [What to do when Cloud and OSS diverge](#what-to-do-when-cloud-and-oss-diverge)
+    - [Add tag content or describe a group of paths](#add-tag-content-or-describe-a-group-of-paths)
+
 ## Overview
 
 This repository contains [OpenAPI specifications](https://www.openapis.org/) for InfluxData's various services. It provides a common place for shared API elements that are referenced by more specific API definitions.
@@ -35,49 +57,63 @@ This repository is organized as follows:
     └── unity.yml           # defines the unity api
 ```
 
-When adding a service API definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product API maintainers to copy the service-specific ("internal") paths and components into the respective API definition (cloud, cloud-priv, or oss) without modifying references. For more information on how to add a new service api defnition, [look here](./src/svc/README.md). For information on what to do when the platform APIs drift, [look here](./src/README.md).
+To learn how to add and update definitions, see [How to contribute](#how-to-contribute).
 
-When changes are complete, simply run `make generate-all` (`docker` currently required) and commit the results to get the new API contracts.
+## FAQs
 
-### FAQs
+### What is an "internal" vs "external" API?
 
-#### "Internal" vs "External" API?
- - "Internal" API refers to a service API that is reachable directly (no gateway). A hypothetical example would be `taskd` talking directly to `queryd` without going through the gateway.
- - "External" API refers to the API that a gateway serves.
+"Internal" API refers to a service API that is reachable directly (no gateway). A hypothetical example would be `taskd` talking directly to `queryd` without going through the gateway.
+"External" API refers to the API that a gateway serves.
 
-#### "Private" vs "Public" API?
- - "Private" API refers to an API that is not published in docs, requires some alternate method of auth (superuser token), a ui/quartz specific routes, or is not committing to stability.
- - "Public" API refers to a documented API used for normal use of the platform.
+### What is a "private" vs "public" API?
 
-#### Versioning?
- - Since there is currently no code that supports API versioning, this repo will remain unversioned. Each swagger definition can define it's own api version, and consumers may test API changes on a branch, but until there is support for versioned APIs in code, we won't tag this repo.
+"Private" API refers to an API that is not published in docs, requires some alternate method of auth (superuser token), a ui/quartz specific routes, or is not committing to stability.
+"Public" API refers to a documented API used for normal use of the platform.
 
-#### Gateway?
- - Gateway refers to the entry point into our platform (whether it be a reverse proxy or some other router).
+### Is the API versioned?
 
-#### Flow of an external request?
- - [client] -> [gateway] -> [service]
-   + An external `client` makes a request for `/api/v2/thing`.
-   + `gateway` finds where to handle requests for `/thing` and forwards the request to that service.
-   + `service` then handles that request and responds to the client.
+Since there is currently no code that supports API versioning, this repo will remain unversioned. Each swagger definition can define it's own api version, and consumers may test API changes on a branch, but until there is support for versioned APIs in code, we won't tag this repo.
 
-#### Flow of an internal request?
- - [service] -> [service]
-   + A `service` running inside the platform makes a request to another platform `service` at `/thing`.
-   + `service` then handles that request and responds to the client (requesting `service`).
+### What is a gateway?
 
-#### Location?
- - Logic states that the further the API spec is from the implementing code, the greater the potential drift between the two. There are several reasons the service specific ("internal") definitions are in this repo and not living next to the code they define. Primarily it comes down to standardization. By standardizing on where to locate all swagger definitions, consumers aren't left wondering where they need to look for the current API contract of a service. Another equally important reason is more technical. While it is possible to reference swagger components via URL (as opposed to local relative file), the fact that many of the services are closed source re-introduce the issue of consuming private swagger. Third slightly relates to the last reason, as it simplifies the integration of the service into the "external" API (no reference path update required).
+Gateway refers to the entry point into our platform (whether it be a reverse proxy or some other router).
 
-#### Other swagger definitions?
- - The goal of this repo is to not only provide a central, trusted location for consumers of our external APIs, but also to provide a re-usable means for service maintainers to easily maintain their service API definitions. **As repository adoption increases, we expect to remove duplicate definitions from our organization's codebase where appropriate, rather than provide API definitions in multiple locations.**
+### What is the flow of an external request?
 
+[client] -> [gateway] -> [service]
 
-## How to use:
+- An external `client` makes a request for `/api/v2/thing`.
+- `gateway` finds where to handle requests for `/thing` and forwards the request to that service.
+- `service` then handles that request and responds to the client.
 
-#### Prologue:
+### What is the flow of an internal request?
 
-From swagger, client *libraries* can be generated. From client libraries, generated or not, client *applications* can be created. This repository, specifically the [`contracts`](./contracts/) directory, contains swagger definitions to generate client libraries. In [Go (golang)](https://go.dev/), there is a standard library made up of a plethora of smaller, more granularly defined libraries. The contracts in this repo allow consumers to generate granular libraries so users don't have to import an entire library when they only need a portion of the utility.
+[service] -> [service]
+
+- A `service` running inside the platform makes a request to another platform `service` at `/thing`.
+- `service` then handles that request and responds to the client (requesting `service`).
+
+### Why is the API spec maintained separately from the code?
+
+Although keeping the API spec "closer" to the implementing code (for example, in the same repository) might prevent drift between them, maintaining the service-specific ("internal") definitions in this repo provides the following benefits:
+
+- Standard location: consumers aren't left wondering where they need to look for the current API contract of a service.
+- Ease of access: given that many of the services are closed source, keeping the definitions in this public repo avoids the need for consumers to access private files.
+- Simpler integration: integration of the service into the "external" API doesn't require updating the reference path.
+
+### Other swagger definitions?
+
+The goal of this repo is to not only provide a central, trusted location for consumers of our external APIs, but also to provide a re-usable means for service maintainers to easily maintain their service API definitions. **As repository adoption increases, we expect to remove duplicate definitions from our organization's codebase where appropriate, rather than provide API definitions in multiple locations.**
+
+## How to use
+
+### Prologue
+
+Various tools can consume the OpenAPI specification and generate API client *libraries* for different programming languages.
+A client *application* can then import a client library and interact with the API.
+This repository, specifically the [`contracts`](./contracts/) directory, contains OpenAPI definitions to generate client libraries.
+Similar to how [Go (golang)](https://go.dev/) has a standard library composed of smaller, single-purpose libraries, the contracts in this repo allow consumers to generate granular libraries that users can import as they need.
 
 It is intended that an individual client library is generated for each service defined. `cloud` and `oss` definitions will continue to exist as monolithic definitions while we postpone splitting them up in order to preserve functionality. As this repository gains adoption, we would like to break subsets of the `cloud` and `oss` definitions into more granular services, such as `query`, `write`, and `tasks`.
 
@@ -85,10 +121,9 @@ These more specialized swagger definitions (similar to the `datasourcesd`, `maps
 
 As the "InfluxDB API" evolves and eventually gets versioned, we can continue to provide complete API definitions in [`ref`](./contracts/ref/), while allowing each sub-service (write, query, tasks, etc.) to evolve on its own.
 
+### Example (consumer)
 
-#### Example (consumer):
-
-If I were producing a golang client library for other consumers to use the `mapsd` service, I could do something like the following:
+The following example generates a `mapsd` client library for golang that consumers can use to interact with the `mapsd` service:
 
 ```sh
 # prepare directory for generated library
@@ -99,6 +134,7 @@ docker run --rm -v /tmp/output:/out -it swaggerapi/swagger-codegen-cli-v3 genera
 ```
 
 The library is then ready for use in an application:
+
 ```go
 import mapsd "<some-prefix>/mapsd/swagger"
 
@@ -107,19 +143,18 @@ import mapsd "<some-prefix>/mapsd/swagger"
   mapsd.NewAPIClient.GetMapboxToken(context.Background())
 ```
 
-#### Example (producer):
+### Notes
 
-Everything (nearly) in the `contracts` directory is generated and should not be edited manually. Running `make generate-all` after editing files in `src` should be sufficient to propagate the change.
-
-### Notes:
-
-There are some limitations to this work. It is important at this time to ensure any definitions consumable from our UI are compatible with, and consumable by [oats](https://github.com/influxdata/oats). One of the OpenAPI v3 compatible specifications `oats` cannot currently handle is the `servers` override, so we keep them in separate swagger files. This is exemplified in `cloud-priv.yml` and it's `servers` key; the major difference between `cloud-priv.yml` and `cloud.yml`.
+There are some limitations to this work.
+InfluxDB UI requires that the definitions it consumes be [oats](https://github.com/influxdata/oats)-compatible and oats-consumable.
+For example, an OpenAPI v3-compatible specification that `oats` doesn't support is the `servers` override, so we maintain separate files for definitions that contain `servers` overrides.
+This is exemplified in `cloud-priv.yml` and its `servers` key - the main difference between `cloud-priv.yml` and `cloud.yml`.
 
 ## How to contribute
 
 To update and generate contracts, do the following:
 
-1. Clone this repository (influxdata/openapi).
+1. Clone this repository (`influxdata/openapi`).
 2. If you haven't already, [install and run Docker](https://docs.docker.com/get-docker/).
 3. Review the [guidelines](#guidelines).
 4. Edit [`src`](./src) files.
@@ -128,19 +163,22 @@ To update and generate contracts, do the following:
 
 ### Guidelines
 
-Follow these guidelines to add or update specifications:
+Follow these guidelines to add and update specifications:
 
-- [Add or update paths and operations](#add-or-update-paths-and-operations)
-- [Add or update service definitions](#add-or-update-service-definitions)
+- [Add and update paths and operations](#add-and-update-paths-and-operations)
+- [Add and update service definitions](#add-and-update-service-definitions)
 - [What to do when Cloud and OSS diverge](#what-to-do-when-cloud-and-oss-diverge)
+- [Add tag content or describe a group of paths](#add-tag-content-or-describe-a-group-of-paths)
 
-### Add or update paths and operations
+### Add and update paths and operations
 
 If you're adding or updating paths and operations (`get`, `post`, etc.), follow our [path template](./docs/templates/pathTemplate.yml) for `summary`, `description`, and `example` elements.
 
-### Add or update service definitions
+### Add and update service definitions
 
-To add a service API definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with a prefix `svc-`. This allows product API maintainers to copy the service-specific ("internal") paths and components into the respective API definition (cloud, cloud-priv, or oss) without modifying references. For more information on how to add a new service api defnition, see [src/svc/README](./src/svc/README.md).
+To add a service API definition, add the service specific components to a subdirectory inside `src/svc` and reference them from a file in `src` with the `svc-` prefix.
+This allows product API maintainers to copy the service-specific ("internal") paths and components into the respective API definition (`cloud`, `cloud-priv`, or `oss`) without modifying references.
+For more information on how to add a new service API definition, see [src/svc/README](./src/svc/README.md).
 
 ### What to do when Cloud and OSS diverge
 
@@ -148,15 +186,17 @@ For information on what to do when platform APIs drift, see [src/README](./src/R
 
 ### Add tag content or describe a group of paths
 
+Use OpenAPI `tags` to group related endpoints (OpenAPI *Paths*).
+Documentation generators that consume the API can use tags to provide navigation and additional information.
 API reference docs
-([OSS](https://docs.influxdata.com/influxdb/v2.2/api/),
+([OSS](https://docs.influxdata.com/influxdb/latest/api/),
 [Cloud](https://docs.influxdata.com/influxdb/cloud/api/))
-rely on the following tag elements and vendor extensions:
+use the following tag elements and vendor extensions:
 
-- `description` Tag field: describes related endpoints (Paths) and their common
-  features.
-- `x-traitTag: true` Tag field: renders sections with information about general API features and use.
-- `x-tagGroups` Root element: renders endpoint (Path) groups in navigation menus.
+- `tag` Tags element: renders endpoint (Path) groups and *trait tags* in navigation menus--for example, **Tasks**.
+- `description` Tag field: describes related Paths and their common features.
+- `x-traitTag: true` Tag field: instead of grouping paths, the tag renders a topical section that contains supplemental information about the API.
+- `x-tagGroups` Root element: groups and sorts `tag` elements for navigation menus--for example, **Data I/O endpoints**.
 
 To edit these elements, see the platform-specific files:
 
