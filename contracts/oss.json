@@ -20,6 +20,10 @@
       "description": "Generates profiling and trace reports.\n\nUse routes under `/debug/pprof` to analyze the Go runtime of InfluxDB.\nThese endpoints generate [Go runtime profiles](https://pkg.go.dev/runtime/pprof)\nand **trace** reports.\n**Profiles** are collections of stack traces that show call sequences\nleading to instances of a particular event, such as allocation.\n\nFor more information about **pprof profile** and **trace** reports,\nsee the following resources:\n  - [Google pprof tool](https://github.com/google/pprof)\n  - [Golang diagnostics](https://go.dev/doc/diagnostics)\n"
     },
     {
+      "name": "Delete",
+      "description": "Delete data from an InfluxDB bucket.\n"
+    },
+    {
       "name": "Query",
       "description": "Retrieve data, analyze queries, and get query suggestions.\n"
     },
@@ -1789,11 +1793,11 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request POST {INFLUX_URL}/api/v2/delete?org={INFLUX_ORG}&bucket={INFLUX_BUCKET} \\\n  --header 'Authorization: Token {INFLUX_TOKEN}' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start\": \"2020-03-01T00:00:00Z\",\n    \"stop\": \"2020-11-14T00:00:00Z\",\n    \"predicate\": \"tag1=\\\"value1\\\" and (tag2=\\\"value2\\\" and tag3!=\\\"value3\\\")\"\n  }'\n"
+            "source": "curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \\\n  --header 'Authorization: Token INFLUX_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start\": \"2020-03-01T00:00:00Z\",\n    \"stop\": \"2020-11-14T00:00:00Z\",\n    \"predicate\": \"tag1=\\\"value1\\\" and (tag2=\\\"value2\\\" and tag3!=\\\"value3\\\")\"\n  }'\n"
           }
         ],
         "requestBody": {
-          "description": "Time range parameters and an optional **delete predicate expression**.\n\nTo select points to delete within the specified time range, pass a\n**delete predicate expression** in the `predicate` property of the request body.\nIf you don't pass a `predicate`, InfluxDB deletes all data with timestamps\nin the specified time range.\n",
+          "description": "Time range parameters and an optional **delete predicate expression**.\n\nTo select points to delete within the specified time range, pass a\n**delete predicate expression** in the `predicate` property of the request body.\nIf you don't pass a `predicate`, InfluxDB deletes all data with timestamps\nin the specified time range.\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n",
           "required": true,
           "content": {
             "application/json": {
@@ -1846,12 +1850,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the delete asynchronously - the deletion might not have completed yet.\n\nAn HTTP `2xx` status code acknowledges that the write or delete is queued.\nTo ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\nwait for a response before you send the next request.\n\nBecause writes are asynchronous, data might not yet be written\nwhen you receive the response.\n\n#### InfluxDB OSS\n\n- Deleted the data.\n",
-            "content": {
-              "text/html": {
-                "example": ""
-              }
-            }
+            "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the delete asynchronously - the deletion might not have completed yet.\n\nAn HTTP `2xx` status code acknowledges that the write or delete is queued.\nTo ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\nwait for a response before you send the next request.\n\nBecause writes are asynchronous, data might not yet be written\nwhen you receive the response.\n\n#### InfluxDB OSS\n\n- Deleted the data.\n"
           },
           "400": {
             "$ref": "#/components/responses/BadRequestError"
