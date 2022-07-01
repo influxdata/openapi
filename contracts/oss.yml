@@ -21,7 +21,7 @@ tags:
         - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.3/security/tokens/create-token/).
   - name: Debug
     description: |
-      Generates profiling and trace reports.
+      Generate profiling and trace reports.
 
       Use routes under `/debug/pprof` to analyze the Go runtime of InfluxDB.
       These endpoints generate [Go runtime profiles](https://pkg.go.dev/runtime/pprof)
@@ -39,6 +39,16 @@ tags:
   - name: Query
     description: |
       Retrieve data, analyze queries, and get query suggestions.
+  - name: Tasks
+    description: |
+      Process and analyze your data with tasks in the InfluxDB task engine.
+      With tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.
+
+      Use the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.
+
+      #### Related guides
+
+      - [Common data processing tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/common-tasks/)
   - name: Write
     description: |
       Write time series data to buckets.
@@ -4266,6 +4276,9 @@ paths:
         - Data I/O endpoints
         - Tasks
       summary: Retrieve a task
+      description: |
+        Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)
+        by task ID.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4276,25 +4289,37 @@ paths:
           description: The task ID.
       responses:
         '200':
-          description: Task details
+          description: Success. The response body contains the task.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
     patch:
       operationId: PatchTasksID
       tags:
         - Tasks
       summary: Update a task
-      description: Update a task. This will cancel all queued runs.
+      description: |
+        Updates a task and then cancels all scheduled runs of the task.
+
+        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Once InfluxDB applies the update, it cancels all scheduled runs of the task.
+
+        To update a task, pass an object that contains the updated key-value pairs.
+        To activate or inactivate a task, set the `status` property.
+        _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
       requestBody:
-        description: Task update to apply
+        description: An object that contains updated task properties to apply.
         required: true
         content:
           application/json:
@@ -4310,23 +4335,33 @@ paths:
           description: The task ID.
       responses:
         '200':
-          description: Task updated
+          description: Success. The response body contains the updated task.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
     delete:
       operationId: DeleteTasksID
       tags:
         - Tasks
       summary: Delete a task
-      description: Deletes a task and all associated records
+      description: |
+        Deletes a task and associated records.
+
+        Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+        Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
+
+        If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4337,13 +4372,17 @@ paths:
           description: The ID of the task to delete.
       responses:
         '204':
-          description: Task deleted
+          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
   '/tasks/{taskID}/runs':
     get:
       operationId: GetTasksIDRuns
@@ -8861,6 +8900,10 @@ paths:
                   value:
                     code: invalid
                     message: 'failed to decode request: missing flux'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -10800,9 +10843,6 @@ components:
         id:
           readOnly: true
           type: string
-        type:
-          description: 'The type of the task, useful for filtering a task list.'
-          type: string
         orgID:
           description: The ID of the organization that owns the task.
           type: string
@@ -10813,7 +10853,7 @@ components:
           description: The name of the task.
           type: string
         ownerID:
-          description: The ID of the user who owns this Task.
+          description: The ID of the user who owns the Task.
           type: string
         description:
           description: The description of the task.
@@ -10826,7 +10866,7 @@ components:
           description: The ID of the authorization used when the task communicates with the query engine.
           type: string
         flux:
-          description: The Flux script to run for this task.
+          description: The Flux script to run for the task.
           type: string
         every:
           description: 'An interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
@@ -10895,6 +10935,8 @@ components:
       enum:
         - active
         - inactive
+      description: |
+        `inactive` cancels scheduled runs and prevents manual runs of the task.
     UserResponse:
       properties:
         id:

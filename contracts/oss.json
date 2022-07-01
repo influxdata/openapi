@@ -17,7 +17,7 @@
     },
     {
       "name": "Debug",
-      "description": "Generates profiling and trace reports.\n\nUse routes under `/debug/pprof` to analyze the Go runtime of InfluxDB.\nThese endpoints generate [Go runtime profiles](https://pkg.go.dev/runtime/pprof)\nand **trace** reports.\n**Profiles** are collections of stack traces that show call sequences\nleading to instances of a particular event, such as allocation.\n\nFor more information about **pprof profile** and **trace** reports,\nsee the following resources:\n  - [Google pprof tool](https://github.com/google/pprof)\n  - [Golang diagnostics](https://go.dev/doc/diagnostics)\n"
+      "description": "Generate profiling and trace reports.\n\nUse routes under `/debug/pprof` to analyze the Go runtime of InfluxDB.\nThese endpoints generate [Go runtime profiles](https://pkg.go.dev/runtime/pprof)\nand **trace** reports.\n**Profiles** are collections of stack traces that show call sequences\nleading to instances of a particular event, such as allocation.\n\nFor more information about **pprof profile** and **trace** reports,\nsee the following resources:\n  - [Google pprof tool](https://github.com/google/pprof)\n  - [Golang diagnostics](https://go.dev/doc/diagnostics)\n"
     },
     {
       "name": "Delete",
@@ -26,6 +26,10 @@
     {
       "name": "Query",
       "description": "Retrieve data, analyze queries, and get query suggestions.\n"
+    },
+    {
+      "name": "Tasks",
+      "description": "Process and analyze your data with tasks in the InfluxDB task engine.\nWith tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.\n\nUse the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.\n\n#### Related guides\n\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n"
     },
     {
       "name": "Write",
@@ -6053,6 +6057,7 @@
           "Tasks"
         ],
         "summary": "Retrieve a task",
+        "description": "Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)\nby task ID.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6069,7 +6074,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Task details",
+            "description": "Success. The response body contains the task.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6078,15 +6083,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       },
@@ -6096,9 +6106,9 @@
           "Tasks"
         ],
         "summary": "Update a task",
-        "description": "Update a task. This will cancel all queued runs.",
+        "description": "Updates a task and then cancels all scheduled runs of the task.\n\nUse this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).\nOnce InfluxDB applies the update, it cancels all scheduled runs of the task.\n\nTo update a task, pass an object that contains the updated key-value pairs.\nTo activate or inactivate a task, set the `status` property.\n_`\"status\": \"inactive\"`_ cancels scheduled runs and prevents manual runs of the task.\n",
         "requestBody": {
-          "description": "Task update to apply",
+          "description": "An object that contains updated task properties to apply.",
           "required": true,
           "content": {
             "application/json": {
@@ -6124,7 +6134,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Task updated",
+            "description": "Success. The response body contains the updated task.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6133,15 +6143,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       },
@@ -6151,7 +6166,7 @@
           "Tasks"
         ],
         "summary": "Delete a task",
-        "description": "Deletes a task and all associated records",
+        "description": "Deletes a task and associated records.\n\nUse this endpoint to delete a task and all associated records (task runs, logs, and labels).\nOnce the task is deleted, InfluxDB cancels all scheduled runs of the task.\n\nIf you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6168,17 +6183,22 @@
         ],
         "responses": {
           "204": {
-            "description": "Task deleted"
+            "description": "Success. Task and runs are deleted. Scheduled runs are canceled."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       }
@@ -12895,6 +12915,12 @@
               }
             }
           },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
             "description": "Unexpected error",
             "content": {
@@ -15820,10 +15846,6 @@
             "readOnly": true,
             "type": "string"
           },
-          "type": {
-            "description": "The type of the task, useful for filtering a task list.",
-            "type": "string"
-          },
           "orgID": {
             "description": "The ID of the organization that owns the task.",
             "type": "string"
@@ -15837,7 +15859,7 @@
             "type": "string"
           },
           "ownerID": {
-            "description": "The ID of the user who owns this Task.",
+            "description": "The ID of the user who owns the Task.",
             "type": "string"
           },
           "description": {
@@ -15855,7 +15877,7 @@
             "type": "string"
           },
           "flux": {
-            "description": "The Flux script to run for this task.",
+            "description": "The Flux script to run for the task.",
             "type": "string"
           },
           "every": {
@@ -15946,7 +15968,8 @@
         "enum": [
           "active",
           "inactive"
-        ]
+        ],
+        "description": "`inactive` cancels scheduled runs and prevents manual runs of the task.\n"
       },
       "UserResponse": {
         "properties": {
