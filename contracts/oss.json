@@ -20,6 +20,10 @@
       "description": "Generates profiling and trace reports.\n\nUse routes under `/debug/pprof` to analyze the Go runtime of InfluxDB.\nThese endpoints generate [Go runtime profiles](https://pkg.go.dev/runtime/pprof)\nand **trace** reports.\n**Profiles** are collections of stack traces that show call sequences\nleading to instances of a particular event, such as allocation.\n\nFor more information about **pprof profile** and **trace** reports,\nsee the following resources:\n  - [Google pprof tool](https://github.com/google/pprof)\n  - [Golang diagnostics](https://go.dev/doc/diagnostics)\n"
     },
     {
+      "name": "Delete",
+      "description": "Delete data from an InfluxDB bucket.\n"
+    },
+    {
       "name": "Query",
       "description": "Retrieve data, analyze queries, and get query suggestions.\n"
     },
@@ -1785,6 +1789,13 @@
         ],
         "summary": "Delete data",
         "description": "Deletes data from a bucket.\n\nUse this endpoint to delete points from a bucket in a specified time range.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n\n  1. Validates the request and queues the delete.\n  2. Returns _success_ if queued; _error_ otherwise.\n  3. Handles the delete asynchronously.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\n  and then responds with success or failure.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n- Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)\n  and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \\\n  --header 'Authorization: Token INFLUX_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start\": \"2020-03-01T00:00:00Z\",\n    \"stop\": \"2020-11-14T00:00:00Z\",\n    \"predicate\": \"tag1=\\\"value1\\\" and (tag2=\\\"value2\\\" and tag3!=\\\"value3\\\")\"\n  }'\n"
+          }
+        ],
         "requestBody": {
           "description": "Time range parameters and an optional **delete predicate expression**.\n\nTo select points to delete within the specified time range, pass a\n**delete predicate expression** in the `predicate` property of the request body.\nIf you don't pass a `predicate`, InfluxDB deletes all data with timestamps\nin the specified time range.\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n",
           "required": true,
