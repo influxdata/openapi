@@ -2124,10 +2124,22 @@ paths:
   /query/ast:
     post:
       operationId: PostQueryAst
-      description: Analyzes flux query and generates a query specification.
       tags:
         - Query
-      summary: Generate an Abstract Syntax Tree (AST) from a query
+      summary: Generate an Abstract Syntax Tree (AST) from a Flux query
+      description: |
+        Analyzes a Flux query and generates a complete package source AST from the 
+        query. 
+
+        Use this endpoint for deep query analysis. 
+
+        #### Required permissions
+
+        #### Limitations 
+
+        #### Rate limits (with InfluxDB Cloud)
+        `query` rate limits apply. For more information, see limits and adjustable 
+        quotas.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: header
@@ -2137,20 +2149,31 @@ paths:
             enum:
               - application/json
       requestBody:
-        description: Analyzed Flux query to generate abstract syntax tree.
+        description: Analyzed Flux query to generate an AST.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/LanguageRequest'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST 'INFLUX_URL/api/v2/query/ast' \
+            --header 'Content-Type: application/json' \
+            --header 'Accept: application/json \
+            --header 'Authorization: Token INFLUX_TOKEN' \
+            --data 'from(bucket: "example-bucket")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r._measurement == "example-measurement")'
       responses:
         '200':
-          description: Abstract syntax tree of the flux query.
+          description: AST of the Flux query.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ASTResponse'
         default:
-          description: Any response other than 200 is an internal server error
+          description: Any response other than 200 is an internal server error.
           content:
             application/json:
               schema:
@@ -5313,7 +5336,9 @@ components:
         - query
       properties:
         query:
-          description: Flux query script to be analyzed
+          description: |
+            Flux query. 
+            Flux query script to be analyzed.
           type: string
     Query:
       description: Query influx using the Flux language
