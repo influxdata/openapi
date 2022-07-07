@@ -20,6 +20,10 @@
       "description": "Manage and execute scripts as API endpoints in InfluxDB.\n\nAn API Invokable Script assigns your custom Flux script to a new\nInfluxDB API endpoint for your organization.\nInvokable scripts let you execute your script as an HTTP request to the endpoint.\n\nInvokable scripts accept parameters.\nAdd parameter references in your script as `params.myparameter`.\nWhen you `invoke` your script, you send parameters as key-value pairs in the `params` object.\nThen, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.\n\n### Related guides\n\n- [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).\n"
     },
     {
+      "name": "Delete",
+      "description": "Delete data from an InfluxDB bucket.\n"
+    },
+    {
       "name": "Query",
       "description": "Retrieve data, analyze queries, and get query suggestions.\n"
     },
@@ -1741,7 +1745,7 @@
             }
           },
           "429": {
-            "description": "Too many requests.\n\n#### InfluxDB Cloud\n\n  - Returns this error if a **read** or **write** request exceeds your\n    plan's [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum\n    [global limit](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#global-limits).\n  - Returns `Retry-After` header that describes when to try the write again.\n\n#### InfluxDB OSS\n\n  - Doesn't return this error.\n",
+            "description": "Too many requests.\n\n#### InfluxDB Cloud\n\n  - Returns this error if a **read** or **write** request exceeds your plan's [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum [global limit](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#global-limits).\n  - For rate limits that reset automatically, returns a `Retry-After` header that describes when to try the write again.\n  - For limits that can't reset (for example, **cardinality limit**), doesn't return a `Retry-After` header.\n\n  Rates (data-in (writes), queries (reads), and deletes) accrue within a fixed five-minute window.\n  Once a rate limit is exceeded, InfluxDB returns an error response until the current five-minute window resets.\n\n#### InfluxDB OSS\n\n  - Doesn't return this error.\n",
             "headers": {
               "Retry-After": {
                 "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
@@ -1756,7 +1760,7 @@
             "$ref": "#/components/responses/InternalServerError"
           },
           "503": {
-            "description": "Service unavailable.\n\n#### InfluxDB Cloud\n\n  - Returns this error if series cardinality exceeds your plan's\n    [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas).\n    See [how to resolve high series cardinality]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/resolve-high-cardinality/).\n\n#### InfluxDB OSS\n\n  - Returns this error if\n    the server is temporarily unavailable to accept writes.\n  - Returns `Retry-After` header that describes when to try the write again.\n",
+            "description": "Service unavailable.\n\n- Returns this error if\n  the server is temporarily unavailable to accept writes.\n- Returns a `Retry-After` header that describes when to try the write again.\n",
             "headers": {
               "Retry-After": {
                 "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
@@ -1781,6 +1785,13 @@
         ],
         "summary": "Delete data",
         "description": "Deletes data from a bucket.\n\nUse this endpoint to delete points from a bucket in a specified time range.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n\n  1. Validates the request and queues the delete.\n  2. Returns _success_ if queued; _error_ otherwise.\n  3. Handles the delete asynchronously.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\n  and then responds with success or failure.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n- Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)\n  and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \\\n  --header 'Authorization: Token INFLUX_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start\": \"2020-03-01T00:00:00Z\",\n    \"stop\": \"2020-11-14T00:00:00Z\",\n    \"predicate\": \"tag1=\\\"value1\\\" and (tag2=\\\"value2\\\" and tag3!=\\\"value3\\\")\"\n  }'\n"
+          }
+        ],
         "requestBody": {
           "description": "Time range parameters and an optional **delete predicate expression**.\n\nTo select points to delete within the specified time range, pass a\n**delete predicate expression** in the `predicate` property of the request body.\nIf you don't pass a `predicate`, InfluxDB deletes all data with timestamps\nin the specified time range.\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n",
           "required": true,
