@@ -8267,7 +8267,7 @@ paths:
         schema:
           externalDocs:
             description: InfluxDB duration
-            url: https://docs.influxdata.com/influxdb/v2.1/reference/glossary/#duration
+            url: https://docs.influxdata.com/influxdb/latest/reference/glossary/#duration
           format: duration
           type: string
       responses:
@@ -9114,6 +9114,18 @@ paths:
       summary: Delete data
       tags:
       - Delete
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \
+            --header 'Authorization: Token INFLUX_TOKEN' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "start": "2020-03-01T00:00:00Z",
+              "stop": "2020-11-14T00:00:00Z",
+              "predicate": "tag1=\"value1\" and (tag2=\"value2\" and tag3!=\"value3\")"
+            }'
   /api/v2/flags:
     get:
       operationId: GetFlags
@@ -9370,7 +9382,7 @@ paths:
         #### Related guides
 
         - For the list of metrics categories, see [InfluxDB OSS metrics](https://docs.influxdata.com/influxdb/v2.3/reference/internals/metrics/).
-        - Learn how to use InfluxDB to [scrape Prometheus metrics](https://docs.influxdata.com/influxdb/v2.3write-data/developer-tools/scrape-prometheus-metrics/).
+        - Learn how to use InfluxDB to [scrape Prometheus metrics](https://docs.influxdata.com/influxdb/v2.3/write-data/developer-tools/scrape-prometheus-metrics/).
         - Learn how InfluxDB [parses the Prometheus exposition format](https://docs.influxdata.com/influxdb/v2.3/reference/prometheus-metrics/).
       operationId: GetMetrics
       parameters:
@@ -10540,7 +10552,7 @@ paths:
       description: |
         Retrieves data from buckets.
 
-        Use this endpoint to send a Flux query request and retreive data from a bucket.
+        Use this endpoint to send a Flux query request and retrieve data from a bucket.
 
         #### Rate limits (with InfluxDB Cloud)
 
@@ -10619,10 +10631,13 @@ paths:
       responses:
         "200":
           content:
-            text/csv:
+            application/csv:
+              example: |
+                result,table,_start,_stop,_time,region,host,_value
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
               schema:
-                example: |
-                  result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
                 type: string
           description: Success. The response body contains query results.
           headers:
@@ -10673,6 +10688,17 @@ paths:
       summary: Query data
       tags:
       - Query
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \
+          --header 'Content-Type: application/vnd.flux' \
+          --header 'Accept: application/csv \
+          --header 'Authorization: Token INFLUX_TOKEN' \
+          --data 'from(bucket: "example-bucket")
+                    |> range(start: -5m)
+                    |> filter(fn: (r) => r._measurement == "example-measurement")'
   /api/v2/query/analyze:
     post:
       operationId: PostQueryAnalyze
@@ -12691,35 +12717,53 @@ paths:
       - Templates
   /api/v2/tasks:
     get:
+      description: |
+        Retrieves a list of [tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/).
+
+        To limit which tasks are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
       operationId: GetTasks
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: Returns task with a specific name.
+      - description: |
+          Task name.
+          Only returns tasks with this name.
+          Different tasks may have the same name.
         in: query
         name: name
         schema:
           type: string
-      - description: Return tasks after a specified ID.
+      - description: |
+          Task ID.
+          Only returns tasks created after this task.
         in: query
         name: after
         schema:
           type: string
-      - description: Filter tasks to a specific user ID.
+      - description: |
+          User ID.
+          Only returns tasks owned by this user.
         in: query
         name: user
         schema:
           type: string
-      - description: Filter tasks to a specific organization name.
+      - description: |
+          Organization name.
+          Only returns tasks owned by this organization.
         in: query
         name: org
         schema:
           type: string
-      - description: Filter tasks to a specific organization ID.
+      - description: |
+          Organization ID.
+          Only returns tasks owned by this organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: Filter tasks by a status--"inactive" or "active".
+      - description: |
+          Task status (`active` or `inactive`).
+          Only returns tasks with this status.
         in: query
         name: status
         schema:
@@ -12727,7 +12771,9 @@ paths:
           - active
           - inactive
           type: string
-      - description: The number of tasks to return
+      - description: |
+          Limits the number of tasks returned.
+          The minimum is `1`, the maximum is `500`, and the default is `100`.
         in: query
         name: limit
         schema:
@@ -12735,7 +12781,11 @@ paths:
           maximum: 500
           minimum: 1
           type: integer
-      - description: Type of task, unset by default.
+      - description: |
+          Task type (`basic` or `system`). Default is `system`.
+
+          The default (`system`) response contains all the metadata properties for tasks.
+          To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
         in: query
         name: type
         required: false
@@ -12749,19 +12799,131 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                basicTypeTaskOutput:
+                  description: Task fields returned with `?type=basic`
+                  summary: Basic output
+                  value:
+                    links:
+                      self: /api/v2/tasks?limit=100
+                    tasks:
+                    - every: 30m
+                      flux: ""
+                      id: 09956cbb6d378000
+                      labels: []
+                      lastRunStatus: success
+                      latestCompleted: "2022-06-30T15:00:00Z"
+                      links:
+                        labels: /api/v2/tasks/09956cbb6d378000/labels
+                        logs: /api/v2/tasks/09956cbb6d378000/logs
+                        members: /api/v2/tasks/09956cbb6d378000/members
+                        owners: /api/v2/tasks/09956cbb6d378000/owners
+                        runs: /api/v2/tasks/09956cbb6d378000/runs
+                        self: /api/v2/tasks/09956cbb6d378000
+                      name: task1
+                      org: ""
+                      orgID: 48c88459ee424a04
+                      ownerID: 0772396d1f411000
+                      status: active
+                    - every: 30m
+                      flux: ""
+                      id: 09956e2b48778000
+                      labels: []
+                      lastRunStatus: success
+                      latestCompleted: "2022-06-28T14:00:00Z"
+                      links:
+                        labels: /api/v2/tasks/09956e2b48778000/labels
+                        logs: /api/v2/tasks/09956e2b48778000/logs
+                        members: /api/v2/tasks/09956e2b48778000/members
+                        owners: /api/v2/tasks/09956e2b48778000/owners
+                        runs: /api/v2/tasks/09956e2b48778000/runs
+                        self: /api/v2/tasks/09956e2b48778000
+                      name: task2
+                      org: ""
+                      orgID: 48c88459ee424a04
+                      ownerID: 0772396d1f411000
+                      status: inactive
+                systemTypeTaskOutput:
+                  description: Task fields returned with `?type=system`
+                  summary: System output
+                  value:
+                    links:
+                      self: /api/v2/tasks?limit=100
+                    tasks:
+                    - createdAt: "2022-06-27T15:09:06Z"
+                      description: IoT Center 90-day environment average.
+                      every: 30m
+                      flux: |-
+                        option task = {name: "task1", every: 30m}
+
+                        from(bucket: "iot_center")
+                            |> range(start: -90d)
+                            |> filter(fn: (r) => r._measurement == "environment")
+                            |> aggregateWindow(every: 1h, fn: mean)
+                      id: 09956cbb6d378000
+                      labels: []
+                      lastRunStatus: success
+                      latestCompleted: "2022-06-30T15:00:00Z"
+                      links:
+                        labels: /api/v2/tasks/09956cbb6d378000/labels
+                        logs: /api/v2/tasks/09956cbb6d378000/logs
+                        members: /api/v2/tasks/09956cbb6d378000/members
+                        owners: /api/v2/tasks/09956cbb6d378000/owners
+                        runs: /api/v2/tasks/09956cbb6d378000/runs
+                        self: /api/v2/tasks/09956cbb6d378000
+                      name: task1
+                      org: my-iot-center
+                      orgID: 48c88459ee424a04
+                      ownerID: 0772396d1f411000
+                      status: active
+                      updatedAt: "2022-06-28T18:10:15Z"
+                    - createdAt: "2022-06-27T15:15:23Z"
+                      description: IoT Center 30-day environment average.
+                      every: 30m
+                      flux: "option task = { \n  name: \"task1\",\n  every: 30m,\n}\n\nfrom(bucket:
+                        \"iot_center\")\n    |> range(start: -30d)\n    |> filter(fn:
+                        (r) => r._measurement == \"environment\")\n    |> aggregateWindow(every:
+                        1h, fn: mean)"
+                      id: 09956e2b48778000
+                      labels: []
+                      lastRunStatus: success
+                      latestCompleted: "2022-06-28T14:00:00Z"
+                      links:
+                        labels: /api/v2/tasks/09956e2b48778000/labels
+                        logs: /api/v2/tasks/09956e2b48778000/logs
+                        members: /api/v2/tasks/09956e2b48778000/members
+                        owners: /api/v2/tasks/09956e2b48778000/owners
+                        runs: /api/v2/tasks/09956e2b48778000/runs
+                        self: /api/v2/tasks/09956e2b48778000
+                      name: task2
+                      org: my-iot-center
+                      orgID: 48c88459ee424a04
+                      ownerID: 0772396d1f411000
+                      status: inactive
+                      updatedAt: "2022-06-28T14:25:26Z"
               schema:
                 $ref: '#/components/schemas/Tasks'
-          description: A list of tasks
+          description: |
+            Success.
+            The response body contains the list of tasks.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
-      summary: List all tasks
+          $ref: '#/components/responses/GeneralServerError'
+      summary: List tasks
       tags:
       - Tasks
     post:
+      description: |
+        Creates a [task](https://docs.influxdata.com/influxdb/v2.3/process-data/) and returns the created task.
+
+        #### Related guides
+
+        - [Create a task](https://docs.influxdata.com/influxdb/v2.3/process-data/manage-tasks/create-task/).
+        - [Common tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/common-tasks/)
+        - [Task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
       operationId: PostTasks
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -12770,7 +12932,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskCreateRequest'
-        description: Task to create
+        description: Task to create.
         required: true
       responses:
         "201":
@@ -12778,16 +12940,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
-          description: Task created
+          description: Success. The response body contains a `tasks` list with the
+            new task.
+        "400":
+          content:
+            application/json:
+              examples:
+                missingFluxError:
+                  summary: Task in request body is missing Flux query
+                  value:
+                    code: invalid
+                    message: 'failed to decode request: missing flux'
+              schema:
+                $ref: '#/components/responses/BadRequestError'
+          description: Bad request
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Create a new task
+      summary: Create a task
       tags:
       - Tasks
+      x-codeSamples:
+      - label: 'cURL: create a task'
+        lang: Shell
+        source: |
+          curl -v --request POST \
+          http://localhost:8086/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --data-binary @- << EOF
+            {
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                    from(bucket: \"iot_center\")\
+                      |> range(start: -30d)\
+                      |> filter(fn: (r) => r._measurement == \"environment\")\
+                      |> aggregateWindow(every: 1h, fn: mean)"
+            }
+          EOF
   /api/v2/tasks/{taskID}:
     delete:
       description: Deletes a task and all associated records
@@ -15164,6 +15358,9 @@ tags:
       - [Golang diagnostics](https://go.dev/doc/diagnostics)
   name: Debug
 - description: |
+    Delete data from an InfluxDB bucket.
+  name: Delete
+- description: |
     Retrieve data, analyze queries, and get query suggestions.
   name: Query
 - description: |
@@ -15229,7 +15426,7 @@ tags:
     | `200`       | Success                  |                       |
     | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
     | `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
-    | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/v2.1/security/tokens/)</li> |
+    | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/latest/security/tokens/)</li> |
     | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
     | `413`       | Request entity too large | Request payload exceeds the size limit. |
     | `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |

@@ -8325,6 +8325,18 @@ paths:
       summary: Delete data
       tags:
       - Delete
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \
+            --header 'Authorization: Token INFLUX_TOKEN' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "start": "2020-03-01T00:00:00Z",
+              "stop": "2020-11-14T00:00:00Z",
+              "predicate": "tag1=\"value1\" and (tag2=\"value2\" and tag3!=\"value3\")"
+            }'
   /api/v2/flags:
     get:
       operationId: GetFlags
@@ -9760,7 +9772,7 @@ paths:
       description: |
         Retrieves data from buckets.
 
-        Use this endpoint to send a Flux query request and retreive data from a bucket.
+        Use this endpoint to send a Flux query request and retrieve data from a bucket.
 
         #### Rate limits (with InfluxDB Cloud)
 
@@ -9839,10 +9851,13 @@ paths:
       responses:
         "200":
           content:
-            text/csv:
+            application/csv:
+              example: |
+                result,table,_start,_stop,_time,region,host,_value
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
               schema:
-                example: |
-                  result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
                 type: string
           description: Success. The response body contains query results.
           headers:
@@ -9893,6 +9908,17 @@ paths:
       summary: Query data
       tags:
       - Query
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \
+          --header 'Content-Type: application/vnd.flux' \
+          --header 'Accept: application/csv \
+          --header 'Authorization: Token INFLUX_TOKEN' \
+          --data 'from(bucket: "example-bucket")
+                    |> range(start: -5m)
+                    |> filter(fn: (r) => r._measurement == "example-measurement")'
   /api/v2/query/analyze:
     post:
       operationId: PostQueryAnalyze
@@ -13394,6 +13420,9 @@ tags:
 
     - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
   name: Invokable Scripts
+- description: |
+    Delete data from an InfluxDB bucket.
+  name: Delete
 - description: |
     Retrieve data, analyze queries, and get query suggestions.
   name: Query

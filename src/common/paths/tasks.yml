@@ -2,34 +2,50 @@ get:
   operationId: GetTasks
   tags:
     - Tasks
-  summary: List all tasks
+  summary: List tasks
+  description: |
+    Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/).
+
+    To limit which tasks are returned, pass query parameters in your request.
+    If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
       name: name
-      description: Returns task with a specific name.
+      description: |
+        Task name.
+        Only returns tasks with this name.
+        Different tasks may have the same name.
       schema:
         type: string
     - in: query
       name: after
       schema:
         type: string
-      description: Return tasks after a specified ID.
+      description: |
+        Task ID.
+        Only returns tasks created after this task.
     - in: query
       name: user
       schema:
         type: string
-      description: Filter tasks to a specific user ID.
+      description: |
+        User ID.
+        Only returns tasks owned by this user.
     - in: query
       name: org
       schema:
         type: string
-      description: Filter tasks to a specific organization name.
+      description: |
+        Organization name.
+        Only returns tasks owned by this organization.
     - in: query
       name: orgID
       schema:
         type: string
-      description: Filter tasks to a specific organization ID.
+      description: |
+        Organization ID.
+        Only returns tasks owned by this organization.
     - in: query
       name: status
       schema:
@@ -37,7 +53,9 @@ get:
         enum:
           - active
           - inactive
-      description: Filter tasks by a status--"inactive" or "active".
+      description: |
+        Task status (`active` or `inactive`).
+        Only returns tasks with this status.
     - in: query
       name: limit
       schema:
@@ -45,10 +63,17 @@ get:
         minimum: 1
         maximum: 500
         default: 100
-      description: The number of tasks to return
+      description: |
+        Limits the number of tasks returned.
+        The minimum is `1`, the maximum is `500`, and the default is `100`.
     - in: query
       name: type
-      description: Type of task, unset by default.
+      description: |
+        Task type (`basic` or `system`). Default is `system`.
+
+        The default (`system`) response contains all the metadata properties for tasks.
+        To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
+
       required: false
       schema:
         default: ""
@@ -58,26 +83,150 @@ get:
           - "system"
   responses:
     "200":
-      description: A list of tasks
+      description: |
+        Success.
+        The response body contains the list of tasks.
       content:
         application/json:
           schema:
             $ref: "../schemas/Tasks.yml"
+          examples:
+            basicTypeTaskOutput:
+              summary: Basic output
+              description: Task fields returned with `?type=basic`
+              value:
+                {
+                  "links": {
+                    "self": "/api/v2/tasks?limit=100"
+                  },
+                  "tasks": [
+                    {
+                      "links": {
+                        "labels": "/api/v2/tasks/09956cbb6d378000/labels",
+                        "logs": "/api/v2/tasks/09956cbb6d378000/logs",
+                        "members": "/api/v2/tasks/09956cbb6d378000/members",
+                        "owners": "/api/v2/tasks/09956cbb6d378000/owners",
+                        "runs": "/api/v2/tasks/09956cbb6d378000/runs",
+                        "self": "/api/v2/tasks/09956cbb6d378000"
+                      },
+                      "labels": [],
+                      "id": "09956cbb6d378000",
+                      "orgID": "48c88459ee424a04",
+                      "org": "",
+                      "ownerID": "0772396d1f411000",
+                      "name": "task1",
+                      "status": "active",
+                      "flux": "",
+                      "every": "30m",
+                      "latestCompleted": "2022-06-30T15:00:00Z",
+                      "lastRunStatus": "success"
+                    },
+                    {
+                      "links": {
+                        "labels": "/api/v2/tasks/09956e2b48778000/labels",
+                        "logs": "/api/v2/tasks/09956e2b48778000/logs",
+                        "members": "/api/v2/tasks/09956e2b48778000/members",
+                        "owners": "/api/v2/tasks/09956e2b48778000/owners",
+                        "runs": "/api/v2/tasks/09956e2b48778000/runs",
+                        "self": "/api/v2/tasks/09956e2b48778000"
+                      },
+                      "labels": [],
+                      "id": "09956e2b48778000",
+                      "orgID": "48c88459ee424a04",
+                      "org": "",
+                      "ownerID": "0772396d1f411000",
+                      "name": "task2",
+                      "status": "inactive",
+                      "flux": "",
+                      "every": "30m",
+                      "latestCompleted": "2022-06-28T14:00:00Z",
+                      "lastRunStatus": "success"
+                    },
+
+                  ]
+                }
+            systemTypeTaskOutput:
+              summary: System output
+              description: Task fields returned with `?type=system`
+              value:
+                {
+                  "links": {
+                    "self": "/api/v2/tasks?limit=100"
+                  },
+                  "tasks": [
+                    {
+                      "links": {
+                        "labels": "/api/v2/tasks/09956cbb6d378000/labels",
+                        "logs": "/api/v2/tasks/09956cbb6d378000/logs",
+                        "members": "/api/v2/tasks/09956cbb6d378000/members",
+                        "owners": "/api/v2/tasks/09956cbb6d378000/owners",
+                        "runs": "/api/v2/tasks/09956cbb6d378000/runs",
+                        "self": "/api/v2/tasks/09956cbb6d378000"
+                      },
+                      "labels": [],
+                      "id": "09956cbb6d378000",
+                      "orgID": "48c88459ee424a04",
+                      "org": "my-iot-center",
+                      "ownerID": "0772396d1f411000",
+                      "name": "task1",
+                      "description": "IoT Center 90-day environment average.",
+                      "status": "active",
+                      "flux": "option task = {name: \"task1\", every: 30m}\n\nfrom(bucket: \"iot_center\")\n    |> range(start: -90d)\n    |> filter(fn: (r) => r._measurement == \"environment\")\n    |> aggregateWindow(every: 1h, fn: mean)",
+                      "every": "30m",
+                      "latestCompleted": "2022-06-30T15:00:00Z",
+                      "lastRunStatus": "success",
+                      "createdAt": "2022-06-27T15:09:06Z",
+                      "updatedAt": "2022-06-28T18:10:15Z"
+                    },
+                    {
+                      "links": {
+                        "labels": "/api/v2/tasks/09956e2b48778000/labels",
+                        "logs": "/api/v2/tasks/09956e2b48778000/logs",
+                        "members": "/api/v2/tasks/09956e2b48778000/members",
+                        "owners": "/api/v2/tasks/09956e2b48778000/owners",
+                        "runs": "/api/v2/tasks/09956e2b48778000/runs",
+                        "self": "/api/v2/tasks/09956e2b48778000"
+                      },
+                      "labels": [],
+                      "id": "09956e2b48778000",
+                      "orgID": "48c88459ee424a04",
+                      "org": "my-iot-center",
+                      "ownerID": "0772396d1f411000",
+                      "name": "task2",
+                      "description": "IoT Center 30-day environment average.",
+                      "status": "inactive",
+                      "flux": "option task = { \n  name: \"task1\",\n  every: 30m,\n}\n\nfrom(bucket: \"iot_center\")\n    |> range(start: -30d)\n    |> filter(fn: (r) => r._measurement == \"environment\")\n    |> aggregateWindow(every: 1h, fn: mean)",
+                      "every": "30m",
+                      "latestCompleted": "2022-06-28T14:00:00Z",
+                      "lastRunStatus": "success",
+                      "createdAt": "2022-06-27T15:15:23Z",
+                      "updatedAt": "2022-06-28T14:25:26Z"
+                    }
+                  ]
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"
 post:
   operationId: PostTasks
   tags:
     - Tasks
-  summary: Create a new task
+  summary: Create a task
+  description: |
+    Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
+
+    #### Related guides
+
+    - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).
+    - [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
+    - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
-    description: Task to create
+    description: Task to create.
     required: true
     content:
       application/json:
@@ -85,14 +234,46 @@ post:
           $ref: "../schemas/TaskCreateRequest.yml"
   responses:
     "201":
-      description: Task created
+      description: Success. The response body contains a `tasks` list with the new task.
       content:
         application/json:
           schema:
             $ref: "../schemas/Task.yml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../responses/BadRequestError.yml"
+          examples:
+            missingFluxError:
+              summary: Task in request body is missing Flux query
+              value: {
+                "code":"invalid",
+                "message": "failed to decode request: missing flux"
+                }
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: create a task"
+      source: |
+        curl -v --request POST \
+        http://localhost:8086/api/v2/tasks \
+        --header "Content-type: application/json" \
+        --header "Authorization: Token INFLUX_TOKEN" \
+        --data-binary @- << EOF
+          {
+          "orgID": "INFLUX_ORG_ID",
+          "description": "IoT Center 30d environment average.",
+          "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                  from(bucket: \"iot_center\")\
+                    |> range(start: -30d)\
+                    |> filter(fn: (r) => r._measurement == \"environment\")\
+                    |> aggregateWindow(every: 1h, fn: mean)"
+          }
+        EOF
