@@ -3138,8 +3138,8 @@
         "tags": [
           "Query"
         ],
-        "summary": "Generate an Abstract Syntax Tree (AST) from a Flux query",
-        "description": "Analyzes a Flux query and generates a complete package source AST from the\nquery.\n\nASTs are tree representations of the syntax in the Flux language's source code.\nThe generated response from this endpoint provides a semantic representation\nof the Flux query with contextual information. The AST breaks down how the\nquery is distributed into different components for execution.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\n#### Limitations \n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following query has correct syntax, but contains an incorrect `from()` property key:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
+        "summary": "Generate a query Abstract Syntax Tree (AST)",
+        "description": "Analyzes a Flux query and returns a complete package source [Abstract Syntax\nTree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)\nfor the query.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\nA Flux query AST provides a semantic, tree-like representation with contextual\ninformation about the query. The AST illustrates how the query is distributed\ninto different components for execution.\n\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following query has correct syntax, but contains an incorrect `from()` property key:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3174,7 +3174,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful request.\nAST of the Flux query.\n",
+            "description": "Success.\nThe response body contains an Abstract Syntax Tree (AST) of the Flux query.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -3673,6 +3673,7 @@
                 "examples": {
                   "invalidASTValue": {
                     "summary": "Invalid AST",
+                    "description": "If the request body contains a missing property key in `from()`,\nreturns `invalid` and problem detail.\n",
                     "value": {
                       "code": "invalid",
                       "message": "invalid AST: loc 1:6-1:19: missing property key"
@@ -3683,7 +3684,7 @@
             }
           },
           "default": {
-            "description": "Any response other than 200 is an internal server error.",
+            "description": "Internal server error.",
             "content": {
               "application/json": {
                 "schema": {
@@ -12911,7 +12912,7 @@
         ],
         "properties": {
           "query": {
-            "description": "Flux query.\nFlux query script to be analyzed.\n",
+            "description": "The Flux query script to be analyzed.\n",
             "type": "string"
           }
         }

@@ -2206,8 +2206,7 @@ components:
       properties:
         query:
           description: |
-            Flux query.
-            Flux query script to be analyzed.
+            The Flux query script to be analyzed.
           type: string
       required:
       - query
@@ -10746,19 +10745,32 @@ paths:
       - Query
   /api/v2/query/ast:
     post:
-      description: "Analyzes a Flux query and generates a complete package source
-        AST from the\nquery.\n\nASTs are tree representations of the syntax in the
-        Flux language's source code.\nThe generated response from this endpoint provides
-        a semantic representation\nof the Flux query with contextual information.
-        The AST breaks down how the\nquery is distributed into different components
-        for execution.\n\nUse this endpoint for deep query analysis such as debugging
-        unexpected query\nresults.\n\n#### Limitations \n\n-  The endpoint doesn't
-        validate values in the query--for example:\n\n    The following query has
-        correct syntax, but contains an incorrect `from()` property key:\n    ```json\n
-        \   { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start:
-        -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n
-        \   }\n    ```\n    Passing this to `/api/v2/query/ast` will return a successful
-        response\n    with a generated AST.\n"
+      description: |
+        Analyzes a Flux query and returns a complete package source [Abstract Syntax
+        Tree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)
+        for the query.
+
+        Use this endpoint for deep query analysis such as debugging unexpected query
+        results.
+
+        A Flux query AST provides a semantic, tree-like representation with contextual
+        information about the query. The AST illustrates how the query is distributed
+        into different components for execution.
+
+
+        #### Limitations
+
+        -  The endpoint doesn't validate values in the query--for example:
+
+            The following query has correct syntax, but contains an incorrect `from()` property key:
+            ```json
+            { "query": "from(foo: \"iot_center\")\
+                        |> range(start: -90d)\
+                        |> filter(fn: (r) => r._measurement == \"environment\")"
+            }
+            ```
+            Passing this to `/api/v2/query/ast` will return a successful response
+            with a generated AST.
       operationId: PostQueryAst
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11111,13 +11123,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ASTResponse'
           description: |
-            Successful request.
-            AST of the Flux query.
+            Success.
+            The response body contains an Abstract Syntax Tree (AST) of the Flux query.
         "400":
           content:
             application/json:
               examples:
                 invalidASTValue:
+                  description: |
+                    If the request body contains a missing property key in `from()`,
+                    returns `invalid` and problem detail.
                   summary: Invalid AST
                   value:
                     code: invalid
@@ -11140,8 +11155,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Any response other than 200 is an internal server error.
-      summary: Generate an Abstract Syntax Tree (AST) from a Flux query
+          description: Internal server error.
+      summary: Generate a query Abstract Syntax Tree (AST)
       tags:
       - Query
       x-codeSamples:
