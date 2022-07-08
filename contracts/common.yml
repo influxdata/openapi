@@ -2131,9 +2131,27 @@ paths:
         Analyzes a Flux query and generates a complete package source AST from the 
         query. 
 
-        Use this endpoint for deep query analysis. 
+        ASTs are tree representations of the syntax in the Flux language's source code.
+        The generated response from this endpoint provides a semantic representation 
+        of the Flux query with contextual information. The AST breaks down how the 
+        query is distributed into different components for execution. 
+
+        Use this endpoint for deep query analysis such as debugging unexpected query 
+        results. 
 
         #### Limitations 
+
+        -  The endpoint doesn't validate values in the query--for example:
+
+          - The following query has correct syntax, but contains an incorrect `from()` property key:
+            ```json
+            { "query": "from(foo: \"iot_center\")\
+                        |> range(start: -90d)\
+                        |> filter(fn: (r) => r._measurement == \"environment\")"
+            }
+            ```
+            Passing this to `/api/v2/query/ast` will return a successful response
+            with a generated AST.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: header
@@ -2161,7 +2179,9 @@ paths:
                       |> filter(fn: (r) => r._measurement == "example-measurement")'
       responses:
         '200':
-          description: AST of the Flux query.
+          description: |
+            Successful request.
+            AST of the Flux query.
           content:
             application/json:
               schema:
@@ -2492,6 +2512,28 @@ paths:
                                                     column: 108
                                                   source: '"example-measurement"'
                                                 value: example-measurement
+        '400':
+          description: |
+            Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the problem.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                type: string
+                example: invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidASTValue:
+                  summary: Invalid AST
+                  value:
+                    code: invalid
+                    message: 'invalid AST: loc 1:6-1:19: missing property key'
         default:
           description: Any response other than 200 is an internal server error.
           content:
