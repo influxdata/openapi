@@ -2357,6 +2357,37 @@ paths:
       tags:
         - Query
       summary: Analyze a Flux query
+      description: |
+        Analyzes a [Flux query](https://docs.influxdata.com/flux/v0.x/) for syntax
+        errors and returns the list of errors.
+
+        In the following example `Query` object, `query` is missing a `from()` property key:
+
+            ```json
+            { "query": "from(: \"iot_center\")\
+                        |> range(start: -90d)\
+                        |> filter(fn: (r) => r._measurement == \"environment\")",
+              "type": "flux"
+            }
+            ```
+
+        Passing this to `/api/v2/analyze` returns an `errors` list that contains an error object for the missing key.
+
+        #### Limitations
+
+        -  The endpoint doesn't validate values in the query--for example:
+
+          - The following query has correct syntax, but contains an incorrect `from()` property key:
+
+            ```json
+            { "query": "from(foo: \"iot_center\")\
+                        |> range(start: -90d)\
+                        |> filter(fn: (r) => r._measurement == \"environment\")",
+              "type": "flux"
+            }
+            ```
+
+            Passing this to `/api/v2/analyze` returns an empty `errors` list.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: header
@@ -2373,26 +2404,103 @@ paths:
               $ref: '#/components/schemas/Query'
       responses:
         '200':
-          description: Query analyze results. Errors will be empty if the query is valid.
+          description: |
+            Success.
+            The response body contains the list of `errors`.
+            If the query syntax is valid, the endpoint returns an empty `errors` list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnalyzeQueryResponse'
+              examples:
+                missingQueryPropertyKey:
+                  summary: Missing property key error
+                  description: |
+                    Returns an error object if the Flux query is missing a property key.
+
+                    The following example is missing the `bucket` property key:
+
+                      ```json
+                      {
+                        "query": "from(: \"iot_center\")\
+
+                        ...
+
+                      }
+                      ```
+                  value:
+                    errors:
+                      - line: 1
+                        column: 6
+                        character: 0
+                        message: missing property key
+        '400':
+          description: |
+            Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the problem.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                type: string
+                example: invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidJSONStringValue:
+                  summary: Invalid JSON
+                  description: 'If the request body contains invalid JSON, returns `invalid` and problem detail.'
+                  value:
+                    code: invalid
+                    message: 'invalid json: invalid character ''\'''' looking for beginning of value'
         default:
           description: Internal server error
           headers:
+            X-Platform-Error-Code:
+              description: The reason for the error.
+              schema:
+                type: string
+                example: internal error
             X-Influx-Error:
-              description: Error string describing the problem
+              description: A string that describes the problem.
               schema:
                 type: string
             X-Influx-Reference:
-              description: Reference code unique to the error type
+              description: The numeric reference code for the error type.
               schema:
                 type: integer
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                emptyJSONObject:
+                  summary: Empty JSON object in request body
+                  description: |
+                    If the request body contains an empty JSON object, returns `internal error`.
+                  value:
+                    code: internal error
+                    message: An internal error has occurred - check server logs
+      x-codeSamples:
+        - lang: Shell
+          label: 'cURL: Analyze a Flux query'
+          source: |
+            curl -v --request POST \
+              "http://localhost:8086/api/v2/query/analyze" \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header 'Content-type: application/json' \
+              --header 'Accept: application/json' \
+              --data-binary @- << EOF
+              { "query": "from(bucket: \"iot_center\")\
+                          |> range(start: -90d)\
+                          |> filter(fn: (r) => r._measurement == \"environment\")",
+                "type": "flux"
+              }
+            EOF
   /query:
     post:
       operationId: PostQuery

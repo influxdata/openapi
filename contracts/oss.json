@@ -3277,6 +3277,7 @@
           "Query"
         ],
         "summary": "Analyze a Flux query",
+        "description": "Analyzes a [Flux query](https://docs.influxdata.com/flux/v0.x/) for syntax\nerrors and returns the list of errors.\n\nIn the following example `Query` object, `query` is missing a `from()` property key:\n\n    ```json\n    { \"query\": \"from(: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n      \"type\": \"flux\"\n    }\n    ```\n\nPassing this to `/api/v2/analyze` returns an `errors` list that contains an error object for the missing key.\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n  - The following query has correct syntax, but contains an incorrect `from()` property key:\n\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n      \"type\": \"flux\"\n    }\n    ```\n\n    Passing this to `/api/v2/analyze` returns an empty `errors` list.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3304,11 +3305,56 @@
         },
         "responses": {
           "200": {
-            "description": "Query analyze results. Errors will be empty if the query is valid.",
+            "description": "Success.\nThe response body contains the list of `errors`.\nIf the query syntax is valid, the endpoint returns an empty `errors` list.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AnalyzeQueryResponse"
+                },
+                "examples": {
+                  "missingQueryPropertyKey": {
+                    "summary": "Missing property key error",
+                    "description": "Returns an error object if the Flux query is missing a property key.\n\nThe following example is missing the `bucket` property key:\n\n  ```json\n  {\n    \"query\": \"from(: \\\"iot_center\\\")\\\n\n    ...\n\n  }\n  ```\n",
+                    "value": {
+                      "errors": [
+                        {
+                          "line": 1,
+                          "column": 6,
+                          "character": 0,
+                          "message": "missing property key"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.\nInfluxDB is unable to parse the request.\nThe response body contains detail about the problem.\n",
+            "headers": {
+              "X-Platform-Error-Code": {
+                "description": "The reason for the error.\n",
+                "schema": {
+                  "type": "string",
+                  "example": "invalid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidJSONStringValue": {
+                    "summary": "Invalid JSON",
+                    "description": "If the request body contains invalid JSON, returns `invalid` and problem detail.",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid json: invalid character '\\'' looking for beginning of value"
+                    }
+                  }
                 }
               }
             }
@@ -3316,14 +3362,21 @@
           "default": {
             "description": "Internal server error",
             "headers": {
+              "X-Platform-Error-Code": {
+                "description": "The reason for the error.",
+                "schema": {
+                  "type": "string",
+                  "example": "internal error"
+                }
+              },
               "X-Influx-Error": {
-                "description": "Error string describing the problem",
+                "description": "A string that describes the problem.",
                 "schema": {
                   "type": "string"
                 }
               },
               "X-Influx-Reference": {
-                "description": "Reference code unique to the error type",
+                "description": "The numeric reference code for the error type.",
                 "schema": {
                   "type": "integer"
                 }
@@ -3333,11 +3386,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "emptyJSONObject": {
+                    "summary": "Empty JSON object in request body",
+                    "description": "If the request body contains an empty JSON object, returns `internal error`.\n",
+                    "value": {
+                      "code": "internal error",
+                      "message": "An internal error has occurred - check server logs"
+                    }
+                  }
                 }
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: Analyze a Flux query",
+            "source": "curl -v --request POST \\\n  \"http://localhost:8086/api/v2/query/analyze\" \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header 'Content-type: application/json' \\\n  --header 'Accept: application/json' \\\n  --data-binary @- << EOF\n  { \"query\": \"from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -90d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n    \"type\": \"flux\"\n  }\nEOF\n"
+          }
+        ]
       }
     },
     "/query": {
