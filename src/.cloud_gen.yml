@@ -1,0 +1,892 @@
+openapi: '3.0.0'
+info:
+  title: InfluxDB Cloud API Service
+  version: 2.0.1
+  description: |
+    The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+servers:
+  - url: /api/v2
+tags:
+  - name: Authorizations
+    description: |
+      Create and manage API tokens.
+      An **authorization** associates a list of permissions to an
+      **organization** and provides a token for API access.
+      Optionally, you can restrict an authorization and its token to a specific user.
+
+      ### Related guides
+
+        - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
+        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
+        - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
+  - name: Invokable Scripts
+    description: |
+      Manage and execute scripts as API endpoints in InfluxDB.
+
+      An API Invokable Script assigns your custom Flux script to a new
+      InfluxDB API endpoint for your organization.
+      Invokable scripts let you execute your script as an HTTP request to the endpoint.
+
+      Invokable scripts accept parameters.
+      Add parameter references in your script as `params.myparameter`.
+      When you `invoke` your script, you send parameters as key-value pairs in the `params` object.
+      Then, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.
+
+      ### Related guides
+
+      - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+  - name: Delete
+    description: |
+      Delete data from an InfluxDB bucket.
+  - name: Query
+    description: |
+      Retrieve data, analyze queries, and get query suggestions.
+  - name: Write
+    description: |
+      Write time series data to buckets.
+
+  # Define x-traitTags below to describe general API features (auth, pagination, headers).
+  - name: Authentication
+    description: |
+      Use one of the following schemes to authenticate to the InfluxDB API:
+
+      - [Token authentication](#section/Authentication/TokenAuthentication)
+      - [Basic authentication](#section/Authentication/BasicAuthentication)
+      - [Querystring authentication](#section/Authentication/QuerystringAuthentication)
+      <!-- ReDoc-Inject: <security-definitions> -->
+    x-traitTag: true
+  - name: Quick start
+    x-traitTag: true
+    description: |
+      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
+
+      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
+  - name: Common parameters
+    x-traitTag: true
+    description: |
+      Many InfluxDB API endpoints require parameters to specify resources--for example,
+      writing to a **bucket** in an **organization**.
+
+      ### Common query parameters
+
+      | Query parameter          | Value type            | Description                                |
+      |:------------------------ |:--------------------- |:-------------------------------------------|
+      | `bucket`                 | string                | The bucket name or ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |
+      | `bucketID`               | string                | The bucket ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |
+      | `org`                    | string                | The organization name or ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
+      | `orgID`                  | 16-byte string        | The organization ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
+  - name: Headers
+    x-traitTag: true
+    description: |
+      InfluxDB API endpoints use standard HTTP request and response headers.
+
+      **Note**: Not all operations support all headers.
+
+      ### Request headers
+
+      | Header                   | Value type            | Description                                |
+      |:------------------------ |:--------------------- |:-------------------------------------------|
+      | `Accept`                 | string                | The content type that the client can understand. |
+      | `Authorization`          | string                | The authorization scheme and credential. |
+      | `Content-Encoding`       | string                | The compression applied to the line protocol in the request payload. |
+      | `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |
+      | `Content-Type`           | string                | The format of the data in the request body. |
+  - name: Response codes
+    x-traitTag: true
+    description: |
+      The InfluxDB API uses standard HTTP status codes for success and failure responses.
+      The response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.
+
+      API operations may return the following HTTP status codes:
+
+      | &nbsp;Code&nbsp; | Status                   | Description      |
+      |:-----------:|:------------------------ |:--------------------- |
+      | `200`       | Success                  |                       |
+      | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
+      | `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
+      | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li> |
+      | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
+      | `413`       | Request entity too large | Request payload exceeds the size limit. |
+      | `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
+      | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
+      | `500`       | Internal server error    |                       |
+      | `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |
+x-tagGroups:
+  - name: Overview
+    tags:
+      - Quick start
+      - Authentication
+      - Headers
+      - Response codes
+  - name: Popular endpoints
+    tags:
+      - Data I/O endpoints
+      - Security and access endpoints
+      - System information endpoints
+  - name: All endpoints
+    tags: []
+paths:
+  /signin:
+    $ref: "./common/paths/signin.yml"
+  /signout:
+    $ref: "./common/paths/signout.yml"
+  /ping:
+    $ref: "./common/paths/ping.yml"
+  /:
+    $ref: "./common/paths/0slash.yml"
+  /dbrps:
+    $ref: "./common/paths/dbrps.yml"
+  "/dbrps/{dbrpID}":
+    $ref: "./common/paths/dbrps_dbrpID.yml"
+  /telegraf/plugins:
+    $ref: "./common/paths/telegraf_plugins.yml"
+  /telegrafs:
+    $ref: "./common/paths/telegrafs.yml"
+  "/telegrafs/{telegrafID}":
+    $ref: "./common/paths/telegrafs_telegrafID.yml"
+  "/telegrafs/{telegrafID}/labels":
+    $ref: "./common/paths/telegrafs_telegrafID_labels.yml"
+  "/telegrafs/{telegrafID}/labels/{labelID}":
+    $ref: "./common/paths/telegrafs_telegrafID_labels_labelID.yml"
+  "/telegrafs/{telegrafID}/members":
+    $ref: "./common/paths/telegrafs_telegrafID_members.yml"
+  "/telegrafs/{telegrafID}/members/{userID}":
+    $ref: "./common/paths/telegrafs_telegrafID_members_userID.yml"
+  "/telegrafs/{telegrafID}/owners":
+    $ref: "./common/paths/telegrafs_telegrafID_owners.yml"
+  "/telegrafs/{telegrafID}/owners/{userID}":
+    $ref: "./common/paths/telegrafs_telegrafID_owners_userID.yml"
+  "/variables/{variableID}/labels":
+    $ref: "./common/paths/variables_variableID_labels.yml"
+  "/variables/{variableID}/labels/{labelID}":
+    $ref: "./common/paths/variables_variableID_labels_labelID.yml"
+  /write:
+    $ref: "./common/paths/write.yml"
+  /delete:
+    $ref: "./common/paths/delete.yml"
+  /labels:
+    $ref: "./common/paths/labels.yml"
+  /labels/{labelID}:
+    $ref: "./common/paths/labels_labelID.yml"
+  "/dashboards/{dashboardID}":
+    $ref: "./common/paths/dashboards_dashboardID.yml"
+  "/dashboards/{dashboardID}/cells":
+    $ref: "./common/paths/dashboards_dashboardID_cells.yml"
+  "/dashboards/{dashboardID}/cells/{cellID}":
+    $ref: "./common/paths/dashboards_dashboardID_cells_cellID.yml"
+  "/dashboards/{dashboardID}/cells/{cellID}/view":
+    $ref: "./common/paths/dashboards_dashboardID_cells_cellID_view.yml"
+  "/dashboards/{dashboardID}/labels":
+    $ref: "./common/paths/dashboards_dashboardID_labels.yml"
+  "/dashboards/{dashboardID}/labels/{labelID}":
+    $ref: "./common/paths/dashboards_dashboardID_labels_labelID.yml"
+  "/dashboards/{dashboardID}/members":
+    $ref: "./common/paths/dashboards_dashboardID_members.yml"
+  "/dashboards/{dashboardID}/members/{userID}":
+    $ref: "./common/paths/dashboards_dashboardID_members_userID.yml"
+  "/dashboards/{dashboardID}/owners":
+    $ref: "./common/paths/dashboards_dashboardID_owners.yml"
+  "/dashboards/{dashboardID}/owners/{userID}":
+    $ref: "./common/paths/dashboards_dashboardID_owners_userID.yml"
+  /query/ast:
+    $ref: "./common/paths/query_ast.yml"
+  /query/suggestions:
+    $ref: "./common/paths/query_suggestions.yml"
+  "/query/suggestions/{name}":
+    $ref: "./common/paths/query_suggestions_name.yml"
+  /query/analyze:
+    $ref: "./common/paths/query_analyze.yml"
+  /query:
+    $ref: "./common/paths/query.yml"
+  /buckets:
+    $ref: "./common/paths/buckets.yml"
+  "/buckets/{bucketID}":
+    $ref: "./common/paths/buckets_bucketID.yml"
+  "/buckets/{bucketID}/labels":
+    $ref: "./common/paths/buckets_bucketID_labels.yml"
+  "/buckets/{bucketID}/labels/{labelID}":
+    $ref: "./common/paths/buckets_bucketID_labels_labelID.yml"
+  "/buckets/{bucketID}/members":
+    $ref: "./common/paths/buckets_bucketID_members.yml"
+  "/buckets/{bucketID}/members/{userID}":
+    $ref: "./common/paths/buckets_bucketID_members_userID.yml"
+  "/buckets/{bucketID}/owners":
+    $ref: "./common/paths/buckets_bucketID_owners.yml"
+  "/buckets/{bucketID}/owners/{userID}":
+    $ref: "./common/paths/buckets_bucketID_owners_userID.yml"
+  /orgs:
+    $ref: "./common/paths/orgs.yml"
+  "/orgs/{orgID}":
+    $ref: "./common/paths/orgs_orgID.yml"
+  "/orgs/{orgID}/secrets":
+    $ref: "./common/paths/orgs_orgID_secrets.yml"
+  "/orgs/{orgID}/members":
+    $ref: "./common/paths/orgs_orgID_members.yml"
+  "/orgs/{orgID}/members/{userID}":
+    $ref: "./common/paths/orgs_orgID_members_userID.yml"
+  "/orgs/{orgID}/owners":
+    $ref: "./common/paths/orgs_orgID_owners.yml"
+  "/orgs/{orgID}/owners/{userID}":
+    $ref: "./common/paths/orgs_orgID_owners_userID.yml"
+  /orgs/{orgID}/secrets/delete:
+    $ref: './common/paths/orgs_orgID_secrets_delete.yml'
+  /orgs/{orgID}/secrets/{secretID}:
+    $ref: './common/paths/orgs_orgID_secrets_secretID.yml'
+  /resources:
+    $ref: "./common/paths/resources.yml"
+  /stacks:
+    $ref: "./common/paths/stacks.yml"
+  /stacks/{stack_id}:
+    $ref: "./common/paths/stacks_stack_id.yml"
+  /stacks/{stack_id}/uninstall:
+    $ref: "./common/paths/stacks_stack_id_uninstall.yml"
+  /templates/apply:
+    $ref: "./common/paths/templates_apply.yml"
+  /templates/export:
+    $ref: "./common/paths/templates_export.yml"
+  "/tasks/{taskID}":
+    $ref: "./common/paths/tasks_taskID.yml"
+  "/tasks/{taskID}/runs":
+    $ref: "./common/paths/tasks_taskID_runs.yml"
+  "/tasks/{taskID}/runs/{runID}":
+    $ref: "./common/paths/tasks_taskID_runs_runID.yml"
+  "/tasks/{taskID}/runs/{runID}/retry":
+    $ref: "./common/paths/tasks_taskID_runs_runID_retry.yml"
+  "/tasks/{taskID}/logs":
+    $ref: "./common/paths/tasks_taskID_logs.yml"
+  "/tasks/{taskID}/runs/{runID}/logs":
+    $ref: "./common/paths/tasks_taskID_runs_runID_logs.yml"
+  "/tasks/{taskID}/labels":
+    $ref: "./common/paths/tasks_taskID_labels.yml"
+  "/tasks/{taskID}/labels/{labelID}":
+    $ref: "./common/paths/tasks_taskID_labels_labelID.yml"
+  /flags:
+    $ref: "./common/paths/flags.yml"
+  /me:
+    $ref: "./common/paths/me.yml"
+  /me/password:
+    $ref: "./common/paths/me_password.yml"
+  "/tasks/{taskID}/members":
+    $ref: "./common/paths/tasks_taskID_members.yml"
+  "/tasks/{taskID}/members/{userID}":
+    $ref: "./common/paths/tasks_taskID_members_userID.yml"
+  "/tasks/{taskID}/owners":
+    $ref: "./common/paths/tasks_taskID_owners.yml"
+  "/tasks/{taskID}/owners/{userID}":
+    $ref: "./common/paths/tasks_taskID_owners_userID.yml"
+  "/users/{userID}/password":
+    $ref: "./common/paths/users_userID_password.yml"
+  /checks:
+    $ref: "./common/paths/checks.yml"
+  "/checks/{checkID}":
+    $ref: "./common/paths/checks_checkID.yml"
+  "/checks/{checkID}/labels":
+    $ref: "./common/paths/checks_checkID_labels.yml"
+  "/checks/{checkID}/labels/{labelID}":
+    $ref: "./common/paths/checks_checkID_labels_labelID.yml"
+  /notificationRules:
+    $ref: "./common/paths/notificationRules.yml"
+  "/checks/{checkID}/query":
+    $ref: "./common/paths/checks_checkID_query.yml"
+  "/notificationRules/{ruleID}":
+    $ref: "./common/paths/notificationRules_ruleID.yml"
+  "/notificationRules/{ruleID}/labels":
+    $ref: "./common/paths/notificationRules_ruleID_labels.yml"
+  "/notificationRules/{ruleID}/labels/{labelID}":
+    $ref: "./common/paths/notificationRules_ruleID_labels_labelID.yml"
+  "/notificationRules/{ruleID}/query":
+    $ref: "./common/paths/notificationRules_ruleID_query.yml"
+  /notificationEndpoints:
+    $ref: "./common/paths/notificationEndpoints.yml"
+  "/notificationEndpoints/{endpointID}":
+    $ref: "./common/paths/notificationEndpoints_endpointID.yml"
+  "/notificationEndpoints/{endpointID}/labels":
+    $ref: "./common/paths/notificationEndpoints_endpointID_labels.yml"
+  "/notificationEndpoints/{endpointID}/labels/{labelID}":
+    $ref: "./common/paths/notificationEndpoints_endpointID_labels_labelID.yml"
+  /users:
+    $ref: './cloud/paths/users.yml'
+  '/users/{userID}':
+    $ref: './cloud/paths/users_userID.yml'
+  /setup:
+    $ref: './cloud/paths/setup.yml'
+  /setup/user:
+    $ref: './cloud/paths/setup_user.yml'
+  /authorizations:
+    $ref: './cloud/paths/authorizations.yml'
+  /authorizations/{authID}:
+    $ref: './cloud/paths/authorizations_authID.yml'
+  /variables:
+    $ref: './cloud/paths/variables.yml'
+  '/variables/{variableID}':
+    $ref: './cloud/paths/variables_variableID.yml'
+  /buckets/{bucketID}/schema/measurements:
+    $ref: './cloud/paths/measurements.yml'
+  /buckets/{bucketID}/schema/measurements/{measurementID}:
+    $ref: './cloud/paths/measurements_measurementID.yml'
+  /orgs/{orgID}/limits:
+    $ref: './cloud/paths/orgs_orgID_limits_get.yml'
+  /orgs/{orgID}/usage:
+    $ref: './cloud/paths/orgs_orgID_usage.yml'
+  /dashboards:
+    $ref: './cloud/paths/dashboards.yml'
+  /tasks:
+    $ref: './cloud/paths/tasks.yml'
+components:
+  parameters:
+    TraceSpan:
+      $ref: "./common/parameters/TraceSpan.yml"
+    Offset:
+      $ref: "./common/parameters/Offset.yml"
+    Limit:
+      $ref: "./common/parameters/Limit.yml"
+    Descending:
+      $ref: "./common/parameters/Descending.yml"
+    SortBy:
+      $ref: "./common/parameters/SortBy.yml"
+    After:
+      $ref: "./common/parameters/After.yml"
+  schemas:
+    LanguageRequest:
+      $ref: "./common/schemas/LanguageRequest.yml"
+    Query:
+      $ref: "./common/schemas/Query.yml"
+    Package:
+      $ref: "./common/schemas/Package.yml"
+    File:
+      $ref: "./common/schemas/File.yml"
+    PackageClause:
+      $ref: "./common/schemas/PackageClause.yml"
+    ImportDeclaration:
+      $ref: "./common/schemas/ImportDeclaration.yml"
+    DeletePredicateRequest:
+      $ref: "./common/schemas/DeletePredicateRequest.yml"
+    Node:
+      $ref: "./common/schemas/Node.yml"
+    NodeType:
+      $ref: "./common/schemas/NodeType.yml"
+    Block:
+      $ref: "./common/schemas/Block.yml"
+    Statement:
+      $ref: "./common/schemas/Statement.yml"
+    BadStatement:
+      $ref: "./common/schemas/BadStatement.yml"
+    VariableAssignment:
+      $ref: "./common/schemas/VariableAssignment.yml"
+    MemberAssignment:
+      $ref: "./common/schemas/MemberAssignment.yml"
+    ExpressionStatement:
+      $ref: "./common/schemas/ExpressionStatement.yml"
+    ReturnStatement:
+      $ref: "./common/schemas/ReturnStatement.yml"
+    OptionStatement:
+      $ref: "./common/schemas/OptionStatement.yml"
+    BuiltinStatement:
+      $ref: "./common/schemas/BuiltinStatement.yml"
+    TestStatement:
+      $ref: "./common/schemas/TestStatement.yml"
+    Expression:
+      $ref: "./common/schemas/Expression.yml"
+    ArrayExpression:
+      $ref: "./common/schemas/ArrayExpression.yml"
+    DictExpression:
+      $ref: "./common/schemas/DictExpression.yml"
+    DictItem:
+      $ref: "./common/schemas/DictItem.yml"
+    FunctionExpression:
+      $ref: "./common/schemas/FunctionExpression.yml"
+    BinaryExpression:
+      $ref: "./common/schemas/BinaryExpression.yml"
+    CallExpression:
+      $ref: "./common/schemas/CallExpression.yml"
+    ConditionalExpression:
+      $ref: "./common/schemas/ConditionalExpression.yml"
+    LogicalExpression:
+      $ref: "./common/schemas/LogicalExpression.yml"
+    MemberExpression:
+      $ref: "./common/schemas/MemberExpression.yml"
+    IndexExpression:
+      $ref: "./common/schemas/IndexExpression.yml"
+    ObjectExpression:
+      $ref: "./common/schemas/ObjectExpression.yml"
+    ParenExpression:
+      $ref: "./common/schemas/ParenExpression.yml"
+    PipeExpression:
+      $ref: "./common/schemas/PipeExpression.yml"
+    UnaryExpression:
+      $ref: "./common/schemas/UnaryExpression.yml"
+    BooleanLiteral:
+      $ref: "./common/schemas/BooleanLiteral.yml"
+    DateTimeLiteral:
+      $ref: "./common/schemas/DateTimeLiteral.yml"
+    DurationLiteral:
+      $ref: "./common/schemas/DurationLiteral.yml"
+    FloatLiteral:
+      $ref: "./common/schemas/FloatLiteral.yml"
+    IntegerLiteral:
+      $ref: "./common/schemas/IntegerLiteral.yml"
+    PipeLiteral:
+      $ref: "./common/schemas/PipeLiteral.yml"
+    RegexpLiteral:
+      $ref: "./common/schemas/RegexpLiteral.yml"
+    StringLiteral:
+      $ref: "./common/schemas/StringLiteral.yml"
+    UnsignedIntegerLiteral:
+      $ref: "./common/schemas/UnsignedIntegerLiteral.yml"
+    Duration:
+      $ref: "./common/schemas/Duration.yml"
+    Property:
+      $ref: "./common/schemas/Property.yml"
+    PropertyKey:
+      $ref: "./common/schemas/PropertyKey.yml"
+    Identifier:
+      $ref: "./common/schemas/Identifier.yml"
+    Dialect:
+      $ref: "./common/schemas/Dialect.yml"
+    AuthorizationUpdateRequest:
+      $ref: "./common/schemas/AuthorizationUpdateRequest.yml"
+    PostBucketRequest:
+      $ref: "./common/schemas/PostBucketRequest.yml"
+    Bucket:
+      $ref: "./common/schemas/Bucket.yml"
+    Buckets:
+      $ref: "./common/schemas/Buckets.yml"
+    RetentionRules:
+      $ref: "./common/schemas/RetentionRules.yml"
+    PatchBucketRequest:
+      $ref: "./common/schemas/PatchBucketRequest.yml"
+    PatchRetentionRules:
+      $ref: "./common/schemas/PatchRetentionRules.yml"
+    PatchRetentionRule:
+      $ref: "./common/schemas/PatchRetentionRule.yml"
+    RetentionRule:
+      $ref: "./common/schemas/RetentionRule.yml"
+    Link:
+      $ref: "./common/schemas/Link.yml"
+    Links:
+      $ref: "./common/schemas/Links.yml"
+    Logs:
+      $ref: "./common/schemas/Logs.yml"
+    LogEvent:
+      $ref: "./common/schemas/LogEvent.yml"
+    Organization:
+      $ref: "./common/schemas/Organization.yml"
+    Organizations:
+      $ref: "./common/schemas/Organizations.yml"
+    PostOrganizationRequest:
+      $ref: "./common/schemas/PostOrganizationRequest.yml"
+    PatchOrganizationRequest:
+      $ref: "./common/schemas/PatchOrganizationRequest.yml"
+    TemplateApply:
+      $ref: "./common/schemas/TemplateApply.yml"
+    TemplateKind:
+      $ref: "./common/schemas/TemplateKind.yml"
+    TemplateExportByID:
+      $ref: "./common/schemas/TemplateExportByID.yml"
+    TemplateExportByName:
+      $ref: "./common/schemas/TemplateExportByName.yml"
+    Template:
+      $ref: "./common/schemas/Template.yml"
+    TemplateEnvReferences:
+      $ref: "./common/schemas/TemplateEnvReferences.yml"
+    TemplateSummary:
+      $ref: "./common/schemas/TemplateSummary.yml"
+    TemplateSummaryLabel:
+      $ref: "./common/schemas/TemplateSummaryLabel.yml"
+    TemplateChart:
+      $ref: "./common/schemas/TemplateChart.yml"
+    Stack:
+      $ref: "./common/schemas/Stack.yml"
+    Runs:
+      $ref: "./common/schemas/Runs.yml"
+    Run:
+      $ref: "./common/schemas/Run.yml"
+    RunManually:
+      $ref: "./common/schemas/RunManually.yml"
+    Tasks:
+      $ref: "./common/schemas/Tasks.yml"
+    Task:
+      $ref: "./common/schemas/Task.yml"
+    TaskStatusType:
+      $ref: "./common/schemas/TaskStatusType.yml"
+    UserResponse:
+      $ref: "./common/schemas/UserResponse.yml"
+    Flags:
+      $ref: "./common/schemas/Flags.yml"
+    ResourceMember:
+      $ref: "./common/schemas/ResourceMember.yml"
+    ResourceMembers:
+      $ref: "./common/schemas/ResourceMembers.yml"
+    ResourceOwner:
+      $ref: "./common/schemas/ResourceOwner.yml"
+    ResourceOwners:
+      $ref: "./common/schemas/ResourceOwners.yml"
+    FluxSuggestions:
+      $ref: "./common/schemas/FluxSuggestions.yml"
+    FluxSuggestion:
+      $ref: "./common/schemas/FluxSuggestion.yml"
+    Routes:
+      $ref: "./common/schemas/Routes.yml"
+    Error:
+      $ref: "./common/schemas/Error.yml"
+    LineProtocolError:
+      $ref: "./common/schemas/LineProtocolError.yml"
+    LineProtocolLengthError:
+      $ref: "./common/schemas/LineProtocolLengthError.yml"
+    Field:
+      $ref: "./common/schemas/Field.yml"
+    BuilderConfig:
+      $ref: "./common/schemas/BuilderConfig.yml"
+    BuilderTagsType:
+      $ref: "./common/schemas/BuilderTagsType.yml"
+    BuilderAggregateFunctionType:
+      $ref: "./common/schemas/BuilderAggregateFunctionType.yml"
+    BuilderFunctionsType:
+      $ref: "./common/schemas/BuilderFunctionsType.yml"
+    DashboardQuery:
+      $ref: "./common/schemas/DashboardQuery.yml"
+    QueryEditMode:
+      $ref: "./common/schemas/QueryEditMode.yml"
+    Axis:
+      $ref: "./common/schemas/Axis.yml"
+    AxisScale:
+      $ref: "./common/schemas/AxisScale.yml"
+    DashboardColor:
+      $ref: "./common/schemas/DashboardColor.yml"
+    RenamableField:
+      $ref: "./common/schemas/RenamableField.yml"
+    XYViewProperties:
+      $ref: "./common/schemas/XYViewProperties.yml"
+    XYGeom:
+      $ref: "./common/schemas/XYGeom.yml"
+    BandViewProperties:
+      $ref: "./common/schemas/BandViewProperties.yml"
+    LinePlusSingleStatProperties:
+      $ref: "./common/schemas/LinePlusSingleStatProperties.yml"
+    MosaicViewProperties:
+      $ref: "./common/schemas/MosaicViewProperties.yml"
+    ScatterViewProperties:
+      $ref: "./common/schemas/ScatterViewProperties.yml"
+    HeatmapViewProperties:
+      $ref: "./common/schemas/HeatmapViewProperties.yml"
+    SingleStatViewProperties:
+      $ref: "./common/schemas/SingleStatViewProperties.yml"
+    HistogramViewProperties:
+      $ref: "./common/schemas/HistogramViewProperties.yml"
+    GaugeViewProperties:
+      $ref: "./common/schemas/GaugeViewProperties.yml"
+    TableViewProperties:
+      $ref: "./common/schemas/TableViewProperties.yml"
+    SimpleTableViewProperties:
+      $ref: "./common/schemas/SimpleTableViewProperties.yml"
+    MarkdownViewProperties:
+      $ref: "./common/schemas/MarkdownViewProperties.yml"
+    CheckViewProperties:
+      $ref: "./common/schemas/CheckViewProperties.yml"
+    GeoViewLayer:
+      $ref: "./common/schemas/GeoViewLayer.yml"
+    GeoViewLayerProperties:
+      $ref: "./common/schemas/GeoViewLayerProperties.yml"
+    GeoCircleViewLayer:
+      $ref: "./common/schemas/GeoCircleViewLayer.yml"
+    GeoPointMapViewLayer:
+      $ref: "./common/schemas/GeoPointMapViewLayer.yml"
+    GeoTrackMapViewLayer:
+      $ref: "./common/schemas/GeoTrackMapViewLayer.yml"
+    GeoHeatMapViewLayer:
+      $ref: "./common/schemas/GeoHeatMapViewLayer.yml"
+    GeoViewProperties:
+      $ref: "./common/schemas/GeoViewProperties.yml"
+    LatLonColumns:
+      $ref: "./common/schemas/LatLonColumns.yml"
+    LatLonColumn:
+      $ref: "./common/schemas/LatLonColumn.yml"
+    Axes:
+      $ref: "./common/schemas/Axes.yml"
+    StaticLegend:
+      $ref: "./common/schemas/StaticLegend.yml"
+    DecimalPlaces:
+      $ref: "./common/schemas/DecimalPlaces.yml"
+    ConstantVariableProperties:
+      $ref: "./common/schemas/ConstantVariableProperties.yml"
+    MapVariableProperties:
+      $ref: "./common/schemas/MapVariableProperties.yml"
+    QueryVariableProperties:
+      $ref: "./common/schemas/QueryVariableProperties.yml"
+    VariableProperties:
+      $ref: "./common/schemas/VariableProperties.yml"
+    ViewProperties:
+      $ref: "./common/schemas/ViewProperties.yml"
+    View:
+      $ref: "./common/schemas/View.yml"
+    Views:
+      $ref: "./common/schemas/Views.yml"
+    CellUpdate:
+      $ref: "./common/schemas/CellUpdate.yml"
+    CreateCell:
+      $ref: "./common/schemas/CreateCell.yml"
+    AnalyzeQueryResponse:
+      $ref: "./common/schemas/AnalyzeQueryResponse.yml"
+    CellWithViewProperties:
+      $ref: "./common/schemas/CellWithViewProperties.yml"
+    Cell:
+      $ref: "./common/schemas/Cell.yml"
+    CellsWithViewProperties:
+      $ref: "./common/schemas/CellsWithViewProperties.yml"
+    Cells:
+      $ref: "./common/schemas/Cells.yml"
+    Secrets:
+      $ref: "./common/schemas/Secrets.yml"
+    SecretKeys:
+      $ref: "./common/schemas/SecretKeys.yml"
+    SecretKeysResponse:
+      $ref: "./common/schemas/SecretKeysResponse.yml"
+    CreateDashboardRequest:
+      $ref: "./common/schemas/CreateDashboardRequest.yml"
+    DashboardWithViewProperties:
+      $ref: "./common/schemas/DashboardWithViewProperties.yml"
+    Dashboard:
+      $ref: "./common/schemas/Dashboard.yml"
+    Dashboards:
+      $ref: "./common/schemas/Dashboards.yml"
+    TelegrafRequest:
+      $ref: "./common/schemas/TelegrafRequest.yml"
+    TelegrafPluginRequest:
+      $ref: "./common/schemas/TelegrafPluginRequest.yml"
+    Telegraf:
+      $ref: "./common/schemas/Telegraf.yml"
+    Telegrafs:
+      $ref: "./common/schemas/Telegrafs.yml"
+    TelegrafPlugin:
+      $ref: "./common/schemas/TelegrafPlugin.yml"
+    TelegrafPlugins:
+      $ref: "./common/schemas/TelegrafPlugins.yml"
+    IsOnboarding:
+      $ref: "./common/schemas/IsOnboarding.yml"
+    PasswordResetBody:
+      $ref: "./common/schemas/PasswordResetBody.yml"
+    AddResourceMemberRequestBody:
+      $ref: "./common/schemas/AddResourceMemberRequestBody.yml"
+    Ready:
+      $ref: "./common/schemas/Ready.yml"
+    HealthCheck:
+      $ref: "./common/schemas/HealthCheck.yml"
+    Labels:
+      $ref: "./common/schemas/Labels.yml"
+    Label:
+      $ref: "./common/schemas/Label.yml"
+    LabelCreateRequest:
+      $ref: "./common/schemas/LabelCreateRequest.yml"
+    LabelUpdate:
+      $ref: "./common/schemas/LabelUpdate.yml"
+    LabelMapping:
+      $ref: "./common/schemas/LabelMapping.yml"
+    LabelsResponse:
+      $ref: "./common/schemas/LabelsResponse.yml"
+    LabelResponse:
+      $ref: "./common/schemas/LabelResponse.yml"
+    ASTResponse:
+      $ref: "./common/schemas/ASTResponse.yml"
+    WritePrecision:
+      $ref: "./common/schemas/WritePrecision.yml"
+    TaskCreateRequest:
+      $ref: "./common/schemas/TaskCreateRequest.yml"
+    TaskUpdateRequest:
+      $ref: "./common/schemas/TaskUpdateRequest.yml"
+    FluxResponse:
+      $ref: "./common/schemas/FluxResponse.yml"
+    CheckPatch:
+      $ref: "./common/schemas/CheckPatch.yml"
+    CheckDiscriminator:
+      $ref: "./common/schemas/CheckDiscriminator.yml"
+    Check:
+      $ref: "./common/schemas/Check.yml"
+    PostCheck:
+      $ref: "./common/schemas/PostCheck.yml"
+    Checks:
+      $ref: "./common/schemas/Checks.yml"
+    CheckBase:
+      $ref: "./common/schemas/CheckBase.yml"
+    ThresholdCheck:
+      $ref: "./common/schemas/ThresholdCheck.yml"
+    Threshold:
+      $ref: "./common/schemas/Threshold.yml"
+    DeadmanCheck:
+      $ref: "./common/schemas/DeadmanCheck.yml"
+    CustomCheck:
+      $ref: "./common/schemas/CustomCheck.yml"
+    ThresholdBase:
+      $ref: "./common/schemas/ThresholdBase.yml"
+    GreaterThreshold:
+      $ref: "./common/schemas/GreaterThreshold.yml"
+    LesserThreshold:
+      $ref: "./common/schemas/LesserThreshold.yml"
+    RangeThreshold:
+      $ref: "./common/schemas/RangeThreshold.yml"
+    CheckStatusLevel:
+      $ref: "./common/schemas/CheckStatusLevel.yml"
+    RuleStatusLevel:
+      $ref: "./common/schemas/RuleStatusLevel.yml"
+    NotificationRuleUpdate:
+      $ref: "./common/schemas/NotificationRuleUpdate.yml"
+    NotificationRuleDiscriminator:
+      $ref: "./common/schemas/NotificationRuleDiscriminator.yml"
+    NotificationRule:
+      $ref: "./common/schemas/NotificationRule.yml"
+    PostNotificationRule:
+      $ref: "./common/schemas/PostNotificationRule.yml"
+    NotificationRules:
+      $ref: "./common/schemas/NotificationRules.yml"
+    NotificationRuleBase:
+      $ref: "./common/schemas/NotificationRuleBase.yml"
+    TagRule:
+      $ref: "./common/schemas/TagRule.yml"
+    StatusRule:
+      $ref: "./common/schemas/StatusRule.yml"
+    HTTPNotificationRuleBase:
+      $ref: "./common/schemas/HTTPNotificationRuleBase.yml"
+    HTTPNotificationRule:
+      $ref: "./common/schemas/HTTPNotificationRule.yml"
+    SlackNotificationRuleBase:
+      $ref: "./common/schemas/SlackNotificationRuleBase.yml"
+    SlackNotificationRule:
+      $ref: "./common/schemas/SlackNotificationRule.yml"
+    SMTPNotificationRule:
+      $ref: "./common/schemas/SMTPNotificationRule.yml"
+    SMTPNotificationRuleBase:
+      $ref: "./common/schemas/SMTPNotificationRuleBase.yml"
+    PagerDutyNotificationRule:
+      $ref: "./common/schemas/PagerDutyNotificationRule.yml"
+    PagerDutyNotificationRuleBase:
+      $ref: "./common/schemas/PagerDutyNotificationRuleBase.yml"
+    TelegramNotificationRule:
+      $ref: "./common/schemas/TelegramNotificationRule.yml"
+    TelegramNotificationRuleBase:
+      $ref: "./common/schemas/TelegramNotificationRuleBase.yml"
+    NotificationEndpointUpdate:
+      $ref: "./common/schemas/NotificationEndpointUpdate.yml"
+    NotificationEndpointDiscriminator:
+      $ref: "./common/schemas/NotificationEndpointDiscriminator.yml"
+    NotificationEndpoint:
+      $ref: "./common/schemas/NotificationEndpoint.yml"
+    PostNotificationEndpoint:
+      $ref: "./common/schemas/PostNotificationEndpoint.yml"
+    NotificationEndpoints:
+      $ref: "./common/schemas/NotificationEndpoints.yml"
+    NotificationEndpointBase:
+      $ref: "./common/schemas/NotificationEndpointBase.yml"
+    SlackNotificationEndpoint:
+      $ref: "./common/schemas/SlackNotificationEndpoint.yml"
+    PagerDutyNotificationEndpoint:
+      $ref: "./common/schemas/PagerDutyNotificationEndpoint.yml"
+    HTTPNotificationEndpoint:
+      $ref: "./common/schemas/HTTPNotificationEndpoint.yml"
+    TelegramNotificationEndpoint:
+      $ref: "./common/schemas/TelegramNotificationEndpoint.yml"
+    NotificationEndpointType:
+      $ref: "./common/schemas/NotificationEndpointType.yml"
+    DBRP:
+      $ref: "./common/schemas/DBRP.yml"
+    DBRPs:
+      $ref: "./common/schemas/DBRPs.yml"
+    DBRPUpdate:
+      $ref: "./common/schemas/DBRPUpdate.yml"
+    DBRPCreate:
+      $ref: "./common/schemas/DBRPCreate.yml"
+    DBRPGet:
+      $ref: "./common/schemas/DBRPGet.yml"
+    SchemaType:
+      $ref: "./common/schemas/SchemaType.yml"
+    ColorMapping:
+      $ref: "./common/schemas/ColorMapping.yml"
+    Resource:
+      $ref: './cloud/schemas/Resource.yml'
+    Permission:
+      $ref: './cloud/schemas/Permission.yml'
+    Authorization:
+      $ref: './cloud/schemas/Authorization.yml'
+    Authorizations:
+      $ref: './cloud/schemas/Authorizations.yml'
+    User:
+      $ref: './cloud/schemas/User.yml'
+    Users:
+      $ref: './cloud/schemas/Users.yml'
+    OnboardingRequest:
+      $ref: './cloud/schemas/OnboardingRequest.yml'
+    OnboardingResponse:
+      $ref: './cloud/schemas/OnboardingResponse.yml'
+    Limit:
+      $ref: './cloud/schemas/Limit.yml'
+    Variable:
+      $ref: './cloud/schemas/Variable.yml'
+    Variables:
+      $ref: './cloud/schemas/Variables.yml'
+    ColumnDataType:
+      $ref: './cloud/schemas/ColumnDataType.yml'
+    ColumnSemanticType:
+      $ref: './cloud/schemas/ColumnSemanticType.yml'
+    MeasurementSchema:
+      $ref: './cloud/schemas/MeasurementSchema.yml'
+    MeasurementSchemaColumn:
+      $ref: './cloud/schemas/MeasurementSchemaColumn.yml'
+    MeasurementSchemaCreateRequest:
+      $ref: './cloud/schemas/MeasurementSchemaCreateRequest.yml'
+    MeasurementSchemaList:
+      $ref: './cloud/schemas/MeasurementSchemaList.yml'
+    MeasurementSchemaUpdateRequest:
+      $ref: './cloud/schemas/MeasurementSchemaUpdateRequest.yml'
+  responses:
+    AuthorizationError:
+      $ref: "./common/responses/AuthorizationError.yml"
+    BadRequestError:
+      $ref: "./common/responses/BadRequestError.yml"
+    GeneralServerError:
+      $ref: "./common/responses/ServerError.yml"
+    InternalServerError:
+      $ref: "./common/responses/InternalServerError.yml"
+    ResourceNotFoundError:
+      $ref: "./common/responses/ResourceNotFoundError.yml"
+  securitySchemes:
+    TokenAuthentication:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: |
+        Use the [Token authentication](#section/Authentication/TokenAuthentication)
+        scheme to authenticate to the InfluxDB API.
+
+
+        In your API requests, send an `Authorization` header.
+        For the header value, provide the word `Token` followed by a space and an InfluxDB API token.
+        The word `Token` is case-sensitive.
+
+
+        ### Syntax
+
+        `Authorization: Token YOUR_INFLUX_TOKEN`
+
+
+        For more information and examples, see the following:
+          - [`/authorizations`](#tag/Authorizations) endpoint.
+          - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
+          - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
+    BasicAuthentication:
+      type: http
+      scheme: basic
+      description: |
+       ### Basic authentication scheme
+
+       Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
+         - **username**: InfluxDB Cloud username
+         - **password**: InfluxDB Cloud API token
+
+       #### Example
+
+       `curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
+             --user "exampleuser@influxdata.com":"INFLUX_API_TOKEN"`
+
+       Replace the following:
+       - *`exampleuser@influxdata.com`*: the email address that you signed up with
+       - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+security:
+  - TokenAuthentication: []

@@ -15,6 +15,9 @@ get:
 
     - The endpoint does not return all of the functions in the Flux standard
     library. It only returns query functions.
+    
+    - Using `/api/v2/query/suggestions/` with cURL will result in a HTTP `301
+    Moved Permanently` status code. Please use `/api/v2/query/suggestions`.
 
     #### Related Guides
 
@@ -23,13 +26,40 @@ get:
     - $ref: "../parameters/TraceSpan.yml"
   responses:
     "200":
-      description: Suggestions for next functions in call chain
+      description: |
+        Success.
+        The response body contains a list of query functions.
       content:
         application/json:
           schema:
             $ref: "../schemas/FluxSuggestions.yml"
+          examples:
+            $ref: "../schemas/QuerySuggestionsSuccessResponse.yml"
+    "301":
+      description: |
+        Moved Permanently.
+        InfluxData has moved the url of the endpoint. 
+        Use `/api/v2/query/suggestions`.
+      content:
+        text/html:
+          schema:
+            $ref: "../schemas/MovedPermanently.yml"
+          examples:
+            movedPermanently:
+              summary: Invalid url
+              description: |
+                The url has been permanently moved. Use `/api/v2/query/suggestions`.
+              value : |
+              `<a href="/api/v2/query/suggestions?orgID=INFLUX_ORG_ID">Moved Permanently</a>.`
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request GET 'INFLUX_URL/api/v2/query/suggestions/' \
+        --header 'Accept: application/json \
+        --header 'Authorization: Token INFLUX_TOKEN'
     default:
-      description: Any response other than 200 is an internal server error
+      description: Internal server error.
       content:
         application/json:
           schema:
