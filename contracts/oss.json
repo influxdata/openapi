@@ -3109,11 +3109,11 @@
     "/query/ast": {
       "post": {
         "operationId": "PostQueryAst",
-        "description": "Analyzes flux query and generates a query specification.",
         "tags": [
           "Query"
         ],
-        "summary": "Generate an Abstract Syntax Tree (AST) from a query",
+        "summary": "Generate a query Abstract Syntax Tree (AST)",
+        "description": "Analyzes a Flux query and returns a complete package source [Abstract Syntax\nTree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)\nfor the query.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\nA Flux query AST provides a semantic, tree-like representation with contextual\ninformation about the query. The AST illustrates how the query is distributed\ninto different components for execution.\n\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following query has correct syntax, but contains an incorrect `from()` property key:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3130,7 +3130,7 @@
           }
         ],
         "requestBody": {
-          "description": "Analyzed Flux query to generate abstract syntax tree.",
+          "description": "The Flux query to analyze.",
           "content": {
             "application/json": {
               "schema": {
@@ -3139,19 +3139,526 @@
             }
           }
         },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST 'INFLUX_URL/api/v2/query/ast' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json \\\n--header 'Authorization: Token INFLUX_TOKEN' \\\n--data 'from(bucket: \"example-bucket\")\n          |> range(start: -5m)\n          |> filter(fn: (r) => r._measurement == \"example-measurement\")'\n"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Abstract syntax tree of the flux query.",
+            "description": "Success.\nThe response body contains an Abstract Syntax Tree (AST) of the Flux query.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ASTResponse"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "ast": {
+                        "type": "Package",
+                        "package": "main",
+                        "files": [
+                          {
+                            "type": "File",
+                            "location": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 109
+                              },
+                              "source": "from(bucket: \"example-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                            },
+                            "metadata": "parser-type=rust",
+                            "package": null,
+                            "imports": null,
+                            "body": [
+                              {
+                                "type": "ExpressionStatement",
+                                "location": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 109
+                                  },
+                                  "source": "from(bucket: \"example-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                                },
+                                "expression": {
+                                  "type": "PipeExpression",
+                                  "location": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 109
+                                    },
+                                    "source": "from(bucket: \"example-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                                  },
+                                  "argument": {
+                                    "type": "PipeExpression",
+                                    "location": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 1
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 47
+                                      },
+                                      "source": "from(bucket: \"example-bucket\") |> range(start: -5m)"
+                                    },
+                                    "argument": {
+                                      "type": "CallExpression",
+                                      "location": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 1
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 26
+                                        },
+                                        "source": "from(bucket: \"example-bucket\")"
+                                      },
+                                      "callee": {
+                                        "type": "Identifier",
+                                        "location": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 1
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 5
+                                          },
+                                          "source": "from"
+                                        },
+                                        "name": "from"
+                                      },
+                                      "arguments": [
+                                        {
+                                          "type": "ObjectExpression",
+                                          "location": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 6
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 25
+                                            },
+                                            "source": "bucket: \"example-bucket\""
+                                          },
+                                          "properties": [
+                                            {
+                                              "type": "Property",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 6
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 25
+                                                },
+                                                "source": "bucket: \"example-bucket\""
+                                              },
+                                              "key": {
+                                                "type": "Identifier",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 6
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 12
+                                                  },
+                                                  "source": "bucket"
+                                                },
+                                                "name": "bucket"
+                                              },
+                                              "value": {
+                                                "type": "StringLiteral",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 14
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 25
+                                                  },
+                                                  "source": "\"example-bucket\""
+                                                },
+                                                "value": "example-bucket"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    "call": {
+                                      "type": "CallExpression",
+                                      "location": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 30
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 47
+                                        },
+                                        "source": "range(start: -5m)"
+                                      },
+                                      "callee": {
+                                        "type": "Identifier",
+                                        "location": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 30
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 35
+                                          },
+                                          "source": "range"
+                                        },
+                                        "name": "range"
+                                      },
+                                      "arguments": [
+                                        {
+                                          "type": "ObjectExpression",
+                                          "location": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 36
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 46
+                                            },
+                                            "source": "start: -5m"
+                                          },
+                                          "properties": [
+                                            {
+                                              "type": "Property",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 36
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 46
+                                                },
+                                                "source": "start: -5m"
+                                              },
+                                              "key": {
+                                                "type": "Identifier",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 36
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 41
+                                                  },
+                                                  "source": "start"
+                                                },
+                                                "name": "start"
+                                              },
+                                              "value": {
+                                                "type": "UnaryExpression",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 43
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 46
+                                                  },
+                                                  "source": "-5m"
+                                                },
+                                                "operator": "-",
+                                                "argument": {
+                                                  "type": "DurationLiteral",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 44
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 46
+                                                    },
+                                                    "source": "5m"
+                                                  },
+                                                  "values": [
+                                                    {
+                                                      "magnitude": 5,
+                                                      "unit": "m"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "call": {
+                                    "type": "CallExpression",
+                                    "location": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 51
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 109
+                                      },
+                                      "source": "filter(fn: (r) => r._measurement == \"example-measurement\")"
+                                    },
+                                    "callee": {
+                                      "type": "Identifier",
+                                      "location": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 51
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 57
+                                        },
+                                        "source": "filter"
+                                      },
+                                      "name": "filter"
+                                    },
+                                    "arguments": [
+                                      {
+                                        "type": "ObjectExpression",
+                                        "location": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 58
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 108
+                                          },
+                                          "source": "fn: (r) => r._measurement == \"example-measurement\""
+                                        },
+                                        "properties": [
+                                          {
+                                            "type": "Property",
+                                            "location": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 58
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 108
+                                              },
+                                              "source": "fn: (r) => r._measurement == \"example-measurement\""
+                                            },
+                                            "key": {
+                                              "type": "Identifier",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 58
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 60
+                                                },
+                                                "source": "fn"
+                                              },
+                                              "name": "fn"
+                                            },
+                                            "value": {
+                                              "type": "FunctionExpression",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 62
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 108
+                                                },
+                                                "source": "(r) => r._measurement == \"example-measurement\""
+                                              },
+                                              "params": [
+                                                {
+                                                  "type": "Property",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 63
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 64
+                                                    },
+                                                    "source": "r"
+                                                  },
+                                                  "key": {
+                                                    "type": "Identifier",
+                                                    "location": {
+                                                      "start": {
+                                                        "line": 1,
+                                                        "column": 63
+                                                      },
+                                                      "end": {
+                                                        "line": 1,
+                                                        "column": 64
+                                                      },
+                                                      "source": "r"
+                                                    },
+                                                    "name": "r"
+                                                  },
+                                                  "value": null
+                                                }
+                                              ],
+                                              "body": {
+                                                "type": "BinaryExpression",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 69
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 108
+                                                  },
+                                                  "source": "r._measurement == \"example-measurement\""
+                                                },
+                                                "operator": "==",
+                                                "left": {
+                                                  "type": "MemberExpression",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 69
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 83
+                                                    },
+                                                    "source": "r._measurement"
+                                                  },
+                                                  "object": {
+                                                    "type": "Identifier",
+                                                    "location": {
+                                                      "start": {
+                                                        "line": 1,
+                                                        "column": 69
+                                                      },
+                                                      "end": {
+                                                        "line": 1,
+                                                        "column": 70
+                                                      },
+                                                      "source": "r"
+                                                    },
+                                                    "name": "r"
+                                                  },
+                                                  "property": {
+                                                    "type": "Identifier",
+                                                    "location": {
+                                                      "start": {
+                                                        "line": 1,
+                                                        "column": 71
+                                                      },
+                                                      "end": {
+                                                        "line": 1,
+                                                        "column": 83
+                                                      },
+                                                      "source": "_measurement"
+                                                    },
+                                                    "name": "_measurement"
+                                                  }
+                                                },
+                                                "right": {
+                                                  "type": "StringLiteral",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 87
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 108
+                                                    },
+                                                    "source": "\"example-measurement\""
+                                                  },
+                                                  "value": "example-measurement"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.\nInfluxDB is unable to parse the request.\nThe response body contains detail about the problem.\n",
+            "headers": {
+              "X-Platform-Error-Code": {
+                "description": "The reason for the error.\n",
+                "schema": {
+                  "type": "string",
+                  "example": "invalid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidASTValue": {
+                    "summary": "Invalid AST",
+                    "description": "If the request body contains a missing property key in `from()`,\nreturns `invalid` and problem detail.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid AST: loc 1:6-1:19: missing property key"
+                    }
+                  }
                 }
               }
             }
           },
           "default": {
-            "description": "Any response other than 200 is an internal server error",
+            "description": "Internal server error.",
             "content": {
               "application/json": {
                 "schema": {
@@ -12483,7 +12990,7 @@
         ],
         "properties": {
           "query": {
-            "description": "Flux query script to be analyzed",
+            "description": "The Flux query script to be analyzed.\n",
             "type": "string"
           }
         }
