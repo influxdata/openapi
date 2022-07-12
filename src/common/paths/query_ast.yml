@@ -1,9 +1,35 @@
 post:
   operationId: PostQueryAst
-  description: Analyzes flux query and generates a query specification.
   tags:
     - Query
-  summary: Generate an Abstract Syntax Tree (AST) from a query
+  summary: Generate a query Abstract Syntax Tree (AST)
+  description: |
+    Analyzes a Flux query and returns a complete package source [Abstract Syntax
+    Tree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)
+    for the query.
+
+    Use this endpoint for deep query analysis such as debugging unexpected query
+    results.
+
+    A Flux query AST provides a semantic, tree-like representation with contextual
+    information about the query. The AST illustrates how the query is distributed
+    into different components for execution.
+
+
+    #### Limitations
+
+    -  The endpoint doesn't validate values in the query--for example:
+
+        The following query has correct syntax, but contains an incorrect `from()` property key:
+        ```json
+        { "query": "from(foo: \"iot_center\")\
+                    |> range(start: -90d)\
+                    |> filter(fn: (r) => r._measurement == \"environment\")"
+        }
+        ```
+        Passing this to `/api/v2/query/ast` will return a successful response
+        with a generated AST.
+
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: header
@@ -13,20 +39,61 @@ post:
         enum:
           - application/json
   requestBody:
-    description: Analyzed Flux query to generate abstract syntax tree.
+    description: The Flux query to analyze.
     content:
       application/json:
         schema:
           $ref: "../schemas/LanguageRequest.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST 'INFLUX_URL/api/v2/query/ast' \
+        --header 'Content-Type: application/json' \
+        --header 'Accept: application/json \
+        --header 'Authorization: Token INFLUX_TOKEN' \
+        --data 'from(bucket: "example-bucket")
+                  |> range(start: -5m)
+                  |> filter(fn: (r) => r._measurement == "example-measurement")'
   responses:
     "200":
-      description: Abstract syntax tree of the flux query.
+      description: |
+        Success.
+        The response body contains an Abstract Syntax Tree (AST) of the Flux query.
       content:
         application/json:
           schema:
             $ref: "../schemas/ASTResponse.yml"
+          examples:
+            $ref: "../schemas/ASTSuccessResponse.yml"
+    "400":
+      description: |
+        Bad request.
+        InfluxDB is unable to parse the request.
+        The response body contains detail about the problem.
+      headers:
+        X-Platform-Error-Code:
+          description: |
+            The reason for the error.
+          schema:
+            type: string
+            example: "invalid"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            invalidASTValue:
+              summary: Invalid AST
+              description: |
+                If the request body contains a missing property key in `from()`,
+                returns `invalid` and problem detail.
+              value: {
+                  "code": "invalid",
+                  "message": "invalid AST: loc 1:6-1:19: missing property key"
+                }
     default:
-      description: Any response other than 200 is an internal server error
+      description: Internal server error.
       content:
         application/json:
           schema:

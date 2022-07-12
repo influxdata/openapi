@@ -20,6 +20,10 @@
       "description": "Manage and execute scripts as API endpoints in InfluxDB.\n\nAn API Invokable Script assigns your custom Flux script to a new\nInfluxDB API endpoint for your organization.\nInvokable scripts let you execute your script as an HTTP request to the endpoint.\n\nInvokable scripts accept parameters.\nAdd parameter references in your script as `params.myparameter`.\nWhen you `invoke` your script, you send parameters as key-value pairs in the `params` object.\nThen, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.\n\n### Related guides\n\n- [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).\n"
     },
     {
+      "name": "Delete",
+      "description": "Delete data from an InfluxDB bucket.\n"
+    },
+    {
       "name": "Query",
       "description": "Retrieve data, analyze queries, and get query suggestions.\n"
     },
@@ -64,37 +68,11 @@
       ]
     },
     {
-      "name": "Data I/O endpoints",
+      "name": "Popular endpoints",
       "tags": [
-        "Write",
-        "Query",
-        "Delete",
-        "Invokable Scripts",
-        "Tasks"
-      ]
-    },
-    {
-      "name": "Resource endpoints",
-      "tags": [
-        "Buckets",
-        "Dashboards",
-        "Tasks",
-        "Resources"
-      ]
-    },
-    {
-      "name": "Security and access endpoints",
-      "tags": [
-        "Authorizations",
-        "Organizations",
-        "Users"
-      ]
-    },
-    {
-      "name": "System information endpoints",
-      "tags": [
-        "Ping",
-        "Routes"
+        "Data I/O endpoints",
+        "Security and access endpoints",
+        "System information endpoints"
       ]
     },
     {
@@ -209,7 +187,8 @@
           }
         ],
         "tags": [
-          "Ping"
+          "Ping",
+          "System information endpoints"
         ],
         "responses": {
           "204": {
@@ -269,7 +248,8 @@
         "operationId": "GetRoutes",
         "summary": "List all top level routes",
         "tags": [
-          "Routes"
+          "Routes",
+          "System information endpoints"
         ],
         "parameters": [
           {
@@ -1572,6 +1552,7 @@
       "post": {
         "operationId": "PostWrite",
         "tags": [
+          "Data I/O endpoints",
           "Write"
         ],
         "summary": "Write data",
@@ -1741,7 +1722,7 @@
             }
           },
           "429": {
-            "description": "Too many requests.\n\n#### InfluxDB Cloud\n\n  - Returns this error if a **read** or **write** request exceeds your\n    plan's [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum\n    [global limit](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#global-limits).\n  - Returns `Retry-After` header that describes when to try the write again.\n\n#### InfluxDB OSS\n\n  - Doesn't return this error.\n",
+            "description": "Too many requests.\n\n#### InfluxDB Cloud\n\n  - Returns this error if a **read** or **write** request exceeds your plan's [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum [global limit](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#global-limits).\n  - For rate limits that reset automatically, returns a `Retry-After` header that describes when to try the write again.\n  - For limits that can't reset (for example, **cardinality limit**), doesn't return a `Retry-After` header.\n\n  Rates (data-in (writes), queries (reads), and deletes) accrue within a fixed five-minute window.\n  Once a rate limit is exceeded, InfluxDB returns an error response until the current five-minute window resets.\n\n#### InfluxDB OSS\n\n  - Doesn't return this error.\n",
             "headers": {
               "Retry-After": {
                 "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
@@ -1756,7 +1737,7 @@
             "$ref": "#/components/responses/InternalServerError"
           },
           "503": {
-            "description": "Service unavailable.\n\n#### InfluxDB Cloud\n\n  - Returns this error if series cardinality exceeds your plan's\n    [adjustable service quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/#adjustable-service-quotas).\n    See [how to resolve high series cardinality]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/resolve-high-cardinality/).\n\n#### InfluxDB OSS\n\n  - Returns this error if\n    the server is temporarily unavailable to accept writes.\n  - Returns `Retry-After` header that describes when to try the write again.\n",
+            "description": "Service unavailable.\n\n- Returns this error if\n  the server is temporarily unavailable to accept writes.\n- Returns a `Retry-After` header that describes when to try the write again.\n",
             "headers": {
               "Retry-After": {
                 "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
@@ -1777,10 +1758,18 @@
       "post": {
         "operationId": "PostDelete",
         "tags": [
+          "Data I/O endpoints",
           "Delete"
         ],
         "summary": "Delete data",
         "description": "Deletes data from a bucket.\n\nUse this endpoint to delete points from a bucket in a specified time range.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n\n  1. Validates the request and queues the delete.\n  2. Returns _success_ if queued; _error_ otherwise.\n  3. Handles the delete asynchronously.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\n  and then responds with success or failure.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n- Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)\n  and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).\n",
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \\\n  --header 'Authorization: Token INFLUX_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start\": \"2020-03-01T00:00:00Z\",\n    \"stop\": \"2020-11-14T00:00:00Z\",\n    \"predicate\": \"tag1=\\\"value1\\\" and (tag2=\\\"value2\\\" and tag3!=\\\"value3\\\")\"\n  }'\n"
+          }
+        ],
         "requestBody": {
           "description": "Time range parameters and an optional **delete predicate expression**.\n\nTo select points to delete within the specified time range, pass a\n**delete predicate expression** in the `predicate` property of the request body.\nIf you don't pass a `predicate`, InfluxDB deletes all data with timestamps\nin the specified time range.\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n",
           "required": true,
@@ -3120,11 +3109,11 @@
     "/query/ast": {
       "post": {
         "operationId": "PostQueryAst",
-        "description": "Analyzes flux query and generates a query specification.",
         "tags": [
           "Query"
         ],
-        "summary": "Generate an Abstract Syntax Tree (AST) from a query",
+        "summary": "Generate a query Abstract Syntax Tree (AST)",
+        "description": "Analyzes a Flux query and returns a complete package source [Abstract Syntax\nTree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)\nfor the query.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\nA Flux query AST provides a semantic, tree-like representation with contextual\ninformation about the query. The AST illustrates how the query is distributed\ninto different components for execution.\n\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following query has correct syntax, but contains an incorrect `from()` property key:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3141,7 +3130,7 @@
           }
         ],
         "requestBody": {
-          "description": "Analyzed Flux query to generate abstract syntax tree.",
+          "description": "The Flux query to analyze.",
           "content": {
             "application/json": {
               "schema": {
@@ -3150,19 +3139,526 @@
             }
           }
         },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST 'INFLUX_URL/api/v2/query/ast' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json \\\n--header 'Authorization: Token INFLUX_TOKEN' \\\n--data 'from(bucket: \"example-bucket\")\n          |> range(start: -5m)\n          |> filter(fn: (r) => r._measurement == \"example-measurement\")'\n"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Abstract syntax tree of the flux query.",
+            "description": "Success.\nThe response body contains an Abstract Syntax Tree (AST) of the Flux query.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ASTResponse"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "ast": {
+                        "type": "Package",
+                        "package": "main",
+                        "files": [
+                          {
+                            "type": "File",
+                            "location": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 109
+                              },
+                              "source": "from(bucket: \"example-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                            },
+                            "metadata": "parser-type=rust",
+                            "package": null,
+                            "imports": null,
+                            "body": [
+                              {
+                                "type": "ExpressionStatement",
+                                "location": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 109
+                                  },
+                                  "source": "from(bucket: \"example-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                                },
+                                "expression": {
+                                  "type": "PipeExpression",
+                                  "location": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 1
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 109
+                                    },
+                                    "source": "from(bucket: \"example-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                                  },
+                                  "argument": {
+                                    "type": "PipeExpression",
+                                    "location": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 1
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 47
+                                      },
+                                      "source": "from(bucket: \"example-bucket\") |> range(start: -5m)"
+                                    },
+                                    "argument": {
+                                      "type": "CallExpression",
+                                      "location": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 1
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 26
+                                        },
+                                        "source": "from(bucket: \"example-bucket\")"
+                                      },
+                                      "callee": {
+                                        "type": "Identifier",
+                                        "location": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 1
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 5
+                                          },
+                                          "source": "from"
+                                        },
+                                        "name": "from"
+                                      },
+                                      "arguments": [
+                                        {
+                                          "type": "ObjectExpression",
+                                          "location": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 6
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 25
+                                            },
+                                            "source": "bucket: \"example-bucket\""
+                                          },
+                                          "properties": [
+                                            {
+                                              "type": "Property",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 6
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 25
+                                                },
+                                                "source": "bucket: \"example-bucket\""
+                                              },
+                                              "key": {
+                                                "type": "Identifier",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 6
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 12
+                                                  },
+                                                  "source": "bucket"
+                                                },
+                                                "name": "bucket"
+                                              },
+                                              "value": {
+                                                "type": "StringLiteral",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 14
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 25
+                                                  },
+                                                  "source": "\"example-bucket\""
+                                                },
+                                                "value": "example-bucket"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    "call": {
+                                      "type": "CallExpression",
+                                      "location": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 30
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 47
+                                        },
+                                        "source": "range(start: -5m)"
+                                      },
+                                      "callee": {
+                                        "type": "Identifier",
+                                        "location": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 30
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 35
+                                          },
+                                          "source": "range"
+                                        },
+                                        "name": "range"
+                                      },
+                                      "arguments": [
+                                        {
+                                          "type": "ObjectExpression",
+                                          "location": {
+                                            "start": {
+                                              "line": 1,
+                                              "column": 36
+                                            },
+                                            "end": {
+                                              "line": 1,
+                                              "column": 46
+                                            },
+                                            "source": "start: -5m"
+                                          },
+                                          "properties": [
+                                            {
+                                              "type": "Property",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 36
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 46
+                                                },
+                                                "source": "start: -5m"
+                                              },
+                                              "key": {
+                                                "type": "Identifier",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 36
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 41
+                                                  },
+                                                  "source": "start"
+                                                },
+                                                "name": "start"
+                                              },
+                                              "value": {
+                                                "type": "UnaryExpression",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 43
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 46
+                                                  },
+                                                  "source": "-5m"
+                                                },
+                                                "operator": "-",
+                                                "argument": {
+                                                  "type": "DurationLiteral",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 44
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 46
+                                                    },
+                                                    "source": "5m"
+                                                  },
+                                                  "values": [
+                                                    {
+                                                      "magnitude": 5,
+                                                      "unit": "m"
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "call": {
+                                    "type": "CallExpression",
+                                    "location": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 51
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 109
+                                      },
+                                      "source": "filter(fn: (r) => r._measurement == \"example-measurement\")"
+                                    },
+                                    "callee": {
+                                      "type": "Identifier",
+                                      "location": {
+                                        "start": {
+                                          "line": 1,
+                                          "column": 51
+                                        },
+                                        "end": {
+                                          "line": 1,
+                                          "column": 57
+                                        },
+                                        "source": "filter"
+                                      },
+                                      "name": "filter"
+                                    },
+                                    "arguments": [
+                                      {
+                                        "type": "ObjectExpression",
+                                        "location": {
+                                          "start": {
+                                            "line": 1,
+                                            "column": 58
+                                          },
+                                          "end": {
+                                            "line": 1,
+                                            "column": 108
+                                          },
+                                          "source": "fn: (r) => r._measurement == \"example-measurement\""
+                                        },
+                                        "properties": [
+                                          {
+                                            "type": "Property",
+                                            "location": {
+                                              "start": {
+                                                "line": 1,
+                                                "column": 58
+                                              },
+                                              "end": {
+                                                "line": 1,
+                                                "column": 108
+                                              },
+                                              "source": "fn: (r) => r._measurement == \"example-measurement\""
+                                            },
+                                            "key": {
+                                              "type": "Identifier",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 58
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 60
+                                                },
+                                                "source": "fn"
+                                              },
+                                              "name": "fn"
+                                            },
+                                            "value": {
+                                              "type": "FunctionExpression",
+                                              "location": {
+                                                "start": {
+                                                  "line": 1,
+                                                  "column": 62
+                                                },
+                                                "end": {
+                                                  "line": 1,
+                                                  "column": 108
+                                                },
+                                                "source": "(r) => r._measurement == \"example-measurement\""
+                                              },
+                                              "params": [
+                                                {
+                                                  "type": "Property",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 63
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 64
+                                                    },
+                                                    "source": "r"
+                                                  },
+                                                  "key": {
+                                                    "type": "Identifier",
+                                                    "location": {
+                                                      "start": {
+                                                        "line": 1,
+                                                        "column": 63
+                                                      },
+                                                      "end": {
+                                                        "line": 1,
+                                                        "column": 64
+                                                      },
+                                                      "source": "r"
+                                                    },
+                                                    "name": "r"
+                                                  },
+                                                  "value": null
+                                                }
+                                              ],
+                                              "body": {
+                                                "type": "BinaryExpression",
+                                                "location": {
+                                                  "start": {
+                                                    "line": 1,
+                                                    "column": 69
+                                                  },
+                                                  "end": {
+                                                    "line": 1,
+                                                    "column": 108
+                                                  },
+                                                  "source": "r._measurement == \"example-measurement\""
+                                                },
+                                                "operator": "==",
+                                                "left": {
+                                                  "type": "MemberExpression",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 69
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 83
+                                                    },
+                                                    "source": "r._measurement"
+                                                  },
+                                                  "object": {
+                                                    "type": "Identifier",
+                                                    "location": {
+                                                      "start": {
+                                                        "line": 1,
+                                                        "column": 69
+                                                      },
+                                                      "end": {
+                                                        "line": 1,
+                                                        "column": 70
+                                                      },
+                                                      "source": "r"
+                                                    },
+                                                    "name": "r"
+                                                  },
+                                                  "property": {
+                                                    "type": "Identifier",
+                                                    "location": {
+                                                      "start": {
+                                                        "line": 1,
+                                                        "column": 71
+                                                      },
+                                                      "end": {
+                                                        "line": 1,
+                                                        "column": 83
+                                                      },
+                                                      "source": "_measurement"
+                                                    },
+                                                    "name": "_measurement"
+                                                  }
+                                                },
+                                                "right": {
+                                                  "type": "StringLiteral",
+                                                  "location": {
+                                                    "start": {
+                                                      "line": 1,
+                                                      "column": 87
+                                                    },
+                                                    "end": {
+                                                      "line": 1,
+                                                      "column": 108
+                                                    },
+                                                    "source": "\"example-measurement\""
+                                                  },
+                                                  "value": "example-measurement"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.\nInfluxDB is unable to parse the request.\nThe response body contains detail about the problem.\n",
+            "headers": {
+              "X-Platform-Error-Code": {
+                "description": "The reason for the error.\n",
+                "schema": {
+                  "type": "string",
+                  "example": "invalid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidASTValue": {
+                    "summary": "Invalid AST",
+                    "description": "If the request body contains a missing property key in `from()`,\nreturns `invalid` and problem detail.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid AST: loc 1:6-1:19: missing property key"
+                    }
+                  }
                 }
               }
             }
           },
           "default": {
-            "description": "Any response other than 200 is an internal server error",
+            "description": "Internal server error.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3262,6 +3758,7 @@
           "Query"
         ],
         "summary": "Analyze a Flux query",
+        "description": "Analyzes a [Flux query](https://docs.influxdata.com/flux/v0.x/) for syntax\nerrors and returns the list of errors.\n\nIn the following example `Query` object, `query` is missing a `from()` property key:\n\n    ```json\n    { \"query\": \"from(: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n      \"type\": \"flux\"\n    }\n    ```\n\nPassing this to `/api/v2/analyze` returns an `errors` list that contains an error object for the missing key.\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n  - The following query has correct syntax, but contains an incorrect `from()` property key:\n\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n      \"type\": \"flux\"\n    }\n    ```\n\n    Passing this to `/api/v2/analyze` returns an empty `errors` list.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3289,11 +3786,56 @@
         },
         "responses": {
           "200": {
-            "description": "Query analyze results. Errors will be empty if the query is valid.",
+            "description": "Success.\nThe response body contains the list of `errors`.\nIf the query syntax is valid, the endpoint returns an empty `errors` list.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AnalyzeQueryResponse"
+                },
+                "examples": {
+                  "missingQueryPropertyKey": {
+                    "summary": "Missing property key error",
+                    "description": "Returns an error object if the Flux query is missing a property key.\n\nThe following example is missing the `bucket` property key:\n\n  ```json\n  {\n    \"query\": \"from(: \\\"iot_center\\\")\\\n\n    ...\n\n  }\n  ```\n",
+                    "value": {
+                      "errors": [
+                        {
+                          "line": 1,
+                          "column": 6,
+                          "character": 0,
+                          "message": "missing property key"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.\nInfluxDB is unable to parse the request.\nThe response body contains detail about the problem.\n",
+            "headers": {
+              "X-Platform-Error-Code": {
+                "description": "The reason for the error.\n",
+                "schema": {
+                  "type": "string",
+                  "example": "invalid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidJSONStringValue": {
+                    "summary": "Invalid JSON",
+                    "description": "If the request body contains invalid JSON, returns `invalid` and problem detail.",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid json: invalid character '\\'' looking for beginning of value"
+                    }
+                  }
                 }
               }
             }
@@ -3301,14 +3843,21 @@
           "default": {
             "description": "Internal server error",
             "headers": {
+              "X-Platform-Error-Code": {
+                "description": "The reason for the error.",
+                "schema": {
+                  "type": "string",
+                  "example": "internal error"
+                }
+              },
               "X-Influx-Error": {
-                "description": "Error string describing the problem",
+                "description": "A string that describes the problem.",
                 "schema": {
                   "type": "string"
                 }
               },
               "X-Influx-Reference": {
-                "description": "Reference code unique to the error type",
+                "description": "The numeric reference code for the error type.",
                 "schema": {
                   "type": "integer"
                 }
@@ -3318,21 +3867,39 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "emptyJSONObject": {
+                    "summary": "Empty JSON object in request body",
+                    "description": "If the request body contains an empty JSON object, returns `internal error`.\n",
+                    "value": {
+                      "code": "internal error",
+                      "message": "An internal error has occurred - check server logs"
+                    }
+                  }
                 }
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: Analyze a Flux query",
+            "source": "curl -v --request POST \\\n  \"http://localhost:8086/api/v2/query/analyze\" \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header 'Content-type: application/json' \\\n  --header 'Accept: application/json' \\\n  --data-binary @- << EOF\n  { \"query\": \"from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -90d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n    \"type\": \"flux\"\n  }\nEOF\n"
+          }
+        ]
       }
     },
     "/query": {
       "post": {
         "operationId": "PostQuery",
         "tags": [
+          "Data I/O endpoints",
           "Query"
         ],
         "summary": "Query data",
-        "description": "Retrieves data from buckets.\n\nUse this endpoint to send a Flux query request and retreive data from a bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`read` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).\n- [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)\n",
+        "description": "Retrieves data from buckets.\n\nUse this endpoint to send a Flux query request and retrieve data from a bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`read` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).\n- [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3379,6 +3946,13 @@
             }
           }
         ],
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \\\n--header 'Content-Type: application/vnd.flux' \\\n--header 'Accept: application/csv \\\n--header 'Authorization: Token INFLUX_TOKEN' \\\n--data 'from(bucket: \"example-bucket\")\n          |> range(start: -5m)\n          |> filter(fn: (r) => r._measurement == \"example-measurement\")'\n"
+          }
+        ],
         "requestBody": {
           "description": "Flux query or specification to execute",
           "content": {
@@ -3420,11 +3994,11 @@
               }
             },
             "content": {
-              "text/csv": {
+              "application/csv": {
                 "schema": {
-                  "type": "string",
-                  "example": "result,table,_start,_stop,_time,region,host,_value mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25 mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62\n"
-                }
+                  "type": "string"
+                },
+                "example": "result,table,_start,_stop,_time,region,host,_value\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62\n"
               }
             }
           },
@@ -4187,7 +4761,8 @@
       "get": {
         "operationId": "GetOrgs",
         "tags": [
-          "Organizations"
+          "Organizations",
+          "Security and access endpoints"
         ],
         "summary": "List all organizations",
         "parameters": [
@@ -4301,7 +4876,8 @@
       "get": {
         "operationId": "GetOrgsID",
         "tags": [
-          "Organizations"
+          "Organizations",
+          "Security and access endpoints"
         ],
         "summary": "Retrieve an organization",
         "parameters": [
@@ -4446,7 +5022,8 @@
       "get": {
         "operationId": "GetOrgsIDSecrets",
         "tags": [
-          "Secrets"
+          "Secrets",
+          "Security and access endpoints"
         ],
         "summary": "List all secret keys for an organization",
         "parameters": [
@@ -4538,7 +5115,8 @@
       "get": {
         "operationId": "GetOrgsIDMembers",
         "tags": [
-          "Organizations"
+          "Organizations",
+          "Security and access endpoints"
         ],
         "summary": "List all members of an organization",
         "parameters": [
@@ -4647,7 +5225,8 @@
       "delete": {
         "operationId": "DeleteOrgsIDMembersID",
         "tags": [
-          "Organizations"
+          "Organizations",
+          "Security and access endpoints"
         ],
         "summary": "Remove a member from an organization",
         "parameters": [
@@ -4694,7 +5273,8 @@
       "get": {
         "operationId": "GetOrgsIDOwners",
         "tags": [
-          "Organizations"
+          "Organizations",
+          "Security and access endpoints"
         ],
         "summary": "List all owners of an organization",
         "parameters": [
@@ -4803,7 +5383,8 @@
       "delete": {
         "operationId": "DeleteOrgsIDOwnersID",
         "tags": [
-          "Organizations"
+          "Organizations",
+          "Security and access endpoints"
         ],
         "summary": "Remove an owner from an organization",
         "parameters": [
@@ -4851,7 +5432,8 @@
         "deprecated": true,
         "operationId": "PostOrgsIDSecrets",
         "tags": [
-          "Secrets"
+          "Secrets",
+          "Security and access endpoints"
         ],
         "summary": "Delete secrets from an organization",
         "parameters": [
@@ -4900,7 +5482,8 @@
       "delete": {
         "operationId": "DeleteOrgsIDSecretsID",
         "tags": [
-          "Secrets"
+          "Secrets",
+          "Security and access endpoints"
         ],
         "summary": "Delete a secret from an organization",
         "parameters": [
@@ -4941,7 +5524,8 @@
       "get": {
         "operationId": "GetResources",
         "tags": [
-          "Resources"
+          "Resources",
+          "System information endpoints"
         ],
         "summary": "List all known resources",
         "parameters": [
@@ -5545,6 +6129,7 @@
       "post": {
         "operationId": "PostTasksIDRuns",
         "tags": [
+          "Data I/O endpoints",
           "Tasks"
         ],
         "summary": "Manually start a task run, overriding the current schedule",
@@ -6433,6 +7018,7 @@
       "post": {
         "operationId": "PostUsersIDPassword",
         "tags": [
+          "Security and access endpoints",
           "Users"
         ],
         "summary": "Update a password",
@@ -9425,6 +10011,7 @@
       "get": {
         "operationId": "GetTasks",
         "tags": [
+          "Data I/O endpoints",
           "Tasks"
         ],
         "summary": "List all tasks",
@@ -9559,6 +10146,7 @@
       "post": {
         "operationId": "PostTasks",
         "tags": [
+          "Data I/O endpoints",
           "Tasks"
         ],
         "summary": "Create a new task",
@@ -9814,7 +10402,7 @@
         ],
         "properties": {
           "query": {
-            "description": "Flux query script to be analyzed",
+            "description": "The Flux query script to be analyzed.\n",
             "type": "string"
           }
         }
