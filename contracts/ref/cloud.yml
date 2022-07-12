@@ -4446,7 +4446,7 @@ components:
           format: duration
           type: string
         flux:
-          description: The Flux script to run for this task.
+          description: The Flux script to run for the task.
           type: string
         id:
           readOnly: true
@@ -4508,13 +4508,10 @@ components:
           description: The ID of the organization that owns the task.
           type: string
         ownerID:
-          description: The ID of the user who owns this Task.
+          description: The ID of the user who owns the Task.
           type: string
         status:
           $ref: '#/components/schemas/TaskStatusType'
-        type:
-          description: The type of the task, useful for filtering a task list.
-          type: string
         updatedAt:
           format: date-time
           readOnly: true
@@ -4545,6 +4542,8 @@ components:
       - flux
       type: object
     TaskStatusType:
+      description: |
+        `inactive` cancels scheduled runs and prevents manual runs of the task.
       enum:
       - active
       - inactive
@@ -11201,7 +11200,13 @@ paths:
       - Tasks
   /api/v2/tasks/{taskID}:
     delete:
-      description: Deletes a task and all associated records
+      description: |
+        Deletes a task and associated records.
+
+        Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+        Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
+
+        If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
       operationId: DeleteTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11213,17 +11218,24 @@ paths:
           type: string
       responses:
         "204":
-          description: Task deleted
+          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
       summary: Delete a task
       tags:
       - Tasks
     get:
+      description: |
+        Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)
+        by task ID.
       operationId: GetTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11239,19 +11251,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
-          description: Task details
+          description: Success. The response body contains the task.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
       summary: Retrieve a task
       tags:
       - Data I/O endpoints
       - Tasks
     patch:
-      description: Update a task. This will cancel all queued runs.
+      description: |
+        Updates a task and then cancels all scheduled runs of the task.
+
+        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Once InfluxDB applies the update, it cancels all scheduled runs of the task.
+
+        To update a task, pass an object that contains the updated key-value pairs.
+        To activate or inactivate a task, set the `status` property.
+        _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
       operationId: PatchTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11266,7 +11290,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskUpdateRequest'
-        description: Task update to apply
+        description: An object that contains updated task properties to apply.
         required: true
       responses:
         "200":
@@ -11274,13 +11298,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
-          description: Task updated
+          description: Success. The response body contains the updated task.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
       summary: Update a task
       tags:
       - Tasks
@@ -13575,6 +13603,16 @@ tags:
 - description: |
     Retrieve data, analyze queries, and get query suggestions.
   name: Query
+- description: |
+    Process and analyze your data with tasks in the InfluxDB task engine.
+    With tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.
+
+    Use the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.
+
+    #### Related guides
+
+    - [Common data processing tasks](https://docs.influxdata.com/influxdb/cloud/process-data/common-tasks/)
+  name: Tasks
 - description: |
     Write time series data to buckets.
   name: Write
