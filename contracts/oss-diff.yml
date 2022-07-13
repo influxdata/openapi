@@ -4626,7 +4626,7 @@ paths:
         - in: query
           name: type
           description: |
-            Task type (`basic` or `system`). Default is `system`.
+            Task type (`basic` or `system`).
 
             The default (`system`) response contains all the metadata properties for tasks.
             To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
@@ -4672,24 +4672,6 @@ paths:
                         every: 30m
                         latestCompleted: '2022-06-30T15:00:00Z'
                         lastRunStatus: success
-                      - links:
-                          labels: /api/v2/tasks/09956e2b48778000/labels
-                          logs: /api/v2/tasks/09956e2b48778000/logs
-                          members: /api/v2/tasks/09956e2b48778000/members
-                          owners: /api/v2/tasks/09956e2b48778000/owners
-                          runs: /api/v2/tasks/09956e2b48778000/runs
-                          self: /api/v2/tasks/09956e2b48778000
-                        labels: []
-                        id: 09956e2b48778000
-                        orgID: 48c88459ee424a04
-                        org: ''
-                        ownerID: 0772396d1f411000
-                        name: task2
-                        status: inactive
-                        flux: ''
-                        every: 30m
-                        latestCompleted: '2022-06-28T14:00:00Z'
-                        lastRunStatus: success
                 systemTypeTaskOutput:
                   summary: System output
                   description: Task fields returned with `?type=system`
@@ -4724,36 +4706,6 @@ paths:
                         lastRunStatus: success
                         createdAt: '2022-06-27T15:09:06Z'
                         updatedAt: '2022-06-28T18:10:15Z'
-                      - links:
-                          labels: /api/v2/tasks/09956e2b48778000/labels
-                          logs: /api/v2/tasks/09956e2b48778000/logs
-                          members: /api/v2/tasks/09956e2b48778000/members
-                          owners: /api/v2/tasks/09956e2b48778000/owners
-                          runs: /api/v2/tasks/09956e2b48778000/runs
-                          self: /api/v2/tasks/09956e2b48778000
-                        labels: []
-                        id: 09956e2b48778000
-                        orgID: 48c88459ee424a04
-                        org: my-iot-center
-                        ownerID: 0772396d1f411000
-                        name: task2
-                        description: IoT Center 30-day environment average.
-                        status: inactive
-                        flux: |-
-                          option task = { 
-                            name: "task1",
-                            every: 30m,
-                          }
-
-                          from(bucket: "iot_center")
-                              |> range(start: -30d)
-                              |> filter(fn: (r) => r._measurement == "environment")
-                              |> aggregateWindow(every: 1h, fn: mean)
-                        every: 30m
-                        latestCompleted: '2022-06-28T14:00:00Z'
-                        lastRunStatus: success
-                        createdAt: '2022-06-27T15:15:23Z'
-                        updatedAt: '2022-06-28T14:25:26Z'
         '401':
           description: |
             Unauthorized. The error may indicate one of the following:
@@ -4798,7 +4750,7 @@ paths:
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       requestBody:
-        description: Task to create.
+        description: The task to create.
         required: true
         content:
           application/json:
@@ -4816,29 +4768,17 @@ paths:
           content:
             application/json:
               schema:
-                description: |
-                  Bad request.
-                  The response body contains detail about the error.
-
-                  #### InfluxDB OSS
-
-                  - Returns this error if `org` or `orgID` does not match an organization.
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
-                    examples:
-                      orgNotFound:
-                        summary: Organization not found
-                        value:
-                          code: invalid
-                          message: 'failed to decode request body: organization not found'
+                $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
               examples:
                 missingFluxError:
                   summary: Task in request body is missing Flux query
                   value:
                     code: invalid
                     message: 'failed to decode request: missing flux'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           content:
@@ -4903,6 +4843,9 @@ paths:
         - Data I/O endpoints
         - Tasks
       summary: Retrieve a task
+      description: |
+        Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)
+        by task ID.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -4913,25 +4856,81 @@ paths:
           description: The task ID.
       responses:
         '200':
-          description: Task details
+          description: Success. The response body contains the task.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
-        default:
-          description: Unexpected error
+        '400':
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if `org` or `orgID` does not match an organization.
           content:
             application/json:
               schema:
                 $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+              examples:
+                orgNotFound:
+                  summary: Organization not found
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          description: |
+            Not found.
+            A requested resource was not found.
+            The response body contains the requested resource type and the name value
+            (if you passed it)--for example:
+
+            - `"organization name \"my-org\" not found"`
+            - `"organization not found"`: indicates you passed an ID that did not match
+               an organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+              examples:
+                org-not-found:
+                  summary: Organization name not found
+                  value:
+                    code: not found
+                    message: organization name "my-org" not found
+                bucket-not-found:
+                  summary: Bucket name not found
+                  value:
+                    code: not found
+                    message: bucket "air_sensor" not found
+                orgID-not-found:
+                  summary: Organization ID not found
+                  value:
+                    code: not found
+                    message: organization not found
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
+        default:
+          $ref: '#/paths/~1config/get/responses/401'
     patch:
       operationId: PatchTasksID
       tags:
         - Tasks
       summary: Update a task
-      description: Update a task. This will cancel all queued runs.
+      description: |
+        Updates a task and then cancels all scheduled runs of the task.
+
+        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Once InfluxDB applies the update, it cancels all scheduled runs of the task.
+
+        To update a task, pass an object that contains the updated key-value pairs.
+        To activate or inactivate a task, set the `status` property.
+        _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
       requestBody:
-        description: Task update to apply
+        description: An object that contains updated task properties to apply.
         required: true
         content:
           application/json:
@@ -4947,23 +4946,33 @@ paths:
           description: The task ID.
       responses:
         '200':
-          description: Task updated
+          description: Success. The response body contains the updated task.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+          $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteTasksID
       tags:
         - Tasks
       summary: Delete a task
-      description: Deletes a task and all associated records
+      description: |
+        Deletes a task and associated records.
+
+        Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+        Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
+
+        If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -4974,13 +4983,17 @@ paths:
           description: The ID of the task to delete.
       responses:
         '204':
-          description: Task deleted
+          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+        '400':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+          $ref: '#/paths/~1config/get/responses/401'
 components:
   parameters: null
   schemas:
@@ -5997,9 +6010,6 @@ components:
         id:
           readOnly: true
           type: string
-        type:
-          description: 'The type of the task, useful for filtering a task list.'
-          type: string
         orgID:
           description: The ID of the organization that owns the task.
           type: string
@@ -6010,7 +6020,7 @@ components:
           description: The name of the task.
           type: string
         ownerID:
-          description: The ID of the user who owns this Task.
+          description: The ID of the user who owns the Task.
           type: string
         description:
           description: The description of the task.
@@ -6020,6 +6030,8 @@ components:
           enum:
             - active
             - inactive
+          description: |
+            `inactive` cancels scheduled runs and prevents manual runs of the task.
         labels:
           type: array
           items:
@@ -6028,7 +6040,7 @@ components:
           description: The ID of the authorization used when the task communicates with the query engine.
           type: string
         flux:
-          description: The Flux script to run for this task.
+          description: The Flux script that the task runs.
           type: string
         every:
           description: 'An interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
