@@ -1674,7 +1674,7 @@
             "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the write asynchronously - the write might not have completed yet.\n\n#### InfluxDB OSS\n\n- Successfully wrote all points in the batch.\n\n#### Related guides\n\n- [How to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).\n"
           },
           "400": {
-            "description": "Bad request.\nThe line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data.\nInfluxDB rejected the batch and did not write any data.\n",
+            "description": "Bad request. The response body contains detail about the error.\n\nInfluxDB returns this error if the line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data.\nInfluxDB rejected the batch and did not write any data.\n\n#### InfluxDB Cloud\n\n- Returns this error for bucket schema conflicts.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1682,10 +1682,17 @@
                 },
                 "examples": {
                   "measurementSchemaFieldTypeConflict": {
-                    "summary": "InfluxDB Cloud field type conflict thrown by an explicit bucket schema",
+                    "summary": "(Cloud) field type conflict thrown by an explicit bucket schema",
                     "value": {
                       "code": "invalid",
                       "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
+                    }
+                  },
+                  "orgNotFound": {
+                    "summary": "(OSS) organization not found",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request body: organization not found"
                     }
                   }
                 }
@@ -1831,7 +1838,23 @@
             "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the delete asynchronously - the deletion might not have completed yet.\n\nAn HTTP `2xx` status code acknowledges that the write or delete is queued.\nTo ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\nwait for a response before you send the next request.\n\nBecause writes are asynchronous, data might not yet be written\nwhen you receive the response.\n\n#### InfluxDB OSS\n\n- Deleted the data.\n"
           },
           "400": {
-            "$ref": "#/components/responses/BadRequestError"
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "orgNotFound": {
+                    "summary": "Organization not found",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request body: organization not found"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/AuthorizationError"
@@ -4007,7 +4030,23 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/BadRequestError"
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "orgNotFound": {
+                    "summary": "Organization not found",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request body: organization not found"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/components/responses/AuthorizationError"
@@ -6460,7 +6499,8 @@
         "tags": [
           "Tasks"
         ],
-        "summary": "List all labels for a task",
+        "summary": "List labels for a task",
+        "description": "Retrieves a list of all labels for a task.\n\nLabels may be used for grouping and filtering tasks.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6472,12 +6512,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "The ID of the task to retrieve labels for."
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of all labels for a task",
+            "description": "Success. The response body contains a list of all labels for the task.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6486,15 +6526,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       },
@@ -6504,6 +6549,7 @@
           "Tasks"
         ],
         "summary": "Add a label to a task",
+        "description": "Adds a label to a task.\n\nUse this endpoint to add a label that you can use to filter tasks in the InfluxDB UI.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6515,11 +6561,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "The ID of the task to label."
           }
         ],
         "requestBody": {
-          "description": "Label to add",
+          "description": "An object that contains a _`labelID`_ to add to the task.",
           "required": true,
           "content": {
             "application/json": {
@@ -6531,7 +6577,7 @@
         },
         "responses": {
           "201": {
-            "description": "A list of all labels for a task",
+            "description": "Success. The response body contains a list of all labels for the task.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6540,15 +6586,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       }
@@ -6560,6 +6611,7 @@
           "Tasks"
         ],
         "summary": "Delete a label from a task",
+        "description": "Deletes a label from a task.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6571,7 +6623,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "The ID of the task to delete the label from."
           },
           {
             "in": "path",
@@ -6580,32 +6632,27 @@
               "type": "string"
             },
             "required": true,
-            "description": "The label ID."
+            "description": "The ID of the label to delete."
           }
         ],
         "responses": {
           "204": {
-            "description": "Delete has been accepted"
+            "description": "Success. The label is deleted."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
           },
           "404": {
-            "description": "Task not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       }
@@ -12985,7 +13032,7 @@
         }
       },
       "Query": {
-        "description": "Query influx using the Flux language",
+        "description": "Query InfluxDB with the Flux language",
         "type": "object",
         "required": [
           "query"
@@ -12995,7 +13042,7 @@
             "$ref": "#/components/schemas/File"
           },
           "query": {
-            "description": "Query script to execute.",
+            "description": "The query script to execute.",
             "type": "string"
           },
           "type": {
@@ -13008,13 +13055,13 @@
           "params": {
             "type": "object",
             "additionalProperties": true,
-            "description": "Enumeration of key/value pairs that respresent parameters to be injected into query (can only specify either this field or extern and not both)\n"
+            "description": "Key-value pairs passed as parameters during query execution.\n\nTo use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:\n\n```json\n  query: \"from(bucket: params.mybucket) |> range(start: params.rangeStart) |> limit(n:1)\"\n```\n\nand pass _`params`_ with the key-value pairs--for example:\n\n```json\n  params: {\n    \"mybucket\": \"environment\",\n    \"rangeStart\": \"-30d\"\n  }\n```\n\nDuring query execution, InfluxDB passes _`params`_ to your script and substitutes the values.\n\n#### Limitations\n\n- If you use _`params`_, you can't use _`extern`_.\n"
           },
           "dialect": {
             "$ref": "#/components/schemas/Dialect"
           },
           "now": {
-            "description": "Specifies the time that should be reported as \"now\" in the query. Default is the server's now time.",
+            "description": "Specifies the time that should be reported as `now` in the query.\nDefault is the server `now` time.\n",
             "type": "string",
             "format": "date-time"
           }
@@ -13400,7 +13447,7 @@
         }
       },
       "DictItem": {
-        "description": "A key/value pair in a dictionary",
+        "description": "A key-value pair in a dictionary.",
         "type": "object",
         "properties": {
           "type": {
@@ -18894,7 +18941,7 @@
             "additionalProperties": {
               "type": "string"
             },
-            "description": "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.",
+            "description": "Key-value pairs associated with this label.\nTo remove a property, send an update with an empty value (`\"\"`) for the key.\n",
             "example": {
               "color": "ffb3b3",
               "description": "this is a description"
@@ -18920,7 +18967,7 @@
             "additionalProperties": {
               "type": "string"
             },
-            "description": "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.",
+            "description": "Key-value pairs associated with this label.\n\nTo remove a property, send an update with an empty value (`\"\"`) for the key.\n",
             "example": {
               "color": "ffb3b3",
               "description": "this is a description"
@@ -18937,9 +18984,9 @@
           "properties": {
             "type": "object",
             "additionalProperties": {
-              "type": "string"
+              "type": "string",
+              "description": "Key-value pairs associated with this label.\n\nTo remove a property, send an update with an empty value (`\"\"`) for the key.\n"
             },
-            "description": "Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.",
             "example": {
               "color": "ffb3b3",
               "description": "this is a description"
@@ -21624,20 +21671,11 @@
         }
       },
       "BadRequestError": {
-        "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
+        "description": "Bad request.\nThe response body contains detail about the error.\n",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
-            },
-            "examples": {
-              "orgNotFound": {
-                "summary": "Organization not found",
-                "value": {
-                  "code": "invalid",
-                  "message": "failed to decode request body: organization not found"
-                }
-              }
             }
           }
         }
