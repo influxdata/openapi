@@ -2671,9 +2671,18 @@ paths:
             minimum: -1
             maximum: 500
             default: 100
-            description: |
-              Limits the number of tasks returned.
-              The minimum is `-1`, the maximum is `500`, and the default is `100`.
+          description: |
+            Limits the number of tasks returned. Default is `100`.
+
+            To reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_)
+            For more information about the `basic` response, see the _`type`_ parameter.
+          examples:
+            minPaginated:
+              summary: Return a maximum of 50 tasks.
+              value: '50'
+            all:
+              summary: 'Return all tasks, without pagination.'
+              value: '-1'
         - in: query
           name: offset
           required: false
@@ -2744,6 +2753,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+      x-codeSamples:
+        - lang: Shell
+          label: 'cURL: all tasks, `basic` output'
+          source: |
+            curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
+              --header 'Content-Type: application/json' \
+              --header 'Authorization: Token INFLUX_API_TOKEN'
     post:
       operationId: PostTasks
       tags:
@@ -2830,10 +2846,10 @@ paths:
                   - code
       x-codeSamples:
         - lang: Shell
-          label: 'cURL: create a task'
+          label: 'cURL: create a flux query task'
           source: |
             curl -v --request POST \
-            http://localhost:8086/api/v2/tasks \
+            https://cloud2.influxdata.com/api/v2/tasks \
             --header "Content-type: application/json" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --data-binary @- << EOF
@@ -2847,6 +2863,27 @@ paths:
                         |> aggregateWindow(every: 1h, fn: mean)"
               }
             EOF
+        - lang: Shell
+          label: 'cURL: create a script task'
+          source: |
+            curl -v --request POST \
+            https://cloud2.influxdata.com/api/v2/tasks \
+            --header "Content-type: application/json" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --data-binary @- << EOF
+              {
+              "orgID": "INFLUX_ORG_ID",
+              "description": "IoT Center 30d environment average.",
+              "scriptID": "085138a111448000",
+              "scriptParameters":
+                {
+                  "rangeStart": "-30d",
+                  "bucket": "air_sensor",
+                  "filterField": "temperature",
+                  "groupColumn": "_time"
+                }
+              }
+            EOF
   '/tasks/{taskID}':
     get:
       operationId: GetTasksID
@@ -2855,7 +2892,7 @@ paths:
         - Tasks
       summary: Retrieve a task
       description: |
-        Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)
+        Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
         by task ID.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
@@ -3915,7 +3952,7 @@ components:
           type: string
         scriptParameters:
           description: |
-            The invocation parameters used by the script (referenced with `scriptID`) during the task run.
+            The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.
 
             #### Limitations
 
@@ -3958,7 +3995,7 @@ components:
           type: string
         scriptParameters:
           description: |
-            The invocation parameters used by the script (referenced with `scriptID`) during the task run.
+            The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.
 
             #### Limitations
 
@@ -3986,28 +4023,28 @@ components:
         status:
           $ref: '#/components/schemas/Task/properties/status'
         flux:
-          description: The Flux script to run for this task.
+          description: Update the Flux script that the task runs.
           type: string
         name:
-          description: Override the 'name' option in the flux script.
+          description: Update the 'name' option in the flux script.
           type: string
         every:
-          description: Override the 'every' option in the flux script.
+          description: Update the 'every' option in the flux script.
           type: string
         cron:
-          description: Override the 'cron' option in the flux script.
+          description: Update the 'cron' option in the flux script.
           type: string
         offset:
-          description: Override the 'offset' option in the flux script.
+          description: Update the 'offset' option in the flux script.
           type: string
         description:
-          description: An optional description of the task.
+          description: Update the description of the task.
           type: string
         scriptID:
-          description: Override the 'scriptID' of a task
+          description: Update the 'scriptID' of the task.
           type: string
         scriptParameters:
-          description: Override the 'scriptParameters' of a task
+          description: Update the 'scriptParameters' of the task.
           type: object
   responses: null
   securitySchemes:

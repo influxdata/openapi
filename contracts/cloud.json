@@ -10083,8 +10083,18 @@
               "type": "integer",
               "minimum": -1,
               "maximum": 500,
-              "default": 100,
-              "description": "Limits the number of tasks returned.\nThe minimum is `-1`, the maximum is `500`, and the default is `100`.\n"
+              "default": 100
+            },
+            "description": "Limits the number of tasks returned. Default is `100`.\n\nTo reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_)\nFor more information about the `basic` response, see the _`type`_ parameter.\n",
+            "examples": {
+              "minPaginated": {
+                "summary": "Return a maximum of 50 tasks.",
+                "value": "50"
+              },
+              "all": {
+                "summary": "Return all tasks, without pagination.",
+                "value": "-1"
+              }
             }
           },
           {
@@ -10145,7 +10155,14 @@
           "default": {
             "$ref": "#/components/responses/GeneralServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: all tasks, `basic` output",
+            "source": "curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Token INFLUX_API_TOKEN'\n"
+          }
+        ]
       },
       "post": {
         "operationId": "PostTasks",
@@ -10221,8 +10238,13 @@
         "x-codeSamples": [
           {
             "lang": "Shell",
-            "label": "cURL: create a task",
-            "source": "curl -v --request POST \\\nhttp://localhost:8086/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--data-binary @- << EOF\n  {\n  \"orgID\": \"INFLUX_ORG_ID\",\n  \"description\": \"IoT Center 30d environment average.\",\n  \"flux\": \"option task = {name: \\\"iot-center-task-1\\\", every: 30m}\\\n          from(bucket: \\\"iot_center\\\")\\\n            |> range(start: -30d)\\\n            |> filter(fn: (r) => r._measurement == \\\"environment\\\")\\\n            |> aggregateWindow(every: 1h, fn: mean)\"\n  }\nEOF\n"
+            "label": "cURL: create a flux query task",
+            "source": "curl -v --request POST \\\nhttps://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--data-binary @- << EOF\n  {\n  \"orgID\": \"INFLUX_ORG_ID\",\n  \"description\": \"IoT Center 30d environment average.\",\n  \"flux\": \"option task = {name: \\\"iot-center-task-1\\\", every: 30m}\\\n          from(bucket: \\\"iot_center\\\")\\\n            |> range(start: -30d)\\\n            |> filter(fn: (r) => r._measurement == \\\"environment\\\")\\\n            |> aggregateWindow(every: 1h, fn: mean)\"\n  }\nEOF\n"
+          },
+          {
+            "lang": "Shell",
+            "label": "cURL: create a script task",
+            "source": "curl -v --request POST \\\nhttps://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--data-binary @- << EOF\n  {\n  \"orgID\": \"INFLUX_ORG_ID\",\n  \"description\": \"IoT Center 30d environment average.\",\n  \"scriptID\": \"085138a111448000\",\n  \"scriptParameters\":\n    {\n      \"rangeStart\": \"-30d\",\n      \"bucket\": \"air_sensor\",\n      \"filterField\": \"temperature\",\n      \"groupColumn\": \"_time\"\n    }\n  }\nEOF\n"
           }
         ]
       }
@@ -10235,7 +10257,7 @@
           "Tasks"
         ],
         "summary": "Retrieve a task",
-        "description": "Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)\nby task ID.\n",
+        "description": "Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)\nby task ID.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -18700,7 +18722,7 @@
             "type": "string"
           },
           "scriptParameters": {
-            "description": "The invocation parameters used by the script (referenced with `scriptID`) during the task run.\n\n#### Limitations\n\n- `scriptParameters` requires `scriptID`.\n- If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.\n",
+            "description": "The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.\n\n#### Limitations\n\n- `scriptParameters` requires `scriptID`.\n- If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.\n",
             "type": "object"
           }
         },
@@ -18737,7 +18759,7 @@
             "type": "string"
           },
           "scriptParameters": {
-            "description": "The invocation parameters used by the script (referenced with `scriptID`) during the task run.\n\n#### Limitations\n\n- `scriptParameters` requires `scriptID`.\n- If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.\n",
+            "description": "The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.\n\n#### Limitations\n\n- `scriptParameters` requires `scriptID`.\n- If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.\n",
             "type": "object"
           },
           "name": {
@@ -18766,35 +18788,35 @@
             "$ref": "#/components/schemas/TaskStatusType"
           },
           "flux": {
-            "description": "The Flux script to run for this task.",
+            "description": "Update the Flux script that the task runs.",
             "type": "string"
           },
           "name": {
-            "description": "Override the 'name' option in the flux script.",
+            "description": "Update the 'name' option in the flux script.",
             "type": "string"
           },
           "every": {
-            "description": "Override the 'every' option in the flux script.",
+            "description": "Update the 'every' option in the flux script.",
             "type": "string"
           },
           "cron": {
-            "description": "Override the 'cron' option in the flux script.",
+            "description": "Update the 'cron' option in the flux script.",
             "type": "string"
           },
           "offset": {
-            "description": "Override the 'offset' option in the flux script.",
+            "description": "Update the 'offset' option in the flux script.",
             "type": "string"
           },
           "description": {
-            "description": "An optional description of the task.",
+            "description": "Update the description of the task.",
             "type": "string"
           },
           "scriptID": {
-            "description": "Override the 'scriptID' of a task",
+            "description": "Update the 'scriptID' of the task.",
             "type": "string"
           },
           "scriptParameters": {
-            "description": "Override the 'scriptParameters' of a task",
+            "description": "Update the 'scriptParameters' of the task.",
             "type": "object"
           }
         }
