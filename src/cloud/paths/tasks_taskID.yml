@@ -1,8 +1,12 @@
 get:
   operationId: GetTasksID
   tags:
+    - Data I/O endpoints
     - Tasks
   summary: Retrieve a task
+  description: |
+    Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+    by task ID.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -13,25 +17,37 @@ get:
       description: The task ID.
   responses:
     "200":
-      description: Task details
+      description: Success. The response body contains the task.
       content:
         application/json:
           schema:
             $ref: "../schemas/Task.yml"
+    "400":
+      $ref: "../../common/responses/BadRequestError.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "404":
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../common/schemas/Error.yml"
+      $ref: "../../common/responses/ServerError.yml"
 patch:
   operationId: PatchTasksID
   tags:
     - Tasks
   summary: Update a task
-  description: Update a task. This will cancel all queued runs.
+  description: |
+    Updates a task and then cancels all scheduled runs of the task.
+
+    Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+    Once InfluxDB applies the update, it cancels all scheduled runs of the task.
+
+    To update a task, pass an object that contains the updated key-value pairs.
+    To activate or inactivate a task, set the `status` property.
+    _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
   requestBody:
-    description: Task update to apply
+    description: An object that contains updated task properties to apply.
     required: true
     content:
       application/json:
@@ -47,23 +63,33 @@ patch:
       description: The task ID.
   responses:
     "200":
-      description: Task updated
+      description: Success. The response body contains the updated task.
       content:
         application/json:
           schema:
             $ref: "../schemas/Task.yml"
+    "400":
+      $ref: "../../common/responses/BadRequestError.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "404":
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../common/schemas/Error.yml"
+      $ref: "../../common/responses/ServerError.yml"
 delete:
   operationId: DeleteTasksID
   tags:
     - Tasks
   summary: Delete a task
-  description: Deletes a task and all associated records
+  description: |
+    Deletes a task and associated records.
+
+    Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+    Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
+
+    If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -74,10 +100,14 @@ delete:
       description: The ID of the task to delete.
   responses:
     "204":
-      description: Task deleted
+      description: Success. Task and runs are deleted. Scheduled runs are canceled.
+    "400":
+      $ref: "../../common/responses/BadRequestError.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "404":
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../common/schemas/Error.yml"
+      $ref: "../../common/responses/ServerError.yml"
