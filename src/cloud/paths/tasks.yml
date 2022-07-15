@@ -4,33 +4,49 @@ get:
     - Data I/O endpoints
     - Tasks
   summary: List all tasks
+  description: |
+    Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/).
+
+    To limit which tasks are returned, pass query parameters in your request.
+    If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: query
       name: name
-      description: Returns task with a specific name.
+      description: |
+        Task name.
+        Only returns tasks with this name.
+        Different tasks may have the same name.
       schema:
         type: string
     - in: query
       name: after
       schema:
         type: string
-      description: Return tasks after a specified ID.
+      description: |
+        Task ID.
+        Only returns tasks created after this task.
     - in: query
       name: user
       schema:
         type: string
-      description: Filter tasks to a specific user ID.
+      description: |
+        User ID.
+        Only returns tasks owned by this user.
     - in: query
       name: org
       schema:
         type: string
-      description: Filter tasks to a specific organization name.
+      description: |
+        Organization name.
+        Only returns tasks owned by this organization.
     - in: query
       name: orgID
       schema:
         type: string
-      description: Filter tasks to a specific organization ID.
+      description: |
+        Organization ID.
+        Only returns tasks owned by this organization.
     - in: query
       name: status
       schema:
@@ -38,7 +54,9 @@ get:
         enum:
           - active
           - inactive
-      description: Filter tasks by a status--"inactive" or "active".
+        description: |
+          Task status (`active` or `inactive`).
+          Only returns tasks with this status.
     - in: query
       name: limit
       schema:
@@ -46,7 +64,18 @@ get:
         minimum: -1
         maximum: 500
         default: 100
-      description: The non-zero number of tasks to return
+      description: |
+        Limits the number of tasks returned. Default is `100`.
+
+        To reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_)
+        For more information about the `basic` response, see the _`type`_ parameter.
+      examples:
+        minPaginated:
+          summary: Return a maximum of 50 tasks.
+          value: "50"
+        all:
+          summary: Return all tasks, without pagination.
+          value: "-1"
     - in: query
       name: offset
       required: false
@@ -65,7 +94,11 @@ get:
           - name
     - in: query
       name: type
-      description: Type of task, unset by default.
+      description: |
+        Task type (`basic` or `system`).
+
+        The default (`system`) response contains all the metadata properties for tasks.
+        To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
       required: false
       schema:
         default: ""
@@ -75,42 +108,116 @@ get:
           - "system"
   responses:
     "200":
-      description: A list of tasks
+      description: |
+        Success.
+        The response body contains the list of tasks.
       content:
         application/json:
           schema:
-            $ref: "../../common/schemas/Tasks.yml"
+            $ref: "../schemas/Tasks.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../common/schemas/Error.yml"
+      $ref: "../../common/responses/ServerError.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: all tasks, `basic` output"
+      source: |
+        curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
+          --header 'Content-Type: application/json' \
+          --header 'Authorization: Token INFLUX_API_TOKEN'
 post:
   operationId: PostTasks
   tags:
     - Data I/O endpoints
     - Tasks
   summary: Create a new task
+  description: |
+    Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
+
+    #### Related guides
+
+    - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).
+    - [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
+    - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: Task to create
+    description: The task to create
     required: true
     content:
       application/json:
         schema:
-          $ref: "../../common/schemas/TaskCreateRequest.yml"
+          $ref: "../schemas/TaskCreateRequest.yml"
   responses:
     "201":
-      description: Task created
+      description: Success. The response body contains a `tasks` list with the new task.
       content:
         application/json:
           schema:
-            $ref: "../../common/schemas/Task.yml"
+            $ref: "../schemas/Task.yml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/responses/BadRequestError.yml"
+          examples:
+            missingFluxError:
+              summary: Task in request body is missing Flux query
+              value: {
+                "code":"invalid",
+                "message": "failed to decode request: missing flux"
+                }
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: create a flux query task"
+      source: |
+        curl -v --request POST \
+        https://cloud2.influxdata.com/api/v2/tasks \
+        --header "Content-type: application/json" \
+        --header "Authorization: Token INFLUX_TOKEN" \
+        --data-binary @- << EOF
+          {
+          "orgID": "INFLUX_ORG_ID",
+          "description": "IoT Center 30d environment average.",
+          "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                  from(bucket: \"iot_center\")\
+                    |> range(start: -30d)\
+                    |> filter(fn: (r) => r._measurement == \"environment\")\
+                    |> aggregateWindow(every: 1h, fn: mean)"
+          }
+        EOF
+    - lang: Shell
+      label: "cURL: create a script task"
+      source: |
+        curl -v --request POST \
+        https://cloud2.influxdata.com/api/v2/tasks \
+        --header "Content-type: application/json" \
+        --header "Authorization: Token INFLUX_TOKEN" \
+        --data-binary @- << EOF
+          {
+          "orgID": "INFLUX_ORG_ID",
+          "description": "IoT Center 30d environment average.",
+          "scriptID": "085138a111448000",
+          "scriptParameters":
+            {
+              "rangeStart": "-30d",
+              "bucket": "air_sensor",
+              "filterField": "temperature",
+              "groupColumn": "_time"
+            }
+          }
+        EOF

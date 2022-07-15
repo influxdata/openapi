@@ -4427,21 +4427,26 @@ components:
           readOnly: true
           type: string
         cron:
-          description: '[Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
+          description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
             that defines the schedule on which the task runs. InfluxDB bases cron
-            runs on the system time.'
+            runs on the system time.
           type: string
         description:
           description: The description of the task.
           type: string
         every:
-          description: An interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)))
+          description: The interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)))
             at which the task runs. `every` also determines when the task first runs,
             depending on the specified time.
           format: duration
           type: string
         flux:
-          description: The Flux script to run for the task.
+          description: |
+            The Flux script that the task runs.
+
+            #### Limitations
+
+            - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.
           type: string
         id:
           readOnly: true
@@ -4503,8 +4508,25 @@ components:
           description: The ID of the organization that owns the task.
           type: string
         ownerID:
-          description: The ID of the user who owns the Task.
+          description: The ID of the user who owns the task.
           type: string
+        scriptID:
+          description: |
+            The ID of the script that the task runs.
+
+            #### Limitations
+
+            - If you use the `scriptID` property, you can't use the `flux` property.
+          type: string
+        scriptParameters:
+          description: |
+            The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.
+
+            #### Limitations
+
+            - `scriptParameters` requires `scriptID`.
+            - If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.
+          type: object
         status:
           $ref: '#/components/schemas/TaskStatusType'
         updatedAt:
@@ -4515,26 +4537,64 @@ components:
       - id
       - name
       - orgID
-      - flux
       type: object
     TaskCreateRequest:
       properties:
+        cron:
+          description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
+            that defines the schedule on which the task runs. InfluxDB bases cron
+            runs on the system time.
+          type: string
         description:
-          description: An optional description of the task.
+          description: The description of the task.
+          type: string
+        every:
+          description: |
+            The interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs.
+            `every` also determines when the task first runs, depending on the specified time.
           type: string
         flux:
-          description: The Flux script to run for this task.
+          description: |
+            The Flux script that the task runs.
+
+            #### Limitations
+
+            - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.
+          type: string
+        name:
+          description: The name of the task
+          type: string
+        offset:
+          description: A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)
+            to delay execution of the task after the scheduled time has elapsed. `0`
+            removes the offset.
+          format: duration
           type: string
         org:
-          description: The name of the organization that owns this Task.
+          description: The name of the organization that owns the task.
           type: string
         orgID:
-          description: The ID of the organization that owns this Task.
+          description: The ID of the organization that owns the task.
           type: string
+        scriptID:
+          description: |
+            The ID of the script that the task runs.
+
+            #### Limitations
+
+            - If you use the `scriptID` property, you can't use the `flux` property.
+          type: string
+        scriptParameters:
+          description: |
+            The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.
+
+            #### Limitations
+
+            - `scriptParameters` requires `scriptID`.
+            - If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.
+          type: object
         status:
           $ref: '#/components/schemas/TaskStatusType'
-      required:
-      - flux
       type: object
     TaskStatusType:
       description: |
@@ -4546,23 +4606,29 @@ components:
     TaskUpdateRequest:
       properties:
         cron:
-          description: Override the 'cron' option in the flux script.
+          description: Update the 'cron' option in the flux script.
           type: string
         description:
-          description: An optional description of the task.
+          description: Update the description of the task.
           type: string
         every:
-          description: Override the 'every' option in the flux script.
+          description: Update the 'every' option in the flux script.
           type: string
         flux:
-          description: The Flux script to run for this task.
+          description: Update the Flux script that the task runs.
           type: string
         name:
-          description: Override the 'name' option in the flux script.
+          description: Update the 'name' option in the flux script.
           type: string
         offset:
-          description: Override the 'offset' option in the flux script.
+          description: Update the 'offset' option in the flux script.
           type: string
+        scriptID:
+          description: Update the 'scriptID' of the task.
+          type: string
+        scriptParameters:
+          description: Update the 'scriptParameters' of the task.
+          type: object
         status:
           $ref: '#/components/schemas/TaskStatusType'
       type: object
@@ -11078,43 +11144,72 @@ paths:
       - Templates
   /api/v2/tasks:
     get:
+      description: |
+        Retrieves a list of [tasks](https://docs.influxdata.com/influxdb/cloud/process-data/).
+
+        To limit which tasks are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
       operationId: GetTasks
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: Returns task with a specific name.
+      - description: |
+          Task name.
+          Only returns tasks with this name.
+          Different tasks may have the same name.
         in: query
         name: name
         schema:
           type: string
-      - description: Return tasks after a specified ID.
+      - description: |
+          Task ID.
+          Only returns tasks created after this task.
         in: query
         name: after
         schema:
           type: string
-      - description: Filter tasks to a specific user ID.
+      - description: |
+          User ID.
+          Only returns tasks owned by this user.
         in: query
         name: user
         schema:
           type: string
-      - description: Filter tasks to a specific organization name.
+      - description: |
+          Organization name.
+          Only returns tasks owned by this organization.
         in: query
         name: org
         schema:
           type: string
-      - description: Filter tasks to a specific organization ID.
+      - description: |
+          Organization ID.
+          Only returns tasks owned by this organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: Filter tasks by a status--"inactive" or "active".
-        in: query
+      - in: query
         name: status
         schema:
+          description: |
+            Task status (`active` or `inactive`).
+            Only returns tasks with this status.
           enum:
           - active
           - inactive
           type: string
-      - description: The non-zero number of tasks to return
+      - description: |
+          Limits the number of tasks returned. Default is `100`.
+
+          To reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_)
+          For more information about the `basic` response, see the _`type`_ parameter.
+        examples:
+          all:
+            summary: Return all tasks, without pagination.
+            value: "-1"
+          minPaginated:
+            summary: Return a maximum of 50 tasks.
+            value: "50"
         in: query
         name: limit
         schema:
@@ -11138,7 +11233,11 @@ paths:
           enum:
           - name
           type: string
-      - description: Type of task, unset by default.
+      - description: |
+          Task type (`basic` or `system`).
+
+          The default (`system`) response contains all the metadata properties for tasks.
+          To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
         in: query
         name: type
         required: false
@@ -11154,18 +11253,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Tasks'
-          description: A list of tasks
+          description: |
+            Success.
+            The response body contains the list of tasks.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
       summary: List all tasks
       tags:
       - Data I/O endpoints
       - Tasks
+      x-codeSamples:
+      - label: 'cURL: all tasks, `basic` output'
+        lang: Shell
+        source: |
+          curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Token INFLUX_API_TOKEN'
     post:
+      description: |
+        Creates a [task](https://docs.influxdata.com/influxdb/cloud/process-data/) and returns the created task.
+
+        #### Related guides
+
+        - [Create a task](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/).
+        - [Common tasks](https://docs.influxdata.com/influxdb/cloud/process-data/common-tasks/)
+        - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
       operationId: PostTasks
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11174,7 +11290,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskCreateRequest'
-        description: Task to create
+        description: The task to create
         required: true
       responses:
         "201":
@@ -11182,7 +11298,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
-          description: Task created
+          description: Success. The response body contains a `tasks` list with the
+            new task.
+        "400":
+          content:
+            application/json:
+              examples:
+                missingFluxError:
+                  summary: Task in request body is missing Flux query
+                  value:
+                    code: invalid
+                    message: 'failed to decode request: missing flux'
+              schema:
+                $ref: '#/components/responses/BadRequestError'
+          description: Bad request
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -11193,6 +11326,46 @@ paths:
       tags:
       - Data I/O endpoints
       - Tasks
+      x-codeSamples:
+      - label: 'cURL: create a flux query task'
+        lang: Shell
+        source: |
+          curl -v --request POST \
+          https://cloud2.influxdata.com/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --data-binary @- << EOF
+            {
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                    from(bucket: \"iot_center\")\
+                      |> range(start: -30d)\
+                      |> filter(fn: (r) => r._measurement == \"environment\")\
+                      |> aggregateWindow(every: 1h, fn: mean)"
+            }
+          EOF
+      - label: 'cURL: create a script task'
+        lang: Shell
+        source: |
+          curl -v --request POST \
+          https://cloud2.influxdata.com/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --data-binary @- << EOF
+            {
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "scriptID": "085138a111448000",
+            "scriptParameters":
+              {
+                "rangeStart": "-30d",
+                "bucket": "air_sensor",
+                "filterField": "temperature",
+                "groupColumn": "_time"
+              }
+            }
+          EOF
   /api/v2/tasks/{taskID}:
     delete:
       description: |
@@ -11229,7 +11402,7 @@ paths:
       - Tasks
     get:
       description: |
-        Retrieves a [task]({{% INFLUXDB_DOCS_URL%}}/reference/glossary/#task)
+        Retrieves a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
         by task ID.
       operationId: GetTasksID
       parameters:
