@@ -39,7 +39,7 @@ paths:
 
             $ {"scripts":[]}
             ```
-            
+
         #### Related Guides
 
         - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
@@ -94,7 +94,8 @@ paths:
                         createdAt: '2022-07-17T23:43:26.660308Z'
                         updatedAt: '2022-07-17T23:43:26.660308Z'
         '400':
-          description: Bad request.
+          description: |
+            Bad request.
           content:
             application/json:
               schema:
@@ -123,11 +124,13 @@ paths:
         - Invokable Scripts
       summary: Create a script
       description: |
+        Creates an [invokable script]({{% INFLUXDB_DOCS_URL %}}/resources/videos/api-invokable-scripts/)
+        and returns the created script.
+
         #### Related Guides
 
-        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
-
-        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
+        - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/).
       requestBody:
         description: The script to create.
         required: true
@@ -155,6 +158,23 @@ paths:
                     language: flux
                     createdAt: '2022-07-17T23:43:26.660308Z'
                     updatedAt: '2022-07-17T23:43:26.660308Z'
+        '400':
+          description: |
+            Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidJSONStringValue:
+                  summary: Invalid JSON
+                  description: |
+                    If the request body contains invalid JSON, returns `invalid` 
+                    and problem detail.
+                  value:
+                    code: invalid
+                    message: 'invalid json: invalid character ''\'''' looking for beginning of value'
+                    details: []
         '422':
           description: |
             Unprocessable entity.
@@ -180,12 +200,12 @@ paths:
               --header "Authorization: Token INFLUX_TOKEN" \
               --header "Accept: application/json" \
               --header "Content-Type: application/json" \
-              --data '{ 
-                  "name": "getLastPoint", 
-                  "description": "getLastPoint finds the last point in a bucket", 
-                  "orgID": "${INFLUX_ORG_ID}", 
-                  "script": "from(bucket: INFLUX_BUCKET) |> range(start: -7d) |> limit(n:1)", 
-                  "language": "flux" 
+              --data '{
+                  "name": "getLastPoint",
+                  "description": "getLastPoint finds the last point in a bucket",
+                  "orgID": "INFLUX_ORG_ID",
+                  "script": "from(bucket: INFLUX_BUCKET) |> range(start: -7d) |> limit(n:1)",
+                  "language": "flux"
                 }'
   '/scripts/{scriptID}':
     get:
@@ -376,12 +396,13 @@ components:
       type: object
       properties:
         name:
-          description: The name of the script. The name must be unique within the organization.
+          description: Script name. The name must be unique within the organization.
           type: string
         description:
+          description: Script description. A description of the script.
           type: string
         script:
-          description: The script to execute.
+          description: Flux script. The script to execute.
           type: string
         language:
           $ref: '#/components/schemas/ScriptLanguage'

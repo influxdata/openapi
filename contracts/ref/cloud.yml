@@ -4040,15 +4040,15 @@ components:
     ScriptCreateRequest:
       properties:
         description:
+          description: Script description. A description of the script.
           type: string
         language:
           $ref: '#/components/schemas/ScriptLanguage'
         name:
-          description: The name of the script. The name must be unique within the
-            organization.
+          description: Script name. The name must be unique within the organization.
           type: string
         script:
-          description: The script to execute.
+          description: Flux script. The script to execute.
           type: string
       required:
       - name
@@ -10646,13 +10646,26 @@ paths:
       - System information endpoints
   /api/v2/scripts:
     get:
-      description: "Retrieves a list of [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).\n\n####
-        Limitations\n\n- Paging with an `offset` greater than the number of records
-        will result in\nan empty response--for example:\n\n  The following request
-        is paging to the 50th record, but the user has only\n  created two scripts.\n\n
-        \   ```sh\n    $ curl --request GET \"INFLUX_URL/api/v2/scripts?limit=1&offset=50\"\n\n
-        \   $ {\"scripts\":[]}\n    ```\n    \n#### Related Guides\n\n- [Invoke custom
-        scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)\n"
+      description: |
+        Retrieves a list of [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+
+        #### Limitations
+
+        - Paging with an `offset` greater than the number of records will result in
+        an empty response--for example:
+
+          The following request is paging to the 50th record, but the user has only
+          created two scripts.
+
+            ```sh
+            $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
+
+            $ {"scripts":[]}
+            ```
+
+        #### Related Guides
+
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: GetScripts
       parameters:
       - description: |
@@ -10719,7 +10732,8 @@ paths:
                       invalid syntax'
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Bad request.
+          description: |
+            Bad request.
         default:
           $ref: '#/components/responses/ServerError'
           description: Internal server error.
@@ -10737,11 +10751,13 @@ paths:
             --header "Content-Type: application/json"
     post:
       description: |
+        Creates an [invokable script]({{% INFLUXDB_DOCS_URL %}}/resources/videos/api-invokable-scripts/)
+        and returns the created script.
+
         #### Related Guides
 
-        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
-
-        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
+        - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/).
       operationId: PostScripts
       requestBody:
         content:
@@ -10771,6 +10787,23 @@ paths:
           description: |
             Success.
             The response body contains the script and its metadata.
+        "400":
+          content:
+            application/json:
+              examples:
+                invalidJSONStringValue:
+                  description: "If the request body contains invalid JSON, returns
+                    `invalid` \nand problem detail.\n"
+                  summary: Invalid JSON
+                  value:
+                    code: invalid
+                    details: []
+                    message: 'invalid json: invalid character ''\'''' looking for
+                      beginning of value'
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
         "422":
           content:
             application/json:
@@ -10794,13 +10827,18 @@ paths:
       x-codeSamples:
       - label: cURL
         lang: Shell
-        source: "curl --request POST \"INFLUX_URL/api/v2/scripts\" \\\n  --header
-          \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\"
-          \\\n  --header \"Content-Type: application/json\" \\\n  --data '{ \n      \"name\":
-          \"getLastPoint\", \n      \"description\": \"getLastPoint finds the last
-          point in a bucket\", \n      \"orgID\": \"${INFLUX_ORG_ID}\", \n      \"script\":
-          \"from(bucket: INFLUX_BUCKET) |> range(start: -7d) |> limit(n:1)\", \n      \"language\":
-          \"flux\" \n    }'\n"
+        source: |
+          curl --request POST "INFLUX_URL/api/v2/scripts" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+                "name": "getLastPoint",
+                "description": "getLastPoint finds the last point in a bucket",
+                "orgID": "INFLUX_ORG_ID",
+                "script": "from(bucket: INFLUX_BUCKET) |> range(start: -7d) |> limit(n:1)",
+                "language": "flux"
+              }'
   /api/v2/scripts/{scriptID}:
     delete:
       description: Deletes a script and all associated records.
