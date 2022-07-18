@@ -2686,13 +2686,17 @@ paths:
         - Query
       summary: Retrieve Flux query suggestions
       description: |
-        Returns a list of Flux query suggestions.
+        Retrieves a list of Flux query suggestions. Each suggestion contains a
+        [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
+        name and parameters.
 
-        Use this endpoint to retrieve a list of Flux query suggestions. The response
-        body contains a list of functions containing the function name and its
-        parameters.
+        Use this endpoint to retrieve a list of Flux query suggestions used in the
+        InfluxDB Flux Query Builder. Helper function names have an underscore (`_`)
+        prefix and shouldn't be used  in queries--for example:
 
-        This endpoint was built to provide autocomplete for the Flux Query Builder.
+        - **Not recommended**: Don't use the `_sortLimit` helper function directly.
+           - **Recommended**:  Use `top(n, columns=["_value"], tables=<-)` to sort
+            on a column and keep the top n records. `top` uses the `_sortLimit` helper function.
 
         #### Limitations
 
@@ -2700,9 +2704,8 @@ paths:
         will result in a HTTP `301 Moved Permanently` status code. Please use
         `/api/v2/query/suggestions` without a trailing slash.
 
-        - The endpoint exposes helper functions that should not be used
-        while building a query such as
-        [`_sortLimit()`](https://github.com/influxdata/flux/blob/a768568a4cbeb299433ee31a059e599d290fcfbf/libflux/flux/benches/everything.flux#L2247)
+        - When writing a query, avoid using `_functionName()` helper functions
+        exposed by this endpoint.
 
         #### Related Guides
 
@@ -2713,7 +2716,8 @@ paths:
         '200':
           description: |
             Success.
-            The response body contains a list of Flux query suggestions.
+            The response body contains a list of Flux query suggestions--function
+            names used in the Flux Query Builder autocomplete suggestions.
           content:
             application/json:
               schema:
@@ -3332,9 +3336,9 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request GET 'INFLUX_URL/api/v2/query/suggestions' \
-              --header 'Accept: application/json' \
-              --header 'Authorization: Token INFLUX_TOKEN'
+            curl --request GET "http://localhost:8086/api/v2/query/suggestions" \
+              --header "Accept: application/json" \
+              --header "Authorization: Token INFLUX_TOKEN"
   '/query/suggestions/{name}':
     get:
       operationId: GetQuerySuggestionsName

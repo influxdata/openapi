@@ -3677,7 +3677,7 @@
           "Query"
         ],
         "summary": "Retrieve Flux query suggestions",
-        "description": "Returns a list of Flux query suggestions.\n\nUse this endpoint to retrieve a list of Flux query suggestions. The response\nbody contains a list of functions containing the function name and its\nparameters.\n\nThis endpoint was built to provide autocomplete for the Flux Query Builder.\n\n#### Limitations\n\n- Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL\nwill result in a HTTP `301 Moved Permanently` status code. Please use\n`/api/v2/query/suggestions` without a trailing slash.\n\n- The endpoint exposes helper functions that should not be used\nwhile building a query such as\n[`_sortLimit()`](https://github.com/influxdata/flux/blob/a768568a4cbeb299433ee31a059e599d290fcfbf/libflux/flux/benches/everything.flux#L2247)\n\n#### Related Guides\n\n- [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/).\n",
+        "description": "Retrieves a list of Flux query suggestions. Each suggestion contains a\n[Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\nname and parameters.\n\nUse this endpoint to retrieve a list of Flux query suggestions used in the\nInfluxDB Flux Query Builder. Helper function names have an underscore (`_`)\nprefix and shouldn't be used  in queries--for example:\n\n- **Not recommended**: Don't use the `_sortLimit` helper function directly.\n   - **Recommended**:  Use `top(n, columns=[\"_value\"], tables=<-)` to sort\n    on a column and keep the top n records. `top` uses the `_sortLimit` helper function.\n\n#### Limitations\n\n- Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL\nwill result in a HTTP `301 Moved Permanently` status code. Please use\n`/api/v2/query/suggestions` without a trailing slash.\n\n- When writing a query, avoid using `_functionName()` helper functions\nexposed by this endpoint.\n\n#### Related Guides\n\n- [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -3685,7 +3685,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success.\nThe response body contains a list of Flux query suggestions.\n",
+            "description": "Success.\nThe response body contains a list of Flux query suggestions--function\nnames used in the Flux Query Builder autocomplete suggestions.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -4657,7 +4657,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request GET 'INFLUX_URL/api/v2/query/suggestions' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Token INFLUX_TOKEN'\n"
+            "source": "curl --request GET \"http://localhost:8086/api/v2/query/suggestions\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Authorization: Token INFLUX_TOKEN\"\n"
           }
         ]
       }
