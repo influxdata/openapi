@@ -10646,35 +10646,102 @@ paths:
       - System information endpoints
   /api/v2/scripts:
     get:
+      description: "Retrieves a list of [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).\n\n####
+        Limitations\n\n- Paging with an `offset` greater than the number of records
+        will result in\nan empty response--for example:\n\n  The following request
+        is paging to the 50th record, but the user has only\n  created two scripts.\n\n
+        \   ```sh\n    $ curl --request GET \"INFLUX_URL/api/v2/scripts?limit=1&offset=50\"\n\n
+        \   $ {\"scripts\":[]}\n    ```\n    \n#### Related Guides\n\n- [Invoke custom
+        scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)\n"
       operationId: GetScripts
       parameters:
-      - description: The number of scripts to return.
+      - description: |
+          Limits the number of scripts returned. Default is `100`.
         in: query
         name: limit
         required: false
         schema:
+          default: 100
+          maximum: 500
+          minimum: 0
           type: integer
-      - description: The offset for pagination.
+      - description: |
+          The offset for pagination.
+          The number of records to skip.
         in: query
         name: offset
         required: false
         schema:
+          default: 0
+          minimum: 0
           type: integer
       responses:
         "200":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    scripts:
+                    - createdAt: "2022-07-17T23:49:45.731237Z"
+                      description: find the last point from Sample Bucket
+                      id: 09afa3b220fe4000
+                      language: flux
+                      name: getLastPointFromSampleBucket
+                      orgID: bea7ea952287f70d
+                      script: 'from(bucket: SampleBucket) |> range(start: -7d) |>
+                        limit(n:1)'
+                      updatedAt: "2022-07-17T23:49:45.731237Z"
+                    - createdAt: "2022-07-17T23:43:26.660308Z"
+                      description: getLastPoint finds the last point in a bucket
+                      id: 09afa23ff13e4000
+                      language: flux
+                      name: getLastPoint
+                      orgID: bea7ea952287f70d
+                      script: 'from(bucket: params.mybucket) |> range(start: -7d)
+                        |> limit(n:1)'
+                      updatedAt: "2022-07-17T23:43:26.660308Z"
               schema:
                 $ref: '#/components/schemas/Scripts'
-          description: The list of scripts.
+          description: |
+            Success.
+            The response body contains the of scripts.
+        "400":
+          content:
+            application/json:
+              examples:
+                invalidSyntaxError:
+                  summary: Query parameter contains invalid syntax.
+                  value:
+                    code: 3
+                    details: []
+                    message: 'parsing field "limit": strconv.ParseUint: parsing "-1":
+                      invalid syntax'
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request.
         default:
           $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          description: Internal server error.
       summary: List scripts
       tags:
       - Data I/O endpoints
       - Invokable Scripts
+      x-codeSamples:
+      - label: cUrl
+        lang: Shell
+        source: |
+          curl --request GET "INFLUX_URL/api/v2/scripts?limit=100&offset=0" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json"
     post:
+      description: |
+        #### Related Guides
+
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+
+        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
       operationId: PostScripts
       requestBody:
         content:
@@ -10687,15 +10754,53 @@ paths:
         "201":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    createdAt: "2022-07-17T23:43:26.660308Z"
+                    description: getLastPoint finds the last point in a bucket
+                    id: 09afa23ff13e4000
+                    language: flux
+                    name: getLastPoint
+                    orgID: bea7ea952287f70d
+                    script: 'from(bucket: params.mybucket) |> range(start: -7d) |>
+                      limit(n:1)'
+                    updatedAt: "2022-07-17T23:43:26.660308Z"
               schema:
                 $ref: '#/components/schemas/Script'
-          description: The created script.
+          description: |
+            Success.
+            The response body contains the script and its metadata.
+        "422":
+          content:
+            application/json:
+              examples:
+                uniquenessError:
+                  description: |
+                    A script with the same `name` exists.
+                  value:
+                    code: conflict
+                    message: uniqueness violation
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Unprocessable entity.
         default:
           $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          description: Internal Server Error
       summary: Create a script
       tags:
       - Invokable Scripts
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: "curl --request POST \"INFLUX_URL/api/v2/scripts\" \\\n  --header
+          \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\"
+          \\\n  --header \"Content-Type: application/json\" \\\n  --data '{ \n      \"name\":
+          \"getLastPoint\", \n      \"description\": \"getLastPoint finds the last
+          point in a bucket\", \n      \"orgID\": \"${INFLUX_ORG_ID}\", \n      \"script\":
+          \"from(bucket: INFLUX_BUCKET) |> range(start: -7d) |> limit(n:1)\", \n      \"language\":
+          \"flux\" \n    }'\n"
   /api/v2/scripts/{scriptID}:
     delete:
       description: Deletes a script and all associated records.
