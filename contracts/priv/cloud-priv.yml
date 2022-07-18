@@ -528,6 +528,39 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
+  /provision/setup:
+    post:
+      operationId: PostProvisionSetup
+      tags:
+        - ProvisionSetup
+      description: Create the initial operator user and organization for the cluster.
+      requestBody:
+        description: Initial user and org to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionSetupRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: the token for the created user
+          description: Token for the created user.
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Bad request. Data in request is invalid. Examples include missing names for user or org.
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: 'Unprocessable entry. Setup has already been completed, or invalid IDs provided.'
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
   /provision/suspend:
     post:
       operationId: PostProvisionSuspend
@@ -1011,6 +1044,16 @@ components:
           $ref: '#/components/schemas/Identity'
         org:
           $ref: '#/components/schemas/Identity'
+    ProvisionSetupRequest:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Identity'
+        org:
+          $ref: '#/components/schemas/Identity'
+      required:
+        - user
+        - org
     ProvisionSuspendRequest:
       type: object
       properties:
