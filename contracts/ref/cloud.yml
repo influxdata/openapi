@@ -70,21 +70,11 @@ components:
     BadRequestError:
       content:
         application/json:
-          examples:
-            orgNotFound:
-              summary: Organization not found
-              value:
-                code: invalid
-                message: 'failed to decode request body: organization not found'
           schema:
             $ref: '#/components/schemas/Error'
       description: |
         Bad request.
         The response body contains detail about the error.
-
-        #### InfluxDB OSS
-
-        - Returns this error if `org` or `orgID` does not match an organization.
     GeneralServerError:
       content:
         application/json:
@@ -1250,7 +1240,7 @@ components:
           $ref: '#/components/schemas/NodeType'
       type: object
     DictItem:
-      description: A key/value pair in a dictionary
+      description: A key-value pair in a dictionary.
       properties:
         key:
           $ref: '#/components/schemas/Expression'
@@ -2083,8 +2073,9 @@ components:
         properties:
           additionalProperties:
             type: string
-          description: Key/Value pairs associated with this label. Keys can be removed
-            by sending an update with an empty value.
+          description: |
+            Key-value pairs associated with this label.
+            To remove a property, send an update with an empty value (`""`) for the key.
           example:
             color: ffb3b3
             description: this is a description
@@ -2099,8 +2090,10 @@ components:
         properties:
           additionalProperties:
             type: string
-          description: Key/Value pairs associated with this label. Keys can be removed
-            by sending an update with an empty value.
+          description: |
+            Key-value pairs associated with this label.
+
+            To remove a property, send an update with an empty value (`""`) for the key.
           example:
             color: ffb3b3
             description: this is a description
@@ -2127,9 +2120,11 @@ components:
           type: string
         properties:
           additionalProperties:
+            description: |
+              Key-value pairs associated with this label.
+
+              To remove a property, send an update with an empty value (`""`) for the key.
             type: string
-          description: Key/Value pairs associated with this label. Keys can be removed
-            by sending an update with an empty value.
           example:
             color: ffb3b3
             description: this is a description
@@ -3464,24 +3459,46 @@ components:
       - $ref: '#/components/schemas/Identifier'
       - $ref: '#/components/schemas/StringLiteral'
     Query:
-      description: Query influx using the Flux language
+      description: Query InfluxDB with the Flux language
       properties:
         dialect:
           $ref: '#/components/schemas/Dialect'
         extern:
           $ref: '#/components/schemas/File'
         now:
-          description: Specifies the time that should be reported as "now" in the
-            query. Default is the server's now time.
+          description: |
+            Specifies the time that should be reported as `now` in the query.
+            Default is the server `now` time.
           format: date-time
           type: string
         params:
           additionalProperties: true
           description: |
-            Enumeration of key/value pairs that respresent parameters to be injected into query (can only specify either this field or extern and not both)
+            Key-value pairs passed as parameters during query execution.
+
+            To use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:
+
+            ```json
+              query: "from(bucket: params.mybucket) |> range(start: params.rangeStart) |> limit(n:1)"
+            ```
+
+            and pass _`params`_ with the key-value pairs--for example:
+
+            ```json
+              params: {
+                "mybucket": "environment",
+                "rangeStart": "-30d"
+              }
+            ```
+
+            During query execution, InfluxDB passes _`params`_ to your script and substitutes the values.
+
+            #### Limitations
+
+            - If you use _`params`_, you can't use _`extern`_.
           type: object
         query:
-          description: Query script to execute.
+          description: The query script to execute.
           type: string
         type:
           description: The type of query. Must be "flux".
@@ -8375,7 +8392,23 @@ paths:
 
             - Deleted the data.
         "400":
-          $ref: '#/components/responses/BadRequestError'
+          content:
+            application/json:
+              examples:
+                orgNotFound:
+                  summary: Organization not found
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if `org` or `orgID` does not match an organization.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "404":
@@ -9960,7 +9993,23 @@ paths:
                 description: Trace ID of a request.
                 type: string
         "400":
-          $ref: '#/components/responses/BadRequestError'
+          content:
+            application/json:
+              examples:
+                orgNotFound:
+                  summary: Organization not found
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if `org` or `orgID` does not match an organization.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "404":
@@ -11491,10 +11540,14 @@ paths:
       - Tasks
   /api/v2/tasks/{taskID}/labels:
     get:
+      description: |
+        Retrieves a list of all labels for a task.
+
+        Labels may be used for grouping and filtering tasks.
       operationId: GetTasksIDLabels
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to retrieve labels for.
         in: path
         name: taskID
         required: true
@@ -11506,21 +11559,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelsResponse'
-          description: A list of all labels for a task
+          description: Success. The response body contains a list of all labels for
+            the task.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
-      summary: List all labels for a task
+          $ref: '#/components/responses/GeneralServerError'
+      summary: List labels for a task
       tags:
       - Tasks
     post:
+      description: |
+        Adds a label to a task.
+
+        Use this endpoint to add a label that you can use to filter tasks in the InfluxDB UI.
       operationId: PostTasksIDLabels
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to label.
         in: path
         name: taskID
         required: true
@@ -11531,7 +11593,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LabelMapping'
-        description: Label to add
+        description: An object that contains a _`labelID`_ to add to the task.
         required: true
       responses:
         "201":
@@ -11539,28 +11601,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelResponse'
-          description: A list of all labels for a task
+          description: Success. The response body contains a list of all labels for
+            the task.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
       summary: Add a label to a task
       tags:
       - Tasks
   /api/v2/tasks/{taskID}/labels/{labelID}:
     delete:
+      description: |
+        Deletes a label from a task.
       operationId: DeleteTasksIDLabelsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to delete the label from.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: The label ID.
+      - description: The ID of the label to delete.
         in: path
         name: labelID
         required: true
@@ -11568,19 +11637,17 @@ paths:
           type: string
       responses:
         "204":
-          description: Delete has been accepted
+          description: Success. The label is deleted.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
         "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Task not found
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
       summary: Delete a label from a task
       tags:
       - Tasks
@@ -13188,21 +13255,35 @@ paths:
             application/json:
               examples:
                 measurementSchemaFieldTypeConflict:
-                  summary: InfluxDB Cloud field type conflict thrown by an explicit
-                    bucket schema
+                  summary: (Cloud) field type conflict thrown by an explicit bucket
+                    schema
                   value:
                     code: invalid
                     message: 'partial write error (2 written): unable to parse ''air_sensor,service=S1,sensor=L1
                       temperature="90.5",humidity=70.0 1632850122'': schema: field
                       type for field "temperature" not permitted by schema; got String
                       but expected Float'
+                orgNotFound:
+                  summary: (OSS) organization not found
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
               schema:
                 $ref: '#/components/schemas/LineProtocolError'
           description: |
-            Bad request.
-            The line protocol data in the request is malformed.
+            Bad request. The response body contains detail about the error.
+
+            InfluxDB returns this error if the line protocol data in the request is malformed.
             The response body contains the first malformed line in the data.
             InfluxDB rejected the batch and did not write any data.
+
+            #### InfluxDB Cloud
+
+            - Returns this error for bucket schema conflicts.
+
+            #### InfluxDB OSS
+
+            - Returns this error if `org` or `orgID` does not match an organization.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "404":
