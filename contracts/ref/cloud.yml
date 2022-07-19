@@ -4074,11 +4074,13 @@ components:
     ScriptUpdateRequest:
       properties:
         description:
+          description: Script description. A description of the script.
           type: string
         name:
+          description: Script name. The name must be unique within the organization.
           type: string
         script:
-          description: script is script to be executed
+          description: The script to execute.
           type: string
       type: object
     Scripts:
@@ -10707,10 +10709,22 @@ paths:
       - Invokable Scripts
   /api/v2/scripts/{scriptID}:
     delete:
-      description: Deletes a script and all associated records.
+      description: |
+        Deletes an invokable script and all associated records.
+
+        #### Limitations
+
+        - Only one script can be deleted per request.
+        - `scriptIDs` that do not exist return an HTTP `204` status code.
+
+        #### Related Guides
+
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: DeleteScriptsID
       parameters:
-      - description: The ID of the script to delete.
+      - description: |
+          Script ID.
+          Only deletes scripts with this ID.
         in: path
         name: scriptID
         required: true
@@ -10718,18 +10732,35 @@ paths:
           type: string
       responses:
         "204":
-          description: The script is deleted.
+          description: |
+            No content.
+            The script is deleted.
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
       summary: Delete a script
       tags:
       - Invokable Scripts
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl -X 'DELETE' \
+            "https://cloud2.influxdata.com/api/v2/scripts/SCRIPTID" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Accept: application/json'
     get:
-      description: Uses script ID to retrieve details of an invokable script.
+      description: |
+        Retrieve an invokable script by its ID.
+
+        #### Related Guides
+
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: GetScriptsID
       parameters:
-      - description: The script ID.
+      - description: |
+          Script ID.
+          Only return a script with this ID.
         in: path
         name: scriptID
         required: true
@@ -10739,22 +10770,64 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    createdAt: "2022-07-17T23:49:45.731237Z"
+                    description: getLastPoint finds the last point in a bucket
+                    id: 09afa3b220fe4000
+                    language: flux
+                    name: getLastPoint
+                    orgID: bea7ea952287f70d
+                    script: 'from(bucket: my-bucket) |> range(start: -7d) |> limit(n:1)'
+                    updatedAt: "2022-07-17T23:49:45.731237Z"
               schema:
                 $ref: '#/components/schemas/Script'
-          description: The requested script object.
+          description: |
+            Success.
+            The response body contains the requested script object.
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  summary: |
+                    The requested script was not found.
+                  value:
+                    code: not found
+                    message: script "09afa3b220fe400" not found
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Not found.
         default:
           $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          description: Internal server error.
       summary: Retrieve a script
       tags:
       - Data I/O endpoints
       - Invokable Scripts
     patch:
       description: |
-        Updates properties (`name`, `description`, and `script`) of an invokable script.
+        Updates an invokable script.
+
+        Use this endpoint to update the properties (`name`, `description`, and `script`)
+        of an invokable script.
+
+        To update a script, pass an object that contains the updated key-value pairs.
+
+        #### Limitations
+
+        - Sending an empty response body returns a 200
+
+        #### Related Guides
+
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: PatchScriptsID
       parameters:
-      - description: The script ID.
+      - description: |
+          Script ID.
+          Only returns scripts with this ID.
         in: path
         name: scriptID
         required: true
@@ -10765,15 +10838,21 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ScriptUpdateRequest'
-        description: Script update to apply
+        description: |
+          An object that contains updated task properties to apply.
         required: true
       responses:
         "200":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value: null
               schema:
                 $ref: '#/components/schemas/Script'
-          description: The updated script.
+          description: |
+            Success.
+            The response body contains the updated script.
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
