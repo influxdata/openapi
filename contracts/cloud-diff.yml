@@ -2765,9 +2765,19 @@ paths:
       tags:
         - Data I/O endpoints
         - Tasks
-      summary: Create a new task
+      summary: Create a task
       description: |
         Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
+
+        Use this endpoint to create a scheduled task that runs a Flux script.
+        In your task, provide one of the following:
+
+          - _`flux`_ property with an inline Flux script
+          - _`scriptID`_ property with an [invokable script](#tag/Invokable-Scripts) ID
+
+        #### InfluxDB Cloud
+
+          - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.
 
         #### Related guides
 
@@ -2791,17 +2801,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
         '400':
-          description: Bad request
+          description: |
+            Bad request
+
+            #### InfluxDB Cloud
+
+              - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
+              - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
           content:
             application/json:
               schema:
                 $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
               examples:
-                missingFluxError:
-                  summary: Task in request body is missing Flux query
+                fluxAndScriptError:
+                  summary: The request body can't contain both flux and scriptID
                   value:
                     code: invalid
-                    message: 'failed to decode request: missing flux'
+                    message: 'failed to decode request: can not provide both scriptID and flux'
+                missingFluxError:
+                  summary: The request body requires either flux or scriptID
+                  value:
+                    code: invalid
+                    message: 'failed to decode request: flux required'
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '500':
@@ -2913,10 +2934,20 @@ paths:
           description: |
             Bad request.
             The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if an incorrect value is passed for `org` or `orgID`.
           content:
             application/json:
               schema:
                 $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+              examples:
+                orgProvidedNotFound:
+                  summary: The org or orgID passed doesn't own the token passed in the header
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '404':
