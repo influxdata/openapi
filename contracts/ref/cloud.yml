@@ -4076,9 +4076,6 @@ components:
         description:
           description: Script description. A description of the script.
           type: string
-        name:
-          description: Script name. The name must be unique within the organization.
-          type: string
         script:
           description: The script to execute.
           type: string
@@ -10746,7 +10743,7 @@ paths:
         lang: Shell
         source: |
           curl -X 'DELETE' \
-            "https://cloud2.influxdata.com/api/v2/scripts/SCRIPTID" \
+            "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --header 'Accept: application/json'
     get:
@@ -10782,7 +10779,29 @@ paths:
                     script: 'from(bucket: my-bucket) |> range(start: -7d) |> limit(n:1)'
                     updatedAt: "2022-07-17T23:49:45.731237Z"
               schema:
-                $ref: '#/components/schemas/Script'
+                properties:
+                  createdAt:
+                    format: date-time
+                    readOnly: true
+                    type: string
+                  description:
+                    type: string
+                  id:
+                    readOnly: true
+                    type: string
+                  language:
+                    $ref: '#/components/schemas/ScriptLanguage'
+                  name:
+                    type: string
+                  orgID:
+                    type: string
+                  script:
+                    description: script to be executed
+                    type: string
+                  updatedAt:
+                    format: date-time
+                    readOnly: true
+                    type: string
           description: |
             Success.
             The response body contains the requested script object.
@@ -10811,14 +10830,14 @@ paths:
       description: |
         Updates an invokable script.
 
-        Use this endpoint to update the properties (`name`, `description`, and `script`)
+        Use this endpoint to update the properties (`description`, and `script`)
         of an invokable script.
 
         To update a script, pass an object that contains the updated key-value pairs.
 
         #### Limitations
 
-        - Sending an empty response body returns a 200
+        - Sending an empty request body returns an HTTP `200` status code.
 
         #### Related Guides
 
@@ -10839,7 +10858,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ScriptUpdateRequest'
         description: |
-          An object that contains updated task properties to apply.
+          An object that contains the updated task properties to apply.
         required: true
       responses:
         "200":
@@ -10847,18 +10866,53 @@ paths:
             application/json:
               examples:
                 successResponse:
-                  value: null
+                  value:
+                    createdAt: "2022-07-17T23:49:45.731237Z"
+                    description: get last point from new bucket
+                    id: 09afa3b220fe4000
+                    language: flux
+                    name: getLastPoint
+                    orgID: bea7ea952287f70d
+                    script: 'from(bucket: newBucket) |> range(start: -7d) |> limit(n:1)'
+                    updatedAt: "2022-07-19T22:27:23.185436Z"
               schema:
-                $ref: '#/components/schemas/Script'
+                $ref: '#/paths/~1scripts~1%7BscriptID%7D/get/responses/200/content/application~1json/schema'
           description: |
             Success.
             The response body contains the updated script.
+        "404":
+          content:
+            application/json:
+              examples:
+                notFound:
+                  summary: |
+                    The requested script was not found.
+                  value:
+                    code: not found
+                    message: script "09afa3b220fe400" not found
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Not found.
         default:
           $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          description: Internal server error
       summary: Update a script
       tags:
       - Invokable Scripts
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl -X 'PATCH' \
+            "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Accept: application/json"
+            --header "Content-Type: application/json"
+            --data '{
+                "description": "get last point from new bucket",
+                "script": "from(bucket: updatedBucket) |> range(start: -7d) |> limit(n:1)", "language": "flux"
+              }'
   /api/v2/scripts/{scriptID}/invoke:
     post:
       description: Invokes a script and substitutes `params` keys referenced in the
