@@ -29,7 +29,7 @@
     },
     {
       "name": "Tasks",
-      "description": "Process and analyze your data with tasks in the InfluxDB task engine.\nWith tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.\n\nUse the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.\n\n#### Related guides\n\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n"
+      "description": "Process and analyze your data with tasks in the InfluxDB task engine.\nWith tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.\nWith InfluxDB Cloud, you can manage [invokable scripts](/#tag/Invokable-Scripts)\nfor your organization and schedule tasks that run them with parameters.\n\nUse the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.\n\n#### Related guides\n\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n"
     },
     {
       "name": "Write",
@@ -6260,37 +6260,37 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Run"
-                }
-              },
-              "examples": {
-                "runSuccess": {
-                  "summary": "A successful task run.",
-                  "value": {
-                    "links": {
-                      "logs": "/api/v2/tasks/0996e56b2f378000/runs/09b070dadaa7d000/logs",
-                      "retry": "/api/v2/tasks/0996e56b2f378000/runs/09b070dadaa7d000/retry",
-                      "self": "/api/v2/tasks/0996e56b2f378000/runs/09b070dadaa7d000",
-                      "task": "/api/v2/tasks/0996e56b2f378000"
-                    },
-                    "id": "09b070dadaa7d000",
-                    "taskID": "0996e56b2f378000",
-                    "status": "success",
-                    "scheduledFor": "2022-07-18T14:46:06Z",
-                    "startedAt": "2022-07-18T14:46:07.16222Z",
-                    "finishedAt": "2022-07-18T14:46:07.308254Z",
-                    "requestedAt": "2022-07-18T14:46:06Z",
-                    "log": [
-                      {
-                        "runID": "09b070dadaa7d000",
-                        "time": "2022-07-18T14:46:07.101231Z",
-                        "message": "Started task from script: \"option task = {name: \\\"task1\\\", every: 30m} from(bucket: \\\"iot_center\\\") |> range(start: -90d) |> filter(fn: (r) => r._measurement == \\\"environment\\\")               |> aggregateWindow(every: 1h, fn: mean)\""
+                },
+                "examples": {
+                  "runSuccess": {
+                    "summary": "A successful task run.",
+                    "value": {
+                      "links": {
+                        "logs": "/api/v2/tasks/0996e56b2f378000/runs/09b070dadaa7d000/logs",
+                        "retry": "/api/v2/tasks/0996e56b2f378000/runs/09b070dadaa7d000/retry",
+                        "self": "/api/v2/tasks/0996e56b2f378000/runs/09b070dadaa7d000",
+                        "task": "/api/v2/tasks/0996e56b2f378000"
                       },
-                      {
-                        "runID": "09b070dadaa7d000",
-                        "time": "2022-07-18T14:46:07.242859Z",
-                        "message": "Completed(success)"
-                      }
-                    ]
+                      "id": "09b070dadaa7d000",
+                      "taskID": "0996e56b2f378000",
+                      "status": "success",
+                      "scheduledFor": "2022-07-18T14:46:06Z",
+                      "startedAt": "2022-07-18T14:46:07.16222Z",
+                      "finishedAt": "2022-07-18T14:46:07.308254Z",
+                      "requestedAt": "2022-07-18T14:46:06Z",
+                      "log": [
+                        {
+                          "runID": "09b070dadaa7d000",
+                          "time": "2022-07-18T14:46:07.101231Z",
+                          "message": "Started task from script: \"option task = {name: \\\"task1\\\", every: 30m} from(bucket: \\\"iot_center\\\") |> range(start: -90d) |> filter(fn: (r) => r._measurement == \\\"environment\\\")               |> aggregateWindow(every: 1h, fn: mean)\""
+                        },
+                        {
+                          "runID": "09b070dadaa7d000",
+                          "time": "2022-07-18T14:46:07.242859Z",
+                          "message": "Completed(success)"
+                        }
+                      ]
+                    }
                   }
                 }
               }
@@ -10317,7 +10317,7 @@
           "Tasks"
         ],
         "summary": "Create a new task",
-        "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.\n\n#### Related guides\n\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
+        "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.\n\nUse this endpoint to create a scheduled task that runs a Flux script.\nIn your task, provide one of the following:\n\n  - _`flux`_ property with an inline Flux script\n  - _`scriptID`_ property with an invokable script ID\n\n#### InfluxDB Cloud\n\n  - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.\n\n#### Related guides\n\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -10346,18 +10346,25 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Bad request\n\n#### InfluxDB Cloud\n\n  - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.\n  - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/responses/BadRequestError"
                 },
                 "examples": {
-                  "missingFluxError": {
-                    "summary": "Task in request body is missing Flux query",
+                  "fluxAndScriptError": {
+                    "summary": "Task in request body can't contain flux and scriptID properties",
                     "value": {
                       "code": "invalid",
-                      "message": "failed to decode request: missing flux"
+                      "message": "failed to decode request: can not provide both scriptID and flux"
+                    }
+                  },
+                  "missingFluxError": {
+                    "summary": "Task in request body requires a flux or scriptID property",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request: flux required"
                     }
                   }
                 }
