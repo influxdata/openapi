@@ -191,7 +191,6 @@
           }
         ],
         "tags": [
-          "Ping",
           "System information endpoints"
         ],
         "responses": {
@@ -224,7 +223,7 @@
           }
         ],
         "tags": [
-          "Ping"
+          "System information endpoints"
         ],
         "responses": {
           "204": {
@@ -252,7 +251,6 @@
         "operationId": "GetRoutes",
         "summary": "List all top level routes",
         "tags": [
-          "Routes",
           "System information endpoints"
         ],
         "parameters": [
@@ -1556,8 +1554,7 @@
       "post": {
         "operationId": "PostWrite",
         "tags": [
-          "Data I/O endpoints",
-          "Write"
+          "Data I/O endpoints"
         ],
         "summary": "Write data",
         "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\n\n#### InfluxDB Cloud\n\n- Takes the following steps when you send a write request:\n\n  1. Validates the request and queues the write.\n  2. If the write is queued, responds with an HTTP `204` status code.\n  3. Handles the write asynchronously and reaches eventual consistency.\n\n  An HTTP `2xx` status code acknowledges that the write or delete is queued.\n  To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\n  wait for a response before you send the next request.\n\n  Because writes are asynchronous, data might not yet be written\n  when you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the write synchronously,\n  and then responds with success or failure.\n- If all points were written successfully, returns `204`,\n  otherwise returns the first line that failed.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
@@ -1769,8 +1766,7 @@
       "post": {
         "operationId": "PostDelete",
         "tags": [
-          "Data I/O endpoints",
-          "Delete"
+          "Data I/O endpoints"
         ],
         "summary": "Delete data",
         "description": "Deletes data from a bucket.\n\nUse this endpoint to delete points from a bucket in a specified time range.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n\n  1. Validates the request and queues the delete.\n  2. Returns _success_ if queued; _error_ otherwise.\n  3. Handles the delete asynchronously.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\n  and then responds with success or failure.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n- Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)\n  and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).\n",
@@ -3137,7 +3133,7 @@
       "post": {
         "operationId": "PostQueryAst",
         "tags": [
-          "Query"
+          "Data I/O endpoints"
         ],
         "summary": "Generate a query Abstract Syntax Tree (AST)",
         "description": "Analyzes a Flux query and returns a complete package source [Abstract Syntax\nTree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)\nfor the query.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\nA Flux query AST provides a semantic, tree-like representation with contextual\ninformation about the query. The AST illustrates how the query is distributed\ninto different components for execution.\n\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following query has correct syntax, but contains an incorrect `from()` property key:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
@@ -3701,7 +3697,7 @@
       "get": {
         "operationId": "GetQuerySuggestions",
         "tags": [
-          "Query"
+          "Data I/O endpoints"
         ],
         "summary": "Retrieve query suggestions",
         "parameters": [
@@ -3737,7 +3733,7 @@
       "get": {
         "operationId": "GetQuerySuggestionsName",
         "tags": [
-          "Query"
+          "Data I/O endpoints"
         ],
         "summary": "Retrieve query suggestions for a branching suggestion",
         "parameters": [
@@ -3782,7 +3778,7 @@
       "post": {
         "operationId": "PostQueryAnalyze",
         "tags": [
-          "Query"
+          "Data I/O endpoints"
         ],
         "summary": "Analyze a Flux query",
         "description": "Analyzes a [Flux query](https://docs.influxdata.com/flux/v0.x/) for syntax\nerrors and returns the list of errors.\n\nIn the following example `Query` object, `query` is missing a `from()` property key:\n\n    ```json\n    { \"query\": \"from(: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n      \"type\": \"flux\"\n    }\n    ```\n\nPassing this to `/api/v2/analyze` returns an `errors` list that contains an error object for the missing key.\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n  - The following query has correct syntax, but contains an incorrect `from()` property key:\n\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n      \"type\": \"flux\"\n    }\n    ```\n\n    Passing this to `/api/v2/analyze` returns an empty `errors` list.\n",
@@ -3922,8 +3918,7 @@
       "post": {
         "operationId": "PostQuery",
         "tags": [
-          "Data I/O endpoints",
-          "Query"
+          "Data I/O endpoints"
         ],
         "summary": "Query data",
         "description": "Retrieves data from buckets.\n\nUse this endpoint to send a Flux query request and retrieve data from a bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`read` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/).\n- [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)\n",
@@ -4804,7 +4799,6 @@
       "get": {
         "operationId": "GetOrgs",
         "tags": [
-          "Organizations",
           "Security and access endpoints"
         ],
         "summary": "List all organizations",
@@ -4872,7 +4866,7 @@
       "post": {
         "operationId": "PostOrgs",
         "tags": [
-          "Organizations"
+          "Security and access endpoints"
         ],
         "summary": "Create an organization",
         "parameters": [
@@ -4919,7 +4913,6 @@
       "get": {
         "operationId": "GetOrgsID",
         "tags": [
-          "Organizations",
           "Security and access endpoints"
         ],
         "summary": "Retrieve an organization",
@@ -4963,7 +4956,7 @@
       "patch": {
         "operationId": "PatchOrgsID",
         "tags": [
-          "Organizations"
+          "Security and access endpoints"
         ],
         "summary": "Update an organization",
         "requestBody": {
@@ -5017,7 +5010,7 @@
       "delete": {
         "operationId": "DeleteOrgsID",
         "tags": [
-          "Organizations"
+          "Security and access endpoints"
         ],
         "summary": "Delete an organization",
         "parameters": [
@@ -5065,7 +5058,6 @@
       "get": {
         "operationId": "GetOrgsIDSecrets",
         "tags": [
-          "Secrets",
           "Security and access endpoints"
         ],
         "summary": "List all secret keys for an organization",
@@ -5109,7 +5101,7 @@
       "patch": {
         "operationId": "PatchOrgsIDSecrets",
         "tags": [
-          "Secrets"
+          "Security and access endpoints"
         ],
         "summary": "Update secrets in an organization",
         "parameters": [
@@ -5158,7 +5150,6 @@
       "get": {
         "operationId": "GetOrgsIDMembers",
         "tags": [
-          "Organizations",
           "Security and access endpoints"
         ],
         "summary": "List all members of an organization",
@@ -5212,7 +5203,7 @@
       "post": {
         "operationId": "PostOrgsIDMembers",
         "tags": [
-          "Organizations"
+          "Security and access endpoints"
         ],
         "summary": "Add a member to an organization",
         "parameters": [
@@ -5268,7 +5259,6 @@
       "delete": {
         "operationId": "DeleteOrgsIDMembersID",
         "tags": [
-          "Organizations",
           "Security and access endpoints"
         ],
         "summary": "Remove a member from an organization",
@@ -5316,7 +5306,6 @@
       "get": {
         "operationId": "GetOrgsIDOwners",
         "tags": [
-          "Organizations",
           "Security and access endpoints"
         ],
         "summary": "List all owners of an organization",
@@ -5370,7 +5359,7 @@
       "post": {
         "operationId": "PostOrgsIDOwners",
         "tags": [
-          "Organizations"
+          "Security and access endpoints"
         ],
         "summary": "Add an owner to an organization",
         "parameters": [
@@ -5426,7 +5415,6 @@
       "delete": {
         "operationId": "DeleteOrgsIDOwnersID",
         "tags": [
-          "Organizations",
           "Security and access endpoints"
         ],
         "summary": "Remove an owner from an organization",
@@ -5475,7 +5463,6 @@
         "deprecated": true,
         "operationId": "PostOrgsIDSecrets",
         "tags": [
-          "Secrets",
           "Security and access endpoints"
         ],
         "summary": "Delete secrets from an organization",
@@ -5525,7 +5512,6 @@
       "delete": {
         "operationId": "DeleteOrgsIDSecretsID",
         "tags": [
-          "Secrets",
           "Security and access endpoints"
         ],
         "summary": "Delete a secret from an organization",
@@ -5567,7 +5553,6 @@
       "get": {
         "operationId": "GetResources",
         "tags": [
-          "Resources",
           "System information endpoints"
         ],
         "summary": "List all known resources",
@@ -6092,7 +6077,7 @@
       "get": {
         "operationId": "GetTasksIDRuns",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "List runs for a task",
         "parameters": [
@@ -6172,8 +6157,7 @@
       "post": {
         "operationId": "PostTasksIDRuns",
         "tags": [
-          "Data I/O endpoints",
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Manually start a task run, overriding the current schedule",
         "parameters": [
@@ -6226,7 +6210,7 @@
       "get": {
         "operationId": "GetTasksIDRunsID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Retrieve a run for a task.",
         "description": "Retrieves a specific run for a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint to retrieve detail and logs for a specific task run.\n",
@@ -6316,7 +6300,7 @@
       "delete": {
         "operationId": "DeleteTasksIDRunsID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Cancel a running task",
         "description": "Cancels a running [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint with InfluxDB OSS to cancel a running task.\n\n#### InfluxDB Cloud\n\n  - Doesn't support this operation.\n",
@@ -6379,7 +6363,7 @@
       "post": {
         "operationId": "PostTasksIDRunsIDRetry",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Retry a task run",
         "requestBody": {
@@ -6442,7 +6426,7 @@
       "get": {
         "operationId": "GetTasksIDLogs",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Retrieve all logs for a task",
         "description": "Retrieves a list of all logs for a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nWhen an InfluxDB task runs, a “run” record is created in the task’s history.\nLogs associated with each run provide relevant log messages, timestamps, and the exit status of the run attempt.\n\nUse this endpoint to retrieve only the log events for a task,\nwithout additional task metadata.\n",
@@ -6534,7 +6518,7 @@
       "get": {
         "operationId": "GetTasksIDRunsIDLogs",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Retrieve all logs for a run",
         "parameters": [
@@ -6588,7 +6572,7 @@
       "get": {
         "operationId": "GetTasksIDLabels",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "List labels for a task",
         "description": "Retrieves a list of all labels for a task.\n\nLabels may be used for grouping and filtering tasks.\n",
@@ -6637,7 +6621,7 @@
       "post": {
         "operationId": "PostTasksIDLabels",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Add a label to a task",
         "description": "Adds a label to a task.\n\nUse this endpoint to add a label that you can use to filter tasks in the InfluxDB UI.\n",
@@ -6699,7 +6683,7 @@
       "delete": {
         "operationId": "DeleteTasksIDLabelsID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Delete a label from a task",
         "description": "Deletes a label from a task.\n",
@@ -6872,7 +6856,7 @@
       "get": {
         "operationId": "GetTasksIDMembers",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "List all task members",
         "parameters": [
@@ -6915,7 +6899,7 @@
       "post": {
         "operationId": "PostTasksIDMembers",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Add a member to a task",
         "parameters": [
@@ -6971,7 +6955,7 @@
       "delete": {
         "operationId": "DeleteTasksIDMembersID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Remove a member from a task",
         "parameters": [
@@ -7018,7 +7002,7 @@
       "get": {
         "operationId": "GetTasksIDOwners",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "List all owners of a task",
         "parameters": [
@@ -7061,7 +7045,7 @@
       "post": {
         "operationId": "PostTasksIDOwners",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Add an owner to a task",
         "parameters": [
@@ -7117,7 +7101,7 @@
       "delete": {
         "operationId": "DeleteTasksIDOwnersID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Remove an owner from a task",
         "parameters": [
@@ -7164,8 +7148,7 @@
       "post": {
         "operationId": "PostUsersIDPassword",
         "tags": [
-          "Security and access endpoints",
-          "Users"
+          "Security and access endpoints"
         ],
         "summary": "Update a password",
         "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud does not support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
@@ -8769,7 +8752,7 @@
       "get": {
         "operationId": "GetUsers",
         "tags": [
-          "Users"
+          "Security and access endpoints"
         ],
         "summary": "List all users",
         "parameters": [
@@ -8797,7 +8780,7 @@
       "post": {
         "operationId": "PostUsers",
         "tags": [
-          "Users"
+          "Security and access endpoints"
         ],
         "summary": "Create a user",
         "parameters": [
@@ -8838,7 +8821,7 @@
       "get": {
         "operationId": "GetUsersID",
         "tags": [
-          "Users"
+          "Security and access endpoints"
         ],
         "summary": "Retrieve a user",
         "parameters": [
@@ -8875,7 +8858,7 @@
       "patch": {
         "operationId": "PatchUsersID",
         "tags": [
-          "Users"
+          "Security and access endpoints"
         ],
         "summary": "Update a user",
         "requestBody": {
@@ -8923,7 +8906,7 @@
       "delete": {
         "operationId": "DeleteUsersID",
         "tags": [
-          "Users"
+          "Security and access endpoints"
         ],
         "summary": "Delete a user",
         "parameters": [
@@ -9059,7 +9042,7 @@
       "get": {
         "operationId": "GetAuthorizations",
         "tags": [
-          "Authorizations"
+          "Security and access endpoints"
         ],
         "summary": "List all authorizations",
         "parameters": [
@@ -9127,7 +9110,7 @@
       "post": {
         "operationId": "PostAuthorizations",
         "tags": [
-          "Authorizations"
+          "Security and access endpoints"
         ],
         "summary": "Create an authorization",
         "parameters": [
@@ -9172,7 +9155,7 @@
       "get": {
         "operationId": "GetAuthorizationsID",
         "tags": [
-          "Authorizations"
+          "Security and access endpoints"
         ],
         "summary": "Retrieve an authorization",
         "parameters": [
@@ -9209,7 +9192,7 @@
       "patch": {
         "operationId": "PatchAuthorizationsID",
         "tags": [
-          "Authorizations"
+          "Security and access endpoints"
         ],
         "summary": "Update authorization status",
         "description": "Update an authorization's status to `active` or `inactive`.",
@@ -9258,7 +9241,7 @@
       "delete": {
         "operationId": "DeleteAuthorizationsID",
         "tags": [
-          "Authorizations"
+          "Security and access endpoints"
         ],
         "summary": "Delete an authorization",
         "parameters": [
@@ -10161,8 +10144,7 @@
       "get": {
         "operationId": "GetTasks",
         "tags": [
-          "Data I/O endpoints",
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "List all tasks",
         "description": "Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/).\n\nTo limit which tasks are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.\n",
@@ -10313,8 +10295,7 @@
       "post": {
         "operationId": "PostTasks",
         "tags": [
-          "Data I/O endpoints",
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Create a task",
         "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.\n\nUse this endpoint to create a scheduled task that runs a Flux script.\nIn your task, provide one of the following:\n\n  - _`flux`_ property with an inline Flux script\n  - _`scriptID`_ property with an [invokable script](#tag/Invokable-Scripts) ID\n\n#### InfluxDB Cloud\n\n  - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.\n\n#### Related guides\n\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
@@ -10406,8 +10387,7 @@
       "get": {
         "operationId": "GetTasksID",
         "tags": [
-          "Data I/O endpoints",
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Retrieve a task",
         "description": "Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)\nby task ID.\n",
@@ -10456,7 +10436,7 @@
       "patch": {
         "operationId": "PatchTasksID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Update a task",
         "description": "Updates a task and then cancels all scheduled runs of the task.\n\nUse this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).\nOnce InfluxDB applies the update, it cancels all scheduled runs of the task.\n\nTo update a task, pass an object that contains the updated key-value pairs.\nTo activate or inactivate a task, set the `status` property.\n_`\"status\": \"inactive\"`_ cancels scheduled runs and prevents manual runs of the task.\n",
@@ -10516,7 +10496,7 @@
       "delete": {
         "operationId": "DeleteTasksID",
         "tags": [
-          "Tasks"
+          "Data I/O endpoints"
         ],
         "summary": "Delete a task",
         "description": "Deletes a task and associated records.\n\nUse this endpoint to delete a task and all associated records (task runs, logs, and labels).\nOnce the task is deleted, InfluxDB cancels all scheduled runs of the task.\n\nIf you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).\n",
