@@ -9,6 +9,7 @@ post:
     `params` key-values sent in the request body--for example:
 
     The following invokable scripts contains the parameter `mybucket`:
+
     ```json
     "script": "from(bucket: params.mybucket)
                 |> range(start: -7d)
@@ -16,6 +17,7 @@ post:
     ```
     The request body to invoke this script should contain a JSON object with
     key-value pairs such as:
+
     ```json
     {
       "params": {
@@ -25,7 +27,7 @@ post:
     ```
 
     #### Related Guides
-    -[Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+    - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
   parameters:
     - in: path
       name: scriptID
@@ -42,12 +44,14 @@ post:
           $ref: '../schemas/ScriptInvocationParams.yml'
   responses:
     '200':
-      description: The result of the script execution.
+      description: |
+        Success.
+        The result of the script execution.
       content:
-        application/json:
+        text/csv:
           schema:
             $ref: '../schemas/ScriptHTTPResponseData.yml'
-          example:
+          examples:
             $ref: '../schemas/ScriptInvokeResponse.yml'
     '400':
       description: |
@@ -70,6 +74,8 @@ post:
                 "code": "invalid",
                 "message": "invalid parameters provided"
               }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
     '404':
       description: |
         Not found.
@@ -99,10 +105,24 @@ post:
                 "code": "not found",
                 "message": "failed to initialize execute state: could not find bucket \"test-bucket\""
               }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      $ref: '../../../common/responses/ServerError.yml'
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
   x-codeSamples:
     - lang: Shell
       label: cUrl
       source: |
+        curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \
+                  --header "Authorization: Token INFLUX_TOKEN" \
+                  --header 'Accept: application/csv' \
+                  --header 'Content-Type: application/json' \
+                  --data '{
+                    "params": {
+                        "mybucket": "air_sensor"
+                        }
+                    }'

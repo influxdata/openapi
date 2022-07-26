@@ -10808,9 +10808,71 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Bad request.
+        "401":
+          content:
+            application/json:
+              examples:
+                tokenNotAuthorized:
+                  summary: Token is not authorized to access a resource
+                  value:
+                    code: unauthorized
+                    message: unauthorized access
+              schema:
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    enum:
+                    - internal error
+                    - not found
+                    - conflict
+                    - invalid
+                    - unprocessable entity
+                    - empty value
+                    - unavailable
+                    - forbidden
+                    - too many requests
+                    - unauthorized
+                    - method not allowed
+                    - request too large
+                    - unsupported media type
+                    readOnly: true
+                    type: string
+                  err:
+                    description: Stack of errors that occurred during processing of
+                      the request. Useful for debugging.
+                    readOnly: true
+                    type: string
+                  message:
+                    description: Human-readable message.
+                    readOnly: true
+                    type: string
+                  op:
+                    description: Describes the logical code operation when the error
+                      occurred. Useful for debugging.
+                    readOnly: true
+                    type: string
+                required:
+                - code
+          description: |
+            Unauthorized. The error may indicate one of the following:
+
+              * The `Authorization: Token` header is missing or malformed.
+              * The API token value is missing from the header.
+              * The token does not have sufficient permissions to write to this organization and bucket.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1scripts/get/responses/401/content/application~1json/schema'
+          description: |
+            Internal server error.
+            The server encountered an unexpected situation.
         default:
-          $ref: '#/components/responses/ServerError'
-          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error.
       summary: List scripts
       tags:
       - Data I/O endpoints
@@ -10887,6 +10949,8 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Bad request.
+        "401":
+          $ref: '#/paths/~1scripts/get/responses/401'
         "422":
           content:
             application/json:
@@ -10901,9 +10965,14 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Unprocessable entity.
+        "500":
+          $ref: '#/paths/~1scripts/get/responses/500'
         default:
-          $ref: '#/components/responses/ServerError'
-          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error.
       summary: Create a script
       tags:
       - Invokable Scripts
@@ -10999,14 +11068,30 @@ paths:
       - Invokable Scripts
   /api/v2/scripts/{scriptID}/invoke:
     post:
-      description: "Invokes a script and substitutes `params` keys referenced in the
-        script with\n`params` key-values sent in the request body--for example:\n\nThe
-        following invokable scripts contains the parameter `mybucket`:\n```json\n\"script\":
-        \"from(bucket: params.mybucket)\n            |> range(start: -7d)\n            |>
-        limit(n:1)\"\n```\nThe request body to invoke this script should contain a
-        JSON object with \nkey-value pairs such as:\n```json\n{\n  \"params\": {\n
-        \   \"mybucket\": \"air_sensor\"\n  }\n}\n```\n\n#### Related Guides\n-[Invoke
-        custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)\n"
+      description: |
+        Invokes a script and substitutes `params` keys referenced in the script with
+        `params` key-values sent in the request body--for example:
+
+        The following invokable scripts contains the parameter `mybucket`:
+
+        ```json
+        "script": "from(bucket: params.mybucket)
+                    |> range(start: -7d)
+                    |> limit(n:1)"
+        ```
+        The request body to invoke this script should contain a JSON object with
+        key-value pairs such as:
+
+        ```json
+        {
+          "params": {
+            "mybucket": "air_sensor"
+          }
+        }
+        ```
+
+        #### Related Guides
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: PostScriptsIDInvoke
       parameters:
       - description: |
@@ -11025,15 +11110,18 @@ paths:
       responses:
         "200":
           content:
-            application/json:
-              example:
+            text/csv:
+              examples:
                 successResponse:
+                  type: string
                   value: |
                     ,result,table,_start,_stop,_time,_value,_field,_measurement,host
                     ,_result,0,2019-10-30T01:28:02.52716421Z,2022-07-26T01:28:02.52716421Z,2020-01-01T00:00:00Z,72.01,used_percent,mem,host2
               schema:
                 $ref: '#/components/schemas/ScriptHTTPResponseData'
-          description: The result of the script execution.
+          description: |
+            Success.
+            The result of the script execution.
         "400":
           content:
             application/json:
@@ -11054,6 +11142,8 @@ paths:
               schema:
                 example: invalid
                 type: string
+        "401":
+          $ref: '#/paths/~1scripts/get/responses/401'
         "404":
           content:
             application/json:
@@ -11082,9 +11172,14 @@ paths:
               schema:
                 example: not found
                 type: string
+        "500":
+          $ref: '#/paths/~1scripts/get/responses/500'
         default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error.
       summary: Invoke a script
       tags:
       - Data I/O endpoints
@@ -11092,7 +11187,16 @@ paths:
       x-codeSamples:
       - label: cUrl
         lang: Shell
-        source: ""
+        source: |
+          curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \
+                    --header "Authorization: Token INFLUX_TOKEN" \
+                    --header 'Accept: application/csv' \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                      "params": {
+                          "mybucket": "air_sensor"
+                          }
+                      }'
   /api/v2/setup:
     get:
       description: Check if setup is allowed. Returns `true` if no default user, organization,

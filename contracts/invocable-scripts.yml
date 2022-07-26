@@ -107,9 +107,69 @@ paths:
                     code: 3
                     message: 'parsing field "limit": strconv.ParseUint: parsing "-1": invalid syntax'
                     details: []
+        '401':
+          description: |
+            Unauthorized. The error may indicate one of the following:
+
+              * The `Authorization: Token` header is missing or malformed.
+              * The API token value is missing from the header.
+              * The token does not have sufficient permissions to write to this organization and bucket.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - unprocessable entity
+                      - empty value
+                      - unavailable
+                      - forbidden
+                      - too many requests
+                      - unauthorized
+                      - method not allowed
+                      - request too large
+                      - unsupported media type
+                  message:
+                    readOnly: true
+                    description: Human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: Describes the logical code operation when the error occurred. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                required:
+                  - code
+              examples:
+                tokenNotAuthorized:
+                  summary: Token is not authorized to access a resource
+                  value:
+                    code: unauthorized
+                    message: unauthorized access
+        '500':
+          description: |
+            Internal server error.
+            The server encountered an unexpected situation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1scripts/get/responses/401/content/application~1json/schema'
         default:
-          description: Internal server error.
-          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
           label: cUrl
@@ -183,6 +243,8 @@ paths:
                     code: invalid
                     message: 'invalid character '','' looking for beginning of value'
                     details: []
+        '401':
+          $ref: '#/paths/~1scripts/get/responses/401'
         '422':
           description: |
             Unprocessable entity.
@@ -197,9 +259,14 @@ paths:
                   value:
                     code: conflict
                     message: uniqueness violation
+        '500':
+          $ref: '#/paths/~1scripts/get/responses/500'
         default:
-          description: Internal Server Error
-          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
           label: cURL
@@ -302,13 +369,15 @@ paths:
         `params` key-values sent in the request body--for example:
 
         The following invokable scripts contains the parameter `mybucket`:
+
         ```json
         "script": "from(bucket: params.mybucket)
                     |> range(start: -7d)
                     |> limit(n:1)"
         ```
-        The request body to invoke this script should contain a JSON object with 
+        The request body to invoke this script should contain a JSON object with
         key-value pairs such as:
+
         ```json
         {
           "params": {
@@ -318,7 +387,7 @@ paths:
         ```
 
         #### Related Guides
-        -[Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       parameters:
         - in: path
           name: scriptID
@@ -335,13 +404,16 @@ paths:
               $ref: '#/components/schemas/ScriptInvocationParams'
       responses:
         '200':
-          description: The result of the script execution.
+          description: |
+            Success.
+            The result of the script execution.
           content:
-            application/json:
+            text/csv:
               schema:
                 $ref: '#/components/schemas/ScriptHTTPResponseData'
-              example:
+              examples:
                 successResponse:
+                  type: string
                   value: |
                     ,result,table,_start,_stop,_time,_value,_field,_measurement,host
                     ,_result,0,2019-10-30T01:28:02.52716421Z,2022-07-26T01:28:02.52716421Z,2020-01-01T00:00:00Z,72.01,used_percent,mem,host2
@@ -365,6 +437,8 @@ paths:
                   value:
                     code: invalid
                     message: invalid parameters provided
+        '401':
+          $ref: '#/paths/~1scripts/get/responses/401'
         '404':
           description: |
             Not found.
@@ -392,13 +466,27 @@ paths:
                   value:
                     code: not found
                     message: 'failed to initialize execute state: could not find bucket "test-bucket"'
+        '500':
+          $ref: '#/paths/~1scripts/get/responses/500'
         default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
           label: cUrl
-          source: ''
+          source: |
+            curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \
+                      --header "Authorization: Token INFLUX_TOKEN" \
+                      --header 'Accept: application/csv' \
+                      --header 'Content-Type: application/json' \
+                      --data '{
+                        "params": {
+                            "mybucket": "air_sensor"
+                            }
+                        }'
 components:
   responses:
     ServerError:
