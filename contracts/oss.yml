@@ -2350,12 +2350,12 @@ paths:
           label: cURL
           source: |
             curl --request POST 'INFLUX_URL/api/v2/query/ast' \
-            --header 'Content-Type: application/json' \
-            --header 'Accept: application/json \
-            --header 'Authorization: Token INFLUX_TOKEN' \
-            --data 'from(bucket: "example-bucket")
-                      |> range(start: -5m)
-                      |> filter(fn: (r) => r._measurement == "example-measurement")'
+              --header 'Content-Type: application/json' \
+              --header 'Accept: application/json \
+              --header 'Authorization: Token INFLUX_TOKEN' \
+              --data 'from(bucket: "example-bucket")
+                        |> range(start: -5m)
+                        |> filter(fn: (r) => r._measurement == "example-measurement")'
       responses:
         '200':
           description: |
@@ -2727,22 +2727,661 @@ paths:
       operationId: GetQuerySuggestions
       tags:
         - Query
-      summary: Retrieve query suggestions
+      summary: Retrieve Flux query suggestions
+      description: |
+        Retrieves a list of Flux query suggestions. Each suggestion contains a
+        [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
+        name and parameters.
+
+        Use this endpoint to retrieve a list of Flux query suggestions used in the
+        InfluxDB Flux Query Builder. Helper function names have an underscore (`_`)
+        prefix and aren't meant to be used directly in queries--for example:
+
+        - **Recommended**:  Use `top(n, columns=["_value"], tables=<-)` to sort
+          on a column and keep the top n records instead of `_sortLimit_`.
+          `top` uses the `_sortLimit` helper function.
+
+        #### Limitations
+
+        - Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL
+        will result in a HTTP `301 Moved Permanently` status code. Please use
+        `/api/v2/query/suggestions` without a trailing slash.
+
+        - When writing a query, avoid using `_functionName()` helper functions
+        exposed by this endpoint.
+
+        #### Related Guides
+
+        - [List of all Flux functions](https://docs.influxdata.com/influxdb/v2.3/flux/v0.x/stdlib/all-functions/).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
         '200':
-          description: Suggestions for next functions in call chain
+          description: |
+            Success.
+            The response body contains a list of Flux query suggestions--function
+            names used in the Flux Query Builder autocomplete suggestions.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FluxSuggestions'
+              examples:
+                successResponse:
+                  value:
+                    funcs:
+                      - name: _fillEmpty
+                        params:
+                          createEmpty: bool
+                          tables: stream
+                      - name: _highestOrLowest
+                        params:
+                          _sortLimit: function
+                          column: invalid
+                          groupColumns: array
+                          'n': invalid
+                          reducer: function
+                          tables: stream
+                      - name: _hourSelection
+                        params:
+                          location: object
+                          start: int
+                          stop: int
+                          tables: stream
+                          timeColumn: string
+                      - name: _sortLimit
+                        params:
+                          columns: array
+                          desc: bool
+                          'n': int
+                          tables: stream
+                      - name: _window
+                        params:
+                          createEmpty: bool
+                          every: duration
+                          location: object
+                          offset: duration
+                          period: duration
+                          startColumn: string
+                          stopColumn: string
+                          tables: stream
+                          timeColumn: string
+                      - name: aggregateWindow
+                        params:
+                          column: invalid
+                          createEmpty: bool
+                          every: duration
+                          fn: function
+                          location: object
+                          offset: duration
+                          period: duration
+                          tables: stream
+                          timeDst: string
+                          timeSrc: string
+                      - name: bool
+                        params:
+                          v: invalid
+                      - name: bottom
+                        params:
+                          columns: array
+                          'n': int
+                          tables: stream
+                      - name: buckets
+                        params:
+                          host: string
+                          org: string
+                          orgID: string
+                          token: string
+                      - name: bytes
+                        params:
+                          v: invalid
+                      - name: cardinality
+                        params:
+                          bucket: string
+                          bucketID: string
+                          host: string
+                          org: string
+                          orgID: string
+                          predicate: function
+                          start: invalid
+                          stop: invalid
+                          token: string
+                      - name: chandeMomentumOscillator
+                        params:
+                          columns: array
+                          'n': int
+                          tables: stream
+                      - name: columns
+                        params:
+                          column: string
+                          tables: stream
+                      - name: contains
+                        params:
+                          set: array
+                          value: invalid
+                      - name: count
+                        params:
+                          column: string
+                          tables: stream
+                      - name: cov
+                        params:
+                          'on': array
+                          pearsonr: bool
+                          x: invalid
+                          'y': invalid
+                      - name: covariance
+                        params:
+                          columns: array
+                          pearsonr: bool
+                          tables: stream
+                          valueDst: string
+                      - name: cumulativeSum
+                        params:
+                          columns: array
+                          tables: stream
+                      - name: derivative
+                        params:
+                          columns: array
+                          initialZero: bool
+                          nonNegative: bool
+                          tables: stream
+                          timeColumn: string
+                          unit: duration
+                      - name: die
+                        params:
+                          msg: string
+                      - name: difference
+                        params:
+                          columns: array
+                          initialZero: bool
+                          keepFirst: bool
+                          nonNegative: bool
+                          tables: stream
+                      - name: display
+                        params:
+                          v: invalid
+                      - name: distinct
+                        params:
+                          column: string
+                          tables: stream
+                      - name: doubleEMA
+                        params:
+                          'n': int
+                          tables: stream
+                      - name: drop
+                        params:
+                          columns: array
+                          fn: function
+                          tables: stream
+                      - name: duplicate
+                        params:
+                          as: string
+                          column: string
+                          tables: stream
+                      - name: duration
+                        params:
+                          v: invalid
+                      - name: elapsed
+                        params:
+                          columnName: string
+                          tables: stream
+                          timeColumn: string
+                          unit: duration
+                      - name: exponentialMovingAverage
+                        params:
+                          'n': int
+                          tables: stream
+                      - name: fill
+                        params:
+                          column: string
+                          tables: stream
+                          usePrevious: bool
+                          value: invalid
+                      - name: filter
+                        params:
+                          fn: function
+                          onEmpty: string
+                          tables: stream
+                      - name: findColumn
+                        params:
+                          column: string
+                          fn: function
+                          tables: stream
+                      - name: findRecord
+                        params:
+                          fn: function
+                          idx: int
+                          tables: stream
+                      - name: first
+                        params:
+                          column: string
+                          tables: stream
+                      - name: float
+                        params:
+                          v: invalid
+                      - name: from
+                        params:
+                          bucket: string
+                          bucketID: string
+                          host: string
+                          org: string
+                          orgID: string
+                          token: string
+                      - name: getColumn
+                        params:
+                          column: string
+                      - name: getRecord
+                        params:
+                          idx: int
+                      - name: group
+                        params:
+                          columns: array
+                          mode: string
+                          tables: stream
+                      - name: highestAverage
+                        params:
+                          column: string
+                          groupColumns: array
+                          'n': int
+                          tables: stream
+                      - name: highestCurrent
+                        params:
+                          column: string
+                          groupColumns: array
+                          'n': int
+                          tables: stream
+                      - name: highestMax
+                        params:
+                          column: string
+                          groupColumns: array
+                          'n': int
+                          tables: stream
+                      - name: histogram
+                        params:
+                          bins: array
+                          column: string
+                          countColumn: string
+                          normalize: bool
+                          tables: stream
+                          upperBoundColumn: string
+                      - name: histogramQuantile
+                        params:
+                          countColumn: string
+                          minValue: float
+                          quantile: float
+                          tables: stream
+                          upperBoundColumn: string
+                          valueColumn: string
+                      - name: holtWinters
+                        params:
+                          column: string
+                          interval: duration
+                          'n': int
+                          seasonality: int
+                          tables: stream
+                          timeColumn: string
+                          withFit: bool
+                      - name: hourSelection
+                        params:
+                          location: object
+                          start: int
+                          stop: int
+                          tables: stream
+                          timeColumn: string
+                      - name: increase
+                        params:
+                          columns: array
+                          tables: stream
+                      - name: int
+                        params:
+                          v: invalid
+                      - name: integral
+                        params:
+                          column: string
+                          interpolate: string
+                          tables: stream
+                          timeColumn: string
+                          unit: duration
+                      - name: join
+                        params:
+                          method: string
+                          'on': array
+                          tables: invalid
+                      - name: kaufmansAMA
+                        params:
+                          column: string
+                          'n': int
+                          tables: stream
+                      - name: kaufmansER
+                        params:
+                          'n': int
+                          tables: stream
+                      - name: keep
+                        params:
+                          columns: array
+                          fn: function
+                          tables: stream
+                      - name: keyValues
+                        params:
+                          keyColumns: array
+                          tables: stream
+                      - name: keys
+                        params:
+                          column: string
+                          tables: stream
+                      - name: last
+                        params:
+                          column: string
+                          tables: stream
+                      - name: length
+                        params:
+                          arr: array
+                      - name: limit
+                        params:
+                          'n': int
+                          offset: int
+                          tables: stream
+                      - name: linearBins
+                        params:
+                          count: int
+                          infinity: bool
+                          start: float
+                          width: float
+                      - name: logarithmicBins
+                        params:
+                          count: int
+                          factor: float
+                          infinity: bool
+                          start: float
+                      - name: lowestAverage
+                        params:
+                          column: string
+                          groupColumns: array
+                          'n': int
+                          tables: stream
+                      - name: lowestCurrent
+                        params:
+                          column: string
+                          groupColumns: array
+                          'n': int
+                          tables: stream
+                      - name: lowestMin
+                        params:
+                          column: string
+                          groupColumns: array
+                          'n': int
+                          tables: stream
+                      - name: map
+                        params:
+                          fn: function
+                          mergeKey: bool
+                          tables: stream
+                      - name: max
+                        params:
+                          column: string
+                          tables: stream
+                      - name: mean
+                        params:
+                          column: string
+                          tables: stream
+                      - name: median
+                        params:
+                          column: string
+                          compression: float
+                          method: string
+                          tables: stream
+                      - name: min
+                        params:
+                          column: string
+                          tables: stream
+                      - name: mode
+                        params:
+                          column: string
+                          tables: stream
+                      - name: movingAverage
+                        params:
+                          'n': int
+                          tables: stream
+                      - name: now
+                        params: {}
+                      - name: pearsonr
+                        params:
+                          'on': array
+                          x: invalid
+                          'y': invalid
+                      - name: pivot
+                        params:
+                          columnKey: array
+                          rowKey: array
+                          tables: stream
+                          valueColumn: string
+                      - name: quantile
+                        params:
+                          column: string
+                          compression: float
+                          method: string
+                          q: float
+                          tables: stream
+                      - name: range
+                        params:
+                          start: invalid
+                          stop: invalid
+                          tables: stream
+                      - name: reduce
+                        params:
+                          fn: function
+                          identity: invalid
+                          tables: stream
+                      - name: relativeStrengthIndex
+                        params:
+                          columns: array
+                          'n': int
+                          tables: stream
+                      - name: rename
+                        params:
+                          columns: invalid
+                          fn: function
+                          tables: stream
+                      - name: sample
+                        params:
+                          column: string
+                          'n': int
+                          pos: int
+                          tables: stream
+                      - name: set
+                        params:
+                          key: string
+                          tables: stream
+                          value: string
+                      - name: skew
+                        params:
+                          column: string
+                          tables: stream
+                      - name: sort
+                        params:
+                          columns: array
+                          desc: bool
+                          tables: stream
+                      - name: spread
+                        params:
+                          column: string
+                          tables: stream
+                      - name: stateCount
+                        params:
+                          column: string
+                          fn: function
+                          tables: stream
+                      - name: stateDuration
+                        params:
+                          column: string
+                          fn: function
+                          tables: stream
+                          timeColumn: string
+                          unit: duration
+                      - name: stateTracking
+                        params:
+                          countColumn: string
+                          durationColumn: string
+                          durationUnit: duration
+                          fn: function
+                          tables: stream
+                          timeColumn: string
+                      - name: stddev
+                        params:
+                          column: string
+                          mode: string
+                          tables: stream
+                      - name: string
+                        params:
+                          v: invalid
+                      - name: sum
+                        params:
+                          column: string
+                          tables: stream
+                      - name: tableFind
+                        params:
+                          fn: function
+                          tables: stream
+                      - name: tail
+                        params:
+                          'n': int
+                          offset: int
+                          tables: stream
+                      - name: time
+                        params:
+                          v: invalid
+                      - name: timeShift
+                        params:
+                          columns: array
+                          duration: duration
+                          tables: stream
+                      - name: timeWeightedAvg
+                        params:
+                          tables: stream
+                          unit: duration
+                      - name: timedMovingAverage
+                        params:
+                          column: string
+                          every: duration
+                          period: duration
+                          tables: stream
+                      - name: to
+                        params:
+                          bucket: string
+                          bucketID: string
+                          fieldFn: function
+                          host: string
+                          measurementColumn: string
+                          org: string
+                          orgID: string
+                          tables: stream
+                          tagColumns: array
+                          timeColumn: string
+                          token: string
+                      - name: toBool
+                        params:
+                          tables: stream
+                      - name: toFloat
+                        params:
+                          tables: stream
+                      - name: toInt
+                        params:
+                          tables: stream
+                      - name: toString
+                        params:
+                          tables: stream
+                      - name: toTime
+                        params:
+                          tables: stream
+                      - name: toUInt
+                        params:
+                          tables: stream
+                      - name: today
+                        params: {}
+                      - name: top
+                        params:
+                          columns: array
+                          'n': int
+                          tables: stream
+                      - name: tripleEMA
+                        params:
+                          'n': int
+                          tables: stream
+                      - name: tripleExponentialDerivative
+                        params:
+                          'n': int
+                          tables: stream
+                      - name: truncateTimeColumn
+                        params:
+                          tables: stream
+                          timeColumn: invalid
+                          unit: duration
+                      - name: uint
+                        params:
+                          v: invalid
+                      - name: union
+                        params:
+                          tables: array
+                      - name: unique
+                        params:
+                          column: string
+                          tables: stream
+                      - name: wideTo
+                        params:
+                          bucket: string
+                          bucketID: string
+                          host: string
+                          org: string
+                          orgID: string
+                          tables: stream
+                          token: string
+                      - name: window
+                        params:
+                          createEmpty: bool
+                          every: duration
+                          location: object
+                          offset: duration
+                          period: duration
+                          startColumn: string
+                          stopColumn: string
+                          tables: stream
+                          timeColumn: string
+                      - name: yield
+                        params:
+                          name: string
+                          tables: stream
+        '301':
+          description: |
+            Moved Permanently.
+            InfluxData has moved the URL of the endpoint.
+            Use `/api/v2/query/suggestions`.
+          content:
+            text/html:
+              schema:
+                properties:
+                  body:
+                    readOnly: true
+                    description: Response message with URL of requested resource.
+                    type: string
+              examples:
+                movedPermanently:
+                  summary: Invalid URL
+                  description: |
+                    The URL has been permanently moved. Use `/api/v2/query/suggestions`.
+                  value: |
+                    <a href="/api/v2/query/suggestions?orgID=INFLUX_ORG_ID">Moved Permanently</a>
         default:
-          description: Any response other than 200 is an internal server error
+          description: Internal server error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions" \
+              --header "Accept: application/json" \
+              --header "Authorization: Token INFLUX_TOKEN"
   '/query/suggestions/{name}':
     get:
       operationId: GetQuerySuggestionsName
