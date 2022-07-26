@@ -2,19 +2,72 @@ get:
   operationId: GetQuerySuggestions
   tags:
     - Query
-  summary: Retrieve query suggestions
+  summary: Retrieve Flux query suggestions
+  description: |
+    Retrieves a list of Flux query suggestions. Each suggestion contains a
+    [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
+    name and parameters.
+
+    Use this endpoint to retrieve a list of Flux query suggestions used in the
+    InfluxDB Flux Query Builder. Helper function names have an underscore (`_`)
+    prefix and aren't meant to be used directly in queries--for example:
+
+    - **Recommended**:  Use `top(n, columns=["_value"], tables=<-)` to sort
+      on a column and keep the top n records instead of `_sortLimit_`.
+      `top` uses the `_sortLimit` helper function.
+
+    #### Limitations
+
+    - Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL
+    will result in a HTTP `301 Moved Permanently` status code. Please use
+    `/api/v2/query/suggestions` without a trailing slash.
+
+    - When writing a query, avoid using `_functionName()` helper functions
+    exposed by this endpoint.
+
+    #### Related Guides
+
+    - [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/).
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   responses:
     "200":
-      description: Suggestions for next functions in call chain
+      description: |
+        Success.
+        The response body contains a list of Flux query suggestions--function
+        names used in the Flux Query Builder autocomplete suggestions.
       content:
         application/json:
           schema:
             $ref: "../schemas/FluxSuggestions.yml"
+          examples:
+            $ref: "../schemas/QuerySuggestionsSuccessResponse.yml"
+    "301":
+      description: |
+        Moved Permanently.
+        InfluxData has moved the URL of the endpoint.
+        Use `/api/v2/query/suggestions`.
+      content:
+        text/html:
+          schema:
+            $ref: "../schemas/MovedPermanently.yml"
+          examples:
+            movedPermanently:
+              summary: Invalid URL
+              description: |
+                The URL has been permanently moved. Use `/api/v2/query/suggestions`.
+              value : |
+                <a href="/api/v2/query/suggestions?orgID=INFLUX_ORG_ID">Moved Permanently</a>
     default:
-      description: Any response other than 200 is an internal server error
+      description: Internal server error.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions" \
+          --header "Accept: application/json" \
+          --header "Authorization: Token INFLUX_TOKEN"
