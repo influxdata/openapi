@@ -11877,20 +11877,35 @@ paths:
       - Signout
   /api/v2/stacks:
     get:
+      description: |
+        Retrieves a list of installed InfluxDB stacks.
+
+        To limit which stacks are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all stacks up to the default `limit`.
       operationId: ListStacks
       parameters:
-      - description: The organization ID of the stacks
+      - description: |
+          The ID of the organization that owns the stacks.
+          Only returns stacks owned by this organization.
+
+          #### InfluxDB Cloud
+
+          - Doesn't require this parameter; InfluxDB only returns resources that the **API token** can read.
         in: query
         name: orgID
         required: true
         schema:
           type: string
-      - description: A collection of names to filter the list by.
+      - description: |
+          A collection of stack event names.
+          Only returns stacks with events that have one of the names.
         in: query
         name: name
         schema:
           type: string
-      - description: A collection of stackIDs to filter the list by.
+      - description: |
+          A collection of stack IDs.
+          Only returns stacks that have one of the IDs.
         in: query
         name: stackID
         schema:
@@ -11906,14 +11921,43 @@ paths:
                       $ref: '#/components/schemas/Stack'
                     type: array
                 type: object
-          description: Success. Returns the list of stacks.
+          description: Success. The response body contains the list of stacks.
+        "400":
+          content:
+            application/json:
+              examples:
+                orgIdMissing:
+                  summary: The orgID query parameter is missing
+                  value:
+                    code: invalid
+                    message: 'organization id[""] is invalid: id must have a length
+                      of 16 bytes'
+                orgProvidedNotFound:
+                  summary: The org or orgID passed doesn't own the token passed in
+                    the header
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if an incorrect value is passed for `org` or `orgID`.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: List installed templates
+      summary: List installed stacks
       tags:
       - Templates
     post:
@@ -14944,10 +14988,23 @@ tags:
 
     #### Related guides
 
-    - [Get started with tasks](https://docs.influxdata.com/influxdb/cloud/process-data/get-started/)
+    - [Get started with tasks](https://docs.influxdata.com/influxdb/cloud/process-data/get-started/).
     - [Common data processing tasks](https://docs.influxdata.com/influxdb/cloud/process-data/common-tasks/)
     - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
   name: Tasks
+- description: "Create, apply, and manage InfluxDB templates.\n\nInfluxDB templates
+    are prepackaged InfluxDB configurations that contain\neverything from dashboards
+    and Telegraf configurations to notifications and alerts.\nUse InfluxDB templates
+    to quickly set up a fresh instance of InfluxDB,\nback up your dashboard configuration,
+    or share your configuration with the InfluxData community.\n\n**InfluxDB stacks**
+    are stateful InfluxDB templates that let you\nadd, update, and remove templated
+    resources over time, avoid duplicating\nresources when applying the same or similar
+    templates more than once, and\napply changes to distributed instances of InfluxDB
+    OSS or InfluxDB Cloud.\n\nUse the `/api/v2/stacks` endpoints to list and manage
+    templated resources.\n\n#### Related guides\n\n- [InfluxDB stacks](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/stacks/)\n-
+    [InfluxDB templates](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/)
+    \n"
+  name: Templates
 - description: |
     Write time series data to buckets.
   name: Write

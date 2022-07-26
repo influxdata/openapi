@@ -29,7 +29,11 @@
     },
     {
       "name": "Tasks",
-      "description": "Process and analyze your data with tasks in the InfluxDB task engine.\nWith tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.\nIn InfluxDB Cloud, you can create tasks that run [invokable scripts](#tag/Invokable-Scripts)\nwith parameters.\n\nUse the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).\n"
+      "description": "Process and analyze your data with tasks in the InfluxDB task engine.\nWith tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.\nIn InfluxDB Cloud, you can create tasks that run [invokable scripts](#tag/Invokable-Scripts)\nwith parameters.\n\nUse the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/).\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).\n"
+    },
+    {
+      "name": "Templates",
+      "description": "Create, apply, and manage InfluxDB templates.\n\nInfluxDB templates are prepackaged InfluxDB configurations that contain\neverything from dashboards and Telegraf configurations to notifications and alerts.\nUse InfluxDB templates to quickly set up a fresh instance of InfluxDB,\nback up your dashboard configuration, or share your configuration with the InfluxData community.\n\n**InfluxDB stacks** are stateful InfluxDB templates that let you\nadd, update, and remove templated resources over time, avoid duplicating\nresources when applying the same or similar templates more than once, and\napply changes to distributed instances of InfluxDB OSS or InfluxDB Cloud.\n\nUse the `/api/v2/stacks` endpoints to list and manage templated resources.\n\n#### Related guides\n\n- [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)\n- [InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/) \n"
     },
     {
       "name": "Write",
@@ -6594,7 +6598,8 @@
         "tags": [
           "Templates"
         ],
-        "summary": "List installed templates",
+        "summary": "List installed stacks",
+        "description": "Retrieves a list of installed InfluxDB stacks.\n\nTo limit which stacks are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all stacks up to the default `limit`.\n",
         "parameters": [
           {
             "in": "query",
@@ -6603,7 +6608,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The organization ID of the stacks"
+            "description": "The ID of the organization that owns the stacks.\nOnly returns stacks owned by this organization.\n\n#### InfluxDB Cloud\n\n- Doesn't require this parameter; InfluxDB only returns resources that the **API token** can read.\n"
           },
           {
             "in": "query",
@@ -6611,7 +6616,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A collection of names to filter the list by."
+            "description": "A collection of stack event names.\nOnly returns stacks with events that have one of the names.\n"
           },
           {
             "in": "query",
@@ -6619,12 +6624,12 @@
             "schema": {
               "type": "string"
             },
-            "description": "A collection of stackIDs to filter the list by."
+            "description": "A collection of stack IDs.\nOnly returns stacks that have one of the IDs.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success. Returns the list of stacks.",
+            "description": "Success. The response body contains the list of stacks.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6640,6 +6645,38 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if an incorrect value is passed for `org` or `orgID`.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "orgIdMissing": {
+                    "summary": "The orgID query parameter is missing",
+                    "value": {
+                      "code": "invalid",
+                      "message": "organization id[\"\"] is invalid: id must have a length of 16 bytes"
+                    }
+                  },
+                  "orgProvidedNotFound": {
+                    "summary": "The org or orgID passed doesn't own the token passed in the header",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request body: organization not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
