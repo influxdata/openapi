@@ -301,6 +301,9 @@ paths:
       parameters:
         - in: path
           name: scriptID
+          description: |
+            Script ID.
+            Only returns scripts with this ID.
           schema:
             type: string
           required: true
@@ -316,9 +319,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScriptHTTPResponseData'
+              example:
+                successResponse:
+                  value: |
+                    ,result,table,_start,_stop,_time,_value,_field,_measurement,host
+                    ,_result,0,2019-10-30T01:28:02.52716421Z,2022-07-26T01:28:02.52716421Z,2020-01-01T00:00:00Z,72.01,used_percent,mem,host2
+        '400':
+          description: |
+            Bad request.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                type: string
+                example: invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidParameters:
+                  summary: Invalid parameters have been passed into the script.
+                  value:
+                    code: invalid
+                    message: invalid parameters provided
+        '404':
+          description: |
+            Not found.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                type: string
+                example: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                scriptNotFound:
+                  summary: |
+                    The requested script was not found.
+                  value:
+                    code: not found
+                    message: script "09afa3b220fe400" not found
+                bucketNotFound:
+                  summary: |
+                    The requested bucket was not found.
+                  value:
+                    code: not found
+                    message: 'failed to initialize execute state: could not find bucket "test-bucket"'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+      x-codeSamples:
+        - lang: Shell
+          label: cUrl
+          source: ''
 components:
   responses:
     ServerError:
@@ -430,7 +489,9 @@ components:
           description: script is script to be executed
           type: string
     ScriptHTTPResponseData:
-      description: The data sent in the response body when a script is invoked by an HTTP request. User defined and dynamic.
+      description: |
+        The response body contains the results of the executed script.
+        The response returned is user defined and dynamic.
       type: string
       format: binary
     ScriptInvocationParams:
@@ -439,6 +500,10 @@ components:
         params:
           type: object
           additionalProperties: true
+          description: |
+            Script parameters.
+            Provide key-value pairs within this params object for parameters
+            referenced in script.
     ScriptLanguage:
       type: string
       enum:

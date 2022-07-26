@@ -8,6 +8,9 @@ post:
   parameters:
     - in: path
       name: scriptID
+      description: |
+        Script ID.
+        Only returns scripts with this ID.
       schema:
         type: string
       required: true
@@ -23,6 +26,62 @@ post:
         application/json:
           schema:
             $ref: '../schemas/ScriptHTTPResponseData.yml'
+          example:
+            $ref: '../schemas/ScriptInvokeResponse.yml'
+    '400':
+      description: |
+        Bad request.
+      headers:
+        X-Platform-Error-Code:
+          description: |
+            The reason for the error.
+          schema:
+            type: string
+            example: "invalid"
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+          examples:
+            invalidParameters:
+              summary: Invalid parameters have been passed into the script.
+              value: {
+                "code": "invalid",
+                "message": "invalid parameters provided"
+              }
+    '404':
+      description: |
+        Not found.
+      headers:
+        X-Platform-Error-Code:
+          description: |
+            The reason for the error.
+          schema:
+            type: string
+            example: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+          examples:
+            scriptNotFound:
+              summary: |
+                The requested script was not found.
+              value: {
+                "code": "not found",
+                "message": "script \"09afa3b220fe400\" not found"
+              }
+            bucketNotFound:
+              summary: |
+                The requested bucket was not found.
+              value: {
+                "code": "not found",
+                "message": "failed to initialize execute state: could not find bucket \"test-bucket\""
+              }
     default:
       description: Unexpected error
       $ref: '../../../common/responses/ServerError.yml'
+  x-codeSamples:
+    - lang: Shell
+      label: cUrl
+      source: |
