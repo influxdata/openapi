@@ -11393,10 +11393,30 @@ paths:
       - Query
   /api/v2/query/suggestions/{name}:
     get:
+      description: |
+        Retrieves a query suggestion that contains the name and parameters of the
+        requested function.
+
+        Use this endpoint to pass a branching suggestion (a Flux function name) and
+        retrieve the parameters of the requested function.
+
+        #### Limitations
+
+        - Use `/api/v2/query/suggestions/{name}` (without a trailing slash).
+        `/api/v2/query/suggestions/{name}/` (note the trailing slash) results in a
+        HTTP `301 Moved Permanently` status.
+
+        - The function `name` must exist and must be spelled correctly.
+
+        #### Related Guides
+
+        - [List of all Flux functions](https://docs.influxdata.com/influxdb/v2.3/flux/v0.x/stdlib/all-functions/).
       operationId: GetQuerySuggestionsName
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The name of the branching suggestion.
+      - description: |
+          A Flux Function name.
+          Only returns functions with this name.
         in: path
         name: name
         required: true
@@ -11406,18 +11426,44 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    name: sum
+                    params:
+                      column: string
+                      tables: stream
               schema:
                 $ref: '#/components/schemas/FluxSuggestion'
-          description: Suggestions for next functions in call chain
-        default:
+          description: |
+            Success.
+            The response body contains the function name and parameters.
+        "500":
           content:
             application/json:
+              examples:
+                internalError:
+                  description: |
+                    The requested function doesn't exist.
+                  summary: Invalid function
+                  value:
+                    code: internal error
+                    message: An internal error has occurred
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Any response other than 200 is an internal server error
-      summary: Retrieve query suggestions for a branching suggestion
+          description: |
+            Internal server error.
+            The value passed for _`name`_ may have been misspelled.
+      summary: Retrieve a query suggestion for a branching suggestion
       tags:
       - Query
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions/sum/" \
+            --header "Accept: application/json" \
+            --header "Authorization: Token INFLUX_TOKEN"
   /ready:
     get:
       operationId: GetReady
