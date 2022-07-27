@@ -2176,7 +2176,7 @@ paths:
       summary: Generate a query Abstract Syntax Tree (AST)
       description: |
         Analyzes a Flux query and returns a complete package source [Abstract Syntax
-        Tree (AST)](https://https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree)
+        Tree (AST)](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#abstract-syntax-tree-ast)
         for the query.
 
         Use this endpoint for deep query analysis such as debugging unexpected query
@@ -2186,18 +2186,19 @@ paths:
         information about the query. The AST illustrates how the query is distributed
         into different components for execution.
 
-
         #### Limitations
 
         -  The endpoint doesn't validate values in the query--for example:
 
             The following query has correct syntax, but contains an incorrect `from()` property key:
+
             ```json
             { "query": "from(foo: \"iot_center\")\
                         |> range(start: -90d)\
                         |> filter(fn: (r) => r._measurement == \"environment\")"
             }
             ```
+
             Passing this to `/api/v2/query/ast` will return a successful response
             with a generated AST.
       parameters:
@@ -2218,13 +2219,13 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request POST 'INFLUX_URL/api/v2/query/ast' \
-              --header 'Content-Type: application/json' \
-              --header 'Accept: application/json \
-              --header 'Authorization: Token INFLUX_TOKEN' \
-              --data 'from(bucket: "example-bucket")
-                        |> range(start: -5m)
-                        |> filter(fn: (r) => r._measurement == "example-measurement")'
+            curl --request POST 'http://localhost:8086/api/v2/query/ast' \
+            --header 'Content-Type: application/json' \
+            --header 'Accept: application/json' \
+            --header 'Authorization: Token INFLUX_TOKEN' \
+            --data 'from(bucket: "example-bucket")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r._measurement == "example-measurement")'
       responses:
         '200':
           description: |
@@ -3334,7 +3335,7 @@ paths:
         Analyzes a [Flux query](https://docs.influxdata.com/flux/v0.x/) for syntax
         errors and returns the list of errors.
 
-        In the following example `Query` object, `query` is missing a `from()` property key:
+        In the following sample query, `from()` is missing the property key.
 
             ```json
             { "query": "from(: \"iot_center\")\
@@ -3344,13 +3345,14 @@ paths:
             }
             ```
 
-        Passing this to `/api/v2/analyze` returns an `errors` list that contains an error object for the missing key.
+        If you pass this in a request to the `/api/v2/analyze` endpoint,
+        InfluxDB returns an `errors` list that contains an error object for the missing key.
 
         #### Limitations
 
         -  The endpoint doesn't validate values in the query--for example:
 
-          - The following query has correct syntax, but contains an incorrect `from()` property key:
+          - The following sample query has correct syntax, but contains an incorrect `from()` property key:
 
             ```json
             { "query": "from(foo: \"iot_center\")\
@@ -3360,7 +3362,8 @@ paths:
             }
             ```
 
-            Passing this to `/api/v2/analyze` returns an empty `errors` list.
+            If you pass this in a request to the `/api/v2/analyze` endpoint,
+            InfluxDB returns an empty `errors` list.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: header
@@ -3391,7 +3394,7 @@ paths:
                   description: |
                     Returns an error object if the Flux query is missing a property key.
 
-                    The following example is missing the `bucket` property key:
+                    The following sample query is missing the _`bucket`_ property key:
 
                       ```json
                       {
@@ -4876,6 +4879,11 @@ paths:
       tags:
         - Tasks
       summary: List runs for a task
+      description: |
+        Retrieves a list of runs for a [task](https://docs.influxdata.com/influxdb/v2.3/process-data/).
+
+        To limit which task runs are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all task runs up to the default `limit`.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4883,12 +4891,14 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to get runs for.
+          description: |
+            The ID of the task to get runs for.
+            Only returns runs for this task.
         - in: query
           name: after
           schema:
             type: string
-          description: Returns runs after a specific ID.
+          description: A task run ID. Only returns runs created after this run.
         - in: query
           name: limit
           schema:
@@ -4896,38 +4906,47 @@ paths:
             minimum: 1
             maximum: 500
             default: 100
-          description: The number of runs to return
+          description: |
+            Limits the number of task runs returned. Default is `100`.
         - in: query
           name: afterTime
           schema:
             type: string
             format: date-time
-          description: 'Filter runs to those scheduled after this time, RFC3339'
+          description: |
+            A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
+            Only returns runs scheduled after this time.
         - in: query
           name: beforeTime
           schema:
             type: string
             format: date-time
-          description: 'Filter runs to those scheduled before this time, RFC3339'
+          description: |
+            A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
+            Only returns runs scheduled before this time.
       responses:
         '200':
-          description: A list of task runs
+          description: Success. The response body contains the list of task runs.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Runs'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
     post:
       operationId: PostTasksIDRuns
       tags:
         - Data I/O endpoints
         - Tasks
-      summary: 'Manually start a task run, overriding the current schedule'
+      summary: 'Start a task run, overriding the schedule'
+      description: |
+        Schedules a task run to start immediately, ignoring scheduled runs.
+
+        Use this endpoint to manually start a task run.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4942,17 +4961,17 @@ paths:
               $ref: '#/components/schemas/RunManually'
       responses:
         '201':
-          description: Run scheduled to start
+          description: Success. The run is scheduled to start.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Run'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
   '/tasks/{taskID}/runs/{runID}':
     get:
       operationId: GetTasksIDRunsID
@@ -5149,7 +5168,7 @@ paths:
                 $ref: '#/components/schemas/Logs'
               examples:
                 taskSuccess:
-                  summary: Events for successful task.
+                  summary: Events for a successful task run.
                   value:
                     events:
                       - runID: 09b070dadaa7d000
@@ -5159,7 +5178,7 @@ paths:
                         time: '2022-07-18T14:46:07.242859Z'
                         message: Completed(success)
                 taskFailure:
-                  summary: Events for a failed task.
+                  summary: Events for a failed task run.
                   value:
                     events:
                       - runID: 09a946fc3167d000
@@ -5194,26 +5213,57 @@ paths:
           schema:
             type: string
           required: true
-          description: ID of task to get logs for.
+          description: The ID of the task to get logs for.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: ID of run to get logs for.
+          description: The ID of the run to get logs for.
       responses:
         '200':
-          description: All logs for a run
+          description: |
+            Success. The response body contains an `events` list with logs for the task run.
+            Each log event `message` contains detail about the event.
+            If a run fails, InfluxDB logs an event with the reason for the failure.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Logs'
+              examples:
+                taskSuccess:
+                  summary: Events for a successful task run.
+                  value:
+                    events:
+                      - runID: 09b070dadaa7d000
+                        time: '2022-07-18T14:46:07.101231Z'
+                        message: 'Started task from script: "option task = {name: \"task1\", every: 30m} from(bucket: \"iot_center\") |> range(start: -90d) |> filter(fn: (r) => r._measurement == \"environment\") |> aggregateWindow(every: 1h, fn: mean)"'
+                      - runID: 09b070dadaa7d000
+                        time: '2022-07-18T14:46:07.242859Z'
+                        message: Completed(success)
+                taskFailure:
+                  summary: Events for a failed task.
+                  value:
+                    events:
+                      - runID: 09a946fc3167d000
+                        time: '2022-07-13T07:06:54.198167Z'
+                        message: 'Started task from script: "option task = {name: \"test task\", every: 3d, offset: 0s}"'
+                      - runID: 09a946fc3167d000
+                        time: '2022-07-13T07:07:13.104037Z'
+                        message: Completed(failed)
+                      - runID: 09a946fc3167d000
+                        time: '2022-07-13T08:24:37.115323Z'
+                        message: 'error exhausting result iterator: error in query specification while starting program: this Flux script returns no streaming data. Consider adding a "yield" or invoking streaming functions directly, without performing an assignment'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
   '/tasks/{taskID}/labels':
     get:
       operationId: GetTasksIDLabels
@@ -6734,11 +6784,15 @@ components:
         - stop
       properties:
         start:
-          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/flux/v0.x/data-types/basic/time/#time-syntax)).'
+          description: |
+            A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
+            The earliest time to delete from.
           type: string
           format: date-time
         stop:
-          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/flux/v0.x/data-types/basic/time/#time-syntax)).'
+          description: |
+            A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
+            The latest time to delete from.
           type: string
           format: date-time
         predicate:
@@ -7032,7 +7086,7 @@ components:
         value:
           type: boolean
     DateTimeLiteral:
-      description: Represents an instant in time with nanosecond precision using the syntax of golang's RFC3339 Nanosecond variant
+      description: 'Represents an instant in time with nanosecond precision in [RFC3339Nano date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339nano-timestamp).'
       type: object
       properties:
         type:
@@ -7130,21 +7184,35 @@ components:
         name:
           type: string
     Dialect:
-      description: 'Dialect are options to change the default CSV output format; https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions'
+      description: |
+        Options for tabular data output.
+        Default output is [annotated CSV](https://docs.influxdata.com/influxdb/v2.3/reference/syntax/annotated-csv/#csv-response-format) with headers.
+
+        For more information about tabular data **dialect**,
+        see [W3 metadata vocabulary for tabular data](https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions).
       type: object
       properties:
         header:
-          description: 'If true, the results will contain a header row'
+          description: 'If true, the results contain a header row.'
           type: boolean
           default: true
         delimiter:
-          description: 'Separator between cells; the default is ,'
+          description: 'The separator used between cells. Default is a comma (`,`).'
           type: string
           default: ','
           maxLength: 1
           minLength: 1
         annotations:
-          description: 'https://www.w3.org/TR/2015/REC-tabular-data-model-20151217/#columns'
+          description: |
+            Annotation rows to include in the results.
+            An _annotation_ is metadata associated with an object (column) in the data model.
+
+            #### Related guides
+
+            - See [Annotated CSV annotations](https://docs.influxdata.com/influxdb/v2.3/reference/syntax/annotated-csv/#annotations) for examples and more information.
+
+            For more information about **annotations** in tabular data,
+            see [W3 metadata vocabulary for tabular data](https://www.w3.org/TR/2015/REC-tabular-data-model-20151217/#columns).
           type: array
           uniqueItems: true
           items:
@@ -7154,13 +7222,23 @@ components:
               - datatype
               - default
         commentPrefix:
-          description: Character prefixed to comment strings
+          description: The character prefixed to comment strings. Default is a number sign (`#`).
           type: string
           default: '#'
           maxLength: 1
           minLength: 0
         dateTimeFormat:
-          description: Format of timestamps
+          description: |
+            The format for timestamps in results.
+            Default is [`RFC3339` date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp).
+            To include nanoseconds in timestamps, use `RFC3339Nano`.
+
+            #### Example formatted date/time values
+
+            | Format      | Value                       |
+            |:------------|:----------------------------|
+            | `RFC3339`    | `"2006-01-02T15:04:05Z07:00"` |
+            | `RFC3339Nano` | `"2006-01-02T15:04:05.999999999Z07:00"` |
           type: string
           default: RFC3339
           enum:
@@ -7365,9 +7443,10 @@ components:
       properties:
         time:
           readOnly: true
-          description: 'Time event occurred, RFC3339Nano.'
+          description: 'The time ([RFC3339Nano date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339nano-timestamp)) that the event occurred.'
           type: string
           format: date-time
+          example: '2006-01-02T15:04:05.999999999Z07:00'
         message:
           readOnly: true
           description: A description of the event that occurred.
@@ -7375,7 +7454,7 @@ components:
           example: Halt and catch fire
         runID:
           readOnly: true
-          description: the ID of the task that logged
+          description: The ID of the task run that generated the event.
           type: string
     Organization:
       properties:
@@ -8422,7 +8501,7 @@ components:
             - success
             - canceled
         scheduledFor:
-          description: 'Time used for run''s "now" option, RFC3339.'
+          description: 'The time [RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp) used for the run''s `now` option.'
           type: string
           format: date-time
         log:
@@ -8437,19 +8516,22 @@ components:
           readOnly: true
         startedAt:
           readOnly: true
-          description: 'Time run started executing, RFC3339Nano.'
+          description: 'The time ([RFC3339Nano date/time format](https://go.dev/src/time/format.go)) the run started executing.'
           type: string
           format: date-time
+          example: '2006-01-02T15:04:05.999999999Z07:00'
         finishedAt:
           readOnly: true
-          description: 'Time run finished executing, RFC3339Nano.'
+          description: 'The time ([RFC3339Nano date/time format](https://go.dev/src/time/format.go)) the run finished executing.'
           type: string
           format: date-time
+          example: '2006-01-02T15:04:05.999999999Z07:00'
         requestedAt:
           readOnly: true
-          description: 'Time run was manually requested, RFC3339Nano.'
+          description: 'The time ([RFC3339Nano date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339nano-timestamp)) the run was manually requested.'
           type: string
           format: date-time
+          example: '2006-01-02T15:04:05.999999999Z07:00'
         links:
           type: object
           readOnly: true
@@ -8471,7 +8553,10 @@ components:
       properties:
         scheduledFor:
           nullable: true
-          description: 'Time used for run''s "now" option, RFC3339.  Default is the server''s now time.'
+          description: |
+            The time [RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)
+            used for the run's `now` option.
+            Default is the server _now_ time.
           type: string
           format: date-time
     TaskStatusType:
@@ -10774,7 +10859,7 @@ components:
           type: string
         latestCompleted:
           type: string
-          description: 'Timestamp (in RFC3339 date/time format](https://datatracker.ietf.org/doc/html/rfc3339)) of the latest scheduled and completed run.'
+          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
           format: date-time
           readOnly: true
         lastRunStatus:
@@ -11044,7 +11129,7 @@ components:
         - endpointID
       properties:
         latestCompleted:
-          description: 'Timestamp (in RFC3339 date/time format](https://datatracker.ietf.org/doc/html/rfc3339)) of the latest scheduled and completed run.'
+          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
           type: string
           format: date-time
           readOnly: true
