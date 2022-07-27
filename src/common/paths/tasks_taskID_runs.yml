@@ -3,6 +3,11 @@ get:
   tags:
     - Tasks
   summary: List runs for a task
+  description: |
+    Retrieves a list of runs for a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/).
+
+    To limit which task runs are returned, pass query parameters in your request.
+    If no query parameters are passed, InfluxDB returns all task runs up to the default `limit`.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,12 +15,16 @@ get:
       schema:
         type: string
       required: true
-      description: The ID of the task to get runs for.
+      description: |
+        The ID of the task to get runs for.
+        Only returns runs for this task.
     - in: query
       name: after
       schema:
         type: string
-      description: Returns runs after a specific ID.
+      description:
+        A task run ID.
+        Only returns runs created after this run.
     - in: query
       name: limit
       schema:
@@ -23,38 +32,47 @@ get:
         minimum: 1
         maximum: 500
         default: 100
-      description: The number of runs to return
+      description: |
+        Limits the number of task runs returned. Default is `100`.
     - in: query
       name: afterTime
       schema:
         type: string
         format: date-time
-      description: Filter runs to those scheduled after this time, RFC3339
+      description: |
+        A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).
+        Only returns runs scheduled after this time.
     - in: query
       name: beforeTime
       schema:
         type: string
         format: date-time
-      description: Filter runs to those scheduled before this time, RFC3339
+      description: |
+        A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).
+        Only returns runs scheduled before this time.
   responses:
     "200":
-      description: A list of task runs
+      description: Success. The response body contains the list of task runs.
       content:
         application/json:
           schema:
             $ref: "../schemas/Runs.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"
 post:
   operationId: PostTasksIDRuns
   tags:
     - Data I/O endpoints
     - Tasks
-  summary: Manually start a task run, overriding the current schedule
+  summary: Start a task run, overriding the schedule
+  description: |
+    Schedules a task run to start immediately, ignoring scheduled runs.
+
+    Use this endpoint to manually start a task run.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -69,14 +87,14 @@ post:
           $ref: "../schemas/RunManually.yml"
   responses:
     "201":
-      description: Run scheduled to start
+      description: Success. The run is scheduled to start.
       content:
         application/json:
           schema:
             $ref: "../schemas/Run.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"

@@ -625,7 +625,7 @@ paths:
                     code: invalid
                     message: At least one field column is required
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
     summary: Bucket Schema
     get:
@@ -720,7 +720,7 @@ paths:
                     code: invalid
                     message: Unable to delete columns from schema
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
   '/orgs/{orgID}/limits':
     get:
       tags:
@@ -1658,7 +1658,7 @@ paths:
                                                               type: string
                                                             latestCompleted:
                                                               type: string
-                                                              description: 'Timestamp (in RFC3339 date/time format](https://datatracker.ietf.org/doc/html/rfc3339)) of the latest scheduled and completed run.'
+                                                              description: 'A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
                                                               format: date-time
                                                               readOnly: true
                                                             lastRunStatus:
@@ -2516,7 +2516,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -2603,7 +2603,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -2690,10 +2690,12 @@ paths:
             type: integer
             minimum: 0
             default: 0
-          description: The number of records to skip
+          description: The number of records to skip.
         - in: query
           name: sortBy
-          description: Field that records should be sorted by
+          description: |
+            The field used for sorting records in the list.
+            Only `name` is supported.
           required: false
           schema:
             type: string
@@ -2732,7 +2734,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource
@@ -2746,16 +2748,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
         default:
           description: Non 2XX error response from server.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
-          label: 'cURL: all tasks, `basic` output'
+          label: 'cURL: all tasks, basic output'
           source: |
             curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
               --header 'Content-Type: application/json' \
@@ -2781,7 +2783,8 @@ paths:
 
         #### Related guides
 
-        - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).
+        - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)
+        - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)
         - [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
         - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
       parameters:
@@ -2802,30 +2805,13 @@ paths:
                 $ref: '#/components/schemas/Task'
         '400':
           description: |
-            Bad request
+            Bad request.
+            The response body contains detail about the error.
 
             #### InfluxDB Cloud
 
               - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
               - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
-          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
-          examples:
-            fluxAndScriptError:
-              summary: The request body can't contain both flux and scriptID
-              value:
-                code: invalid
-                message: 'failed to decode request: can not provide both scriptID and flux'
-            missingFluxError:
-              summary: The request body requires either flux or scriptID
-              value:
-                code: invalid
-                message: 'failed to decode request: flux required'
-        '401':
-          $ref: '#/paths/~1tasks/get/responses/401'
-        '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
-        default:
-          description: Unexpected error
           content:
             application/json:
               schema:
@@ -2862,44 +2848,63 @@ paths:
                     type: string
                 required:
                   - code
+              examples:
+                fluxAndScriptError:
+                  summary: The request body can't contain both flux and scriptID
+                  value:
+                    code: invalid
+                    message: 'failed to decode request: can not provide both scriptID and flux'
+                missingFluxError:
+                  summary: The request body requires either a flux parameter or scriptID parameter
+                  value:
+                    code: invalid
+                    message: 'failed to decode request: flux required'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
-          label: 'cURL: create a flux query task'
+          label: 'cURL: create a Flux script task'
           source: |
-            curl -v --request POST \
-            https://cloud2.influxdata.com/api/v2/tasks \
+            curl https://cloud2.influxdata.com/api/v2/tasks \
             --header "Content-type: application/json" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --data-binary @- << EOF
               {
-              "orgID": "INFLUX_ORG_ID",
-              "description": "IoT Center 30d environment average.",
-              "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                      from(bucket: \"iot_center\")\
-                        |> range(start: -30d)\
-                        |> filter(fn: (r) => r._measurement == \"environment\")\
-                        |> aggregateWindow(every: 1h, fn: mean)"
+                "orgID": "INFLUX_ORG_ID",
+                "description": "IoT Center 30d environment average.",
+                "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                        from(bucket: \"iot_center\")\
+                          |> range(start: -30d)\
+                          |> filter(fn: (r) => r._measurement == \"environment\")\
+                          |> aggregateWindow(every: 1h, fn: mean)"
               }
             EOF
         - lang: Shell
-          label: 'cURL: create a script task'
+          label: 'cURL: create a Flux script reference task'
           source: |
-            curl -v --request POST \
-            https://cloud2.influxdata.com/api/v2/tasks \
+            curl https://cloud2.influxdata.com/api/v2/tasks \
             --header "Content-type: application/json" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --data-binary @- << EOF
               {
-              "orgID": "INFLUX_ORG_ID",
-              "description": "IoT Center 30d environment average.",
-              "scriptID": "085138a111448000",
-              "scriptParameters":
-                {
-                  "rangeStart": "-30d",
-                  "bucket": "air_sensor",
-                  "filterField": "temperature",
-                  "groupColumn": "_time"
-                }
+                "orgID": "INFLUX_ORG_ID",
+                "description": "IoT Center 30d environment average.",
+                "scriptID": "085138a111448000",
+                "scriptParameters":
+                  {
+                    "rangeStart": "-30d",
+                    "bucket": "air_sensor",
+                    "filterField": "temperature",
+                    "groupColumn": "_time"
+                  }
               }
             EOF
   '/tasks/{taskID}':
@@ -2911,7 +2916,7 @@ paths:
       summary: Retrieve a task
       description: |
         Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
-        by task ID.
+        by ID.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -2919,7 +2924,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task.
@@ -2938,7 +2943,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -2960,7 +2965,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/default/content/application~1json/schema'
+                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
               examples:
                 org-not-found:
                   summary: Organization name not found
@@ -2990,7 +2995,7 @@ paths:
         Updates a task and then cancels all scheduled runs of the task.
 
         Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
-        Once InfluxDB applies the update, it cancels all scheduled runs of the task.
+        Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
         To update a task, pass an object that contains the updated key-value pairs.
         To activate or inactivate a task, set the `status` property.
@@ -3903,18 +3908,18 @@ components:
             - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.
           type: string
         every:
-          description: 'The interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
+          description: 'The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
           type: string
           format: duration
         cron:
-          description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB bases cron runs on the system time.'
+          description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
           type: string
         offset:
           description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
           type: string
           format: duration
         latestCompleted:
-          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/flux/v0.x/data-types/basic/time/#time-syntax)) of the latest scheduled and completed run.'
+          description: 'A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
           type: string
           format: date-time
           readOnly: true
