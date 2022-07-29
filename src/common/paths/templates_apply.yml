@@ -3,7 +3,15 @@ post:
   tags:
     - Templates
   summary: Apply or dry-run a template
-  description: Applies or performs a dry-run of template in an organization.
+  description: |
+    Applies a template to the organization and returns the list of resources that
+    the template
+    If you pass _`dryRun: true`_ in the request body, InfluxDB simulates the
+    template run and doesn't create, update, or delete resources.
+    
+    #### Required permissions
+
+    - `write` permissions for resource types in the template.
   requestBody:
     required: true
     content:
@@ -16,6 +24,24 @@ post:
       text/yml:
         schema:
           $ref: "../schemas/TemplateApply.yml"
+  x-codeSample:
+    lang: Shell
+    label: "cURL: dry run remote template"
+    source: |
+        curl -v --request POST \
+        "${INFLUX_URL}/api/v2/templates/apply" \
+        --header "Authorization: Token ${INFLUX_ALL_ACCESS_TOKEN}" \
+        --data @- << EOF
+          {
+            "dryRun": true,
+            "orgID": "$INFLUX_ORG_ID",
+            "remotes": [
+              {
+                "url": "$TEMPLATE_URL"
+              }
+            ]
+          }
+        EOF
   responses:
     "200":
       description: >
