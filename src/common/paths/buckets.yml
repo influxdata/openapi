@@ -105,12 +105,18 @@ post:
     Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/cloud/reference/glossary/#bucket)
     and returns the created bucket along with metadata.
     
-    #### InfluxDB Cloud
-    
+    A [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})
+    must be set upon creation. This determines how long data will be stored
+    within the bucket.
+
     #### InfluxDB OSS
-    
-    - Does not support `explicit` bucket schemas.
-    
+
+    - InfluxDB OSS not support `explicit` bucket schemas.
+    - A single InfluxDB OSS instance supports approximately 20 buckets
+    actively being written to or queried across all organizations depending on 
+    the use case. Any more than that can adversely affect performance.
+    - A shard group in InfluxDB OSS contains only a single shard.
+
     #### Related Guides
     
     - [Create bucket]({{% INFLUXDB_DOCS_URL %}}/cloud/organizations/buckets/create-bucket/)
@@ -133,8 +139,37 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Bucket.yml"
+    "400":
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
     "401":
       $ref: "../responses/AuthorizationError.yml"
+    "403":
+      description: |
+        Forbidden.
+        Bucket quota exceeded.
+      headers:
+        X-Platform-Error-Code:
+          description: |
+            The reason for the error.
+          schema:
+            type: string
+            example: "forbidden"
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            quotaExceeded:
+              summary: Bucket quota exceeded
+              value: {
+                "code": "forbidden",
+                "message": "creating bucket would exceed quota"
+              }
     422:
       description: |
         Unprocessable Entity.
@@ -151,3 +186,11 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "https://cloud2.influxdata.com/api/v2/buckets \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json"

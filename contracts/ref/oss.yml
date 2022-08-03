@@ -3251,11 +3251,10 @@ components:
         rp:
           default: "0"
           description: |
-            Retention Period.
-            Retention period is the duration in which the bucket retains data.
-            The default value of 0 denotes an infinite duration.
-            For more examples and information on units of measurement, see
-            [retention periods](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/cli/influx/bucket/create/#retention-periods).
+            Retention policy is an InfluxDB 1.x concept that represents the duration
+            of time that each data point in the retention policy persists.
+            The InfluxDB 2.x and Cloud equivalent is
+            [retention period](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#retention-period).
           type: string
         schemaType:
           $ref: '#/components/schemas/SchemaType'
@@ -3743,16 +3742,20 @@ components:
     RetentionRule:
       properties:
         everySeconds:
+          default: 0
           description: |
-            Duration in seconds for how long data will be kept in the database. 0 means infinite.
+            The duration in seconds for how long data will be kept in the database.
+            0 represents infinite retention.
           example: 86400
           format: int64
           minimum: 0
           type: integer
         shardGroupDurationSeconds:
           description: |
-            Shard duration.
-            Shard duration is measured in seconds.
+            The shard group duration.
+            The duration of time or interval that each shard group covers measured
+            in seconds.
+            OSS only.
           format: int64
           type: integer
         type:
@@ -6645,20 +6648,17 @@ paths:
             --header "Accept: application/json" \
             --header "Content-Type: application/json"
     post:
-      description: |
-        Creates a [bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket)
-        and returns the created bucket along with metadata.
-
-        #### InfluxDB Cloud
-
-        #### InfluxDB OSS
-
-        - Does not support `explicit` bucket schemas.
-
-        #### Related Guides
-
-        - [Create bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/create-bucket/)
-        - [Create bucket CLI reference](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/cli/influx/bucket/create)
+      description: "Creates a [bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket)\nand
+        returns the created bucket along with metadata.\n\nA [retention period]({{%
+        INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})\nmust be
+        set upon creation. This determines how long data will be stored\nwithin the
+        bucket.\n\n#### InfluxDB OSS\n\n- InfluxDB OSS not support `explicit` bucket
+        schemas.\n- A single InfluxDB OSS instance supports approximately 20 buckets\nactively
+        being written to or queried across all organizations depending on \nthe use
+        case. Any more than that can adversely affect performance.\n- A shard group
+        in InfluxDB OSS contains only a single shard.\n\n#### Related Guides\n\n-
+        [Create bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/create-bucket/)\n-
+        [Create bucket CLI reference](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/cli/influx/bucket/create)\n"
       operationId: PostBuckets
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -6678,8 +6678,36 @@ paths:
           description: |
             Success.
             Bucket created.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
         "401":
           $ref: '#/components/responses/AuthorizationError'
+        "403":
+          content:
+            application/json:
+              examples:
+                quotaExceeded:
+                  summary: Bucket quota exceeded
+                  value:
+                    code: forbidden
+                    message: creating bucket would exceed quota
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Forbidden.
+            Bucket quota exceeded.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                example: forbidden
+                type: string
         "422":
           content:
             application/json:
@@ -6699,6 +6727,14 @@ paths:
       summary: Create a bucket
       tags:
       - Buckets
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST "https://cloud2.influxdata.com/api/v2/buckets \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json"
   /api/v2/buckets/{bucketID}:
     delete:
       operationId: DeleteBucketsID
@@ -16484,6 +16520,13 @@ tags:
       - [Manage API tokens](https://docs.influxdata.com/influxdb/v2.3/security/tokens/).
       - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.3/security/tokens/create-token/).
   name: Authorizations
+- description: "Store your data in InfluxDB [buckets](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket).\nA
+    bucket is a named location where time series data is stored. All buckets\nhave
+    a [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}}),\na
+    duration of time that each data point persists. InfluxDB drops all \npoints with
+    timestamps older than the bucket’s retention period. \nA bucket belongs to an
+    organization.\n\n### Related guides\n\n  - [Manage buckets](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/)\n"
+  name: Buckets
 - description: |
     Generate profiling and trace reports.
 
