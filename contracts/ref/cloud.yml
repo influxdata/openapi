@@ -4087,17 +4087,17 @@ components:
     ScriptHTTPResponseData:
       description: |
         The response body contains the results of the executed script.
-        The response returned is user defined and dynamic.
+        The response is user defined and dynamic.
       format: binary
       type: string
     ScriptInvocationParams:
       properties:
         params:
           additionalProperties: true
-          description: |
-            Script parameters.
-            Provide key-value pairs within this params object for parameters
-            referenced in script.
+          description: "The script parameters.\n`params` contains key-value pairs
+            that map values to the **params.keys** \nin a script.\nWhen you invoke
+            a script with `params`, InfluxDB passes the values as\ninvocation parameters
+            to the script.\n"
           type: object
       type: object
     ScriptLanguage:
@@ -10809,64 +10809,9 @@ paths:
           description: |
             Bad request.
         "401":
-          content:
-            application/json:
-              examples:
-                tokenNotAuthorized:
-                  summary: Token is not authorized to access a resource
-                  value:
-                    code: unauthorized
-                    message: unauthorized access
-              schema:
-                properties:
-                  code:
-                    description: code is the machine-readable error code.
-                    enum:
-                    - internal error
-                    - not found
-                    - conflict
-                    - invalid
-                    - unprocessable entity
-                    - empty value
-                    - unavailable
-                    - forbidden
-                    - too many requests
-                    - unauthorized
-                    - method not allowed
-                    - request too large
-                    - unsupported media type
-                    readOnly: true
-                    type: string
-                  err:
-                    description: Stack of errors that occurred during processing of
-                      the request. Useful for debugging.
-                    readOnly: true
-                    type: string
-                  message:
-                    description: Human-readable message.
-                    readOnly: true
-                    type: string
-                  op:
-                    description: Describes the logical code operation when the error
-                      occurred. Useful for debugging.
-                    readOnly: true
-                    type: string
-                required:
-                - code
-          description: |
-            Unauthorized. The error may indicate one of the following:
-
-              * The `Authorization: Token` header is missing or malformed.
-              * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
+          $ref: '#/components/responses/AuthorizationError'
         "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1scripts/get/responses/401/content/application~1json/schema'
-          description: |
-            Internal server error.
-            The server encountered an unexpected situation.
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -10878,7 +10823,7 @@ paths:
       - Data I/O endpoints
       - Invokable Scripts
       x-codeSamples:
-      - label: cUrl
+      - label: cURL
         lang: Shell
         source: |
           curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
@@ -10950,7 +10895,7 @@ paths:
           description: |
             Bad request.
         "401":
-          $ref: '#/paths/~1scripts/get/responses/401'
+          $ref: '#/components/responses/AuthorizationError'
         "422":
           content:
             application/json:
@@ -10966,7 +10911,7 @@ paths:
           description: |
             Unprocessable entity.
         "500":
-          $ref: '#/paths/~1scripts/get/responses/500'
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -11072,15 +11017,15 @@ paths:
         Invokes a script and substitutes `params` keys referenced in the script with
         `params` key-values sent in the request body--for example:
 
-        The following invokable scripts contains the parameter `mybucket`:
+        The following script contains the parameter `_mybucket_`:
 
         ```json
         "script": "from(bucket: params.mybucket)
                     |> range(start: -7d)
                     |> limit(n:1)"
         ```
-        The request body to invoke this script should contain a JSON object with
-        key-value pairs such as:
+        The following example `POST /api/v2/scripts/SCRIPT_ID/invoke` request body
+        passes a value for _`mybucket`_:
 
         ```json
         {
@@ -11143,7 +11088,7 @@ paths:
                 example: invalid
                 type: string
         "401":
-          $ref: '#/paths/~1scripts/get/responses/401'
+          $ref: '#/components/responses/AuthorizationError'
         "404":
           content:
             application/json:
@@ -11173,7 +11118,7 @@ paths:
                 example: not found
                 type: string
         "500":
-          $ref: '#/paths/~1scripts/get/responses/500'
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -11185,7 +11130,7 @@ paths:
       - Data I/O endpoints
       - Invokable Scripts
       x-codeSamples:
-      - label: cUrl
+      - label: cURL
         lang: Shell
         source: |
           curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \

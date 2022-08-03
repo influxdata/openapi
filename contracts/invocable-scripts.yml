@@ -108,62 +108,9 @@ paths:
                     message: 'parsing field "limit": strconv.ParseUint: parsing "-1": invalid syntax'
                     details: []
         '401':
-          description: |
-            Unauthorized. The error may indicate one of the following:
-
-              * The `Authorization: Token` header is missing or malformed.
-              * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
-          content:
-            application/json:
-              schema:
-                properties:
-                  code:
-                    description: code is the machine-readable error code.
-                    readOnly: true
-                    type: string
-                    enum:
-                      - internal error
-                      - not found
-                      - conflict
-                      - invalid
-                      - unprocessable entity
-                      - empty value
-                      - unavailable
-                      - forbidden
-                      - too many requests
-                      - unauthorized
-                      - method not allowed
-                      - request too large
-                      - unsupported media type
-                  message:
-                    readOnly: true
-                    description: Human-readable message.
-                    type: string
-                  op:
-                    readOnly: true
-                    description: Describes the logical code operation when the error occurred. Useful for debugging.
-                    type: string
-                  err:
-                    readOnly: true
-                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
-                    type: string
-                required:
-                  - code
-              examples:
-                tokenNotAuthorized:
-                  summary: Token is not authorized to access a resource
-                  value:
-                    code: unauthorized
-                    message: unauthorized access
+          $ref: '#/components/responses/AuthorizationError'
         '500':
-          description: |
-            Internal server error.
-            The server encountered an unexpected situation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1scripts/get/responses/401/content/application~1json/schema'
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error.
           content:
@@ -172,7 +119,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
-          label: cUrl
+          label: cURL
           source: |
             curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
               --header "Authorization: Token INFLUX_TOKEN" \
@@ -244,7 +191,7 @@ paths:
                     message: 'invalid character '','' looking for beginning of value'
                     details: []
         '401':
-          $ref: '#/paths/~1scripts/get/responses/401'
+          $ref: '#/components/responses/AuthorizationError'
         '422':
           description: |
             Unprocessable entity.
@@ -260,7 +207,7 @@ paths:
                     code: conflict
                     message: uniqueness violation
         '500':
-          $ref: '#/paths/~1scripts/get/responses/500'
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error.
           content:
@@ -368,15 +315,15 @@ paths:
         Invokes a script and substitutes `params` keys referenced in the script with
         `params` key-values sent in the request body--for example:
 
-        The following invokable scripts contains the parameter `mybucket`:
+        The following script contains the parameter `_mybucket_`:
 
         ```json
         "script": "from(bucket: params.mybucket)
                     |> range(start: -7d)
                     |> limit(n:1)"
         ```
-        The request body to invoke this script should contain a JSON object with
-        key-value pairs such as:
+        The following example `POST /api/v2/scripts/SCRIPT_ID/invoke` request body
+        passes a value for _`mybucket`_:
 
         ```json
         {
@@ -438,7 +385,7 @@ paths:
                     code: invalid
                     message: invalid parameters provided
         '401':
-          $ref: '#/paths/~1scripts/get/responses/401'
+          $ref: '#/components/responses/AuthorizationError'
         '404':
           description: |
             Not found.
@@ -467,7 +414,7 @@ paths:
                     code: not found
                     message: 'failed to initialize execute state: could not find bucket "test-bucket"'
         '500':
-          $ref: '#/paths/~1scripts/get/responses/500'
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error.
           content:
@@ -476,7 +423,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
-          label: cUrl
+          label: cURL
           source: |
             curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \
                       --header "Authorization: Token INFLUX_TOKEN" \
@@ -491,6 +438,31 @@ components:
   responses:
     ServerError:
       description: Non 2XX error response from server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationError:
+      description: |
+        Unauthorized. The error may indicate one of the following:
+
+          * The `Authorization: Token` header is missing or malformed.
+          * The API token value is missing from the header.
+          * The token does not have sufficient permissions to write to this organization and bucket.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tokenNotAuthorized:
+              summary: Token is not authorized to access a resource
+              value:
+                code: unauthorized
+                message: unauthorized access
+    InternalServerError:
+      description: |
+        Internal server error.
+        The server encountered an unexpected situation.
       content:
         application/json:
           schema:
@@ -600,7 +572,7 @@ components:
     ScriptHTTPResponseData:
       description: |
         The response body contains the results of the executed script.
-        The response returned is user defined and dynamic.
+        The response is user defined and dynamic.
       type: string
       format: binary
     ScriptInvocationParams:
@@ -610,9 +582,11 @@ components:
           type: object
           additionalProperties: true
           description: |
-            Script parameters.
-            Provide key-value pairs within this params object for parameters
-            referenced in script.
+            The script parameters.
+            `params` contains key-value pairs that map values to the **params.keys** 
+            in a script.
+            When you invoke a script with `params`, InfluxDB passes the values as
+            invocation parameters to the script.
     ScriptLanguage:
       type: string
       enum:
