@@ -3250,11 +3250,10 @@ components:
           $ref: '#/components/schemas/RetentionRules'
         rp:
           default: "0"
-          description: |
-            Retention policy is an InfluxDB 1.x concept that represents the duration
-            of time that each data point in the retention policy persists.
-            The InfluxDB 2.x and Cloud equivalent is
-            [retention period](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#retention-period).
+          description: "Retention policy is an InfluxDB 1.x concept that represents
+            the duration\nof time that each data point in the retention policy persists.
+            Use `rp`\nfor compatibility with InfluxDB 1.x. \nThe InfluxDB 2.x and
+            Cloud equivalent is\n[retention period](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#retention-period).\n"
           type: string
         schemaType:
           $ref: '#/components/schemas/SchemaType'
@@ -3263,10 +3262,17 @@ components:
             Schema Type.
             Use `explicit` to enforce column names, tags, fields, and data types for
             your data.
+
+            #### InfluxDB Cloud
+
+            - Default value is `implicit`.
+
+            #### InfluxDB OSS
+
+            - Does not support `schemaType`.
       required:
       - orgID
       - name
-      - retentionRules
     PostCheck:
       allOf:
       - $ref: '#/components/schemas/CheckDiscriminator'
@@ -3742,9 +3748,10 @@ components:
     RetentionRule:
       properties:
         everySeconds:
-          default: 0
+          default: 2592000
           description: |
             The duration in seconds for how long data will be kept in the database.
+            The default duration is 2592000 (30 days).
             0 represents infinite retention.
           example: 86400
           format: int64
@@ -3755,7 +3762,15 @@ components:
             The shard group duration.
             The duration of time or interval that each shard group covers measured
             in seconds.
-            OSS only.
+
+            #### InfluxDB Cloud
+
+            - Does not use `shardGroupDurationsSeconds`.
+
+            #### InfluxDB OSS
+
+            - Default value depends on the
+            [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/v2.3/reference/internals/shards/#shard-group-duration).
           format: int64
           type: integer
         type:
@@ -3764,7 +3779,6 @@ components:
           - expire
           type: string
       required:
-      - type
       - everySeconds
       type: object
     RetentionRules:
@@ -6649,15 +6663,12 @@ paths:
             --header "Content-Type: application/json"
     post:
       description: "Creates a [bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket)\nand
-        returns the created bucket along with metadata.\n\nA [retention period]({{%
-        INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})\nmust be
-        set upon creation. This determines how long data will be stored\nwithin the
-        bucket.\n\n#### InfluxDB OSS\n\n- InfluxDB OSS not support `explicit` bucket
-        schemas.\n- A single InfluxDB OSS instance supports approximately 20 buckets\nactively
-        being written to or queried across all organizations depending on \nthe use
-        case. Any more than that can adversely affect performance.\n- A shard group
-        in InfluxDB OSS contains only a single shard.\n\n#### Related Guides\n\n-
-        [Create bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/create-bucket/)\n-
+        returns the created bucket along with metadata. The default data\n[retention
+        period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})\nis
+        30 days.\n\n#### InfluxDB OSS\n\n- A single InfluxDB OSS instance supports
+        approximately 20 buckets\nactively being written to or queried across all
+        organizations depending on \nthe use case. Any more than that can adversely
+        affect performance.\n\n#### Related Guides\n\n- [Create bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/create-bucket/)\n-
         [Create bucket CLI reference](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/cli/influx/bucket/create)\n"
       operationId: PostBuckets
       parameters:
@@ -6673,6 +6684,28 @@ paths:
         "201":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    createdAt: "2022-08-03T23:04:41.073704121Z"
+                    description: bucket holding air sensor data
+                    id: 37407e232b3911d8
+                    labels: []
+                    links:
+                      labels: /api/v2/buckets/37407e232b3911d8/labels
+                      members: /api/v2/buckets/37407e232b3911d8/members
+                      org: /api/v2/orgs/INFLUX_ORG_ID
+                      owners: /api/v2/buckets/37407e232b3911d8/owners
+                      self: /api/v2/buckets/37407e232b3911d8
+                      write: /api/v2/write?org=INFLUX_ORG_ID&bucket=37407e232b3911d8
+                    name: air_sensor
+                    orgID: INFLUX_ORG_ID
+                    retentionRules:
+                    - everySeconds: 2592000
+                      type: expire
+                    schemaType: implicit
+                    type: user
+                    updatedAt: "2022-08-03T23:04:41.073704228Z"
               schema:
                 $ref: '#/components/schemas/Bucket'
           description: |
@@ -6734,7 +6767,18 @@ paths:
           curl --request POST "https://cloud2.influxdata.com/api/v2/buckets \
             --header "Authorization: Token INFLUX_TOKEN" \
             --header "Accept: application/json" \
-            --header "Content-Type: application/json"
+            --header "Content-Type: application/json" \
+            --data '{
+                "name": "air_sensor",
+                "description": "bucket holding air sensor data",
+                "orgID": "INFLUX_ORG_ID",
+                "retentionRules": [
+                    {
+                        "type": "expire",
+                        "everySeconds": 2592000,
+                    }
+                ]
+              }'
   /api/v2/buckets/{bucketID}:
     delete:
       operationId: DeleteBucketsID

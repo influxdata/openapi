@@ -103,19 +103,15 @@ post:
   summary: Create a bucket
   description: |
     Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/cloud/reference/glossary/#bucket)
-    and returns the created bucket along with metadata.
-    
-    A [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})
-    must be set upon creation. This determines how long data will be stored
-    within the bucket.
+    and returns the created bucket along with metadata. The default data
+    [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})
+    is 30 days.
 
     #### InfluxDB OSS
 
-    - InfluxDB OSS not support `explicit` bucket schemas.
     - A single InfluxDB OSS instance supports approximately 20 buckets
     actively being written to or queried across all organizations depending on 
     the use case. Any more than that can adversely affect performance.
-    - A shard group in InfluxDB OSS contains only a single shard.
 
     #### Related Guides
     
@@ -139,6 +135,8 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Bucket.yml"
+          examples:
+            $ref: "../responses/example-responses/PostBucketsSuccessResponse.yml"
     "400":
       description: |
         Bad request.
@@ -193,4 +191,15 @@ post:
         curl --request POST "https://cloud2.influxdata.com/api/v2/buckets \
           --header "Authorization: Token INFLUX_TOKEN" \
           --header "Accept: application/json" \
-          --header "Content-Type: application/json"
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "air_sensor",
+              "description": "bucket holding air sensor data",
+              "orgID": "INFLUX_ORG_ID",
+              "retentionRules": [
+                  {
+                      "type": "expire",
+                      "everySeconds": 2592000,
+                  }
+              ]
+            }'
