@@ -2440,6 +2440,8 @@ components:
       readOnly: true
       type: string
     Links:
+      description: |
+        TODO figure out what these links are used for
       properties:
         next:
           $ref: '#/components/schemas/Link'
@@ -3234,11 +3236,10 @@ components:
       properties:
         description:
           description: |
-            The description of the bucket.
+            A description of the bucket.
           type: string
         name:
           description: |
-            Bucket name.
             The name of the bucket.
           type: string
         orgID:
@@ -3255,7 +3256,7 @@ components:
             of time that each data point in the retention policy persists. Use `rp`
             for compatibility with InfluxDB 1.x.
             The InfluxDB 2.x and Cloud equivalent is
-            [retention period](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#retention-period).
+            [retention period](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#retention-period).
           type: string
         schemaType:
           $ref: '#/components/schemas/SchemaType'
@@ -3267,11 +3268,11 @@ components:
 
             #### InfluxDB Cloud
 
-            - Default value is `implicit`.
+            - Default is `implicit`.
 
             #### InfluxDB OSS
 
-            - Does not support `schemaType`.
+            - Doesn't support `schemaType`.
       required:
       - orgID
       - name
@@ -3762,8 +3763,7 @@ components:
         shardGroupDurationSeconds:
           description: |
             The shard group duration.
-            The duration of time or interval that each shard group covers measured
-            in seconds.
+            The duration or interval (in seconds) that each shard group covers.
 
             #### InfluxDB Cloud
 
@@ -6563,7 +6563,7 @@ paths:
   /api/v2/buckets:
     get:
       description: |
-        Retrieves a list of [buckets](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket).
+        Retrieves a list of [buckets](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket).
 
         To limit which buckets are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all buckets up to the
@@ -6591,7 +6591,7 @@ paths:
 
         #### Related Guides
 
-        - [Manage buckets](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/)
+        - [Manage buckets](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/)
       operationId: GetBuckets
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -6614,14 +6614,14 @@ paths:
           type: string
       - description: |
           Bucket name.
-          Only returns buckets with a specific name.
+          Only returns buckets with this specific name.
         in: query
         name: name
         schema:
           type: string
       - description: |
           Bucket ID.
-          Only returns buckets with a specific ID.
+          Only returns the bucket with this ID.
         in: query
         name: id
         schema:
@@ -6641,12 +6641,12 @@ paths:
                       links:
                         labels: /api/v2/buckets/77ca9dace40a9bfc/labels
                         members: /api/v2/buckets/77ca9dace40a9bfc/members
-                        org: /api/v2/orgs/ORG_ID
+                        org: /api/v2/orgs/INFLUX_ORG_ID
                         owners: /api/v2/buckets/77ca9dace40a9bfc/owners
                         self: /api/v2/buckets/77ca9dace40a9bfc
                         write: /api/v2/write?org=ORG_ID&bucket=77ca9dace40a9bfc
                       name: _monitoring
-                      orgID: ORG_ID
+                      orgID: INFLUX_ORG_ID
                       retentionRules:
                       - everySeconds: 604800
                         type: expire
@@ -6659,8 +6659,7 @@ paths:
                 $ref: '#/components/schemas/Buckets'
           description: |
             Success.
-            The response body contains a list of buckets and URI links to adjacent
-            buckets.
+            The response body contains a list of buckets.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "500":
@@ -6671,34 +6670,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: List all buckets
+      summary: List buckets
       tags:
       - Buckets
       x-codeSamples:
       - label: cURL
         lang: Shell
         source: |
-          curl --request GET "https://cloud2.influxdata.com/api/v2/buckets?name=_monitoring" \
+          curl --request GET "http://localhost:8086/api/v2/buckets?name=_monitoring" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --header "Accept: application/json" \
             --header "Content-Type: application/json"
     post:
       description: |
-        Creates a [bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket)
+        Creates a [bucket](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket)
         and returns the created bucket along with metadata. The default data
-        [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})
+        [retention period](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#retention-period)
         is 30 days.
 
         #### InfluxDB OSS
 
-        - A single InfluxDB OSS instance supports approximately 20 buckets
-        actively being written to or queried across all organizations depending on
-        the use case. Any more than that can adversely affect performance.
+        - A single InfluxDB OSS instance supports active writes or queries for
+        approximately 20 buckets across all organizations at a given time. Reading
+        or writing to more than 20 buckets at a time can adversely affect
+        performance.
+
+        #### Limitations
+
+        - InfluxDB Cloud Free Plan allows users to create up to two buckets.
+        Exceeding the bucket quota will result in an HTTP `403` status code.
+        For additional information regarding InfluxDB Cloud offerings, see
+        [InfluxDB Cloud Pricing](https://www.influxdata.com/influxdb-cloud-pricing/).
 
         #### Related Guides
 
-        - [Create bucket](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/create-bucket/)
-        - [Create bucket CLI reference](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/cli/influx/bucket/create)
+        - [Create bucket](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/create-bucket/)
+        - [Create bucket CLI reference](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/bucket/create)
       operationId: PostBuckets
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -6739,7 +6746,7 @@ paths:
                 $ref: '#/components/schemas/Bucket'
           description: |
             Success.
-            Bucket created.
+            The bucket was created.
         "400":
           content:
             application/json:
@@ -6762,7 +6769,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Forbidden.
-            Bucket quota exceeded.
+            The bucket quota is exceeded.
           headers:
             X-Platform-Error-Code:
               description: |
@@ -6777,7 +6784,7 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Unprocessable Entity.
-            Request body failed validation.
+            The request body failed validation.
         "500":
           $ref: '#/components/responses/InternalServerError'
         default:
@@ -6793,7 +6800,7 @@ paths:
       - label: cURL
         lang: Shell
         source: |
-          curl --request POST "https://cloud2.influxdata.com/api/v2/buckets \
+          curl --request POST "http://localhost:8086/api/v2/buckets \
             --header "Authorization: Token INFLUX_TOKEN" \
             --header "Accept: application/json" \
             --header "Content-Type: application/json" \
@@ -16594,16 +16601,16 @@ tags:
       - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.3/security/tokens/create-token/).
   name: Authorizations
 - description: |
-    Store your data in InfluxDB [buckets](https://docs.influxdata.com/influxdb/v2.3/cloud/reference/glossary/#bucket).
+    Store your data in InfluxDB [buckets](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket).
     A bucket is a named location where time series data is stored. All buckets
-    have a [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}}),
+    have a [retention period](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#retention-period),
     a duration of time that each data point persists. InfluxDB drops all
     points with timestamps older than the bucket’s retention period.
     A bucket belongs to an organization.
 
     ### Related guides
 
-      - [Manage buckets](https://docs.influxdata.com/influxdb/v2.3/cloud/organizations/buckets/)
+      - [Manage buckets](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/)
   name: Buckets
 - description: |
     Generate profiling and trace reports.

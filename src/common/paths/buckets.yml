@@ -2,9 +2,9 @@ get:
   operationId: GetBuckets
   tags:
     - Buckets
-  summary: List all buckets
+  summary: List buckets
   description: |
-    Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/cloud/reference/glossary/#bucket).
+    Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
 
     To limit which buckets are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all buckets up to the
@@ -32,7 +32,7 @@ get:
 
     #### Related Guides
 
-    - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/cloud/organizations/buckets/)
+    - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - $ref: "../parameters/Offset.yml"
@@ -56,22 +56,21 @@ get:
       name: name
       description: |
         Bucket name.
-        Only returns buckets with a specific name.
+        Only returns buckets with this specific name.
       schema:
         type: string
     - in: query
       name: id
       description: |
         Bucket ID.
-        Only returns buckets with a specific ID.
+        Only returns the bucket with this ID.
       schema:
         type: string
   responses:
     "200":
       description: |
         Success.
-        The response body contains a list of buckets and URI links to adjacent
-        buckets.
+        The response body contains a list of buckets.
       content:
         application/json:
           schema:
@@ -92,7 +91,7 @@ get:
     - lang: Shell
       label: cURL
       source: |
-        curl --request GET "https://cloud2.influxdata.com/api/v2/buckets?name=_monitoring" \
+        curl --request GET "http://localhost:8086/api/v2/buckets?name=_monitoring" \
           --header "Authorization: Token INFLUX_TOKEN" \
           --header "Accept: application/json" \
           --header "Content-Type: application/json"
@@ -102,21 +101,29 @@ post:
     - Buckets
   summary: Create a bucket
   description: |
-    Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/cloud/reference/glossary/#bucket)
+    Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket)
     and returns the created bucket along with metadata. The default data
-    [retention period]({{% INFLUXDB_DOCS_URL %/cloud/reference/glossary/#retention-period}})
+    [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period)
     is 30 days.
 
     #### InfluxDB OSS
 
-    - A single InfluxDB OSS instance supports approximately 20 buckets
-    actively being written to or queried across all organizations depending on
-    the use case. Any more than that can adversely affect performance.
+    - A single InfluxDB OSS instance supports active writes or queries for
+    approximately 20 buckets across all organizations at a given time. Reading
+    or writing to more than 20 buckets at a time can adversely affect
+    performance.
+    
+    #### Limitations
+
+    - InfluxDB Cloud Free Plan allows users to create up to two buckets.
+    Exceeding the bucket quota will result in an HTTP `403` status code.
+    For additional information regarding InfluxDB Cloud offerings, see
+    [InfluxDB Cloud Pricing](https://www.influxdata.com/influxdb-cloud-pricing/).
 
     #### Related Guides
 
-    - [Create bucket]({{% INFLUXDB_DOCS_URL %}}/cloud/organizations/buckets/create-bucket/)
-    - [Create bucket CLI reference]({{% INFLUXDB_DOCS_URL %}}/cloud/reference/cli/influx/bucket/create)
+    - [Create bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/)
+    - [Create bucket CLI reference]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/bucket/create)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
@@ -130,7 +137,7 @@ post:
     "201":
       description: |
         Success.
-        Bucket created.
+        The bucket was created.
       content:
         application/json:
           schema:
@@ -149,7 +156,7 @@ post:
     "403":
       description: |
         Forbidden.
-        Bucket quota exceeded.
+        The bucket quota is exceeded.
       headers:
         X-Platform-Error-Code:
           description: |
@@ -171,7 +178,7 @@ post:
     422:
       description: |
         Unprocessable Entity.
-        Request body failed validation.
+        The request body failed validation.
       content:
         application/json:
           schema:
@@ -188,7 +195,7 @@ post:
     - lang: Shell
       label: cURL
       source: |
-        curl --request POST "https://cloud2.influxdata.com/api/v2/buckets \
+        curl --request POST "http://localhost:8086/api/v2/buckets \
           --header "Authorization: Token INFLUX_TOKEN" \
           --header "Accept: application/json" \
           --header "Content-Type: application/json" \
