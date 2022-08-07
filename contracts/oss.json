@@ -5199,6 +5199,7 @@
           "Buckets"
         ],
         "summary": "Retrieve a bucket",
+        "description": "Retrieve a bucket.\n\nUse this endpoint to retrieve information for a specific bucket.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5210,19 +5211,47 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "Bucket ID.\nOnly returns the bucket with this ID.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "Bucket details",
+            "description": "Success.\nThe response body contains the bucket information.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Bucket"
+                },
+                "examples": {
+                  "$ ref": "../responses/example-responses/GetBucketsIDSuccessResponse.yml"
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "description": "Not found.\nBucket not found.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "The requested bucket was not found.\n",
+                    "value": {
+                      "code": "not found",
+                      "message": "bucket not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5242,6 +5271,7 @@
           "Buckets"
         ],
         "summary": "Update a bucket",
+        "description": "Updates a bucket.\n\nUse this endpoint to update properties\n(`name`, `description`, and `retentionRules`) of a bucket.\n\n#### InfluxDB Cloud\n\n- `retentionRules` must be sent in the request body. Failure to do so will\nresult in an HTTP `403` status code.\n\n#### InfluxDB OSS\n\n- `retentionRules` isn't required.\n\n#### Related Guides\n\n- [Update a bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/update-bucket/)\n",
         "requestBody": {
           "description": "Bucket update to apply",
           "required": true,
@@ -5274,9 +5304,102 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Bucket"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "id": "37407e232b3911d8",
+                      "orgID": "INFLUX_ORG_ID",
+                      "type": "user",
+                      "schemaType": "implicit",
+                      "description": "bucket holding air sensor data",
+                      "name": "air_sensor",
+                      "retentionRules": [
+                        {
+                          "type": "expire",
+                          "everySeconds": 2592000
+                        }
+                      ],
+                      "createdAt": "2022-08-03T23:04:41.073704121Z",
+                      "updatedAt": "2022-08-07T22:49:49.422962913Z",
+                      "links": {
+                        "labels": "/api/v2/buckets/37407e232b3911d8/labels",
+                        "members": "/api/v2/buckets/37407e232b3911d8/members",
+                        "org": "/api/v2/orgs/INFLUX_ORG_ID",
+                        "owners": "/api/v2/buckets/37407e232b3911d8/owners",
+                        "self": "/api/v2/buckets/37407e232b3911d8",
+                        "write": "/api/v2/write?org=INFLUX_ORG_ID&bucket=37407e232b3911d8"
+                      },
+                      "labels": []
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidJSONStringValue": {
+                    "summary": "Invalid JSON",
+                    "description": "If the request body contains invalid JSON, returns `invalid`\nwith detail about the problem.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid json: invalid character '\\'' looking for beginning of value"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "403": {
+            "description": "Forbidden.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidRetention": {
+                    "summary": "The retention policy provided exceeds the org's max retention\nduration.\n",
+                    "value": {
+                      "code": "forbidden",
+                      "message": "provided retention exceeds orgs maximum retention duration"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.\nBucket not found.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "The requested bucket was not found.\n",
+                    "value": {
+                      "code": "not found",
+                      "message": "bucket not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5288,7 +5411,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request PATCH \"http://localhost:8086/api/v2/buckets/BUCKET_ID \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"air_sensor\",\n      \"description\": \"bucket holding air sensor data\",\n      \"retentionRules\": [\n          {\n              \"type\": \"expire\",\n              \"everySeconds\": 2592000\n          }\n      ]\n    }'\n"
+          }
+        ]
       },
       "delete": {
         "operationId": "DeleteBucketsID",
@@ -5296,6 +5426,7 @@
           "Buckets"
         ],
         "summary": "Delete a bucket",
+        "description": "Deletes a bucket and all associated records.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n  1. Validates the request and queues the delete.\n  2. Returns an HTTP `204` status code if queued; _error_ otherwise.\n  3. Handles the delete asynchronously.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\nand then responds with success or failure.\n\n#### Limitations\n\n- Only one bucket can be deleted per request.\n\n#### Related Guides\n\n- [Delete a bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/delete-bucket/#delete-a-bucket-in-the-influxdb-ui)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5307,22 +5438,56 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the bucket to delete."
+            "description": "Bucket ID.\nThe ID of the bucket to delete.\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "Delete has been accepted"
+            "description": "Success.\n\n#### InfluxDB Cloud\n  - The bucket is queued for deletion.\n\n#### InfluxDB OSS\n  - The bucket is deleted.\n"
           },
-          "404": {
-            "description": "Bucket not found",
+          "400": {
+            "description": "Bad Request.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidID": {
+                    "summary": "Invalid ID.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "id must have a length of 16 bytes"
+                    }
+                  }
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "description": "Not found.\nBucket not found.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "The requested bucket was not found.\n",
+                    "value": {
+                      "code": "not found",
+                      "message": "bucket not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5333,7 +5498,14 @@
                 }
               }
             }
-          }
+          },
+          "x-codeSamples": [
+            {
+              "lang": "Shell",
+              "label": "cURL",
+              "source": "curl --request DELETE \"http://localhost:8086/api/v2/buckets/BUCKET_ID\" \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header 'Accept: application/json'\n"
+            }
+          ]
         }
       }
     },
@@ -15153,12 +15325,14 @@
       },
       "PatchBucketRequest": {
         "type": "object",
-        "description": "Updates to an existing bucket resource.",
+        "description": "Retention rules to expire or retain data.\n#### InfluxDB Cloud\n- `retentionRules` is required.\n\n#### InfluxDB OSS\n- `retentionRules` isn't required.\n",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the bucket.\n"
           },
           "description": {
+            "description": "A description of the bucket.\n",
             "type": "string"
           },
           "retentionRules": {
@@ -15175,7 +15349,6 @@
       },
       "PatchRetentionRule": {
         "type": "object",
-        "description": "Updates to a rule to expire or retain data.",
         "properties": {
           "type": {
             "type": "string",
@@ -15187,18 +15360,19 @@
           "everySeconds": {
             "type": "integer",
             "format": "int64",
-            "description": "Duration in seconds for how long data will be kept in the database. 0 means infinite.",
+            "description": "The duration in seconds for how long data will be kept in the database.\nThe default duration is 2592000 (30 days).\n0 represents infinite retention.\n",
             "example": 86400,
+            "default": 2592000,
             "minimum": 0
           },
           "shardGroupDurationSeconds": {
             "type": "integer",
             "format": "int64",
-            "description": "Shard duration measured in seconds."
+            "description": "The shard group duration.\nThe duration or interval (in seconds) that each shard group covers.\n#### InfluxDB Cloud\n- Does not use `shardGroupDurationsSeconds`.\n#### InfluxDB OSS\n- Default value depends on the\n[bucket retention period]({{% INFLUXDB_DOCS_URL %}}/v2.3/reference/internals/shards/#shard-group-duration).\n"
           }
         },
         "required": [
-          "type"
+          "everySeconds"
         ]
       },
       "RetentionRule": {
