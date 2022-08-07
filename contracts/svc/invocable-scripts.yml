@@ -76,7 +76,7 @@ paths:
         - Invokable Scripts
       summary: Retrieve a script
       description: |
-        Retrieve an invokable script.
+        Retrieves an invokable script.
 
         #### Related Guides
 
@@ -94,7 +94,7 @@ paths:
         '200':
           description: |
             Success.
-            The response body contains the requested script object.
+            The response body contains the script object.
           content:
             application/json:
               schema:
@@ -110,6 +110,8 @@ paths:
                     language: flux
                     createdAt: '2022-07-17T23:49:45.731237Z'
                     updatedAt: '2022-07-17T23:49:45.731237Z'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
         '404':
           description: |
             Not found.
@@ -124,6 +126,8 @@ paths:
                   value:
                     code: not found
                     message: script "09afa3b220fe400" not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Internal server error.
           $ref: '#/components/responses/ServerError'
@@ -184,6 +188,8 @@ paths:
                     language: flux
                     createdAt: '2022-07-17T23:49:45.731237Z'
                     updatedAt: '2022-07-19T22:27:23.185436Z'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
         '404':
           description: |
             Not found.
@@ -198,6 +204,8 @@ paths:
                   value:
                     code: not found
                     message: script "09afa3b220fe400" not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Internal server error
           $ref: '#/components/responses/ServerError'
@@ -242,8 +250,12 @@ paths:
       responses:
         '204':
           description: |
-            No content.
-            The script is deleted.
+            Success.
+            The script is queued for deletion.
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -288,6 +300,31 @@ components:
   responses:
     ServerError:
       description: Non 2XX error response from server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationError:
+      description: |
+        Unauthorized. The error may indicate one of the following:
+
+          * The `Authorization: Token` header is missing or malformed.
+          * The API token value is missing from the header.
+          * The token does not have sufficient permissions to write to this organization and bucket.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tokenNotAuthorized:
+              summary: Token is not authorized to access a resource
+              value:
+                code: unauthorized
+                message: unauthorized access
+    InternalServerError:
+      description: |
+        Internal server error.
+        The server encountered an unexpected situation.
       content:
         application/json:
           schema:
