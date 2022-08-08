@@ -107,12 +107,19 @@ paths:
                     code: 3
                     message: 'parsing field "limit": strconv.ParseUint: parsing "-1": invalid syntax'
                     details: []
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Internal server error.
-          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
-          label: cUrl
+          label: cURL
           source: |
             curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
               --header "Authorization: Token INFLUX_TOKEN" \
@@ -183,6 +190,8 @@ paths:
                     code: invalid
                     message: 'invalid character '','' looking for beginning of value'
                     details: []
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
         '422':
           description: |
             Unprocessable entity.
@@ -197,9 +206,14 @@ paths:
                   value:
                     code: conflict
                     message: uniqueness violation
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Internal Server Error
-          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
           label: cURL
@@ -297,10 +311,36 @@ paths:
         - Data I/O endpoints
         - Invokable Scripts
       summary: Invoke a script
-      description: Invokes a script and substitutes `params` keys referenced in the script with `params` key-values sent in the request body.
+      description: |
+        Invokes a script and substitutes `params` keys referenced in the script with
+        `params` key-values sent in the request body--for example:
+
+        The following script contains the parameter _`mybucket`_:
+
+        ```json
+        "script": "from(bucket: params.mybucket)
+                    |> range(start: -7d)
+                    |> limit(n:1)"
+        ```
+        The following example `POST /api/v2/scripts/SCRIPT_ID/invoke` request body
+        passes a value for _`mybucket`_:
+
+        ```json
+        {
+          "params": {
+            "mybucket": "air_sensor"
+          }
+        }
+        ```
+
+        #### Related Guides
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       parameters:
         - in: path
           name: scriptID
+          description: |
+            Script ID.
+            Only returns scripts with this ID.
           schema:
             type: string
           required: true
@@ -311,18 +351,118 @@ paths:
               $ref: '#/components/schemas/ScriptInvocationParams'
       responses:
         '200':
-          description: The result of the script execution.
+          description: |
+            Success.
+            The response body contains the result of the script execution.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ScriptHTTPResponseData'
+              examples:
+                successResponse:
+                  type: string
+                  value: |
+                    ,result,table,_start,_stop,_time,_value,_field,_measurement,host
+                    ,_result,0,2019-10-30T01:28:02.52716421Z,2022-07-26T01:28:02.52716421Z,2020-01-01T00:00:00Z,72.01,used_percent,mem,host2
+        '400':
+          description: |
+            Bad request.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                type: string
+                example: invalid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScriptHTTPResponseData'
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidParameters:
+                  summary: The parameters passed to the script are invalid.
+                  value:
+                    code: invalid
+                    message: invalid parameters provided
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: |
+            Not found.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                type: string
+                example: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                scriptNotFound:
+                  summary: |
+                    The requested script was not found.
+                  value:
+                    code: not found
+                    message: script "09afa3b220fe400" not found
+                bucketNotFound:
+                  summary: |
+                    The requested bucket was not found.
+                  value:
+                    code: not found
+                    message: 'failed to initialize execute state: could not find bucket "test-bucket"'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \
+                      --header "Authorization: Token INFLUX_TOKEN" \
+                      --header 'Accept: application/csv' \
+                      --header 'Content-Type: application/json' \
+                      --data '{
+                        "params": {
+                            "mybucket": "air_sensor"
+                            }
+                        }'
 components:
   responses:
     ServerError:
       description: Non 2XX error response from server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationError:
+      description: |
+        Unauthorized. The error may indicate one of the following:
+
+          * The `Authorization: Token` header is missing or malformed.
+          * The API token value is missing from the header.
+          * The token does not have sufficient permissions to write to this organization and bucket.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tokenNotAuthorized:
+              summary: Token is not authorized to access a resource
+              value:
+                code: unauthorized
+                message: unauthorized access
+    InternalServerError:
+      description: |
+        Internal server error.
+        The server encountered an unexpected situation.
       content:
         application/json:
           schema:
@@ -430,7 +570,9 @@ components:
           description: script is script to be executed
           type: string
     ScriptHTTPResponseData:
-      description: The data sent in the response body when a script is invoked by an HTTP request. User defined and dynamic.
+      description: |
+        The response body contains the results of the executed script.
+        The response is user-defined and dynamic.
       type: string
       format: binary
     ScriptInvocationParams:
@@ -439,6 +581,12 @@ components:
         params:
           type: object
           additionalProperties: true
+          description: |
+            The script parameters.
+            `params` contains key-value pairs that map values to the **params.keys**
+            in a script.
+            When you invoke a script with `params`, InfluxDB passes the values as
+            invocation parameters to the script.
     ScriptLanguage:
       type: string
       enum:

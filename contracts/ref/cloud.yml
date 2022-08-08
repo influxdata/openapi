@@ -4130,14 +4130,21 @@ components:
       - description
       type: object
     ScriptHTTPResponseData:
-      description: The data sent in the response body when a script is invoked by
-        an HTTP request. User defined and dynamic.
+      description: |
+        The response body contains the results of the executed script.
+        The response is user-defined and dynamic.
       format: binary
       type: string
     ScriptInvocationParams:
       properties:
         params:
           additionalProperties: true
+          description: |
+            The script parameters.
+            `params` contains key-value pairs that map values to the **params.keys**
+            in a script.
+            When you invoke a script with `params`, InfluxDB passes the values as
+            invocation parameters to the script.
           type: object
       type: object
     ScriptLanguage:
@@ -11536,15 +11543,22 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          $ref: '#/components/responses/ServerError'
-          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error.
       summary: List scripts
       tags:
       - Data I/O endpoints
       - Invokable Scripts
       x-codeSamples:
-      - label: cUrl
+      - label: cURL
         lang: Shell
         source: |
           curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
@@ -11615,6 +11629,8 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
         "422":
           content:
             application/json:
@@ -11629,9 +11645,14 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Unprocessable entity.
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          $ref: '#/components/responses/ServerError'
-          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error.
       summary: Create a script
       tags:
       - Invokable Scripts
@@ -11727,11 +11748,36 @@ paths:
       - Invokable Scripts
   /api/v2/scripts/{scriptID}/invoke:
     post:
-      description: Invokes a script and substitutes `params` keys referenced in the
-        script with `params` key-values sent in the request body.
+      description: |
+        Invokes a script and substitutes `params` keys referenced in the script with
+        `params` key-values sent in the request body--for example:
+
+        The following script contains the parameter _`mybucket`_:
+
+        ```json
+        "script": "from(bucket: params.mybucket)
+                    |> range(start: -7d)
+                    |> limit(n:1)"
+        ```
+        The following example `POST /api/v2/scripts/SCRIPT_ID/invoke` request body
+        passes a value for _`mybucket`_:
+
+        ```json
+        {
+          "params": {
+            "mybucket": "air_sensor"
+          }
+        }
+        ```
+
+        #### Related Guides
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: PostScriptsIDInvoke
       parameters:
-      - in: path
+      - description: |
+          Script ID.
+          Only returns scripts with this ID.
+        in: path
         name: scriptID
         required: true
         schema:
@@ -11744,17 +11790,93 @@ paths:
       responses:
         "200":
           content:
-            application/json:
+            text/csv:
+              examples:
+                successResponse:
+                  type: string
+                  value: |
+                    ,result,table,_start,_stop,_time,_value,_field,_measurement,host
+                    ,_result,0,2019-10-30T01:28:02.52716421Z,2022-07-26T01:28:02.52716421Z,2020-01-01T00:00:00Z,72.01,used_percent,mem,host2
               schema:
                 $ref: '#/components/schemas/ScriptHTTPResponseData'
-          description: The result of the script execution.
+          description: |
+            Success.
+            The response body contains the result of the script execution.
+        "400":
+          content:
+            application/json:
+              examples:
+                invalidParameters:
+                  summary: The parameters passed to the script are invalid.
+                  value:
+                    code: invalid
+                    message: invalid parameters provided
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                example: invalid
+                type: string
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          content:
+            application/json:
+              examples:
+                bucketNotFound:
+                  summary: |
+                    The requested bucket was not found.
+                  value:
+                    code: not found
+                    message: 'failed to initialize execute state: could not find bucket
+                      "test-bucket"'
+                scriptNotFound:
+                  summary: |
+                    The requested script was not found.
+                  value:
+                    code: not found
+                    message: script "09afa3b220fe400" not found
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Not found.
+          headers:
+            X-Platform-Error-Code:
+              description: |
+                The reason for the error.
+              schema:
+                example: not found
+                type: string
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
-          $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unexpected error.
       summary: Invoke a script
       tags:
       - Data I/O endpoints
       - Invokable Scripts
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST "https://cloud2.influxdata.com/api/v2/scripts/SCRIPT_ID/invoke" \
+                    --header "Authorization: Token INFLUX_TOKEN" \
+                    --header 'Accept: application/csv' \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                      "params": {
+                          "mybucket": "air_sensor"
+                          }
+                      }'
   /api/v2/setup:
     get:
       description: Check if setup is allowed. Returns `true` if no default user, organization,
