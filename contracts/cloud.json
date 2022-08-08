@@ -5344,6 +5344,7 @@
           "Buckets"
         ],
         "summary": "List all labels for a bucket",
+        "description": "Retrieves a list of all labels for a bucket.\n\nLabels may be used for grouping and filtering buckets.\n\n#### Related guides\n\n- [Manage labels in the InfluxDB UI]({{% INFLUXDB_DOCS_URL %}}/visualize-data/labels/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5355,19 +5356,47 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "Bucket ID.\nThe ID of the bucket to retrieve labels for.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of all labels for a bucket",
+            "description": "Success.\nThe response body contains a list of all labels for the bucket.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LabelsResponse"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "links": {
+                        "self": "/api/v2/labels"
+                      },
+                      "labels": [
+                        {
+                          "id": "09cbd068e7ebb000",
+                          "orgID": "INFLUX_ORG_ID",
+                          "name": "production_buckets"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5387,6 +5416,7 @@
           "Buckets"
         ],
         "summary": "Add a label to a bucket",
+        "description": "Adds a label to a bucket.\n\nUse this endpoint to add a label that you can use to buckets in the InfluxDB\nUI.\n\n#### Limitations\n\n- Before adding a label to a bucket, you must create the label if you have\nnot done so. To create a label, use\n[Create a label]({{% INFLUXDB_DOCS_URL %}}/api/#operation/PostLabels)\n\n#### Related guides\n\n- [Manage labels in the InfluxDB UI]({{% INFLUXDB_DOCS_URL %}}/visualize-data/labels/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5398,11 +5428,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "Bucket ID.\nThe ID of the bucket to label.\n"
           }
         ],
         "requestBody": {
-          "description": "Label to add",
+          "description": "An object that contains a _`labelID`_ to add to the bucket.",
           "required": true,
           "content": {
             "application/json": {
@@ -5414,14 +5444,68 @@
         },
         "responses": {
           "201": {
-            "description": "The newly added label",
+            "description": "Success.\nThe response body contains the label information.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LabelResponse"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "links": {
+                        "self": "/api/v2/labels"
+                      },
+                      "label": {
+                        "id": "09cbd068e7ebb000",
+                        "orgID": "INFLUX_ORG_ID",
+                        "name": "production_buckets"
+                      }
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError",
+            "examples": {
+              "invalidRequest": {
+                "summary": "The `labelID` is missing from the request body.",
+                "value": {
+                  "code": "invalid",
+                  "message": "label id is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "422": {
+            "description": "Unprocessable entity.\nLabel already exists on the resource.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "conflictingResource": {
+                    "summary": "Label already exists on the resource.\n",
+                    "value": {
+                      "code": "conflict",
+                      "message": "Cannot add label, label already exists on resource"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5433,7 +5517,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets/BUCKETS_ID/labels \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"labelID\": \"09cbd068e7ebb000\"\n    }'\n"
+          }
+        ]
       }
     },
     "/buckets/{bucketID}/labels/{labelID}": {
@@ -17638,7 +17729,9 @@
         "type": "object",
         "properties": {
           "labelID": {
-            "type": "string"
+            "type": "string",
+            "description": "Label ID.\nThe ID of the label to attach.\n",
+            "required": true
           }
         }
       },

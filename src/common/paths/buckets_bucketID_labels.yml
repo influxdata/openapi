@@ -3,6 +3,14 @@ get:
   tags:
     - Buckets
   summary: List all labels for a bucket
+  description: |
+    Retrieves a list of all labels for a bucket.
+
+    Labels may be used for grouping and filtering buckets.
+
+    #### Related guides
+    
+    - [Manage labels in the InfluxDB UI]({{% INFLUXDB_DOCS_URL %}}/visualize-data/labels/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,14 +18,28 @@ get:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        Bucket ID.
+        The ID of the bucket to retrieve labels for.
   responses:
     "200":
-      description: A list of all labels for a bucket
+      description: |
+        Success.
+        The response body contains a list of all labels for the bucket.
       content:
         application/json:
           schema:
             $ref: "../schemas/LabelsResponse.yml"
+          examples:
+            $ref: "../responses/examples-responses/GetBucketsIDLabelsSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -29,6 +51,21 @@ post:
   tags:
     - Buckets
   summary: Add a label to a bucket
+  description: |
+    Adds a label to a bucket.
+
+    Use this endpoint to add a label that you can use to buckets in the InfluxDB
+    UI.
+
+    #### Limitations
+
+    - Before adding a label to a bucket, you must create the label if you have
+    not done so. To create a label, use
+    [Create a label]({{% INFLUXDB_DOCS_URL %}}/api/#operation/PostLabels)
+
+    #### Related guides
+
+    - [Manage labels in the InfluxDB UI]({{% INFLUXDB_DOCS_URL %}}/visualize-data/labels/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -36,9 +73,11 @@ post:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        Bucket ID.
+        The ID of the bucket to label.
   requestBody:
-    description: Label to add
+    description: An object that contains a _`labelID`_ to add to the bucket.
     required: true
     content:
       application/json:
@@ -46,14 +85,60 @@ post:
           $ref: "../schemas/LabelMapping.yml"
   responses:
     "201":
-      description: The newly added label
+      description: |
+        Success.
+        The response body contains the label information.
       content:
         application/json:
           schema:
             $ref: "../schemas/LabelResponse.yml"
+          examples:
+            $ref: "../responses/examples-responses/PostBucketsIDLabelsSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+      examples:
+        invalidRequest:
+          summary: The `labelID` is missing from the request body.
+          value: {
+            "code": "invalid",
+            "message": "label id is required"
+          }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "422":
+      description: |
+        Unprocessable entity.
+        Label already exists on the resource.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            conflictingResource:
+              summary: |
+                Label already exists on the resource.
+              value: {
+                "code": "conflict",
+                "message": "Cannot add label, label already exists on resource"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/buckets/BUCKETS_ID/labels \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "labelID": "09cbd068e7ebb000"
+            }'
