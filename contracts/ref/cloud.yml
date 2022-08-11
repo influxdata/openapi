@@ -146,8 +146,12 @@ components:
     AddResourceMemberRequestBody:
       properties:
         id:
+          description: |
+            The ID of the user to add to the resource.
           type: string
         name:
+          description: |
+            The name of the user to add to the resource.
           type: string
       required:
       - id
@@ -5870,6 +5874,8 @@ components:
     UserResponse:
       properties:
         id:
+          description: |
+            The ID of the user.
           readOnly: true
           type: string
         links:
@@ -5882,12 +5888,13 @@ components:
           readOnly: true
           type: object
         name:
-          type: string
-        oauthID:
+          description: |
+            The name of the user.
           type: string
         status:
           default: active
-          description: If inactive the user is inactive.
+          description: |
+            The status of a user. An inactive user won't have access to resources.
           enum:
           - active
           - inactive
@@ -6635,10 +6642,26 @@ paths:
       - Buckets
   /api/v2/buckets/{bucketID}/members:
     get:
+      description: |
+        Retrieves a list of all users for a bucket.
+
+        InfluxDB [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) have
+        permission to access InfluxDB.
+
+        [Members](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#member) are users in
+        an organization with access to the specified resource.
+
+        Use this endpoint to retrieve all users with access to a bucket.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/cloud/organizations/members/)
       operationId: GetBucketsIDMembers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The bucket ID.
+      - description: |
+          The ID of the bucket to retrieve users for.
         in: path
         name: bucketID
         required: true
@@ -6648,9 +6671,37 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/buckets/37407e232b3911d8/members
+                    users:
+                    - id: 791df274afd48a83
+                      links:
+                        self: /api/v2/users/791df274afd48a83
+                      name: example_user_1
+                      role: member
+                      status: active
+                    - id: 09cfb87051cbe000
+                      links:
+                        self: /api/v2/users/09cfb87051cbe000
+                      name: example_user_2
+                      role: owner
+                      status: active
               schema:
                 $ref: '#/components/schemas/ResourceMembers'
-          description: A list of bucket members
+          description: |
+            Success.
+            The response body contains a list of all users for the bucket.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -6661,10 +6712,26 @@ paths:
       tags:
       - Buckets
     post:
+      description: |
+        Add a user to a bucket and return the new user information.
+
+        InfluxDB [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) have
+        permission to access InfluxDB.
+
+        [Members](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#member) are users in
+        an organization.
+
+        Use this endpoint to give a user member privileges to a bucket.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/cloud/organizations/members/)
       operationId: PostBucketsIDMembers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The bucket ID.
+      - description: |
+          The ID of the bucket to retrieve users for.
         in: path
         name: bucketID
         required: true
@@ -6675,15 +6742,40 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
-        description: User to add as member
+        description: A user to add as a member to the bucket.
         required: true
       responses:
         "201":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    id: 09cfb87051cbe000
+                    links:
+                      self: /api/v2/users/09cfb87051cbe000
+                    name: example_user_1
+                    role: member
+                    status: active
               schema:
                 $ref: '#/components/schemas/ResourceMember'
-          description: Member added to bucket
+          description: |
+            Success.
+            The response body contains the user information.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The `userID` is missing from the request body.
+              value:
+                code: invalid
+                message: user id missing or invalid
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -6693,18 +6785,41 @@ paths:
       summary: Add a member to a bucket
       tags:
       - Buckets
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST "http://localhost:8086/api/v2/buckets/BUCKET_ID/members \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+                "id": "09cfb87051cbe000"
+              }
   /api/v2/buckets/{bucketID}/members/{userID}:
     delete:
+      description: |
+        Removes a member from a bucket.
+
+        Use this endpoint to remove a user's member privileges from a bucket. This
+        will remove user access to the bucket.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/cloud/organizations/members/)
       operationId: DeleteBucketsIDMembersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the member to remove.
+      - description: |
+          The ID of the user to remove.
         in: path
         name: userID
         required: true
         schema:
           type: string
-      - description: The bucket ID.
+      - description: |
+          The ID of the bucket to remove a user from.
         in: path
         name: bucketID
         required: true
@@ -6712,7 +6827,15 @@ paths:
           type: string
       responses:
         "204":
-          description: Member removed
+          description: |
+            Success.
+            The user is no longer a member of the bucket.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -6772,7 +6895,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
-          description: Bucket owner added
+          description: Bucket owner adde
         default:
           content:
             application/json:

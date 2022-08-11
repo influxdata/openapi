@@ -5500,6 +5500,7 @@
           "Buckets"
         ],
         "summary": "List all users with member privileges for a bucket",
+        "description": "Retrieves a list of all users for a bucket.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users in\nan organization with access to the specified resource.\n\nUse this endpoint to retrieve all users with access to a bucket.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5511,19 +5512,60 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "The ID of the bucket to retrieve users for.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of bucket members",
+            "description": "Success.\nThe response body contains a list of all users for the bucket.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceMembers"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "links": {
+                        "self": "/api/v2/buckets/37407e232b3911d8/members"
+                      },
+                      "users": [
+                        {
+                          "role": "member",
+                          "links": {
+                            "self": "/api/v2/users/791df274afd48a83"
+                          },
+                          "id": "791df274afd48a83",
+                          "name": "example_user_1",
+                          "status": "active"
+                        },
+                        {
+                          "role": "owner",
+                          "links": {
+                            "self": "/api/v2/users/09cfb87051cbe000"
+                          },
+                          "id": "09cfb87051cbe000",
+                          "name": "example_user_2",
+                          "status": "active"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5543,6 +5585,7 @@
           "Buckets"
         ],
         "summary": "Add a member to a bucket",
+        "description": "Add a user to a bucket and return the new user information.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users in\nan organization.\n\nUse this endpoint to give a user member privileges to a bucket.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5554,11 +5597,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "The ID of the bucket to retrieve users for.\n"
           }
         ],
         "requestBody": {
-          "description": "User to add as member",
+          "description": "A user to add as a member to the bucket.",
           "required": true,
           "content": {
             "application/json": {
@@ -5570,14 +5613,48 @@
         },
         "responses": {
           "201": {
-            "description": "Member added to bucket",
+            "description": "Success.\nThe response body contains the user information.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceMember"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "role": "member",
+                      "links": {
+                        "self": "/api/v2/users/09cfb87051cbe000"
+                      },
+                      "id": "09cfb87051cbe000",
+                      "name": "example_user_1",
+                      "status": "active"
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError",
+            "examples": {
+              "invalidRequest": {
+                "summary": "The `userID` is missing from the request body.",
+                "value": {
+                  "code": "invalid",
+                  "message": "user id missing or invalid"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5589,7 +5666,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets/BUCKET_ID/members \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"id\": \"09cfb87051cbe000\"\n    }\n"
+          }
+        ]
       }
     },
     "/buckets/{bucketID}/members/{userID}": {
@@ -5599,6 +5683,7 @@
           "Buckets"
         ],
         "summary": "Remove a member from a bucket",
+        "description": "Removes a member from a bucket.\n\nUse this endpoint to remove a user's member privileges from a bucket. This\nwill remove user access to the bucket.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5610,7 +5695,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the member to remove."
+            "description": "The ID of the user to remove.\n"
           },
           {
             "in": "path",
@@ -5619,12 +5704,21 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "The ID of the bucket to remove a user from.\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "Member removed"
+            "description": "Success.\nThe user is no longer a member of the bucket.\n"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5716,7 +5810,7 @@
         },
         "responses": {
           "201": {
-            "description": "Bucket owner added",
+            "description": "Bucket owner adde",
             "content": {
               "application/json": {
                 "schema": {
@@ -16986,16 +17080,15 @@
         "properties": {
           "id": {
             "readOnly": true,
-            "type": "string"
-          },
-          "oauthID": {
-            "type": "string"
+            "type": "string",
+            "description": "The ID of the user.\n"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the user.\n"
           },
           "status": {
-            "description": "If inactive the user is inactive.",
+            "description": "The status of a user. An inactive user won't have access to resources.\n",
             "default": "active",
             "type": "string",
             "enum": [
@@ -19999,10 +20092,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "The ID of the user to add to the resource.\n"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the user to add to the resource.\n"
           }
         },
         "required": [
