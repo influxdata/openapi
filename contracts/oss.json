@@ -6598,7 +6598,8 @@
         "tags": [
           "Templates"
         ],
-        "summary": "List installed templates",
+        "summary": "List installed stacks",
+        "description": "Retrieves a list of installed InfluxDB stacks.\n\nTo limit stacks in the response, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all installed stacks\nfor the organization.\n",
         "parameters": [
           {
             "in": "query",
@@ -6607,7 +6608,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The organization ID of the stacks"
+            "description": "The ID of the organization that owns the stacks.\nOnly returns stacks owned by this organization.\n\n#### InfluxDB Cloud\n\n- Doesn't require this parameter;\n  InfluxDB only returns resources allowed by the API token.\n"
           },
           {
             "in": "query",
@@ -6615,7 +6616,13 @@
             "schema": {
               "type": "string"
             },
-            "description": "A collection of names to filter the list by."
+            "description": "The stack name.\nFinds stack `events` with this name and returns the stacks.\n\nRepeatable.\nTo filter for more than one stack name,\nrepeat this parameter with each name--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`\n",
+            "examples": {
+              "findStackByName": {
+                "summary": "Find stacks with the event name",
+                "value": "project-stack-0"
+              }
+            }
           },
           {
             "in": "query",
@@ -6623,12 +6630,18 @@
             "schema": {
               "type": "string"
             },
-            "description": "A collection of stackIDs to filter the list by."
+            "description": "The stack ID.\nOnly returns stacks with this ID.\n\nRepeatable.\nTo filter for more than one stack ID,\nrepeat this parameter with each ID--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`\n",
+            "examples": {
+              "findStackByID": {
+                "summary": "Find a stack with the ID",
+                "value": "09bd87cd33be3000"
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success. Returns the list of stacks.",
+            "description": "Success. The response body contains the list of stacks.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6644,6 +6657,38 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if an incorrect value is passed for `org` or `orgID`.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "orgIdMissing": {
+                    "summary": "The orgID query parameter is missing",
+                    "value": {
+                      "code": "invalid",
+                      "message": "organization id[\"\"] is invalid: id must have a length of 16 bytes"
+                    }
+                  },
+                  "orgProvidedNotFound": {
+                    "summary": "The org or orgID passed doesn't own the token passed in the header",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request body: organization not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -6662,7 +6707,8 @@
         "tags": [
           "Templates"
         ],
-        "summary": "Create a new stack",
+        "summary": "Create a stack",
+        "description": "Creates or initializes a stack.\n\nUse this endpoint to _manually_ initialize a new stack with the following\noptional information:\n\n  - Stack name\n  - Stack description\n  - URLs for template manifest files\n\nTo automatically create a stack when applying templates,\nuse the [/api/v2/templates/apply endpoint](#operation/ApplyTemplate).\n\n#### Required permissions\n\n- `write` permission for the organization\n\n#### Related guides\n\n- [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)\n- [Use InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/#apply-templates-to-an-influxdb-instance)\n",
         "requestBody": {
           "description": "The stack to create.",
           "required": true,
@@ -6702,6 +6748,22 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
