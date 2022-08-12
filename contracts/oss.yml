@@ -10866,12 +10866,45 @@ components:
       properties:
         dryRun:
           type: boolean
+          description: |
+            Only applies a dry run of the templates passed in the request.
+
+            - Validates the template and generates a resource diff and summary.
+            - Doesn't install templates or make changes to the InfluxDB instance.
         orgID:
           type: string
+          description: |
+            Organization ID.
+            InfluxDB applies templates to this organization.
+            The organization will own all resources created by the template.
+
+            To find your organization, see how to
+            [view organizations](https://docs.influxdata.com/influxdb/v2.3/organizations/view-orgs/).
         stackID:
           type: string
+          description: |
+            ID of the stack to update.
+
+            To apply templates to an existing stack in the organization, use the `stackID` parameter.
+            If you apply templates without providing a stack ID,
+            InfluxDB initializes a new stack with all new resources.
+
+            To find a stack ID, use the InfluxDB [`/api/v2/stacks` API endpoint](#operation/ListStacks) to list stacks.
+
+            #### Related guides
+
+            - [Stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
+            - [View stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/view/)
         template:
           type: object
+          description: |
+            A template object to apply.
+            A template object has a `contents` property
+            with an array of InfluxDB resource configurations.
+
+            Pass `template` to apply only one template object.
+            If you use `template`, you can't use the `templates` parameter.
+            If you want to apply multiple template objects, use `templates` instead.
           properties:
             contentType:
               type: string
@@ -10883,6 +10916,13 @@ components:
               $ref: '#/components/schemas/Template'
         templates:
           type: array
+          description: |
+            A list of template objects to apply.
+            A template object has a `contents` property
+            with an array of InfluxDB resource configurations.
+
+            Use the `templates` parameter to apply multiple template objects.
+            If you use `templates`, you can't use the `template` parameter.
           items:
             type: object
             properties:
@@ -10896,6 +10936,26 @@ components:
                 $ref: '#/components/schemas/Template'
         envRefs:
           type: object
+          description: |
+            An object with key-value pairs that map to **environment references** in templates.
+
+            Environment references in templates are `envRef` objects with an `envRef.key`
+            property.
+            To substitute a custom environment reference value when applying templates,
+            pass `envRefs` with the `envRef.key` and the value.
+
+            When you apply a template, InfluxDB replaces `envRef` objects in the template
+            with the values that you provide in the `envRefs` parameter.
+            For more examples, see how to [define environment references](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#define-environment-references).
+
+            The following template fields may use environment references:
+
+              - `metadata.name`
+              - `spec.endpointName`
+              - `spec.associations.name`
+
+            For more information about including environment references in template fields, see how to
+            [include user-definable resource names](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/create/#include-user-definable-resource-names).
           additionalProperties:
             oneOf:
               - type: string
@@ -10904,10 +10964,48 @@ components:
               - type: boolean
         secrets:
           type: object
+          description: |
+            An object with key-value pairs that map to **secrets** in queries.
+
+            Queries may reference secrets stored in InfluxDB--for example:
+
+              ```js
+              import "sql"
+              import "influxdata/influxdb/secrets"
+
+              username = secrets.get(key: "POSTGRES_USERNAME")
+              password = secrets.get(key: "POSTGRES_PASSWORD")
+              ```
+
+            To define secret values in your request,
+            pass the `secrets` parameter with key-value pairs--for example:
+
+              ```json
+              {
+                ...
+                "secrets": {
+                  "POSTGRES_USERNAME": "pguser",
+                  "POSTGRES_PASSWORD": "foo"
+                }
+                ...
+              }
+              ```
+
+            InfluxDB stores the secret value.
+            Once stored, you can't view the secret value in InfluxDB.
+
+            #### Related guides
+
+            - [How to pass secrets when installing a template](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#pass-secrets-when-installing-a-template)
           additionalProperties:
             type: string
         remotes:
           type: array
+          description: |
+            A list of URLs for template files.
+
+            To apply a template manifest file located at a URL, pass `remotes`
+            with an array that contains the URL.
           items:
             type: object
             properties:
@@ -10919,6 +11017,15 @@ components:
               - url
         actions:
           type: array
+          description: |
+            A list of `action` objects.
+            Actions let you customize how InfluxDB applies templates in the request.
+
+            You can use the following actions to prevent creating or updating resources:
+
+            - A `skipKind` action skips template resources of a specified `kind`.
+            - A `skipResource` action skips template resources with a specified `metadata.name`
+              and `kind`.
           items:
             oneOf:
               - type: object
@@ -11044,18 +11151,55 @@ components:
       type: array
       items:
         type: object
+        description: |
+          A template entry.
+          Defines an InfluxDB resource in a template.
         properties:
           apiVersion:
             type: string
+            example: influxdata.com/v2alpha1
           kind:
             $ref: '#/components/schemas/TemplateKind'
-          meta:
+          metadata:
             type: object
+            description: |
+              Metadata properties used for the resource when the template is applied.
             properties:
               name:
                 type: string
           spec:
             type: object
+            description: |
+              Configuration properties used for the resource when the template is applied.
+              Key-value pairs map to the specification for the resource.
+
+              The following code samples show `spec` configurations for template resources:
+
+              - A bucket:
+
+                ```json
+                { "spec": {
+                    "name": "iot_center",
+                    "retentionRules": [{
+                        "everySeconds": 2.592e+06,
+                        "type": "expire"
+                      }]
+                  }
+                }
+                ```
+
+              - A variable:
+                
+                ```json
+                { "spec": {
+                    "language": "flux",
+                    "name": "Node_Service",
+                    "query": "import \"influxdata/influxdb/v1\"\r\nv1.tagValues(bucket: \"iot_center\",
+                        tag: \"service\")",
+                    "type": "query"
+                  }
+                }
+                ```
     TemplateEnvReferences:
       type: array
       items:
