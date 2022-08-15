@@ -12,7 +12,7 @@
       description: |
         Organization ID.
         InfluxDB applies templates to this organization.
-        The organization will own all resources created by the template.
+        The organization owns all resources created by the template.
 
         To find your organization, see how to
         [view organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/).
@@ -74,7 +74,7 @@
       type: object
       description: |
         An object with key-value pairs that map to **environment references** in templates.
-        
+
         Environment references in templates are `envRef` objects with an `envRef.key`
         property.
         To substitute a custom environment reference value when applying templates,
@@ -103,7 +103,9 @@
       description: |
         An object with key-value pairs that map to **secrets** in queries.
 
-        Queries may reference secrets stored in InfluxDB--for example:
+        Queries may reference secrets stored in InfluxDB--for example,
+        the following Flux script retrieves `POSTGRES_USERNAME` and `POSTGRES_PASSWORD`
+        secrets and then uses them to connect to a PostgreSQL database:
 
           ```js
           import "sql"
@@ -111,9 +113,15 @@
 
           username = secrets.get(key: "POSTGRES_USERNAME")
           password = secrets.get(key: "POSTGRES_PASSWORD")
+
+          sql.from(
+            driverName: "postgres",
+            dataSourceName: "postgresql://${username}:${password}@localhost:5432",
+            query: "SELECT * FROM example_table",
+          )
           ```
 
-        To define secret values in your request,
+        To define secret values in your `/api/v2/templates/apply` request,
         pass the `secrets` parameter with key-value pairs--for example:
 
           ```json
@@ -127,8 +135,8 @@
           }
           ```
 
-        InfluxDB stores the secret value.
-        Once stored, you can't view the secret value in InfluxDB.
+        InfluxDB stores the key-value pairs as secrets that you can access with `secrets.get()`.
+        Once stored, you can't view secret values in InfluxDB.
 
         #### Related guides
 

@@ -4983,17 +4983,37 @@ components:
                 type: string
             type: object
           spec:
-            description: "Configuration properties used for the resource when the
-              template is applied.\nKey-value pairs map to the specification for the
-              resource.\n\nThe following code samples show `spec` configurations for
-              template resources:\n\n- A bucket:\n\n  ```json\n  { \"spec\": {\n      \"name\":
-              \"iot_center\",\n      \"retentionRules\": [{\n          \"everySeconds\":
-              2.592e+06,\n          \"type\": \"expire\"\n        }]\n    }\n  }\n
-              \ ```\n\n- A variable:\n  \n  ```json\n  { \"spec\": {\n      \"language\":
-              \"flux\",\n      \"name\": \"Node_Service\",\n      \"query\": \"import
-              \\\"influxdata/influxdb/v1\\\"\\r\\nv1.tagValues(bucket: \\\"iot_center\\\",\n
-              \         tag: \\\"service\\\")\",\n      \"type\": \"query\"\n    }\n
-              \ }\n  ```\n"
+            description: |
+              Configuration properties used for the resource when the template is applied.
+              Key-value pairs map to the specification for the resource.
+
+              The following code samples show `spec` configurations for template resources:
+
+              - A bucket:
+
+                ```json
+                { "spec": {
+                    "name": "iot_center",
+                    "retentionRules": [{
+                        "everySeconds": 2.592e+06,
+                        "type": "expire"
+                      }]
+                  }
+                }
+                ```
+
+              - A variable:
+
+                ```json
+                { "spec": {
+                    "language": "flux",
+                    "name": "Node_Service",
+                    "query": "import \"influxdata/influxdb/v1\"\r\nv1.tagValues(bucket: \"iot_center\",
+                        tag: \"service\")",
+                    "type": "query"
+                  }
+                }
+                ```
             type: object
         type: object
       type: array
@@ -5080,7 +5100,7 @@ components:
           description: |
             Organization ID.
             InfluxDB applies templates to this organization.
-            The organization will own all resources created by the template.
+            The organization owns all resources created by the template.
 
             To find your organization, see how to
             [view organizations](https://docs.influxdata.com/influxdb/v2.3/organizations/view-orgs/).
@@ -5107,7 +5127,9 @@ components:
           description: |
             An object with key-value pairs that map to **secrets** in queries.
 
-            Queries may reference secrets stored in InfluxDB--for example:
+            Queries may reference secrets stored in InfluxDB--for example,
+            the following Flux script retrieves `POSTGRES_USERNAME` and `POSTGRES_PASSWORD`
+            secrets and then uses them to connect to a PostgreSQL database:
 
               ```js
               import "sql"
@@ -5115,9 +5137,15 @@ components:
 
               username = secrets.get(key: "POSTGRES_USERNAME")
               password = secrets.get(key: "POSTGRES_PASSWORD")
+
+              sql.from(
+                driverName: "postgres",
+                dataSourceName: "postgresql://${username}:${password}@localhost:5432",
+                query: "SELECT * FROM example_table",
+              )
               ```
 
-            To define secret values in your request,
+            To define secret values in your `/api/v2/templates/apply` request,
             pass the `secrets` parameter with key-value pairs--for example:
 
               ```json
@@ -5131,8 +5159,8 @@ components:
               }
               ```
 
-            InfluxDB stores the secret value.
-            Once stored, you can't view the secret value in InfluxDB.
+            InfluxDB stores the key-value pairs as secrets that you can access with `secrets.get()`.
+            Once stored, you can't view secret values in InfluxDB.
 
             #### Related guides
 
@@ -6389,7 +6417,7 @@ components:
 
         ### Syntax
 
-        `Authorization: Token YOUR_INFLUX_TOKEN`
+        `Authorization: Token YOUR_INFLUX_API_TOKEN`
 
 
         For more information and examples, see the following:
@@ -9351,7 +9379,7 @@ paths:
         lang: Shell
         source: |
           curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \
-            --header 'Authorization: Token INFLUX_TOKEN' \
+            --header 'Authorization: Token INFLUX_API_TOKEN' \
             --header 'Content-Type: application/json' \
             --data '{
               "start": "2020-03-01T00:00:00Z",
@@ -10965,7 +10993,7 @@ paths:
           curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \
           --header 'Content-Type: application/vnd.flux' \
           --header 'Accept: application/csv \
-          --header 'Authorization: Token INFLUX_TOKEN' \
+          --header 'Authorization: Token INFLUX_API_TOKEN' \
           --data 'from(bucket: "example-bucket")
                     |> range(start: -5m)
                     |> filter(fn: (r) => r._measurement == "example-measurement")'
@@ -11113,7 +11141,7 @@ paths:
         source: |
           curl -v --request POST \
             "http://localhost:8086/api/v2/query/analyze" \
-            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
             --header 'Content-type: application/json' \
             --header 'Accept: application/json' \
             --data-binary @- << EOF
@@ -11547,7 +11575,7 @@ paths:
           curl --request POST 'http://localhost:8086/api/v2/query/ast' \
           --header 'Content-Type: application/json' \
           --header 'Accept: application/json' \
-          --header 'Authorization: Token INFLUX_TOKEN' \
+          --header 'Authorization: Token INFLUX_API_TOKEN' \
           --data 'from(bucket: "example-bucket")
                     |> range(start: -5m)
                     |> filter(fn: (r) => r._measurement == "example-measurement")'
@@ -12210,7 +12238,7 @@ paths:
         source: |
           curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions" \
             --header "Accept: application/json" \
-            --header "Authorization: Token INFLUX_TOKEN"
+            --header "Authorization: Token INFLUX_API_TOKEN"
   /api/v2/query/suggestions/{name}:
     get:
       description: |
@@ -12283,7 +12311,7 @@ paths:
         source: |
           curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions/sum/" \
             --header "Accept: application/json" \
-            --header "Authorization: Token INFLUX_TOKEN"
+            --header "Authorization: Token INFLUX_API_TOKEN"
   /ready:
     get:
       operationId: GetReady
@@ -14141,7 +14169,7 @@ paths:
         source: |
           curl http://localhost:8086/api/v2/tasks \
             --header "Content-type: application/json" \
-            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
             --data-binary @- << EOF
               {
               "orgID": "INFLUX_ORG_ID",
@@ -15425,11 +15453,119 @@ paths:
       - Telegrafs
   /api/v2/templates/apply:
     post:
-      description: Applies or performs a dry-run of template in an organization.
+      description: |
+        Applies a template to
+        create or update a [stack](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/) of InfluxDB
+        [resources](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/export/all/#resources).
+        The response contains the diff of changes and the stack ID.
+
+        Use this endpoint to install an InfluxDB template to an organization.
+        Provide template URLs or template objects in your request.
+        To customize which template resources are installed, use the `actions`
+        parameter.
+
+        By default, when you apply a template, InfluxDB installs the template to
+        create and update stack resources and then generates a diff of the changes.
+        If you pass `dryRun: true` in the request body, InfluxDB validates the
+        template and generates the resource diff, but doesn’t make any
+        changes to your instance.
+
+        #### Custom values for templates
+
+        - Some templates may contain [environment references](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/create/#include-user-definable-resource-names) for custom metadata.
+          To provide custom values for environment references, pass the _`envRefs`_
+          property in the request body.
+          For more information and examples, see how to
+          [define environment references](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#define-environment-references).
+
+        - Some templates may contain queries that use
+          [secrets](https://docs.influxdata.com/influxdb/v2.3/security/secrets/).
+          To provide custom secret values, pass the _`secrets`_ property
+          in the request body.
+          Don't expose secret values in templates.
+          For more information, see [how to pass secrets when installing a template](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#pass-secrets-when-installing-a-template).
+
+        #### Required permissions
+
+        - `write` permissions for resource types in the template.
+
+        #### Rate limits (with InfluxDB Cloud)
+
+        - Adjustable service quotas apply.
+          For more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).
+
+        #### Related guides
+
+        - [Use templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/)
+        - [Stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
       operationId: ApplyTemplate
       requestBody:
         content:
           application/json:
+            examples:
+              skipKindAction:
+                summary: Skip all bucket and task resources in the provided templates
+                value:
+                  actions:
+                  - action: skipKind
+                    properties:
+                      kind: Bucket
+                  - action: skipKind
+                    properties:
+                      kind: Task
+                  orgID: INFLUX_ORG_ID
+                  templates:
+                  - contents:
+                    - '[object Object]': null
+              skipResourceAction:
+                summary: Skip specific resources in the provided templates
+                value:
+                  actions:
+                  - action: skipResource
+                    properties:
+                      kind: Label
+                      resourceTemplateName: foo-001
+                  - action: skipResource
+                    properties:
+                      kind: Bucket
+                      resourceTemplateName: bar-020
+                  - action: skipResource
+                    properties:
+                      kind: Bucket
+                      resourceTemplateName: baz-500
+                  orgID: INFLUX_ORG_ID
+                  templates:
+                  - contents:
+                    - apiVersion: influxdata.com/v2alpha1
+                      kind: Bucket
+                      metadata:
+                        name: baz-500
+              templateObjectEnvRefs:
+                summary: envRefs for template objects
+                value:
+                  envRefs:
+                    docker-bucket: MY_DOCKER_BUCKET
+                    docker-spec-1: MY_DOCKER_SPEC
+                    linux-cpu-label: MY_CPU_LABEL
+                  orgID: INFLUX_ORG_ID
+                  templates:
+                  - contents:
+                    - apiVersion: influxdata.com/v2alpha1
+                      kind: Label
+                      metadata:
+                        name:
+                          envRef:
+                            key: linux-cpu-label
+                      spec:
+                        color: '#326BBA'
+                        name: inputs.cpu
+                  - contents:
+                    - apiVersion: influxdata.com/v2alpha1
+                      kind: Bucket
+                      metadata:
+                        name:
+                          envRef:
+                            key: docker-bucket
             schema:
               $ref: '#/components/schemas/TemplateApply'
           application/x-jsonnet:
@@ -15438,6 +15574,8 @@ paths:
           text/yml:
             schema:
               $ref: '#/components/schemas/TemplateApply'
+        description: |
+          Parameters for applying templates.
         required: true
       responses:
         "200":
@@ -15446,14 +15584,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/TemplateSummary'
           description: |
-            Success. The package dry-run succeeded. No new resources were created. Returns a diff and summary of the dry-run. The diff and summary won't contain IDs for resources that didn't exist at the time of the dry-run.
+            Success.
+            The template dry run succeeded.
+            The response body contains a resource diff of changes that the
+            template would have made if installed.
+            No resources were created or updated.
+            The diff and summary won't contain IDs for resources
+            that didn't exist at the time of the dry run.
         "201":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TemplateSummary'
           description: |
-            Success. The package applied successfully. Returns a diff and summary of the run. The summary contains newly created resources. The diff compares the initial state to the state after the package applied. This corresponds to `"dryRun": true`.
+            Success.
+            The template applied successfully.
+            The response body contains the stack ID, a diff, and a summary.
+            The diff compares the initial state to the state after the template installation.
+            The summary contains newly created resources.
         "422":
           content:
             application/json:
@@ -15469,7 +15617,35 @@ paths:
                   - message
                   - code
                   type: object
-          description: Template failed validation
+          description: |
+            Unprocessable entity.
+
+
+            The error may indicate one of the following problems:
+
+            - The template failed validation.
+            - You passed a parameter combination that InfluxDB doesn't support.
+        "500":
+          content:
+            application/json:
+              examples:
+                createExceedsQuota:
+                  summary: 'InfluxDB Cloud: Creating resource would exceed quota.'
+                  value:
+                    code: internal error
+                    message: "resource_type=\"tasks\" err=\"failed to apply resource\"\n\tmetadata_name=\"alerting-gates-b84003\"
+                      err_msg=\"failed to create tasks[\\\"alerting-gates-b84003\\\"]:
+                      creating task would exceed quota\""
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Internal server error.
+
+            #### InfluxDB Cloud
+
+            - Returns this error if creating one of the template
+              resources (bucket, dashboard, task, user) exceeds your plan’s
+              adjustable service quotas.
         default:
           content:
             application/json:
@@ -15479,6 +15655,102 @@ paths:
       summary: Apply or dry-run a template
       tags:
       - Templates
+      x-codeSamples:
+      - label: 'cURL: Dry run with a remote template'
+        lang: Shell
+        source: |
+          curl --request POST "http://localhost:8086/api/v2/templates/apply" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --data @- << EOF
+              {
+                "dryRun": true,
+                "orgID": "INFLUX_ORG_ID",
+                "remotes": [
+                  {
+                    "url": "https://raw.githubusercontent.com/influxdata/community-templates/master/linux_system/linux_system.yml"
+                  }
+                ]
+              }
+          EOF
+      - label: 'cURL: Apply with secret values'
+        lang: Shell
+        source: |
+          curl "http://localhost:8086/api/v2/templates/apply" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --data @- << EOF | jq .
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "secrets": {
+                  "SLACK_WEBHOOK": "YOUR_SECRET_WEBHOOK_URL"
+                },
+                "remotes": [
+                  {
+                    "url": "https://raw.githubusercontent.com/influxdata/community-templates/master/fortnite/fn-template.yml"
+                  }
+                ]
+              }
+          EOF
+      - label: 'cURL: Apply template objects with environment references'
+        lang: Shell
+        source: |
+          curl --request POST "http://localhost:8086/api/v2/templates/apply" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --data @- << EOF
+            { "orgID": "INFLUX_ORG_ID",
+              "envRefs": {
+                "linux-cpu-label": "MY_CPU_LABEL",
+                "docker-bucket": "MY_DOCKER_BUCKET",
+                "docker-spec-1": "MY_DOCKER_SPEC"
+              },
+              "templates": [
+                { "contents": [{
+                    "apiVersion": "influxdata.com/v2alpha1",
+                    "kind": "Label",
+                    "metadata": {
+                      "name": {
+                        "envRef": {
+                          "key": "linux-cpu-label"
+                        }
+                      }
+                    },
+                    "spec": {
+                      "color": "#326BBA",
+                      "name": "inputs.cpu"
+                    }
+                  }]
+                },
+                "templates": [
+                  { "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Label",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "linux-cpu-label"
+                          }
+                        }
+                      },
+                      "spec": {
+                        "color": "#326BBA",
+                        "name": "inputs.cpu"
+                      }
+                    }]
+                  },
+                  { "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Bucket",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "docker-bucket"
+                          }
+                        }
+                      }
+                    }]
+                  }
+                ]
+              }
+          EOF
   /api/v2/templates/export:
     post:
       operationId: ExportTemplate
