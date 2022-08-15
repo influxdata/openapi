@@ -4006,18 +4006,18 @@ paths:
 
         #### InfluxDB Cloud
 
-        - `retentionRules` must be sent in the request body. Failure to do so will
-        result in an HTTP `403` status code.
+        - Requires the `retentionRules` property in the request body. If you don't
+        provide `retentionRules`, InfluxDB responds with an HTTP `403` status code.
 
         #### InfluxDB OSS
 
-        - `retentionRules` isn't required.
+        - Doesn't require `retentionRules`.
 
         #### Related Guides
 
         - [Update a bucket](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/update-bucket/)
       requestBody:
-        description: Bucket update to apply
+        description: The bucket update to apply.
         required: true
         content:
           application/json:
@@ -7920,11 +7920,6 @@ components:
             $ref: '#/components/schemas/Bucket'
     RetentionRules:
       type: array
-      description: Rules to expire or retain data.  No rules means data never expires.
-      items:
-        $ref: '#/components/schemas/RetentionRule'
-    PatchBucketRequest:
-      type: object
       description: |
         Retention rules to expire or retain data.
         #### InfluxDB Cloud
@@ -7932,6 +7927,12 @@ components:
 
         #### InfluxDB OSS
         - `retentionRules` isn't required.
+      items:
+        $ref: '#/components/schemas/RetentionRule'
+    PatchBucketRequest:
+      type: object
+      description: |
+        An object that contains updated bucket properties to apply.
       properties:
         name:
           type: string
@@ -7960,9 +7961,9 @@ components:
           type: integer
           format: int64
           description: |
-            The duration in seconds for how long data will be kept in the database.
-            The default duration is 2592000 (30 days).
-            0 represents infinite retention.
+            The number of seconds to keep data.
+            Default duration is `2592000` (30 days).
+            `0` represents infinite retention.
           example: 86400
           default: 2592000
           minimum: 0
@@ -7970,13 +7971,20 @@ components:
           type: integer
           format: int64
           description: |
-            The shard group duration.
-            The duration or interval (in seconds) that each shard group covers.
+            The [shard group duration](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#shard).
+            The number of seconds that each shard group covers.
+
             #### InfluxDB Cloud
-            - Does not use `shardGroupDurationsSeconds`.
+
+            - Doesn't use `shardGroupDurationsSeconds`.
+
             #### InfluxDB OSS
-            - Default value depends on the
-            [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/v2.3/reference/internals/shards/#shard-group-duration).
+
+            - Default value depends on the [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/#shard-group-duration).
+
+            #### Related guides
+
+            - InfluxDB [shards and shard groups](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/)
       required:
         - everySeconds
     RetentionRule:

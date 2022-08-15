@@ -3151,12 +3151,7 @@ components:
       - password
     PatchBucketRequest:
       description: |
-        Retention rules to expire or retain data.
-        #### InfluxDB Cloud
-        - `retentionRules` is required.
-
-        #### InfluxDB OSS
-        - `retentionRules` isn't required.
+        An object that contains updated bucket properties to apply.
       properties:
         description:
           description: |
@@ -3183,22 +3178,29 @@ components:
         everySeconds:
           default: 2592000
           description: |
-            The duration in seconds for how long data will be kept in the database.
-            The default duration is 2592000 (30 days).
-            0 represents infinite retention.
+            The number of seconds to keep data.
+            Default duration is `2592000` (30 days).
+            `0` represents infinite retention.
           example: 86400
           format: int64
           minimum: 0
           type: integer
         shardGroupDurationSeconds:
           description: |
-            The shard group duration.
-            The duration or interval (in seconds) that each shard group covers.
+            The [shard group duration](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#shard).
+            The number of seconds that each shard group covers.
+
             #### InfluxDB Cloud
-            - Does not use `shardGroupDurationsSeconds`.
+
+            - Doesn't use `shardGroupDurationsSeconds`.
+
             #### InfluxDB OSS
-            - Default value depends on the
-            [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/v2.3/reference/internals/shards/#shard-group-duration).
+
+            - Default value depends on the [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/#shard-group-duration).
+
+            #### Related guides
+
+            - InfluxDB [shards and shard groups](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/)
           format: int64
           type: integer
         type:
@@ -3844,7 +3846,13 @@ components:
       - everySeconds
       type: object
     RetentionRules:
-      description: Rules to expire or retain data.  No rules means data never expires.
+      description: |
+        Retention rules to expire or retain data.
+        #### InfluxDB Cloud
+        - `retentionRules` is required.
+
+        #### InfluxDB OSS
+        - `retentionRules` isn't required.
       items:
         $ref: '#/components/schemas/RetentionRule'
       type: array
@@ -7093,12 +7101,12 @@ paths:
 
         #### InfluxDB Cloud
 
-        - `retentionRules` must be sent in the request body. Failure to do so will
-        result in an HTTP `403` status code.
+        - Requires the `retentionRules` property in the request body. If you don't
+        provide `retentionRules`, InfluxDB responds with an HTTP `403` status code.
 
         #### InfluxDB OSS
 
-        - `retentionRules` isn't required.
+        - Doesn't require `retentionRules`.
 
         #### Related Guides
 
@@ -7117,7 +7125,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PatchBucketRequest'
-        description: Bucket update to apply
+        description: The bucket update to apply.
         required: true
       responses:
         "200":
