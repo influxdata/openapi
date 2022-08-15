@@ -4041,6 +4041,21 @@ paths:
       tags:
         - Buckets
       summary: List all users with member privileges for a bucket
+      description: |
+        Retrieves a list of all users for a bucket.
+
+        InfluxDB [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) have
+        permission to access InfluxDB.
+
+        [Members](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#member) are users in
+        an organization with access to the specified resource.
+
+        Use this endpoint to retrieve all users with access to a bucket.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/cloud/organizations/members/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4048,14 +4063,43 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to retrieve users for.
       responses:
         '200':
-          description: A list of bucket members
+          description: |
+            Success.
+            The response body contains a list of all users for the bucket.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceMembers'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/buckets/37407e232b3911d8/members
+                    users:
+                      - role: member
+                        links:
+                          self: /api/v2/users/791df274afd48a83
+                        id: 791df274afd48a83
+                        name: example_user_1
+                        status: active
+                      - role: owner
+                        links:
+                          self: /api/v2/users/09cfb87051cbe000
+                        id: 09cfb87051cbe000
+                        name: example_user_2
+                        status: active
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -4067,6 +4111,21 @@ paths:
       tags:
         - Buckets
       summary: Add a member to a bucket
+      description: |
+        Add a user to a bucket and return the new user information.
+
+        InfluxDB [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) have
+        permission to access InfluxDB.
+
+        [Members](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#member) are users in
+        an organization.
+
+        Use this endpoint to give a user member privileges to a bucket.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/cloud/organizations/members/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4074,9 +4133,10 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to retrieve users for.
       requestBody:
-        description: User to add as member
+        description: A user to add as a member to the bucket.
         required: true
         content:
           application/json:
@@ -4084,23 +4144,69 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Member added to bucket
+          description: |
+            Success.
+            The response body contains the user information.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceMember'
+              examples:
+                successResponse:
+                  value:
+                    role: member
+                    links:
+                      self: /api/v2/users/09cfb87051cbe000
+                    id: 09cfb87051cbe000
+                    name: example_user_1
+                    status: active
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The `userID` is missing from the request body.
+              value:
+                code: invalid
+                message: user id missing or invalid
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "http://localhost:8086/api/v2/buckets/BUCKET_ID/members \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "id": "09cfb87051cbe000"
+                }
   '/buckets/{bucketID}/members/{userID}':
     delete:
       operationId: DeleteBucketsIDMembersID
       tags:
         - Buckets
       summary: Remove a member from a bucket
+      description: |
+        Removes a member from a bucket.
+
+        Use this endpoint to remove a user's member privileges from a bucket. This
+        removes the user's `read` and `write` permissions for the bucket.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/cloud/organizations/members/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4108,16 +4214,26 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the member to remove.
+          description: |
+            The ID of the user to remove.
         - in: path
           name: bucketID
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to remove a user from.
       responses:
         '204':
-          description: Member removed
+          description: |
+            Success.
+            The user is no longer a member of the bucket.
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -4173,7 +4289,7 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Bucket owner added
+          description: Success. The user is an owner of the bucket
           content:
             application/json:
               schema:
@@ -9951,12 +10067,15 @@ components:
         id:
           readOnly: true
           type: string
-        oauthID:
-          type: string
+          description: |
+            The ID of the user.
         name:
           type: string
+          description: |
+            The name of the user.
         status:
-          description: If inactive the user is inactive.
+          description: |
+            The status of a user. An inactive user won't have access to resources.
           default: active
           type: string
           enum:
@@ -12028,8 +12147,12 @@ components:
       properties:
         id:
           type: string
+          description: |
+            The ID of the user to add to the resource.
         name:
           type: string
+          description: |
+            The name of the user to add to the resource.
       required:
         - id
     Ready:
