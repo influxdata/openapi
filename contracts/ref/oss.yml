@@ -5015,23 +5015,69 @@ components:
       type: object
     Template:
       items:
+        description: |
+          A template entry.
+          Defines an InfluxDB resource in a template.
         properties:
           apiVersion:
+            example: influxdata.com/v2alpha1
             type: string
           kind:
             $ref: '#/components/schemas/TemplateKind'
-          meta:
+          metadata:
+            description: |
+              Metadata properties used for the resource when the template is applied.
             properties:
               name:
                 type: string
             type: object
           spec:
+            description: |
+              Configuration properties used for the resource when the template is applied.
+              Key-value pairs map to the specification for the resource.
+
+              The following code samples show `spec` configurations for template resources:
+
+              - A bucket:
+
+                ```json
+                { "spec": {
+                    "name": "iot_center",
+                    "retentionRules": [{
+                        "everySeconds": 2.592e+06,
+                        "type": "expire"
+                      }]
+                  }
+                }
+                ```
+
+              - A variable:
+
+                ```json
+                { "spec": {
+                    "language": "flux",
+                    "name": "Node_Service",
+                    "query": "import \"influxdata/influxdb/v1\"\r\nv1.tagValues(bucket: \"iot_center\",
+                        tag: \"service\")",
+                    "type": "query"
+                  }
+                }
+                ```
             type: object
         type: object
       type: array
     TemplateApply:
       properties:
         actions:
+          description: |
+            A list of `action` objects.
+            Actions let you customize how InfluxDB applies templates in the request.
+
+            You can use the following actions to prevent creating or updating resources:
+
+            - A `skipKind` action skips template resources of a specified `kind`.
+            - A `skipResource` action skips template resources with a specified `metadata.name`
+              and `kind`.
           items:
             oneOf:
             - properties:
@@ -5065,6 +5111,11 @@ components:
               type: object
           type: array
         dryRun:
+          description: |
+            Only applies a dry run of the templates passed in the request.
+
+            - Validates the template and generates a resource diff and summary.
+            - Doesn't install templates or make changes to the InfluxDB instance.
           type: boolean
         envRefs:
           additionalProperties:
@@ -5073,10 +5124,42 @@ components:
             - type: integer
             - type: number
             - type: boolean
+          description: |
+            An object with key-value pairs that map to **environment references** in templates.
+
+            Environment references in templates are `envRef` objects with an `envRef.key`
+            property.
+            To substitute a custom environment reference value when applying templates,
+            pass `envRefs` with the `envRef.key` and the value.
+
+            When you apply a template, InfluxDB replaces `envRef` objects in the template
+            with the values that you provide in the `envRefs` parameter.
+            For more examples, see how to [define environment references](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#define-environment-references).
+
+            The following template fields may use environment references:
+
+              - `metadata.name`
+              - `spec.endpointName`
+              - `spec.associations.name`
+
+            For more information about including environment references in template fields, see how to
+            [include user-definable resource names](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/create/#include-user-definable-resource-names).
           type: object
         orgID:
+          description: |
+            Organization ID.
+            InfluxDB applies templates to this organization.
+            The organization owns all resources created by the template.
+
+            To find your organization, see how to
+            [view organizations](https://docs.influxdata.com/influxdb/v2.3/organizations/view-orgs/).
           type: string
         remotes:
+          description: |
+            A list of URLs for template files.
+
+            To apply a template manifest file located at a URL, pass `remotes`
+            with an array that contains the URL.
           items:
             properties:
               contentType:
@@ -5090,10 +5173,72 @@ components:
         secrets:
           additionalProperties:
             type: string
+          description: |
+            An object with key-value pairs that map to **secrets** in queries.
+
+            Queries may reference secrets stored in InfluxDB--for example,
+            the following Flux script retrieves `POSTGRES_USERNAME` and `POSTGRES_PASSWORD`
+            secrets and then uses them to connect to a PostgreSQL database:
+
+              ```js
+              import "sql"
+              import "influxdata/influxdb/secrets"
+
+              username = secrets.get(key: "POSTGRES_USERNAME")
+              password = secrets.get(key: "POSTGRES_PASSWORD")
+
+              sql.from(
+                driverName: "postgres",
+                dataSourceName: "postgresql://${username}:${password}@localhost:5432",
+                query: "SELECT * FROM example_table",
+              )
+              ```
+
+            To define secret values in your `/api/v2/templates/apply` request,
+            pass the `secrets` parameter with key-value pairs--for example:
+
+              ```json
+              {
+                ...
+                "secrets": {
+                  "POSTGRES_USERNAME": "pguser",
+                  "POSTGRES_PASSWORD": "foo"
+                }
+                ...
+              }
+              ```
+
+            InfluxDB stores the key-value pairs as secrets that you can access with `secrets.get()`.
+            Once stored, you can't view secret values in InfluxDB.
+
+            #### Related guides
+
+            - [How to pass secrets when installing a template](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#pass-secrets-when-installing-a-template)
           type: object
         stackID:
+          description: |
+            ID of the stack to update.
+
+            To apply templates to an existing stack in the organization, use the `stackID` parameter.
+            If you apply templates without providing a stack ID,
+            InfluxDB initializes a new stack with all new resources.
+
+            To find a stack ID, use the InfluxDB [`/api/v2/stacks` API endpoint](#operation/ListStacks) to list stacks.
+
+            #### Related guides
+
+            - [Stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
+            - [View stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/view/)
           type: string
         template:
+          description: |
+            A template object to apply.
+            A template object has a `contents` property
+            with an array of InfluxDB resource configurations.
+
+            Pass `template` to apply only one template object.
+            If you use `template`, you can't use the `templates` parameter.
+            If you want to apply multiple template objects, use `templates` instead.
           properties:
             contentType:
               type: string
@@ -5105,6 +5250,13 @@ components:
               type: array
           type: object
         templates:
+          description: |
+            A list of template objects to apply.
+            A template object has a `contents` property
+            with an array of InfluxDB resource configurations.
+
+            Use the `templates` parameter to apply multiple template objects.
+            If you use `templates`, you can't use the `template` parameter.
           items:
             properties:
               contentType:
@@ -6317,7 +6469,7 @@ components:
 
         ### Syntax
 
-        `Authorization: Token YOUR_INFLUX_TOKEN`
+        `Authorization: Token YOUR_INFLUX_API_TOKEN`
 
 
         For more information and examples, see the following:
@@ -9593,7 +9745,7 @@ paths:
         lang: Shell
         source: |
           curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \
-            --header 'Authorization: Token INFLUX_TOKEN' \
+            --header 'Authorization: Token INFLUX_API_TOKEN' \
             --header 'Content-Type: application/json' \
             --data '{
               "start": "2020-03-01T00:00:00Z",
@@ -11207,7 +11359,7 @@ paths:
           curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \
           --header 'Content-Type: application/vnd.flux' \
           --header 'Accept: application/csv \
-          --header 'Authorization: Token INFLUX_TOKEN' \
+          --header 'Authorization: Token INFLUX_API_TOKEN' \
           --data 'from(bucket: "example-bucket")
                     |> range(start: -5m)
                     |> filter(fn: (r) => r._measurement == "example-measurement")'
@@ -11355,7 +11507,7 @@ paths:
         source: |
           curl -v --request POST \
             "http://localhost:8086/api/v2/query/analyze" \
-            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
             --header 'Content-type: application/json' \
             --header 'Accept: application/json' \
             --data-binary @- << EOF
@@ -11789,7 +11941,7 @@ paths:
           curl --request POST 'http://localhost:8086/api/v2/query/ast' \
           --header 'Content-Type: application/json' \
           --header 'Accept: application/json' \
-          --header 'Authorization: Token INFLUX_TOKEN' \
+          --header 'Authorization: Token INFLUX_API_TOKEN' \
           --data 'from(bucket: "example-bucket")
                     |> range(start: -5m)
                     |> filter(fn: (r) => r._measurement == "example-measurement")'
@@ -12452,7 +12604,7 @@ paths:
         source: |
           curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions" \
             --header "Accept: application/json" \
-            --header "Authorization: Token INFLUX_TOKEN"
+            --header "Authorization: Token INFLUX_API_TOKEN"
   /api/v2/query/suggestions/{name}:
     get:
       description: |
@@ -12525,7 +12677,7 @@ paths:
         source: |
           curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions/sum/" \
             --header "Accept: application/json" \
-            --header "Authorization: Token INFLUX_TOKEN"
+            --header "Authorization: Token INFLUX_API_TOKEN"
   /ready:
     get:
       operationId: GetReady
@@ -13828,20 +13980,57 @@ paths:
       - Sources
   /api/v2/stacks:
     get:
+      description: |
+        Retrieves a list of installed InfluxDB stacks.
+
+        To limit stacks in the response, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all installed stacks
+        for the organization.
       operationId: ListStacks
       parameters:
-      - description: The organization ID of the stacks
+      - description: |
+          The ID of the organization that owns the stacks.
+          Only returns stacks owned by this organization.
+
+          #### InfluxDB Cloud
+
+          - Doesn't require this parameter;
+            InfluxDB only returns resources allowed by the API token.
         in: query
         name: orgID
         required: true
         schema:
           type: string
-      - description: A collection of names to filter the list by.
+      - description: |
+          The stack name.
+          Finds stack `events` with this name and returns the stacks.
+
+          Repeatable.
+          To filter for more than one stack name,
+          repeat this parameter with each name--for example:
+
+          - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`
+        examples:
+          findStackByName:
+            summary: Find stacks with the event name
+            value: project-stack-0
         in: query
         name: name
         schema:
           type: string
-      - description: A collection of stackIDs to filter the list by.
+      - description: |
+          The stack ID.
+          Only returns stacks with this ID.
+
+          Repeatable.
+          To filter for more than one stack ID,
+          repeat this parameter with each ID--for example:
+
+          - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`
+        examples:
+          findStackByID:
+            summary: Find a stack with the ID
+            value: 09bd87cd33be3000
         in: query
         name: stackID
         schema:
@@ -13857,17 +14046,67 @@ paths:
                       $ref: '#/components/schemas/Stack'
                     type: array
                 type: object
-          description: Success. Returns the list of stacks.
+          description: Success. The response body contains the list of stacks.
+        "400":
+          content:
+            application/json:
+              examples:
+                orgIdMissing:
+                  summary: The orgID query parameter is missing
+                  value:
+                    code: invalid
+                    message: 'organization id[""] is invalid: id must have a length
+                      of 16 bytes'
+                orgProvidedNotFound:
+                  summary: The org or orgID passed doesn't own the token passed in
+                    the header
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if an incorrect value is passed for `org` or `orgID`.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: List installed templates
+      summary: List installed stacks
       tags:
       - Templates
     post:
+      description: |
+        Creates or initializes a stack.
+
+        Use this endpoint to _manually_ initialize a new stack with the following
+        optional information:
+
+          - Stack name
+          - Stack description
+          - URLs for template manifest files
+
+        To automatically create a stack when applying templates,
+        use the [/api/v2/templates/apply endpoint](#operation/ApplyTemplate).
+
+        #### Required permissions
+
+        - `write` permission for the organization
+
+        #### Related guides
+
+        - [InfluxDB stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
+        - [Use InfluxDB templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#apply-templates-to-an-influxdb-instance)
       operationId: CreateStack
       requestBody:
         content:
@@ -13895,13 +14134,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Stack'
           description: Success. Returns the newly created stack.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unexpected error
-      summary: Create a new stack
+      summary: Create a stack
       tags:
       - Templates
   /api/v2/stacks/{stack_id}:
@@ -14280,7 +14535,7 @@ paths:
         source: |
           curl http://localhost:8086/api/v2/tasks \
             --header "Content-type: application/json" \
-            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
             --data-binary @- << EOF
               {
               "orgID": "INFLUX_ORG_ID",
@@ -15564,11 +15819,119 @@ paths:
       - Telegrafs
   /api/v2/templates/apply:
     post:
-      description: Applies or performs a dry-run of template in an organization.
+      description: |
+        Applies a template to
+        create or update a [stack](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/) of InfluxDB
+        [resources](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/export/all/#resources).
+        The response contains the diff of changes and the stack ID.
+
+        Use this endpoint to install an InfluxDB template to an organization.
+        Provide template URLs or template objects in your request.
+        To customize which template resources are installed, use the `actions`
+        parameter.
+
+        By default, when you apply a template, InfluxDB installs the template to
+        create and update stack resources and then generates a diff of the changes.
+        If you pass `dryRun: true` in the request body, InfluxDB validates the
+        template and generates the resource diff, but doesn’t make any
+        changes to your instance.
+
+        #### Custom values for templates
+
+        - Some templates may contain [environment references](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/create/#include-user-definable-resource-names) for custom metadata.
+          To provide custom values for environment references, pass the _`envRefs`_
+          property in the request body.
+          For more information and examples, see how to
+          [define environment references](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#define-environment-references).
+
+        - Some templates may contain queries that use
+          [secrets](https://docs.influxdata.com/influxdb/v2.3/security/secrets/).
+          To provide custom secret values, pass the _`secrets`_ property
+          in the request body.
+          Don't expose secret values in templates.
+          For more information, see [how to pass secrets when installing a template](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#pass-secrets-when-installing-a-template).
+
+        #### Required permissions
+
+        - `write` permissions for resource types in the template.
+
+        #### Rate limits (with InfluxDB Cloud)
+
+        - Adjustable service quotas apply.
+          For more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).
+
+        #### Related guides
+
+        - [Use templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/)
+        - [Stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
       operationId: ApplyTemplate
       requestBody:
         content:
           application/json:
+            examples:
+              skipKindAction:
+                summary: Skip all bucket and task resources in the provided templates
+                value:
+                  actions:
+                  - action: skipKind
+                    properties:
+                      kind: Bucket
+                  - action: skipKind
+                    properties:
+                      kind: Task
+                  orgID: INFLUX_ORG_ID
+                  templates:
+                  - contents:
+                    - '[object Object]': null
+              skipResourceAction:
+                summary: Skip specific resources in the provided templates
+                value:
+                  actions:
+                  - action: skipResource
+                    properties:
+                      kind: Label
+                      resourceTemplateName: foo-001
+                  - action: skipResource
+                    properties:
+                      kind: Bucket
+                      resourceTemplateName: bar-020
+                  - action: skipResource
+                    properties:
+                      kind: Bucket
+                      resourceTemplateName: baz-500
+                  orgID: INFLUX_ORG_ID
+                  templates:
+                  - contents:
+                    - apiVersion: influxdata.com/v2alpha1
+                      kind: Bucket
+                      metadata:
+                        name: baz-500
+              templateObjectEnvRefs:
+                summary: envRefs for template objects
+                value:
+                  envRefs:
+                    docker-bucket: MY_DOCKER_BUCKET
+                    docker-spec-1: MY_DOCKER_SPEC
+                    linux-cpu-label: MY_CPU_LABEL
+                  orgID: INFLUX_ORG_ID
+                  templates:
+                  - contents:
+                    - apiVersion: influxdata.com/v2alpha1
+                      kind: Label
+                      metadata:
+                        name:
+                          envRef:
+                            key: linux-cpu-label
+                      spec:
+                        color: '#326BBA'
+                        name: inputs.cpu
+                  - contents:
+                    - apiVersion: influxdata.com/v2alpha1
+                      kind: Bucket
+                      metadata:
+                        name:
+                          envRef:
+                            key: docker-bucket
             schema:
               $ref: '#/components/schemas/TemplateApply'
           application/x-jsonnet:
@@ -15577,6 +15940,8 @@ paths:
           text/yml:
             schema:
               $ref: '#/components/schemas/TemplateApply'
+        description: |
+          Parameters for applying templates.
         required: true
       responses:
         "200":
@@ -15585,14 +15950,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/TemplateSummary'
           description: |
-            Success. The package dry-run succeeded. No new resources were created. Returns a diff and summary of the dry-run. The diff and summary won't contain IDs for resources that didn't exist at the time of the dry-run.
+            Success.
+            The template dry run succeeded.
+            The response body contains a resource diff of changes that the
+            template would have made if installed.
+            No resources were created or updated.
+            The diff and summary won't contain IDs for resources
+            that didn't exist at the time of the dry run.
         "201":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TemplateSummary'
           description: |
-            Success. The package applied successfully. Returns a diff and summary of the run. The summary contains newly created resources. The diff compares the initial state to the state after the package applied. This corresponds to `"dryRun": true`.
+            Success.
+            The template applied successfully.
+            The response body contains the stack ID, a diff, and a summary.
+            The diff compares the initial state to the state after the template installation.
+            The summary contains newly created resources.
         "422":
           content:
             application/json:
@@ -15608,7 +15983,35 @@ paths:
                   - message
                   - code
                   type: object
-          description: Template failed validation
+          description: |
+            Unprocessable entity.
+
+
+            The error may indicate one of the following problems:
+
+            - The template failed validation.
+            - You passed a parameter combination that InfluxDB doesn't support.
+        "500":
+          content:
+            application/json:
+              examples:
+                createExceedsQuota:
+                  summary: 'InfluxDB Cloud: Creating resource would exceed quota.'
+                  value:
+                    code: internal error
+                    message: "resource_type=\"tasks\" err=\"failed to apply resource\"\n\tmetadata_name=\"alerting-gates-b84003\"
+                      err_msg=\"failed to create tasks[\\\"alerting-gates-b84003\\\"]:
+                      creating task would exceed quota\""
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Internal server error.
+
+            #### InfluxDB Cloud
+
+            - Returns this error if creating one of the template
+              resources (bucket, dashboard, task, user) exceeds your plan’s
+              adjustable service quotas.
         default:
           content:
             application/json:
@@ -15618,6 +16021,102 @@ paths:
       summary: Apply or dry-run a template
       tags:
       - Templates
+      x-codeSamples:
+      - label: 'cURL: Dry run with a remote template'
+        lang: Shell
+        source: |
+          curl --request POST "http://localhost:8086/api/v2/templates/apply" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --data @- << EOF
+              {
+                "dryRun": true,
+                "orgID": "INFLUX_ORG_ID",
+                "remotes": [
+                  {
+                    "url": "https://raw.githubusercontent.com/influxdata/community-templates/master/linux_system/linux_system.yml"
+                  }
+                ]
+              }
+          EOF
+      - label: 'cURL: Apply with secret values'
+        lang: Shell
+        source: |
+          curl "http://localhost:8086/api/v2/templates/apply" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --data @- << EOF | jq .
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "secrets": {
+                  "SLACK_WEBHOOK": "YOUR_SECRET_WEBHOOK_URL"
+                },
+                "remotes": [
+                  {
+                    "url": "https://raw.githubusercontent.com/influxdata/community-templates/master/fortnite/fn-template.yml"
+                  }
+                ]
+              }
+          EOF
+      - label: 'cURL: Apply template objects with environment references'
+        lang: Shell
+        source: |
+          curl --request POST "http://localhost:8086/api/v2/templates/apply" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --data @- << EOF
+            { "orgID": "INFLUX_ORG_ID",
+              "envRefs": {
+                "linux-cpu-label": "MY_CPU_LABEL",
+                "docker-bucket": "MY_DOCKER_BUCKET",
+                "docker-spec-1": "MY_DOCKER_SPEC"
+              },
+              "templates": [
+                { "contents": [{
+                    "apiVersion": "influxdata.com/v2alpha1",
+                    "kind": "Label",
+                    "metadata": {
+                      "name": {
+                        "envRef": {
+                          "key": "linux-cpu-label"
+                        }
+                      }
+                    },
+                    "spec": {
+                      "color": "#326BBA",
+                      "name": "inputs.cpu"
+                    }
+                  }]
+                },
+                "templates": [
+                  { "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Label",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "linux-cpu-label"
+                          }
+                        }
+                      },
+                      "spec": {
+                        "color": "#326BBA",
+                        "name": "inputs.cpu"
+                      }
+                    }]
+                  },
+                  { "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Bucket",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "docker-bucket"
+                          }
+                        }
+                      }
+                    }]
+                  }
+                ]
+              }
+          EOF
   /api/v2/templates/export:
     post:
       operationId: ExportTemplate
@@ -16920,6 +17419,30 @@ tags:
     - [Get started with tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/get-started/)
     - [Common data processing tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/common-tasks/)
   name: Tasks
+- description: |
+    Export and apply InfluxDB **templates**.
+    Manage **stacks** of templated InfluxDB resources.
+
+    InfluxDB templates are prepackaged configurations for
+    everything from dashboards and Telegraf to notifications and alerts.
+    Use InfluxDB templates to quickly configure a fresh instance of InfluxDB,
+    back up your dashboard configuration, or share your configuration with the
+    InfluxData community.
+
+    Use the `/api/v2/templates` endpoints to export templates and apply templates.
+
+    **InfluxDB stacks** are stateful InfluxDB templates that let you
+    add, update, and remove installed template resources over time, avoid duplicating
+    resources when applying the same or similar templates more than once, and
+    apply changes to distributed instances of InfluxDB OSS or InfluxDB Cloud.
+
+    Use the `/api/v2/stacks` endpoints to manage installed template resources.
+
+    #### Related guides
+
+    - [InfluxDB stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
+    - [InfluxDB templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/)
+  name: Templates
 - description: |
     Write time series data to buckets.
   name: Write
