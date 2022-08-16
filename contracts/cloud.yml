@@ -5406,6 +5406,11 @@ paths:
         Schedules a task run to start immediately, ignoring scheduled runs.
 
         Use this endpoint to manually start a task run.
+        Scheduled runs will continue to run as scheduled.
+        This may result in concurrently running tasks.
+
+        To _retry_ a previous run (and avoid creating a new run),
+        use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry`](#operation/PostTasksIDRunsIDRetry) endpoint.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5448,13 +5453,13 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve runs for.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The run ID.
+          description: The ID of the run to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task run.
@@ -5507,7 +5512,7 @@ paths:
 
         #### InfluxDB Cloud
 
-          - Doesn't support this operation.
+        - Doesn't support this operation.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5515,7 +5520,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to cancel.
         - in: path
           name: runID
           schema:
@@ -5529,7 +5534,8 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Doesn't support this operation.
+            - Doesn't support this operation.
+            - Doesn't return this status.
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -5542,7 +5548,7 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Always returns this error; cancelling a task run is not supported.
+              - Always returns this error; doesn't support cancelling tasks.
 
             #### InfluxDB OSS
 
@@ -5561,6 +5567,14 @@ paths:
       tags:
         - Tasks
       summary: Retry a task run
+      description: |
+        Queues a task run to retry and returns the newly scheduled run.
+
+        To manually start a _new_ task run, use the [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
+
+        #### Limitations
+
+        - The task must be _active_ (`status: "active"`).
       requestBody:
         content:
           application/json; charset=utf-8:
@@ -5573,26 +5587,60 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retry.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The run ID.
+          description: The ID of the task run to retry.
       responses:
         '200':
-          description: Run that has been queued
+          description: Success. The response body contains the queued run.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Run'
-        default:
-          description: Unexpected error
+              examples:
+                retryTaskRun:
+                  summary: A task run scheduled to retry
+                  value:
+                    links:
+                      logs: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/logs
+                      retry: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/retry
+                      self: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000
+                      task: /api/v2/tasks/09a776832f381000
+                    id: 09d60ffe08738000
+                    taskID: 09a776832f381000
+                    status: scheduled
+                    scheduledFor: '2022-08-15T00:00:00Z'
+                    requestedAt: '2022-08-16T20:05:11.84145Z'
+        '400':
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            InfluxDB may return this error for the following reasons:
+
+            - The task has `status: inactive`.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                inactiveTask:
+                  summary: Can't retry an inactive task
+                  value:
+                    code: invalid
+                    message: 'failed to retry run: inactive task'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/GeneralServerError'
   '/tasks/{taskID}/logs':
     get:
       operationId: GetTasksIDLogs
@@ -5665,6 +5713,11 @@ paths:
       tags:
         - Tasks
       summary: Retrieve all logs for a run
+      description: |
+        Retrieves all logs for a task run.
+        A log is a list of run events with `runID`, `time`, and `message` properties.
+
+        Use this endpoint to help analyze task performance and troubleshoot failed task runs.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7776,7 +7829,7 @@ paths:
       parameters:
         - in: path
           name: orgID
-          description: ID of the organization.
+          description: The ID of the organization.
           required: true
           schema:
             type: string
@@ -7805,7 +7858,7 @@ paths:
       parameters:
         - in: path
           name: orgID
-          description: ID of the organization.
+          description: The ID of the organization.
           required: true
           schema:
             type: string
@@ -8097,14 +8150,51 @@ paths:
         Creates a [task](https://docs.influxdata.com/influxdb/cloud/process-data/) and returns the created task.
 
         Use this endpoint to create a scheduled task that runs a Flux script.
-        In your task, provide one of the following:
-
-          - _`flux`_ property with an inline Flux script
-          - _`scriptID`_ property with an [invokable script](#tag/Invokable-Scripts) ID
 
         #### InfluxDB Cloud
 
-          - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.
+        - You can use either `flux` or `scriptID` to provide the task script.
+
+          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+              ```json
+              {
+                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+                from(bucket: \"telegraf\")
+                  |> range(start: -1h)
+                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                  |> aggregateWindow(every: 1h, fn: max)
+                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                "status": "active",
+                "description": "This task downsamples CPU data every hour"
+              }
+              ```
+
+          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
+            for the task to run.
+            To pass task options when using `scriptID`, pass the options as
+            properties in the request body--for example:
+
+              ```json
+              {
+                "name": "CPU Total 1 Hour New",
+                "description": "This task downsamples CPU data every hour",
+                "every": "1h",
+                "scriptID": "SCRIPT_ID",
+                "scriptParameters":
+                  {
+                    "rangeStart": "-1h",
+                    "bucket": "telegraf",
+                    "filterField": "cpu-total"
+                  }
+                }
+              ```
+
+        #### Limitations:
+
+          - You can't use `flux` and `scriptID` for the same task.
 
         #### Related guides
 
@@ -8208,8 +8298,7 @@ paths:
         - Tasks
       summary: Retrieve a task
       description: |
-        Retrieves a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
-        by ID.
+        Retrieves a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -8243,12 +8332,57 @@ paths:
       description: |
         Updates a task and then cancels all scheduled runs of the task.
 
-        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
         To update a task, pass an object that contains the updated key-value pairs.
         To activate or inactivate a task, set the `status` property.
         _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+
+        #### InfluxDB Cloud
+
+        - You can use either `flux` or `scriptID` to provide the task script.
+          
+          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+              ```json
+              {
+                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+                from(bucket: \"telegraf\")
+                  |> range(start: -1h)
+                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                  |> aggregateWindow(every: 1h, fn: max)
+                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                "status": "active",
+                "description": "This task downsamples CPU data every hour"
+              }
+              ```
+
+          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts) 
+            for the task to run.
+            To pass task options when using `scriptID`, pass the options as
+            properties in the request body--for example:
+
+              ```json
+              {
+                "name": "CPU Total 1 Hour New",
+                "description": "This task downsamples CPU data every hour",
+                "every": "1h",
+                "scriptID": "SCRIPT_ID",
+                "scriptParameters":
+                  {
+                    "rangeStart": "-1h",
+                    "bucket": "telegraf",
+                    "filterField": "cpu-total"
+                  }
+                }
+              ```
+
+        #### Limitations:
+
+        - You can't use `flux` and `scriptID` for the same task.
       requestBody:
         description: An object that contains updated task properties to apply.
         required: true
@@ -8263,7 +8397,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to update.
       responses:
         '200':
           description: Success. The response body contains the updated task.
@@ -8303,7 +8437,7 @@ paths:
           description: The ID of the task to delete.
       responses:
         '204':
-          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+          description: Success. The task and runs are deleted. Scheduled runs are canceled.
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -13281,7 +13415,7 @@ components:
               description: 'Specifies the Telegram bot token. See https://core.telegram.org/bots#creating-a-new-bot .'
               type: string
             channel:
-              description: 'ID of the telegram channel, a chat_id in https://core.telegram.org/bots/api#sendmessage .'
+              description: 'The ID of the telegram channel; a chat_id in https://core.telegram.org/bots/api#sendmessage .'
               type: string
     NotificationEndpointType:
       type: string
@@ -13295,14 +13429,14 @@ components:
       properties:
         id:
           type: string
-          description: ID of the DBRP mapping.
+          description: The ID of the DBRP mapping.
           readOnly: true
         orgID:
           type: string
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
         bucketID:
           type: string
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
         database:
           type: string
           description: InfluxDB v1 database
@@ -13342,13 +13476,13 @@ components:
       properties:
         orgID:
           type: string
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
         org:
           type: string
-          description: Name of the organization that owns this mapping.
+          description: The name of the organization that owns this mapping.
         bucketID:
           type: string
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
         database:
           type: string
           description: InfluxDB v1 database
@@ -13456,7 +13590,7 @@ components:
               readOnly: true
             orgID:
               type: string
-              description: ID of org that authorization is scoped to.
+              description: The ID of the organization that the authorization is scoped to.
             permissions:
               type: array
               minItems: 1
@@ -13473,15 +13607,15 @@ components:
             userID:
               readOnly: true
               type: string
-              description: ID of user that created and owns the token.
+              description: The ID of the user that created and owns the token.
             user:
               readOnly: true
               type: string
-              description: Name of user that created and owns the token.
+              description: The name of the user that created and owns the token.
             org:
               readOnly: true
               type: string
-              description: Name of the org token is scoped to.
+              description: The name of the organization that the token is scoped to.
             links:
               type: object
               readOnly: true
@@ -13818,10 +13952,10 @@ components:
           readOnly: true
         orgID:
           type: string
-          description: ID of the organization that the measurement schema is associated with.
+          description: The ID of the organization.
         bucketID:
           type: string
-          description: ID of the bucket that the measurement schema is associated with.
+          description: The ID of the bucket that the measurement schema is associated with.
         name:
           type: string
           nullable: false

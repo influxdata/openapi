@@ -213,11 +213,11 @@ components:
             readOnly: true
             type: object
           org:
-            description: Name of the organization that the token is scoped to.
+            description: The name of the organization that the token is scoped to.
             readOnly: true
             type: string
           orgID:
-            description: ID of the organization that the authorization is scoped to.
+            description: The ID of the organization.
             type: string
           permissions:
             description: List of permissions for an authorization.  An authorization
@@ -235,11 +235,11 @@ components:
             readOnly: true
             type: string
           user:
-            description: Name of the user that created and owns the token.
+            description: The name of the user that created and owns the token.
             readOnly: true
             type: string
           userID:
-            description: ID of the user that created and owns the token.
+            description: The ID of the user that created and owns the token.
             readOnly: true
             type: string
         type: object
@@ -251,7 +251,8 @@ components:
       - $ref: '#/components/schemas/AuthorizationUpdateRequest'
       - properties:
           orgID:
-            description: ID of org that authorization is scoped to.
+            description: The ID of the organization that the authorization is scoped
+              to.
             type: string
           permissions:
             description: List of permissions for an auth.  An auth must have at least
@@ -261,7 +262,7 @@ components:
             minItems: 1
             type: array
           userID:
-            description: ID of user that authorization is scoped to.
+            description: The ID of the user that the authorization is scoped to.
             type: string
         type: object
       required:
@@ -964,7 +965,7 @@ components:
     DBRP:
       properties:
         bucketID:
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
           type: string
         database:
           description: InfluxDB v1 database
@@ -974,13 +975,13 @@ components:
             specified.
           type: boolean
         id:
-          description: ID of the DBRP mapping.
+          description: The ID of the DBRP mapping.
           readOnly: true
           type: string
         links:
           $ref: '#/components/schemas/Links'
         orgID:
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
           type: string
         retention_policy:
           description: InfluxDB v1 retention policy
@@ -1000,7 +1001,7 @@ components:
     DBRPCreate:
       properties:
         bucketID:
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
           type: string
         database:
           description: InfluxDB v1 database
@@ -1010,10 +1011,10 @@ components:
             specified.
           type: boolean
         org:
-          description: Name of the organization that owns this mapping.
+          description: The name of the organization that owns this mapping.
           type: string
         orgID:
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
           type: string
         retention_policy:
           description: InfluxDB v1 retention policy
@@ -2288,20 +2289,22 @@ components:
       - $ref: '#/components/schemas/AuthorizationUpdateRequest'
       - properties:
           orgID:
-            description: ID of org that authorization is scoped to.
+            description: The ID of the organization that the authorization is scoped
+              to.
             type: string
           permissions:
-            description: List of permissions for an auth.  An auth must have at least
-              one Permission.
+            description: |
+              List of permissions for an authorization.
+              An authorization must have at least one permission.
             items:
               $ref: '#/components/schemas/Permission'
             minItems: 1
             type: array
           token:
-            description: Token (name) of the authorization
+            description: Token (name) of the authorization.
             type: string
           userID:
-            description: ID of user that authorization is scoped to.
+            description: The ID of the user that the authorization is scoped to.
             type: string
         type: object
       required:
@@ -4294,7 +4297,7 @@ components:
     ShardOwner:
       properties:
         nodeID:
-          description: ID of the node that owns a shard.
+          description: The ID of the node that owns the shard.
           format: int64
           type: integer
       required:
@@ -4969,7 +4972,7 @@ components:
       - $ref: '#/components/schemas/NotificationEndpointBase'
       - properties:
           channel:
-            description: ID of the telegram channel, a chat_id in https://core.telegram.org/bots/api#sendmessage
+            description: The ID of the telegram channel; a chat_id in https://core.telegram.org/bots/api#sendmessage
               .
             type: string
           token:
@@ -14312,7 +14315,8 @@ paths:
           type: string
       responses:
         "204":
-          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+          description: Success. The task and runs are deleted. Scheduled runs are
+            canceled.
         "400":
           $ref: '#/components/responses/BadRequestError'
         "401":
@@ -14328,8 +14332,7 @@ paths:
       - Tasks
     get:
       description: |
-        Retrieves a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)
-        by ID.
+        Retrieves a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
       operationId: GetTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -14364,7 +14367,7 @@ paths:
       description: |
         Updates a task and then cancels all scheduled runs of the task.
 
-        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
         To update a task, pass an object that contains the updated key-value pairs.
@@ -14373,7 +14376,7 @@ paths:
       operationId: PatchTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to update.
         in: path
         name: taskID
         required: true
@@ -14839,6 +14842,11 @@ paths:
         Schedules a task run to start immediately, ignoring scheduled runs.
 
         Use this endpoint to manually start a task run.
+        Scheduled runs will continue to run as scheduled.
+        This may result in concurrently running tasks.
+
+        To _retry_ a previous run (and avoid creating a new run),
+        use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry`](#operation/PostTasksIDRunsIDRetry) endpoint.
       operationId: PostTasksIDRuns
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -14878,11 +14886,11 @@ paths:
 
         #### InfluxDB Cloud
 
-          - Doesn't support this operation.
+        - Doesn't support this operation.
       operationId: DeleteTasksIDRunsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to cancel.
         in: path
         name: taskID
         required: true
@@ -14901,7 +14909,8 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Doesn't support this operation.
+            - Doesn't support this operation.
+            - Doesn't return this status.
         "400":
           $ref: '#/components/responses/BadRequestError'
         "401":
@@ -14918,7 +14927,7 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Always returns this error; cancelling a task run is not supported.
+              - Always returns this error; doesn't support cancelling tasks.
 
             #### InfluxDB OSS
 
@@ -14938,13 +14947,13 @@ paths:
       operationId: GetTasksIDRunsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to retrieve runs for.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: The run ID.
+      - description: The ID of the run to retrieve.
         in: path
         name: runID
         required: true
@@ -14998,6 +15007,11 @@ paths:
       - Tasks
   /api/v2/tasks/{taskID}/runs/{runID}/logs:
     get:
+      description: |
+        Retrieves all logs for a task run.
+        A log is a list of run events with `runID`, `time`, and `message` properties.
+
+        Use this endpoint to help analyze task performance and troubleshoot failed task runs.
       operationId: GetTasksIDRunsIDLogs
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -15069,16 +15083,24 @@ paths:
       - Tasks
   /api/v2/tasks/{taskID}/runs/{runID}/retry:
     post:
+      description: |
+        Queues a task run to retry and returns the newly scheduled run.
+
+        To manually start a _new_ task run, use the [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
+
+        #### Limitations
+
+        - The task must be _active_ (`status: "active"`).
       operationId: PostTasksIDRunsIDRetry
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The task ID.
+      - description: The ID of the task to retry.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: The run ID.
+      - description: The ID of the task run to retry.
         in: path
         name: runID
         required: true
@@ -15093,15 +15115,49 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                retryTaskRun:
+                  summary: A task run scheduled to retry
+                  value:
+                    id: 09d60ffe08738000
+                    links:
+                      logs: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/logs
+                      retry: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/retry
+                      self: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000
+                      task: /api/v2/tasks/09a776832f381000
+                    requestedAt: "2022-08-16T20:05:11.84145Z"
+                    scheduledFor: "2022-08-15T00:00:00Z"
+                    status: scheduled
+                    taskID: 09a776832f381000
               schema:
                 $ref: '#/components/schemas/Run'
-          description: Run that has been queued
-        default:
+          description: Success. The response body contains the queued run.
+        "400":
           content:
             application/json:
+              examples:
+                inactiveTask:
+                  summary: Can't retry an inactive task
+                  value:
+                    code: invalid
+                    message: 'failed to retry run: inactive task'
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Unexpected error
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            InfluxDB may return this error for the following reasons:
+
+            - The task has `status: inactive`.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/GeneralServerError'
       summary: Retry a task run
       tags:
       - Tasks

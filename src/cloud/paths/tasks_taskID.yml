@@ -5,8 +5,7 @@ get:
     - Tasks
   summary: Retrieve a task
   description: |
-    Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
-    by ID.
+    Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -40,12 +39,58 @@ patch:
   description: |
     Updates a task and then cancels all scheduled runs of the task.
 
-    Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+    Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
     Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
     To update a task, pass an object that contains the updated key-value pairs.
     To activate or inactivate a task, set the `status` property.
     _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+  
+    #### InfluxDB Cloud
+
+    - You can use either `flux` or `scriptID` to provide the task script.
+      
+      - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+          ```json
+          {
+            "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+            from(bucket: \"telegraf\")
+              |> range(start: -1h)
+              |> filter(fn: (r) => (r._measurement == \"cpu\"))
+              |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+              |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+              |> aggregateWindow(every: 1h, fn: max)
+              |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+            "status": "active",
+            "description": "This task downsamples CPU data every hour"
+          }
+          ```
+
+      - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts) 
+        for the task to run.
+        To pass task options when using `scriptID`, pass the options as
+        properties in the request body--for example:
+
+          ```json
+          {
+            "name": "CPU Total 1 Hour New",
+            "description": "This task downsamples CPU data every hour",
+            "every": "1h",
+            "scriptID": "SCRIPT_ID",
+            "scriptParameters":
+              {
+                "rangeStart": "-1h",
+                "bucket": "telegraf",
+                "filterField": "cpu-total"
+              }
+            }
+          ```
+
+    #### Limitations:
+
+    - You can't use `flux` and `scriptID` for the same task.
+
   requestBody:
     description: An object that contains updated task properties to apply.
     required: true
@@ -60,7 +105,7 @@ patch:
       schema:
         type: string
       required: true
-      description: The task ID.
+      description: The ID of the task to update.
   responses:
     "200":
       description: Success. The response body contains the updated task.
@@ -100,7 +145,7 @@ delete:
       description: The ID of the task to delete.
   responses:
     "204":
-      description: Success. Task and runs are deleted. Scheduled runs are canceled.
+      description: Success. The task and runs are deleted. Scheduled runs are canceled.
     "400":
       $ref: "../../common/responses/BadRequestError.yml"
     "401":

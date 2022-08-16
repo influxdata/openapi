@@ -5261,6 +5261,11 @@ paths:
         Schedules a task run to start immediately, ignoring scheduled runs.
 
         Use this endpoint to manually start a task run.
+        Scheduled runs will continue to run as scheduled.
+        This may result in concurrently running tasks.
+
+        To _retry_ a previous run (and avoid creating a new run),
+        use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry`](#operation/PostTasksIDRunsIDRetry) endpoint.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5303,13 +5308,13 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve runs for.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The run ID.
+          description: The ID of the run to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task run.
@@ -5362,7 +5367,7 @@ paths:
 
         #### InfluxDB Cloud
 
-          - Doesn't support this operation.
+        - Doesn't support this operation.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5370,7 +5375,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to cancel.
         - in: path
           name: runID
           schema:
@@ -5384,7 +5389,8 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Doesn't support this operation.
+            - Doesn't support this operation.
+            - Doesn't return this status.
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -5397,7 +5403,7 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Always returns this error; cancelling a task run is not supported.
+              - Always returns this error; doesn't support cancelling tasks.
 
             #### InfluxDB OSS
 
@@ -5416,6 +5422,14 @@ paths:
       tags:
         - Tasks
       summary: Retry a task run
+      description: |
+        Queues a task run to retry and returns the newly scheduled run.
+
+        To manually start a _new_ task run, use the [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
+
+        #### Limitations
+
+        - The task must be _active_ (`status: "active"`).
       requestBody:
         content:
           application/json; charset=utf-8:
@@ -5428,26 +5442,60 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retry.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The run ID.
+          description: The ID of the task run to retry.
       responses:
         '200':
-          description: Run that has been queued
+          description: Success. The response body contains the queued run.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Run'
-        default:
-          description: Unexpected error
+              examples:
+                retryTaskRun:
+                  summary: A task run scheduled to retry
+                  value:
+                    links:
+                      logs: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/logs
+                      retry: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/retry
+                      self: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000
+                      task: /api/v2/tasks/09a776832f381000
+                    id: 09d60ffe08738000
+                    taskID: 09a776832f381000
+                    status: scheduled
+                    scheduledFor: '2022-08-15T00:00:00Z'
+                    requestedAt: '2022-08-16T20:05:11.84145Z'
+        '400':
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            InfluxDB may return this error for the following reasons:
+
+            - The task has `status: inactive`.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                inactiveTask:
+                  summary: Can't retry an inactive task
+                  value:
+                    code: invalid
+                    message: 'failed to retry run: inactive task'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/GeneralServerError'
   '/tasks/{taskID}/logs':
     get:
       operationId: GetTasksIDLogs
@@ -5520,6 +5568,11 @@ paths:
       tags:
         - Tasks
       summary: Retrieve all logs for a run
+      description: |
+        Retrieves all logs for a task run.
+        A log is a list of run events with `runID`, `time`, and `message` properties.
+
+        Use this endpoint to help analyze task performance and troubleshoot failed task runs.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -11889,7 +11942,7 @@ components:
               description: 'Specifies the Telegram bot token. See https://core.telegram.org/bots#creating-a-new-bot .'
               type: string
             channel:
-              description: 'ID of the telegram channel, a chat_id in https://core.telegram.org/bots/api#sendmessage .'
+              description: 'The ID of the telegram channel; a chat_id in https://core.telegram.org/bots/api#sendmessage .'
               type: string
     NotificationEndpointType:
       type: string
@@ -11903,14 +11956,14 @@ components:
       properties:
         id:
           type: string
-          description: ID of the DBRP mapping.
+          description: The ID of the DBRP mapping.
           readOnly: true
         orgID:
           type: string
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
         bucketID:
           type: string
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
         database:
           type: string
           description: InfluxDB v1 database
@@ -11950,13 +12003,13 @@ components:
       properties:
         orgID:
           type: string
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
         org:
           type: string
-          description: Name of the organization that owns this mapping.
+          description: The name of the organization that owns this mapping.
         bucketID:
           type: string
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
         database:
           type: string
           description: InfluxDB v1 database
