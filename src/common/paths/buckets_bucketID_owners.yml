@@ -3,6 +3,19 @@ get:
   tags:
     - Buckets
   summary: List all owners of a bucket
+  description: |
+    Retrieves a list of all owners for a bucket.
+
+    InfluxDB owners have permission to delete resources and other users from
+    the resource.
+
+    #### InfluxDB Cloud
+
+    - InfluxDB Cloud has only one permission level for users: `owner`.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,14 +23,27 @@ get:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        The ID of the bucket to retrieve owners for.
   responses:
     "200":
-      description: A list of bucket owners
+      description: |
+        Success.
+        The response body contains a list of all owners for the bucket.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceOwners.yml"
+          examples:
+            $ref: "../responses/example-responses/GetBucketsIDOwnersSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -29,6 +55,21 @@ post:
   tags:
     - Buckets
   summary: Add an owner to a bucket
+  description: |
+    Add a owner to a bucket and return the new owner information.
+
+    InfluxDB owners have permission to delete resources and other users from
+    the resource.
+
+    Use this endpoint to give `owner` privileges to a bucket.
+
+    #### InfluxDB Cloud
+
+    - InfluxDB Cloud has only one permission level for users: `owner`.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -36,24 +77,55 @@ post:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        The ID of the bucket to retrieve users for.
   requestBody:
-    description: User to add as owner
+    description: A user to add as an owner to the bucket.
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/AddResourceMemberRequestBody.yml"
+        examples:
+          $ref: "../responses/example-responses/PostBucketsIDOwnersSuccessResponse.yml"
   responses:
     "201":
-      description: Success. The user is an owner of the bucket
+      description: |
+        Success.
+        The response body contains the user information.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceOwner.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+      examples:
+        invalidRequest:
+          summary: The user `id` is missing from the request body.
+          value: {
+            "code": "invalid",
+            "message": "user id missing or invalid"
+          }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/buckets/BUCKET_ID/owners \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "id": "09cfb87051cbe000"
+            }

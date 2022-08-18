@@ -5778,7 +5778,7 @@
             "$ref": "#/components/responses/BadRequestError",
             "examples": {
               "invalidRequest": {
-                "summary": "The `userID` is missing from the request body.",
+                "summary": "The user `id` is missing from the request body.",
                 "value": {
                   "code": "invalid",
                   "message": "user id missing or invalid"
@@ -5810,7 +5810,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets/BUCKET_ID/members \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"id\": \"09cfb87051cbe000\"\n    }\n"
+            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets/BUCKET_ID/members \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"id\": \"09cfb87051cbe000\"\n    }\n"
           }
         ]
       }
@@ -5879,6 +5879,7 @@
           "Buckets"
         ],
         "summary": "List all owners of a bucket",
+        "description": "Retrieves a list of all owners for a bucket.\n\nInfluxDB owners have permission to delete resources and other users from\nthe resource.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud has only one permission level for users: `owner`.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5890,19 +5891,51 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "The ID of the bucket to retrieve owners for.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of bucket owners",
+            "description": "Success.\nThe response body contains a list of all owners for the bucket.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceOwners"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "links": {
+                        "self": "/api/v2/buckets/BUCKET_ID/owners"
+                      },
+                      "users": [
+                        {
+                          "role": "owner",
+                          "links": {
+                            "self": "/api/v2/users/d88d182d91b0950f"
+                          },
+                          "id": "d88d182d91b0950f",
+                          "name": "example-owner",
+                          "status": "active"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5922,6 +5955,7 @@
           "Buckets"
         ],
         "summary": "Add an owner to a bucket",
+        "description": "Add a owner to a bucket and return the new owner information.\n\nInfluxDB owners have permission to delete resources and other users from\nthe resource.\n\nUse this endpoint to give `owner` privileges to a bucket.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud has only one permission level for users: `owner`.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5933,23 +5967,36 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "The ID of the bucket to retrieve users for.\n"
           }
         ],
         "requestBody": {
-          "description": "User to add as owner",
+          "description": "A user to add as an owner to the bucket.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AddResourceMemberRequestBody"
+              },
+              "examples": {
+                "successResponse": {
+                  "value": {
+                    "role": "owner",
+                    "links": {
+                      "self": "/api/v2/users/d88d182d91b0950f"
+                    },
+                    "id": "d88d182d91b0950f",
+                    "name": "example-user",
+                    "status": "active"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Success. The user is an owner of the bucket",
+            "description": "Success.\nThe response body contains the user information.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -5957,6 +6004,27 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError",
+            "examples": {
+              "invalidRequest": {
+                "summary": "The user `id` is missing from the request body.",
+                "value": {
+                  "code": "invalid",
+                  "message": "user id missing or invalid"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -5968,7 +6036,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets/BUCKET_ID/owners \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"id\": \"09cfb87051cbe000\"\n    }\n"
+          }
+        ]
       }
     },
     "/buckets/{bucketID}/owners/{userID}": {
@@ -5978,6 +6053,7 @@
           "Buckets"
         ],
         "summary": "Remove an owner from a bucket",
+        "description": "Removes an owner from a bucket.\n\nUse this endpoint to remove an owner from a bucket. This\nremoves the user's `owner` permissions for the bucket. With `owner`\npermissions, a user can delete resources and other users from your\norganization.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud has only one permission level for users: `owner`.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5989,7 +6065,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the owner to remove."
+            "description": "The ID of the owner to remove.\n"
           },
           {
             "in": "path",
@@ -5998,12 +6074,21 @@
               "type": "string"
             },
             "required": true,
-            "description": "The bucket ID."
+            "description": "The ID of the bucket to remove a user from.\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "Owner removed"
+            "description": "Success.\nThe user is no longer an owner of the bucket.\n"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
