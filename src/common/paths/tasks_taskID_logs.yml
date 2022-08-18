@@ -3,6 +3,14 @@ get:
   tags:
     - Tasks
   summary: Retrieve all logs for a task
+  description: |
+    Retrieves a list of all logs for a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+
+    When an InfluxDB task runs, a “run” record is created in the task’s history.
+    Logs associated with each run provide relevant log messages, timestamps, and the exit status of the run attempt.
+
+    Use this endpoint to retrieve only the log events for a task,
+    without additional task metadata.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -13,14 +21,58 @@ get:
       description: The task ID.
   responses:
     "200":
-      description: All logs for a task
+      description: |
+       Success. The response body contains an `events` list with logs for the task.
+       Each log event `message` contains detail about the event.
+       If a task run fails, InfluxDB logs an event with the reason for the failure.
       content:
         application/json:
           schema:
             $ref: "../schemas/Logs.yml"
+          examples:
+            taskSuccess:
+              summary: Events for a successful task run.
+              value:
+                "events": [
+                  {
+                    "runID": "09b070dadaa7d000",
+                    "time": "2022-07-18T14:46:07.101231Z",
+                    "message": "Started task from script: \"option task = {name: \\\"task1\\\", every: 30m} from(bucket: \\\"iot_center\\\") |> range(start: -90d) |> filter(fn: (r) => r._measurement == \\\"environment\\\") |> aggregateWindow(every: 1h, fn: mean)\""
+                  },
+                  {
+                    "runID": "09b070dadaa7d000",
+                    "time": "2022-07-18T14:46:07.242859Z",
+                    "message": "Completed(success)"
+                  }
+                ]
+            taskFailure:
+              summary: Events for a failed task run.
+              value: {
+                "events": [
+                  {
+                    "runID": "09a946fc3167d000",
+                    "time": "2022-07-13T07:06:54.198167Z",
+                    "message": "Started task from script: \"option task = {name: \\\"test task\\\", every: 3d, offset: 0s}\""
+                  },
+                  {
+                    "runID": "09a946fc3167d000",
+                    "time": "2022-07-13T07:07:13.104037Z",
+                    "message": "Completed(failed)"
+                  },
+                  {
+                    "runID": "09a946fc3167d000",
+                    "time": "2022-07-13T08:24:37.115323Z",
+                    "message": "error exhausting result iterator: error in query specification while starting program: this Flux script returns no streaming data. Consider adding a \"yield\" or invoking streaming functions directly, without performing an assignment"
+                  }
+                ]
+              }
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"

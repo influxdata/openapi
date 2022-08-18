@@ -29,32 +29,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
-  '/users/{userIdpeId}':
-    get:
-      operationId: GetUser
-      tags:
-        - User
-      parameters:
-        - in: path
-          name: userIdpeId
-          schema:
-            type: string
-          required: true
-          description: The IDPE ID of the user
-      summary: Get the profile for the current user
-      responses:
-        '200':
-          description: User
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          description: Unauthorized
-          $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   /account:
     delete:
       operationId: DeleteAccount
@@ -158,6 +132,65 @@ paths:
                 $ref: '#/components/schemas/Account'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/accounts/{accountId}/orgs':
+    get:
+      operationId: GetAccountOrganizations
+      tags:
+        - Accounts
+        - Organizations
+      summary: Get the list of Organizations for the given Account
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the Account for which to list Organizations.
+      responses:
+        '200':
+          description: Organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSummaries'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/accounts/{accountId}/orgs/default':
+    put:
+      operationId: PutAccountDefaultOrganization
+      tags:
+        - Organization
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account setting default organization
+      requestBody:
+        description: The organization to set as the user's default organization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationDefaultRequest'
+      responses:
+        '204':
+          description: default organization set
+        '404':
+          description: Organization not found
           $ref: '#/components/responses/ServerError'
         '422':
           description: Missing or invalid information
@@ -559,25 +592,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
-  /orgs:
-    get:
-      operationId: GetOrganizations
-      tags:
-        - Organizations
-      summary: Get the list of Organizations for the current user and account
-      responses:
-        '200':
-          description: Organizations
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrganizationSummaries'
-        '401':
-          description: Unauthorized
-          $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}':
     get:
       operationId: GetOrgsId
@@ -642,24 +656,6 @@ paths:
         '422':
           description: Missing or invalid information
           $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
-  /orgs/default:
-    put:
-      operationId: PutDefaultOrganization
-      tags:
-        - Organization
-      requestBody:
-        description: The organization to set as the user's default organization
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrganizationDefaultRequest'
-      responses:
-        '204':
-          description: default account set
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -1131,42 +1127,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
-  '/operator/accounts/{accountId}/users/{userId}':
-    delete:
-      operationId: RemoveUserFromAccount
-      tags:
-        - Accounts
-        - Users
-        - Operators
-      summary: Removes a user from an account
-      requestBody:
-        content:
-          application/json; charset=utf-8:
-            schema:
-              type: object
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: path
-          name: accountId
-          schema:
-            type: string
-          required: true
-          description: The ID of the account to remove user from.
-        - in: path
-          name: userId
-          schema:
-            type: string
-          required: true
-          description: The ID of the user to remove from the account.
-      responses:
-        '204':
-          description: User removed from account
-        '401':
-          description: Unauthorized
-          $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   /operator/providers:
     get:
       operationId: GetProvidersInfo
@@ -1337,6 +1297,42 @@ paths:
           $ref: '#/components/responses/ServerError'
         '404':
           description: Org not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/users/{userId}':
+    patch:
+      operationId: PatchUser
+      tags:
+        - User
+      summary: Patch the profile for the specified user
+      requestBody:
+        description: User update to apply
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatchRequest'
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -1685,9 +1681,6 @@ components:
           description: user's first name
         id:
           type: string
-          description: user's id in quartz
-        idpeId:
-          type: string
           description: user's id in idpe
         lastName:
           type: string
@@ -1697,6 +1690,14 @@ components:
         - id
         - idpeId
         - lastName
+    UserPatchRequest:
+      properties:
+        firstName:
+          type: string
+          description: user's first name
+        lastName:
+          type: string
+          description: user's last name
     Users:
       type: array
       items:
@@ -1750,8 +1751,6 @@ components:
         balance:
           type: number
           description: account balance
-        region:
-          type: string
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
         balanceUpdatedAt:

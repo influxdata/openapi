@@ -83,10 +83,12 @@ get:
         type: integer
         minimum: 0
         default: 0
-      description: The number of records to skip
+      description: The number of records to skip.
     - in: query
       name: sortBy
-      description: Field that records should be sorted by
+      description: |
+        The field used for sorting records in the list.
+        Only `name` is supported.
       required: false
       schema:
         type: string
@@ -106,6 +108,13 @@ get:
         enum:
           - "basic"
           - "system"
+    - in: query
+      name: scriptID
+      description: |
+        Script ID.
+        Only returns tasks that use this script.
+      schema:
+        type: string
   responses:
     "200":
       description: |
@@ -123,7 +132,7 @@ get:
       $ref: "../../common/responses/ServerError.yml"
   x-codeSamples:
     - lang: Shell
-      label: "cURL: all tasks, `basic` output"
+      label: "cURL: all tasks, basic output"
       source: |
         curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
           --header 'Content-Type: application/json' \
@@ -133,13 +142,24 @@ post:
   tags:
     - Data I/O endpoints
     - Tasks
-  summary: Create a new task
+  summary: Create a task
   description: |
     Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
 
+    Use this endpoint to create a scheduled task that runs a Flux script.
+    In your task, provide one of the following:
+
+      - _`flux`_ property with an inline Flux script
+      - _`scriptID`_ property with an [invokable script](#tag/Invokable-Scripts) ID
+
+    #### InfluxDB Cloud
+
+      - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.
+
     #### Related guides
 
-    - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).
+    - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)
+    - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)
     - [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
     - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   parameters:
@@ -159,17 +179,32 @@ post:
           schema:
             $ref: "../schemas/Task.yml"
     "400":
-      description: Bad request
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        #### InfluxDB Cloud
+
+          - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
+          - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
       content:
         application/json:
           schema:
-            $ref: "../../common/responses/BadRequestError.yml"
+            $ref: "../../common/schemas/Error.yml"
           examples:
+            fluxAndScriptError:
+              summary: The request body can't contain both flux and scriptID
+              value:
+                {
+                  "code": "invalid",
+                  "message": "failed to decode request: can not provide both scriptID and flux"
+                }
             missingFluxError:
-              summary: Task in request body is missing Flux query
-              value: {
-                "code":"invalid",
-                "message": "failed to decode request: missing flux"
+              summary: The request body requires either a flux parameter or scriptID parameter
+              value:
+                {
+                  "code": "invalid",
+                  "message": "failed to decode request: flux required"
                 }
     "401":
       $ref: "../../common/responses/AuthorizationError.yml"
@@ -183,41 +218,39 @@ post:
             $ref: "../../common/schemas/Error.yml"
   x-codeSamples:
     - lang: Shell
-      label: "cURL: create a flux query task"
+      label: "cURL: create a Flux script task"
       source: |
-        curl -v --request POST \
-        https://cloud2.influxdata.com/api/v2/tasks \
+        curl https://cloud2.influxdata.com/api/v2/tasks \
         --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_TOKEN" \
+        --header "Authorization: Token INFLUX_API_TOKEN" \
         --data-binary @- << EOF
           {
-          "orgID": "INFLUX_ORG_ID",
-          "description": "IoT Center 30d environment average.",
-          "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                  from(bucket: \"iot_center\")\
-                    |> range(start: -30d)\
-                    |> filter(fn: (r) => r._measurement == \"environment\")\
-                    |> aggregateWindow(every: 1h, fn: mean)"
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                    from(bucket: \"iot_center\")\
+                      |> range(start: -30d)\
+                      |> filter(fn: (r) => r._measurement == \"environment\")\
+                      |> aggregateWindow(every: 1h, fn: mean)"
           }
         EOF
     - lang: Shell
-      label: "cURL: create a script task"
+      label: "cURL: create a Flux script reference task"
       source: |
-        curl -v --request POST \
-        https://cloud2.influxdata.com/api/v2/tasks \
+        curl https://cloud2.influxdata.com/api/v2/tasks \
         --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_TOKEN" \
+        --header "Authorization: Token INFLUX_API_TOKEN" \
         --data-binary @- << EOF
           {
-          "orgID": "INFLUX_ORG_ID",
-          "description": "IoT Center 30d environment average.",
-          "scriptID": "085138a111448000",
-          "scriptParameters":
-            {
-              "rangeStart": "-30d",
-              "bucket": "air_sensor",
-              "filterField": "temperature",
-              "groupColumn": "_time"
-            }
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "scriptID": "085138a111448000",
+            "scriptParameters":
+              {
+                "rangeStart": "-30d",
+                "bucket": "air_sensor",
+                "filterField": "temperature",
+                "groupColumn": "_time"
+              }
           }
         EOF

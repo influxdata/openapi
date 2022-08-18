@@ -44,7 +44,7 @@ post:
       label: cURL
       source: |
         curl --request POST INFLUX_URL/api/v2/delete?org=INFLUX_ORG&bucket=INFLUX_BUCKET \
-          --header 'Authorization: Token INFLUX_TOKEN' \
+          --header 'Authorization: Token INFLUX_API_TOKEN' \
           --header 'Content-Type: application/json' \
           --data '{
             "start": "2020-03-01T00:00:00Z",
@@ -142,7 +142,24 @@ post:
 
         - Deleted the data.
     "400":
-      $ref: "../responses/BadRequestError.yml"
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        #### InfluxDB OSS
+
+        - Returns this error if `org` or `orgID` does not match an organization.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            orgNotFound:
+              summary: Organization not found
+              value: {
+                "code":"invalid",
+                "message":"failed to decode request body: organization not found"
+              }
     "401":
       $ref: "../responses/AuthorizationError.yml"
     "404":

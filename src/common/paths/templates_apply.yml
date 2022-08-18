@@ -3,50 +3,329 @@ post:
   tags:
     - Templates
   summary: Apply or dry-run a template
-  description: Applies or performs a dry-run of template in an organization.
+  description: |
+    Applies a template to
+    create or update a [stack]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/) of InfluxDB
+    [resources]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/export/all/#resources).
+    The response contains the diff of changes and the stack ID.
+
+    Use this endpoint to install an InfluxDB template to an organization.
+    Provide template URLs or template objects in your request.
+    To customize which template resources are installed, use the `actions`
+    parameter.
+
+    By default, when you apply a template, InfluxDB installs the template to
+    create and update stack resources and then generates a diff of the changes.
+    If you pass `dryRun: true` in the request body, InfluxDB validates the
+    template and generates the resource diff, but doesn’t make any
+    changes to your instance.
+
+    #### Custom values for templates
+
+    - Some templates may contain [environment references]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/create/#include-user-definable-resource-names) for custom metadata.
+      To provide custom values for environment references, pass the _`envRefs`_
+      property in the request body.
+      For more information and examples, see how to
+      [define environment references]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/#define-environment-references).
+
+    - Some templates may contain queries that use
+      [secrets]({{% INFLUXDB_DOCS_URL %}}/security/secrets/).
+      To provide custom secret values, pass the _`secrets`_ property
+      in the request body.
+      Don't expose secret values in templates.
+      For more information, see [how to pass secrets when installing a template]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/#pass-secrets-when-installing-a-template).
+
+    #### Required permissions
+
+    - `write` permissions for resource types in the template.
+
+    #### Rate limits (with InfluxDB Cloud)
+
+    - Adjustable service quotas apply.
+      For more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).
+
+    #### Related guides
+
+    - [Use templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/)
+    - [Stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)
   requestBody:
     required: true
+    description: |
+      Parameters for applying templates.
     content:
       application/json:
         schema:
           $ref: "../schemas/TemplateApply.yml"
+        examples:
+          skipKindAction:
+            summary: Skip all bucket and task resources in the provided templates
+            value:
+              { "orgID": "INFLUX_ORG_ID",
+                "actions": [
+                { "action": "skipKind",
+                  "properties": {
+                    "kind": "Bucket"
+                  }
+                },
+                { "action": "skipKind",
+                  "properties": {
+                    "kind": "Task"
+                  }
+                }],
+                "templates": [
+                  "contents": [{
+                    {
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Bucket",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "docker-bucket"
+                          }
+                        }
+                      }
+                    }
+                  }]
+                ]
+              }
+          skipResourceAction:
+            summary: Skip specific resources in the provided templates
+            value:
+              { "orgID": "INFLUX_ORG_ID",
+                "actions": [
+                {
+                  "action": "skipResource",
+                  "properties": {
+                    "kind": "Label",
+                    "resourceTemplateName": "foo-001"
+                  }
+                },
+                {
+                  "action": "skipResource",
+                  "properties": {
+                    "kind": "Bucket",
+                    "resourceTemplateName": "bar-020"
+                  }
+                },
+                {
+                  "action": "skipResource",
+                  "properties": {
+                    "kind": "Bucket",
+                    "resourceTemplateName": "baz-500"
+                  }
+                }],
+                "templates": [
+                  {
+                    "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Bucket",
+                      "metadata": {
+                        "name": "baz-500"
+                      }
+                    }]
+                  }
+                ]
+              }
+          templateObjectEnvRefs:
+            summary: envRefs for template objects
+            value:
+              { "orgID": "INFLUX_ORG_ID",
+                "envRefs": {
+                  "linux-cpu-label": "MY_CPU_LABEL",
+                  "docker-bucket": "MY_DOCKER_BUCKET",
+                  "docker-spec-1": "MY_DOCKER_SPEC"
+                },
+                "templates": [
+                  { "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Label",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "linux-cpu-label"
+                          }
+                        }
+                      },
+                      "spec": {
+                        "color": "#326BBA",
+                        "name": "inputs.cpu"
+                      }
+                    }]
+                  },
+                  { "contents": [{
+                      "apiVersion": "influxdata.com/v2alpha1",
+                      "kind": "Bucket",
+                      "metadata": {
+                        "name": {
+                          "envRef": {
+                            "key": "docker-bucket"
+                          }
+                        }
+                      }
+                    }]
+                  }]
+              }
       application/x-jsonnet:
         schema:
           $ref: "../schemas/TemplateApply.yml"
       text/yml:
         schema:
           $ref: "../schemas/TemplateApply.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: Dry run with a remote template"
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/templates/apply" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data @- << EOF
+            {
+              "dryRun": true,
+              "orgID": "INFLUX_ORG_ID",
+              "remotes": [
+                {
+                  "url": "https://raw.githubusercontent.com/influxdata/community-templates/master/linux_system/linux_system.yml"
+                }
+              ]
+            }
+        EOF
+    - lang: Shell
+      label: "cURL: Apply with secret values"
+      source: |
+        curl "http://localhost:8086/api/v2/templates/apply" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data @- << EOF | jq .
+            {
+              "orgID": "INFLUX_ORG_ID",
+              "secrets": {
+                "SLACK_WEBHOOK": "YOUR_SECRET_WEBHOOK_URL"
+              },
+              "remotes": [
+                {
+                  "url": "https://raw.githubusercontent.com/influxdata/community-templates/master/fortnite/fn-template.yml"
+                }
+              ]
+            }
+        EOF
+    - lang: Shell
+      label: "cURL: Apply template objects with environment references"
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/templates/apply" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data @- << EOF
+          { "orgID": "INFLUX_ORG_ID",
+            "envRefs": {
+              "linux-cpu-label": "MY_CPU_LABEL",
+              "docker-bucket": "MY_DOCKER_BUCKET",
+              "docker-spec-1": "MY_DOCKER_SPEC"
+            },
+            "templates": [
+              { "contents": [{
+                  "apiVersion": "influxdata.com/v2alpha1",
+                  "kind": "Label",
+                  "metadata": {
+                    "name": {
+                      "envRef": {
+                        "key": "linux-cpu-label"
+                      }
+                    }
+                  },
+                  "spec": {
+                    "color": "#326BBA",
+                    "name": "inputs.cpu"
+                  }
+                }]
+              },
+              "templates": [
+                { "contents": [{
+                    "apiVersion": "influxdata.com/v2alpha1",
+                    "kind": "Label",
+                    "metadata": {
+                      "name": {
+                        "envRef": {
+                          "key": "linux-cpu-label"
+                        }
+                      }
+                    },
+                    "spec": {
+                      "color": "#326BBA",
+                      "name": "inputs.cpu"
+                    }
+                  }]
+                },
+                { "contents": [{
+                    "apiVersion": "influxdata.com/v2alpha1",
+                    "kind": "Bucket",
+                    "metadata": {
+                      "name": {
+                        "envRef": {
+                          "key": "docker-bucket"
+                        }
+                      }
+                    }
+                  }]
+                }
+              ]
+            }
+        EOF
   responses:
     "200":
-      description: >
+      description: |
         Success.
-        The package dry-run succeeded.
-        No new resources were created.
-        Returns a diff and summary of the dry-run.
+        The template dry run succeeded.
+        The response body contains a resource diff of changes that the
+        template would have made if installed.
+        No resources were created or updated.
         The diff and summary won't contain IDs for resources
-        that didn't exist at the time of the dry-run.
+        that didn't exist at the time of the dry run.
       content:
         application/json:
           schema:
             $ref: "../schemas/TemplateSummary.yml"
     "201":
-      description: >
+      description: |
         Success.
-        The package applied successfully.
-        Returns a diff and summary of the run.
+        The template applied successfully.
+        The response body contains the stack ID, a diff, and a summary.
+        The diff compares the initial state to the state after the template installation.
         The summary contains newly created resources.
-        The diff compares the initial state to the state after the package applied.
-        This corresponds to `"dryRun": true`.
       content:
         application/json:
           schema:
             $ref: "../schemas/TemplateSummary.yml"
     "422":
-      description: Template failed validation
+      description: |
+        Unprocessable entity.
+
+
+        The error may indicate one of the following problems:
+
+        - The template failed validation.
+        - You passed a parameter combination that InfluxDB doesn't support.
       content:
         application/json:
           schema:
             $ref: "../schemas/TemplateSummaryError.yml"
+    "500":
+      description: |
+        Internal server error.
+
+        #### InfluxDB Cloud
+
+        - Returns this error if creating one of the template
+          resources (bucket, dashboard, task, user) exceeds your plan’s
+          adjustable service quotas.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            createExceedsQuota:
+              summary: "InfluxDB Cloud: Creating resource would exceed quota."
+              value:
+                {
+                  "code": "internal error",
+                  "message": "resource_type=\"tasks\" err=\"failed to apply resource\"\n\tmetadata_name=\"alerting-gates-b84003\" err_msg=\"failed to create tasks[\\\"alerting-gates-b84003\\\"]: creating task would exceed quota\""
+                }
     default:
       description: Unexpected error
       content:

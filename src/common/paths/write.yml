@@ -205,20 +205,37 @@ post:
         - [How to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).
     "400":
       description: |
-        Bad request.
-        The line protocol data in the request is malformed.
-        The response body contains the first malformed line in the data.
-        InfluxDB rejected the batch and did not write any data.
+        Bad request. The response body contains detail about the error.
+
+        InfluxDB returns this error if the line protocol data in the request is malformed.
+        The response body contains the first malformed line in the data, and indicates what was expected.
+        For partial writes, the number of points written and the number of points rejected are also included.
+        For more information, check the `rejected_points` measurement in your `_monitoring` bucket.
+
+        #### InfluxDB Cloud
+
+        - Returns this error for bucket schema conflicts.
+
+        #### InfluxDB OSS
+
+        - Returns this error if `org` or `orgID` does not match an organization.
+
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/LineProtocolError.yml"
           examples:
             measurementSchemaFieldTypeConflict:
-              summary: InfluxDB Cloud field type conflict thrown by an explicit bucket schema
+              summary: (Cloud) field type conflict thrown by an explicit bucket schema
               value: {
                "code": "invalid",
                "message": "partial write error (2 written): unable to parse 'air_sensor,service=S1,sensor=L1 temperature=\"90.5\",humidity=70.0 1632850122': schema: field type for field \"temperature\" not permitted by schema; got String but expected Float"
+              }
+            orgNotFound:
+              summary: (OSS) organization not found
+              value: {
+                "code":"invalid",
+                "message":"failed to decode request body: organization not found"
               }
     "413":
       description: |

@@ -4,48 +4,188 @@ get:
     - Data I/O endpoints
     - Invokable Scripts
   summary: List scripts
+  description: |
+    Retrieves a list of [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+
+    #### Limitations
+
+    - Paging with an `offset` greater than the number of records will result in
+    an empty response--for example:
+
+      The following request is paging to the 50th record, but the user has only
+      created two scripts.
+
+        ```sh
+        $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
+
+        $ {"scripts":[]}
+        ```
+
+    #### Related Guides
+
+    - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+
   parameters:
     - in: query
       name: limit
-      description: The number of scripts to return.
+      description: |
+        Limits the number of scripts returned. Default is `100`.
       required: false
       schema:
         type: integer
+        minimum: 0
+        maximum: 500
+        default: 100
     - in: query
       name: offset
       required: false
-      description: The offset for pagination.
+      description: |
+        The offset for pagination.
+        The number of records to skip.
       schema:
         type: integer
+        minimum: 0
+        default: 0
   responses:
     '200':
-      description: The list of scripts.
+      description: |
+        Success.
+        The response body contains the list of scripts.
       content:
         application/json:
           schema:
-            $ref: '../schemas/Scripts.yml'
+            $ref: "../schemas/Scripts.yml"
+          examples:
+            $ref: "../schemas/ScriptListResponse.yml"
+    '400':
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+          examples:
+            invalidSyntaxError:
+              summary: Query parameter contains invalid syntax.
+              value: {
+                "code": 3,
+                "message": "parsing field \"limit\": strconv.ParseUint: parsing \"-1\": invalid syntax",
+                "details": []
+              }
+    "401":
+      $ref: "../../../common/responses/AuthorizationError.yml"
+    "500":
+      $ref: "../../../common/responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      $ref: '../../../common/responses/ServerError.yml'
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json"
+
 post:
   operationId: PostScripts
   tags:
     - Invokable Scripts
   summary: Create a script
+  description: |
+    Creates an [invokable script](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
+    and returns the created script.
+
+    #### Related Guides
+
+    - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+    - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/).
   requestBody:
     description: The script to create.
     required: true
     content:
       application/json:
         schema:
-          $ref: '../schemas/ScriptCreateRequest.yml'
+          $ref: "../schemas/ScriptCreateRequest.yml"
   responses:
     '201':
-      description: The created script.
+      description: |
+        Success.
+        The response body contains the script and its metadata.
       content:
         application/json:
           schema:
-            $ref: '../schemas/Script.yml'
+            $ref: "../schemas/Script.yml"
+          examples:
+            $ref: "../schemas/ScriptCreateResponse.yml"
+    '400':
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+          examples:
+            invalidJSONStringValue:
+              summary: Invalid JSON
+              description: |
+                If the request body contains invalid JSON, returns `invalid`
+                with detail about the problem.
+              value: {
+                "code": "invalid",
+                "message": "invalid json: invalid character '\\'' looking for beginning of value"
+              }
+            invalidCharacterValue:
+              summary: Invalid character
+              description: |
+                If the request body contains an invalid character, returns
+                `invalid` with detail about the problem.
+              value: {
+                "code": "invalid",
+                "message": "invalid character ',' looking for beginning of value",
+                "details": []
+              }
+    "401":
+      $ref: "../../../common/responses/AuthorizationError.yml"
+    '422':
+      description: |
+        Unprocessable entity.
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+          examples:
+            uniquenessError:
+              description: |
+                A script with the same `name` exists.
+              value: {
+               "code":"conflict",
+               "message":"uniqueness violation"
+              }
+    "500":
+      $ref: "../../../common/responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      $ref: '../../../common/responses/ServerError.yml'
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "../../../common/schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "https://cloud2.influxdata.com/api/v2/scripts" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "getLastPoint",
+              "description": "getLastPoint finds the last point in a bucket",
+              "orgID": "INFLUX_ORG_ID",
+              "script": "from(bucket: INFLUX_BUCKET) |> range(start: -7d) |> limit(n:1)",
+              "language": "flux"
+            }'

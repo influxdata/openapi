@@ -528,6 +528,39 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
+  /provision/setup:
+    post:
+      operationId: PostProvisionSetup
+      tags:
+        - ProvisionSetup
+      description: Create the initial operator user and organization for the cluster.
+      requestBody:
+        description: Initial user and org to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionSetupRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: the token for the created user
+          description: Token for the created user.
+        '400':
+          $ref: '#/components/responses/ServerError'
+          description: Bad request. Data in request is invalid. Examples include missing names for user or org.
+        '422':
+          $ref: '#/components/responses/ServerError'
+          description: 'Unprocessable entry. Setup has already been completed, or invalid IDs provided.'
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error
   /provision/suspend:
     post:
       operationId: PostProvisionSuspend
@@ -616,12 +649,15 @@ components:
             id:
               readOnly: true
               type: string
-            oauthID:
-              type: string
+              description: |
+                The ID of the user.
             name:
               type: string
+              description: |
+                The name of the user.
             status:
-              description: If inactive the user is inactive.
+              description: |
+                The status of a user. An inactive user won't have access to resources.
               default: active
               type: string
               enum:
@@ -770,15 +806,29 @@ components:
                   everySeconds:
                     type: integer
                     format: int64
-                    description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+                    description: |
+                      The duration in seconds for how long data will be kept in the database.
+                      The default duration is 2592000 (30 days).
+                      0 represents infinite retention.
                     example: 86400
+                    default: 2592000
                     minimum: 0
                   shardGroupDurationSeconds:
                     type: integer
                     format: int64
-                    description: Shard duration measured in seconds.
+                    description: |
+                      The shard group duration.
+                      The duration or interval (in seconds) that each shard group covers.
+
+                      #### InfluxDB Cloud
+
+                      - Does not use `shardGroupDurationsSeconds`.
+
+                      #### InfluxDB OSS
+
+                      - Default value depends on the
+                      [bucket retention period]({{% INFLUXDB_DOCS_URL %}}/v2.3/reference/internals/shards/#shard-group-duration).
                 required:
-                  - type
                   - everySeconds
             labels:
               type: array
@@ -797,7 +847,9 @@ components:
                     type: object
                     additionalProperties:
                       type: string
-                    description: Key/Value pairs associated with this label. Keys can be removed by sending an update with an empty value.
+                    description: |
+                      Key-value pairs associated with this label.
+                      To remove a property, send an update with an empty value (`""`) for the key.
                     example:
                       color: ffb3b3
                       description: this is a description
@@ -1009,6 +1061,16 @@ components:
           $ref: '#/components/schemas/Identity'
         org:
           $ref: '#/components/schemas/Identity'
+    ProvisionSetupRequest:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/Identity'
+        org:
+          $ref: '#/components/schemas/Identity'
+      required:
+        - user
+        - org
     ProvisionSuspendRequest:
       type: object
       properties:
@@ -1310,6 +1372,8 @@ components:
       description: URI of resource.
     Links:
       type: object
+      description: |
+        URI pointers for additional paged results.
       properties:
         next:
           $ref: '#/components/schemas/Link'

@@ -11,6 +11,18 @@ tags:
         - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
         - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
         - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
+  - name: Buckets
+    description: |
+      Store your data in InfluxDB [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
+      A bucket is a named location where time series data is stored. All buckets
+      have a [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period),
+      a duration of time that each data point persists. InfluxDB drops all
+      points with timestamps older than the bucket’s retention period.
+      A bucket belongs to an organization.
+
+      ### Related guides
+
+        - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)
   - name: Invokable Scripts
     description: |
       Manage and execute scripts as API endpoints in InfluxDB.
@@ -26,7 +38,7 @@ tags:
 
       ### Related guides
 
-      - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+      - [Invoke custom scripts]({{% INFLUXDB_DOCS_URL %}}/api-guide/api-invokable-scripts/).
   - name: Delete
     description: |
       Delete data from an InfluxDB bucket.
@@ -37,12 +49,40 @@ tags:
     description: |
       Process and analyze your data with tasks in the InfluxDB task engine.
       With tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.
+      In InfluxDB Cloud, you can create tasks that run [invokable scripts](#tag/Invokable-Scripts)
+      with parameters.
 
       Use the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.
 
       #### Related guides
 
+      - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/).
       - [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
+      - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
+  - name: Templates
+    description: |
+      Export and apply InfluxDB **templates**.
+      Manage **stacks** of templated InfluxDB resources.
+
+      InfluxDB templates are prepackaged configurations for
+      everything from dashboards and Telegraf to notifications and alerts.
+      Use InfluxDB templates to quickly configure a fresh instance of InfluxDB,
+      back up your dashboard configuration, or share your configuration with the
+      InfluxData community.
+
+      Use the `/api/v2/templates` endpoints to export templates and apply templates.
+
+      **InfluxDB stacks** are stateful InfluxDB templates that let you
+      add, update, and remove installed template resources over time, avoid duplicating
+      resources when applying the same or similar templates more than once, and
+      apply changes to distributed instances of InfluxDB OSS or InfluxDB Cloud.
+
+      Use the `/api/v2/stacks` endpoints to manage installed template resources.
+
+      #### Related guides
+
+      - [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)
+      - [InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/)
   - name: Write
     description: |
       Write time series data to buckets.
@@ -105,11 +145,11 @@ tags:
       |:-----------:|:------------------------ |:--------------------- |
       | `200`       | Success                  |                       |
       | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
-      | `400`       | Bad request              | `Authorization` header is missing or malformed or the API token does not have permission for the operation. |
-      | `401`       | Unauthorized             | May indicate one of the following: <li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li> |
+      | `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token does not have permission for the operation.</li></ul> |
+      | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |
       | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
       | `413`       | Request entity too large | Request payload exceeds the size limit. |
-      | `422`       | Unprocessible entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
+      | `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
       | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
       | `500`       | Internal server error    |                       |
       | `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |

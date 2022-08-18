@@ -165,6 +165,13 @@ get:
       $ref: "../responses/InternalServerError.yml"
     default:
       $ref: "../responses/ServerError.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: all tasks, basic output"
+      source: |
+        curl https://localhost:8086/api/v2/tasks/?limit=-1&type=basic \
+          --header 'Content-Type: application/json' \
+          --header 'Authorization: Token INFLUX_API_TOKEN'
 post:
   operationId: PostTasks
   tags:
@@ -176,7 +183,8 @@ post:
 
     #### Related guides
 
-    - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/).
+    - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)
+    - [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)
     - [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
     - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   parameters:
@@ -196,17 +204,30 @@ post:
           schema:
             $ref: "../schemas/Task.yml"
     "400":
-      description: Bad request
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        #### InfluxDB OSS
+
+        - Returns this error if an incorrect value is passed for `org` or `orgID`.
       content:
         application/json:
           schema:
-            $ref: "../responses/BadRequestError.yml"
+            $ref: "../schemas/Error.yml"
           examples:
+            orgProvidedNotFound:
+              summary: The org or orgID passed doesn't own the token passed in the header
+              value:
+                {
+                  "code":"invalid",
+                  "message":"failed to decode request body: organization not found"
+                }
             missingFluxError:
               summary: Task in request body is missing Flux query
               value: {
-                "code":"invalid",
-                "message": "failed to decode request: missing flux"
+                  "code":"invalid",
+                  "message": "failed to decode request: missing flux"
                 }
     "401":
       $ref: "../responses/AuthorizationError.yml"
@@ -222,18 +243,17 @@ post:
     - lang: Shell
       label: "cURL: create a task"
       source: |
-        curl -v --request POST \
-        http://localhost:8086/api/v2/tasks \
-        --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_TOKEN" \
-        --data-binary @- << EOF
-          {
-          "orgID": "INFLUX_ORG_ID",
-          "description": "IoT Center 30d environment average.",
-          "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                  from(bucket: \"iot_center\")\
-                    |> range(start: -30d)\
-                    |> filter(fn: (r) => r._measurement == \"environment\")\
-                    |> aggregateWindow(every: 1h, fn: mean)"
-          }
+        curl http://localhost:8086/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data-binary @- << EOF
+            {
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                    from(bucket: \"iot_center\")\
+                      |> range(start: -30d)\
+                      |> filter(fn: (r) => r._measurement == \"environment\")\
+                      |> aggregateWindow(every: 1h, fn: mean)"
+            }
         EOF

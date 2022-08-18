@@ -74,7 +74,7 @@ post:
         curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \
         --header 'Content-Type: application/vnd.flux' \
         --header 'Accept: application/csv \
-        --header 'Authorization: Token INFLUX_TOKEN' \
+        --header 'Authorization: Token INFLUX_API_TOKEN' \
         --data 'from(bucket: "example-bucket")
                   |> range(start: -5m)
                   |> filter(fn: (r) => r._measurement == "example-measurement")'
@@ -138,7 +138,24 @@ post:
             type: integer
             format: int32
     "400":
-      $ref: "../responses/BadRequestError.yml"
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        #### InfluxDB OSS
+
+        - Returns this error if `org` or `orgID` does not match an organization.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            orgNotFound:
+              summary: Organization not found
+              value: {
+                "code":"invalid",
+                "message":"failed to decode request body: organization not found"
+              }
     "401":
       $ref: "../responses/AuthorizationError.yml"
     "404":
