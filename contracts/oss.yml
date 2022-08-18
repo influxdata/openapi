@@ -4179,6 +4179,20 @@ paths:
       tags:
         - Buckets
       summary: List all labels for a bucket
+      description: |
+        Retrieves a list of all labels for a bucket.
+
+        Labels are objects that contain `labelID`, `name`, `description`, and `color`
+        key-value pairs. They may be used for grouping and filtering InfluxDB
+        resources.
+        Labels are also capable of grouping across different resources--for example,
+        you can apply a label named `air_sensor` to a bucket and a task to quickly
+        organize resources.
+
+        #### Related guides
+
+        - Use the [`/api/v2/labels` InfluxDB API endpoint](#tag/Labels) to retrieve and manage labels.
+        - [Manage labels in the InfluxDB UI](https://docs.influxdata.com/influxdb/v2.3/visualize-data/labels/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4186,14 +4200,34 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to retrieve labels for.
       responses:
         '200':
-          description: A list of all labels for a bucket
+          description: |
+            Success.
+            The response body contains a list of all labels for the bucket.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelsResponse'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/labels
+                    labels:
+                      - id: 09cbd068e7ebb000
+                        orgID: INFLUX_ORG_ID
+                        name: production_buckets
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -4205,6 +4239,24 @@ paths:
       tags:
         - Buckets
       summary: Add a label to a bucket
+      description: |
+        Adds a label to a bucket and returns the new label information.
+
+        Labels are objects that contain `labelID`, `name`, `description`, and `color`
+        key-value pairs. They may be used for grouping and filtering across one or
+        more kinds of **resources**--for example, you can apply a label named
+        `air_sensor` to a bucket and a task to quickly organize resources.
+
+        #### Limitations
+
+        - Before adding a label to a bucket, you must create the label if you
+          haven't already. To create a label with the InfluxDB API, send a `POST`
+          request to the [`/api/v2/labels` endpoint](#operation/PostLabels)).
+
+        #### Related guides
+
+        - Use the [`/api/v2/labels` InfluxDB API endpoint](#tag/Labels) to retrieve and manage labels.
+        - [Manage labels in the InfluxDB UI](https://docs.influxdata.com/influxdb/v2.3/visualize-data/labels/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4212,9 +4264,11 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            Bucket ID.
+            The ID of the bucket to label.
       requestBody:
-        description: Label to add
+        description: An object that contains a _`labelID`_ to add to the bucket.
         required: true
         content:
           application/json:
@@ -4222,17 +4276,68 @@ paths:
               $ref: '#/components/schemas/LabelMapping'
       responses:
         '201':
-          description: The newly added label
+          description: |
+            Success.
+            The response body contains the label information.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelResponse'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/labels
+                    label:
+                      id: 09cbd068e7ebb000
+                      orgID: INFLUX_ORG_ID
+                      name: production_buckets
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The `labelID` is missing from the request body.
+              value:
+                code: invalid
+                message: label id is required
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '422':
+          description: |
+            Unprocessable entity.
+            Label already exists on the resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                conflictingResource:
+                  summary: |
+                    Label already exists on the resource.
+                  value:
+                    code: conflict
+                    message: 'Cannot add label, label already exists on resource'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "http://localhost:8086/api/v2/buckets/BUCKETS_ID/labels \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "labelID": "09cbd068e7ebb000"
+                }'
   '/buckets/{bucketID}/labels/{labelID}':
     delete:
       operationId: DeleteBucketsIDLabelsID
@@ -14903,6 +15008,9 @@ components:
       type: object
       properties:
         labelID:
+          description: |
+            Label ID.
+            The ID of the label to attach.
           type: string
     LabelsResponse:
       type: object
