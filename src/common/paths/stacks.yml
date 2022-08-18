@@ -2,27 +2,64 @@ get:
   operationId: ListStacks
   tags:
     - Templates
-  summary: List installed templates
+  summary: List installed stacks
+  description: |
+    Retrieves a list of installed InfluxDB stacks.
+
+    To limit stacks in the response, pass query parameters in your request.
+    If no query parameters are passed, InfluxDB returns all installed stacks
+    for the organization.
   parameters:
     - in: query
       name: orgID
       required: true
       schema:
         type: string
-      description: The organization ID of the stacks
+      description: |
+        The ID of the organization that owns the stacks.
+        Only returns stacks owned by this organization.
+
+        #### InfluxDB Cloud
+
+        - Doesn't require this parameter;
+          InfluxDB only returns resources allowed by the API token.
     - in: query
       name: name
       schema:
         type: string
-      description: A collection of names to filter the list by.
+      description: |
+        The stack name.
+        Finds stack `events` with this name and returns the stacks.
+
+        Repeatable.
+        To filter for more than one stack name,
+        repeat this parameter with each name--for example:
+
+        - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`
+      examples:
+        findStackByName:
+          summary: Find stacks with the event name
+          value: "project-stack-0"
     - in: query
       name: stackID
       schema:
         type: string
-      description: A collection of stackIDs to filter the list by.
+      description: |
+        The stack ID.
+        Only returns stacks with this ID.
+
+        Repeatable.
+        To filter for more than one stack ID,
+        repeat this parameter with each ID--for example:
+
+        - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`
+      examples:
+        findStackByID:
+          summary: Find a stack with the ID
+          value: "09bd87cd33be3000"
   responses:
     "200":
-      description: Success. Returns the list of stacks.
+      description: Success. The response body contains the list of stacks.
       content:
         application/json:
           schema:
@@ -32,6 +69,35 @@ get:
                 type: array
                 items:
                   $ref: "../schemas/Stack.yml"
+    "400":
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        #### InfluxDB OSS
+
+        - Returns this error if an incorrect value is passed for `org` or `orgID`.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            orgIdMissing:
+              summary: The orgID query parameter is missing
+              value: {
+                "code": "invalid",
+                "message": "organization id[\"\"] is invalid: id must have a length of 16 bytes"
+              }
+            orgProvidedNotFound:
+              summary: The org or orgID passed doesn't own the token passed in the header
+              value: {
+                "code":"invalid",
+                "message": "failed to decode request body: organization not found"
+              }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -42,7 +108,28 @@ post:
   operationId: CreateStack
   tags:
     - Templates
-  summary: Create a new stack
+  summary: Create a stack
+  description: |
+    Creates or initializes a stack.
+
+    Use this endpoint to _manually_ initialize a new stack with the following
+    optional information:
+
+      - Stack name
+      - Stack description
+      - URLs for template manifest files
+
+    To automatically create a stack when applying templates,
+    use the [/api/v2/templates/apply endpoint](#operation/ApplyTemplate).
+
+    #### Required permissions
+
+    - `write` permission for the organization
+
+    #### Related guides
+
+    - [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)
+    - [Use InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/#apply-templates-to-an-influxdb-instance)
   requestBody:
     description: The stack to create.
     required: true
@@ -69,6 +156,22 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Stack.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:

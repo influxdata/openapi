@@ -3,6 +3,21 @@ get:
   tags:
     - Buckets
   summary: List all users with member privileges for a bucket
+  description: |
+    Retrieves a list of all users for a bucket.
+
+    InfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have
+    permission to access InfluxDB.
+
+    [Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users in
+    an organization with access to the specified resource.
+
+    Use this endpoint to retrieve all users with access to a bucket.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)
+    - [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,14 +25,27 @@ get:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        The ID of the bucket to retrieve users for.
   responses:
     "200":
-      description: A list of bucket members
+      description: |
+        Success.
+        The response body contains a list of all users for the bucket.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceMembers.yml"
+          examples:
+            $ref: "../responses/example-responses/GetBucketsIDMembersSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -29,6 +57,21 @@ post:
   tags:
     - Buckets
   summary: Add a member to a bucket
+  description: |
+    Add a user to a bucket and return the new user information.
+
+    InfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have
+    permission to access InfluxDB.
+
+    [Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users in
+    an organization.
+
+    Use this endpoint to give a user member privileges to a bucket.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)
+    - [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -36,9 +79,10 @@ post:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        The ID of the bucket to retrieve users for.
   requestBody:
-    description: User to add as member
+    description: A user to add as a member to the bucket.
     required: true
     content:
       application/json:
@@ -46,14 +90,44 @@ post:
           $ref: "../schemas/AddResourceMemberRequestBody.yml"
   responses:
     "201":
-      description: Member added to bucket
+      description: |
+        Success.
+        The response body contains the user information.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceMember.yml"
+          examples:
+            $ref: "../responses/example-responses/PostBucketsIDMembersSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+      examples:
+        invalidRequest:
+          summary: The `userID` is missing from the request body.
+          value: {
+            "code": "invalid",
+            "message": "user id missing or invalid"
+          }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/buckets/BUCKET_ID/members \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "id": "09cfb87051cbe000"
+            }
