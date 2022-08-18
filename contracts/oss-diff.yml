@@ -898,7 +898,14 @@ paths:
       tags:
         - Security and access endpoints
         - Users
-      summary: List all users
+      summary: List users
+      description: |
+        Lists users. Default limit is `20`.
+
+        #### Required permissions
+
+        - `read-user` permission
+        - To list all users, pass an **Op** InfluxDB API token.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
@@ -937,7 +944,7 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of users
+          description: Success. The response contains a list of `users`.
           content:
             application/json:
               schema:
@@ -950,10 +957,16 @@ paths:
       tags:
         - Users
       summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
+
+        #### Required permissions
+
+        - `write-users`. Requires an InfluxDB API **Op** token.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       requestBody:
-        description: User to create
+        description: The user to create.
         required: true
         content:
           application/json:
@@ -961,14 +974,98 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: User created
+          description: |
+            Success.
+            The response contains the newly created user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - unprocessable entity
+                      - empty value
+                      - unavailable
+                      - forbidden
+                      - too many requests
+                      - unauthorized
+                      - method not allowed
+                      - request too large
+                      - unsupported media type
+                  message:
+                    readOnly: true
+                    description: Human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: Describes the logical code operation when the error occurred. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                required:
+                  - code
+              examples:
+                tokenNotAuthorized:
+                  summary: 'API token doesn''t have `write:users` permission'
+                  value:
+                    code: unauthorized
+                    message: 'write:users/09d8462ce0764000 is unauthorized'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
+      x-codeSamples:
+        - label: 'cURL: create a user and set a password'
+          lang: Shell
+          source: |
+
+            # Create the user and assign the user ID to a variable.
+            USER_ID=$(curl --request POST \
+                      "http://localhost:8086/api/v2/users/" \
+                      --header "Authorization: Token INFLUX_OP_TOKEN" \
+                      --header 'Content-type: application/json' \
+                      --data-binary @- << EOF | jq -r '.id'
+                      {
+                        "name": "USER_NAME",
+                        "status": "active"
+                      }
+            EOF
+            )
+
+            # Pass the user ID and a password to set the password for the user.
+            curl request POST "http://localhost:8086/api/v2/users/$USER_ID/password/" \
+              --header "Authorization: Token INFLUX_OP_TOKEN" \
+              --header 'Content-type: application/json' \
+              --data '{ "password": "USER_PASSWORD" }'
   '/users/{userID}':
     get:
       operationId: GetUsersID
@@ -1416,7 +1513,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     get:
       operationId: GetSources
       tags:
@@ -1441,7 +1538,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/sources/{sourceID}':
     delete:
       operationId: DeleteSourcesID
@@ -1464,13 +1561,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     patch:
       operationId: PatchSourcesID
       tags:
@@ -1503,13 +1600,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     get:
       operationId: GetSourcesID
       tags:
@@ -1535,13 +1632,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/sources/{sourceID}/health':
     get:
       operationId: GetSourcesIDHealth
@@ -1574,7 +1671,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/sources/{sourceID}/buckets':
     get:
       operationId: GetSourcesIDBuckets
@@ -1615,13 +1712,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   /scrapers:
     get:
       operationId: GetScrapers
@@ -1685,7 +1782,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}':
     get:
       operationId: GetScrapersID
@@ -1712,7 +1809,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     delete:
       operationId: DeleteScrapersID
       tags:
@@ -1734,7 +1831,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     patch:
       operationId: PatchScrapersID
       summary: Update a scraper target
@@ -1767,7 +1864,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/labels':
     get:
       operationId: GetScrapersIDLabels
@@ -1799,7 +1896,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     post:
       operationId: PostScrapersIDLabels
       tags:
@@ -1859,7 +1956,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/labels/{labelID}':
     delete:
       operationId: DeleteScrapersIDLabelsID
@@ -1888,13 +1985,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/members':
     get:
       operationId: GetScrapersIDMembers
@@ -1932,7 +2029,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     post:
       operationId: PostScrapersIDMembers
       tags:
@@ -1973,7 +2070,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/members/{userID}':
     delete:
       operationId: DeleteScrapersIDMembersID
@@ -2002,7 +2099,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/owners':
     get:
       operationId: GetScrapersIDOwners
@@ -2040,7 +2137,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     post:
       operationId: PostScrapersIDOwners
       tags:
@@ -2092,7 +2189,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/owners/{userID}':
     delete:
       operationId: DeleteScrapersIDOwnersID
@@ -2121,7 +2218,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   /backup/kv:
     get:
       operationId: GetBackupKV
@@ -2244,7 +2341,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -2485,7 +2582,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           $ref: '#/paths/~1config/get/responses/401'
   /remotes:
@@ -4496,7 +4593,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -4573,7 +4670,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -4737,7 +4834,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource
@@ -4751,7 +4848,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           $ref: '#/paths/~1config/get/responses/401'
       x-codeSamples:
@@ -4803,39 +4900,7 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  code:
-                    description: code is the machine-readable error code.
-                    readOnly: true
-                    type: string
-                    enum:
-                      - internal error
-                      - not found
-                      - conflict
-                      - invalid
-                      - unprocessable entity
-                      - empty value
-                      - unavailable
-                      - forbidden
-                      - too many requests
-                      - unauthorized
-                      - method not allowed
-                      - request too large
-                      - unsupported media type
-                  message:
-                    readOnly: true
-                    description: Human-readable message.
-                    type: string
-                  op:
-                    readOnly: true
-                    description: Describes the logical code operation when the error occurred. Useful for debugging.
-                    type: string
-                  err:
-                    readOnly: true
-                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
-                    type: string
-                required:
-                  - code
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -4856,7 +4921,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: create a task'
@@ -4910,7 +4975,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -4932,7 +4997,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 org-not-found:
                   summary: Organization name not found

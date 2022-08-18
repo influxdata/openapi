@@ -11,8 +11,11 @@ paths:
     get:
       operationId: GetUsers
       tags:
+        - Security and access endpoints
         - Users
-      summary: List all users
+      summary: List users
+      description: |
+        Lists users.
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -27,7 +30,7 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of users
+          description: Success. The response contains a list of `users`.
           content:
             application/json:
               schema:
@@ -40,10 +43,12 @@ paths:
       tags:
         - Users
       summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       requestBody:
-        description: User to create
+        description: The user to create.
         required: true
         content:
           application/json:
@@ -51,11 +56,66 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: User created
+          description: |
+            Success.
+            The response contains the newly created user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - unprocessable entity
+                      - empty value
+                      - unavailable
+                      - forbidden
+                      - too many requests
+                      - unauthorized
+                      - method not allowed
+                      - request too large
+                      - unsupported media type
+                  message:
+                    readOnly: true
+                    description: Human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: Describes the logical code operation when the error occurred. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                required:
+                  - code
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -625,7 +685,7 @@ paths:
                     code: invalid
                     message: At least one field column is required
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
     summary: Bucket Schema
     get:
@@ -720,7 +780,7 @@ paths:
                     code: invalid
                     message: Unable to delete columns from schema
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/orgs/{orgID}/limits':
     get:
       tags:
@@ -2516,7 +2576,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -2608,7 +2668,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -2746,7 +2806,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource
@@ -2760,13 +2820,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Non 2XX error response from server.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: all tasks, basic output'
@@ -2864,39 +2924,7 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  code:
-                    description: code is the machine-readable error code.
-                    readOnly: true
-                    type: string
-                    enum:
-                      - internal error
-                      - not found
-                      - conflict
-                      - invalid
-                      - unprocessable entity
-                      - empty value
-                      - unavailable
-                      - forbidden
-                      - too many requests
-                      - unauthorized
-                      - method not allowed
-                      - request too large
-                      - unsupported media type
-                  message:
-                    readOnly: true
-                    description: Human-readable message.
-                    type: string
-                  op:
-                    readOnly: true
-                    description: Describes the logical code operation when the error occurred. Useful for debugging.
-                    type: string
-                  err:
-                    readOnly: true
-                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
-                    type: string
-                required:
-                  - code
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 fluxAndScriptError:
                   summary: The request body can't contain both flux and scriptID
@@ -2917,7 +2945,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: create a Flux script task'
@@ -2991,7 +3019,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -3013,7 +3041,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 org-not-found:
                   summary: Organization name not found
