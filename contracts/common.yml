@@ -3923,6 +3923,10 @@ paths:
       tags:
         - Buckets
       summary: Retrieve a bucket
+      description: |
+        Retrieves a bucket.
+
+        Use this endpoint to retrieve information for a specific bucket.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -3930,14 +3934,58 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to retrieve.
       responses:
         '200':
-          description: Bucket details
+          description: |
+            Success.
+            The response body contains the bucket information.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bucket'
+              examples:
+                successResponse:
+                  value:
+                    id: 37407e232b3911d8
+                    orgID: bea7ea952287f70d
+                    type: user
+                    schemaType: implicit
+                    description: bucket for air sensor data
+                    name: air-sensor
+                    retentionRules:
+                      - type: expire
+                        everySeconds: 2592000
+                    createdAt: '2022-08-03T23:04:41.073704121Z'
+                    updatedAt: '2022-08-03T23:04:41.073704228Z'
+                    links:
+                      labels: /api/v2/buckets/37407e232b3911d8/labels
+                      members: /api/v2/buckets/37407e232b3911d8/members
+                      org: /api/v2/orgs/INFLUX_ORG_ID
+                      owners: /api/v2/buckets/37407e232b3911d8/owners
+                      self: /api/v2/buckets/37407e232b3911d8
+                      write: /api/v2/write?org=INFLUX_ORG_ID&bucket=37407e232b3911d8
+                    labels: []
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: |
+            Not found.
+            Bucket not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested bucket wasn't found.
+                  value:
+                    code: not found
+                    message: bucket not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -3949,8 +3997,26 @@ paths:
       tags:
         - Buckets
       summary: Update a bucket
+      description: |
+        Updates a bucket.
+
+        Use this endpoint to update properties
+        (`name`, `description`, and `retentionRules`) of a bucket.
+
+        #### InfluxDB Cloud
+
+        - Requires the `retentionRules` property in the request body. If you don't
+        provide `retentionRules`, InfluxDB responds with an HTTP `403` status code.
+
+        #### InfluxDB OSS
+
+        - Doesn't require `retentionRules`.
+
+        #### Related Guides
+
+        - [Update a bucket](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/update-bucket/)
       requestBody:
-        description: Bucket update to apply
+        description: The bucket update to apply.
         required: true
         content:
           application/json:
@@ -3971,17 +4037,130 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bucket'
+              examples:
+                successResponse:
+                  value:
+                    id: 37407e232b3911d8
+                    orgID: INFLUX_ORG_ID
+                    type: user
+                    schemaType: implicit
+                    description: bucket holding air sensor data
+                    name: air_sensor
+                    retentionRules:
+                      - type: expire
+                        everySeconds: 2592000
+                    createdAt: '2022-08-03T23:04:41.073704121Z'
+                    updatedAt: '2022-08-07T22:49:49.422962913Z'
+                    links:
+                      labels: /api/v2/buckets/37407e232b3911d8/labels
+                      members: /api/v2/buckets/37407e232b3911d8/members
+                      org: /api/v2/orgs/INFLUX_ORG_ID
+                      owners: /api/v2/buckets/37407e232b3911d8/owners
+                      self: /api/v2/buckets/37407e232b3911d8
+                      write: /api/v2/write?org=INFLUX_ORG_ID&bucket=37407e232b3911d8
+                    labels: []
+        '400':
+          description: |
+            Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidJSONStringValue:
+                  summary: Invalid JSON
+                  description: |
+                    If the request body contains invalid JSON, InfluxDB returns `invalid`
+                    with detail about the problem.
+                  value:
+                    code: invalid
+                    message: 'invalid json: invalid character ''\'''' looking for beginning of value'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '403':
+          description: |
+            Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidRetention:
+                  summary: |
+                    The retention policy provided exceeds the max retention for the
+                    organization.
+                  value:
+                    code: forbidden
+                    message: provided retention exceeds orgs maximum retention duration
+        '404':
+          description: |
+            Not found.
+            Bucket not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested bucket wasn't found.
+                  value:
+                    code: not found
+                    message: bucket not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request PATCH "http://localhost:8086/api/v2/buckets/BUCKET_ID \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "name": "air_sensor",
+                  "description": "bucket holding air sensor data",
+                  "retentionRules": [
+                      {
+                          "type": "expire",
+                          "everySeconds": 2592000
+                      }
+                  ]
+                }'
     delete:
       operationId: DeleteBucketsID
       tags:
         - Buckets
       summary: Delete a bucket
+      description: |
+        Deletes a bucket and all associated records.
+
+        #### InfluxDB Cloud
+
+        - Does the following when you send a delete request:
+
+          1. Validates the request and queues the delete.
+          2. Returns an HTTP `204` status code if queued; _error_ otherwise.
+          3. Handles the delete asynchronously.
+
+        #### InfluxDB OSS
+
+        - Validates the request, handles the delete synchronously,
+        and then responds with success or failure.
+
+        #### Limitations
+
+        - Only one bucket can be deleted per request.
+
+        #### Related Guides
+
+        - [Delete a bucket](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/delete-bucket/#delete-a-bucket-in-the-influxdb-ui)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -3989,22 +4168,65 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the bucket to delete.
+          description: |
+            Bucket ID.
+            The ID of the bucket to delete.
       responses:
         '204':
-          description: Delete has been accepted
-        '404':
-          description: Bucket not found
+          description: |
+            Success.
+
+            #### InfluxDB Cloud
+              - The bucket is queued for deletion.
+
+            #### InfluxDB OSS
+              - The bucket is deleted.
+        '400':
+          description: |
+            Bad Request.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                invalidID:
+                  summary: |
+                    Invalid ID.
+                  value:
+                    code: invalid
+                    message: id must have a length of 16 bytes
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: |
+            Not found.
+            Bucket not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested bucket was not found.
+                  value:
+                    code: not found
+                    message: bucket not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request DELETE "http://localhost:8086/api/v2/buckets/BUCKET_ID" \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header 'Accept: application/json'
   '/buckets/{bucketID}/labels':
     get:
       operationId: GetBucketsIDLabels
@@ -8199,16 +8421,29 @@ components:
             $ref: '#/components/schemas/Bucket'
     RetentionRules:
       type: array
-      description: Rules to expire or retain data.  No rules means data never expires.
+      description: |
+        Retention rules to expire or retain data.
+        #### InfluxDB Cloud
+
+        - `retentionRules` is required.
+
+        #### InfluxDB OSS
+
+        - `retentionRules` isn't required.
       items:
         $ref: '#/components/schemas/RetentionRule'
     PatchBucketRequest:
       type: object
-      description: Updates to an existing bucket resource.
+      description: |
+        An object that contains updated bucket properties to apply.
       properties:
         name:
           type: string
+          description: |
+            The name of the bucket.
         description:
+          description: |
+            A description of the bucket.
           type: string
         retentionRules:
           $ref: '#/components/schemas/PatchRetentionRules'
@@ -8219,7 +8454,6 @@ components:
         $ref: '#/components/schemas/PatchRetentionRule'
     PatchRetentionRule:
       type: object
-      description: Updates to a rule to expire or retain data.
       properties:
         type:
           type: string
@@ -8229,15 +8463,33 @@ components:
         everySeconds:
           type: integer
           format: int64
-          description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+          description: |
+            The number of seconds to keep data.
+            Default duration is `2592000` (30 days).
+            `0` represents infinite retention.
           example: 86400
+          default: 2592000
           minimum: 0
         shardGroupDurationSeconds:
           type: integer
           format: int64
-          description: Shard duration measured in seconds.
+          description: |
+            The [shard group duration](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#shard).
+            The number of seconds that each shard group covers.
+
+            #### InfluxDB Cloud
+
+            - Doesn't use `shardGroupDurationsSeconds`.
+
+            #### InfluxDB OSS
+
+            - Default value depends on the [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/#shard-group-duration).
+
+            #### Related guides
+
+            - InfluxDB [shards and shard groups](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/)
       required:
-        - type
+        - everySeconds
     RetentionRule:
       type: object
       properties:
