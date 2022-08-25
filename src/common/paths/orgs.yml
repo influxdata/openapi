@@ -4,6 +4,12 @@ get:
     - Organizations
     - Security and access endpoints
   summary: List all organizations
+  description: |
+    Retrieves a list of [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+
+    #### Related guides
+
+    - [Manage organizations]({{% INFLUXDB_DOCS_URL %}}/organizations)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - $ref: "../parameters/Offset.yml"
@@ -13,24 +19,38 @@ get:
       name: org
       schema:
         type: string
-      description: Filter organizations to a specific organization name.
+      description: |
+        The name of the organization to retrieve.
     - in: query
       name: orgID
       schema:
         type: string
-      description: Filter organizations to a specific organization ID.
+      description: |
+        The ID of the organization to retrieve.
     - in: query
       name: userID
       schema:
         type: string
-      description: Filter organizations to a specific user ID.
+      description: |
+        The ID of the user to filter with.
+        Only returns organizations associated with this user.
   responses:
     "200":
-      description: A list of organizations
+      description: |
+        Success.
+        The response body contains a list of organizations.
       content:
         application/json:
           schema:
             $ref: "../schemas/Organizations.yml"
+          examples:
+            $ref: "../responses/example-responses/GetOrgsSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -42,6 +62,17 @@ post:
   tags:
     - Organizations
   summary: Create an organization
+  description: |
+    Creates an [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+
+    #### InfluxDB Cloud
+
+    - You can't create additional organizations in InfluxDB Cloud. Only the
+    default organization is available.
+
+    #### Related guides
+
+    - [Manage organizations]({{% INFLUXDB_DOCS_URL %}}/organizations)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
@@ -53,14 +84,45 @@ post:
           $ref: "../schemas/PostOrganizationRequest.yml"
   responses:
     "201":
-      description: Organization created
+      description:
+        Created.
+        The response body contains the organization information.
       content:
         application/json:
           schema:
             $ref: "../schemas/Organization.yml"
+          examples:
+            $ref: "../responses/example-responses/PostOrgsSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+      examples:
+        invalidRequest:
+          summary: The `name` field is missing from the request body.
+          value: {
+            "code": "invalid",
+            "message": "org name is empty"
+          }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/orgs \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "INFLUX_ORG",
+              "description: "Example InfluxDB organization"
+            }'
