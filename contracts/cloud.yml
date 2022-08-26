@@ -6753,6 +6753,8 @@ paths:
       tags:
         - Tasks
       summary: List all owners of a task
+      description: |
+        Lists all users that have owner permission for a task.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6760,14 +6762,34 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve owners for.
       responses:
         '200':
-          description: A list of users who have owner privileges for a task
+          description: |
+            Success.
+            The response contains a list of `users` that own the task.
+
+            If the task has no owners, the response contains an empty `users` array.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwners'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -6778,7 +6800,12 @@ paths:
       operationId: PostTasksIDOwners
       tags:
         - Tasks
-      summary: Add an owner to a task
+      summary: Add an owner for a task
+      description: |
+        Assigns a task `owner` role to a user.
+
+        Use this endpoint to create a _resource owner_ for the task.
+        A _resource owner_ is a user with `role: owner` for a specific resource.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6788,7 +6815,7 @@ paths:
           required: true
           description: The task ID.
       requestBody:
-        description: User to add as owner
+        description: A user to add as an owner of the task.
         required: true
         content:
           application/json:
@@ -6796,11 +6823,41 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Added to task owners
+          description: |
+            Created. The task `owner` role is assigned to the user.
+            The response body contains the resource owner with
+            role and user detail.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
+              examples:
+                createdOwner:
+                  summary: User has the owner role for the resource
+                  value:
+                    role: owner
+                    links:
+                      logs: /api/v2/users/0772396d1f411000/logs
+                      self: /api/v2/users/0772396d1f411000
+                    id: 0772396d1f411000
+                    name: USER_NAME
+                    status: active
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -7818,13 +7875,16 @@ paths:
     get:
       operationId: GetUsers
       tags:
+        - Security and access endpoints
         - Users
-      summary: List all users
+      summary: List users
+      description: |
+        Lists users.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
         '200':
-          description: A list of users
+          description: Success. The response contains a list of `users`.
           content:
             application/json:
               schema:
@@ -7837,10 +7897,12 @@ paths:
       tags:
         - Users
       summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: User to create
+        description: The user to create.
         required: true
         content:
           application/json:
@@ -7848,11 +7910,34 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: User created
+          description: |
+            Success.
+            The response contains the newly created user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
@@ -14127,14 +14212,14 @@ components:
           description: The message template as a flux interpolated string.
           type: string
         parseMode:
-          description: 'Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to "MarkdownV2" .'
+          description: 'Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options. Defaults to "MarkdownV2".'
           type: string
           enum:
             - MarkdownV2
             - HTML
             - Markdown
         disableWebPagePreview:
-          description: Disables preview of web links in the sent messages when "true". Defaults to "false" .
+          description: Disables preview of web links in the sent messages when "true". Defaults to "false".
           type: boolean
     NotificationEndpointUpdate:
       type: object

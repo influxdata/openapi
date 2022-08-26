@@ -3,7 +3,15 @@ get:
   tags:
     - Security and access endpoints
     - Users
-  summary: List all users
+  summary: List users
+  description: |
+    Lists users. Default limit is `20`.
+
+    #### Required permissions
+
+    - `read-user` permission
+    - To list all users, pass an **Op** InfluxDB API token.
+
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - $ref: "../../common/parameters/Offset.yml"
@@ -19,7 +27,7 @@ get:
         type: string
   responses:
     "200":
-      description: A list of users
+      description: Success. The response contains a list of `users`.
       content:
         application/json:
           schema:
@@ -32,10 +40,16 @@ post:
   tags:
     - Users
   summary: Create a user
+  description: |
+    Creates a user and returns the newly created user.
+
+    #### Required permissions
+
+    - `write-users`. Requires an InfluxDB API **Op** token.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: User to create
+    description: The user to create.
     required: true
     content:
       application/json:
@@ -43,11 +57,66 @@ post:
           $ref: "../../common/schemas/User.yml"
   responses:
     "201":
-      description: User created
+      description: |
+        Success.
+        The response contains the newly created user.
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/UserResponse.yml"
+    "401":
+      description: |
+        Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            tokenNotAuthorized:
+              summary: API token doesn't have `write:users` permission
+              value:
+                {
+                  "code": "unauthorized",
+                  "message": "write:users/09d8462ce0764000 is unauthorized"
+              }
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
+  x-codeSamples:
+    -  label: "cURL: create a user and set a password"
+       lang: Shell
+       source: |
+
+        # Create the user and assign the user ID to a variable.
+        USER_ID=$(curl --request POST \
+                  "http://localhost:8086/api/v2/users/" \
+                  --header "Authorization: Token INFLUX_OP_TOKEN" \
+                  --header 'Content-type: application/json' \
+                  --data-binary @- << EOF | jq -r '.id'
+                  {
+                    "name": "USER_NAME",
+                    "status": "active"
+                  }
+        EOF
+        )
+
+        # Pass the user ID and a password to set the password for the user.
+        curl request POST "http://localhost:8086/api/v2/users/$USER_ID/password/" \
+          --header "Authorization: Token INFLUX_OP_TOKEN" \
+          --header 'Content-type: application/json' \
+          --data '{ "password": "USER_PASSWORD" }'
+

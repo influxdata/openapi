@@ -8834,6 +8834,7 @@
           "Tasks"
         ],
         "summary": "List all owners of a task",
+        "description": "Lists all users that have owner permission for a task.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8845,12 +8846,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "The ID of the task to retrieve owners for."
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of users who have owner privileges for a task",
+            "description": "Success.\nThe response contains a list of `users` that own the task.\n\nIf the task has no owners, the response contains an empty `users` array.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8858,6 +8859,22 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -8876,7 +8893,8 @@
         "tags": [
           "Tasks"
         ],
-        "summary": "Add an owner to a task",
+        "summary": "Add an owner for a task",
+        "description": "Assigns a task `owner` role to a user.\n\nUse this endpoint to create a _resource owner_ for the task.\nA _resource owner_ is a user with `role: owner` for a specific resource.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8892,7 +8910,7 @@
           }
         ],
         "requestBody": {
-          "description": "User to add as owner",
+          "description": "A user to add as an owner of the task.",
           "required": true,
           "content": {
             "application/json": {
@@ -8904,14 +8922,45 @@
         },
         "responses": {
           "201": {
-            "description": "Added to task owners",
+            "description": "Created. The task `owner` role is assigned to the user.\nThe response body contains the resource owner with\nrole and user detail.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceOwner"
+                },
+                "examples": {
+                  "createdOwner": {
+                    "summary": "User has the owner role for the resource",
+                    "value": {
+                      "role": "owner",
+                      "links": {
+                        "logs": "/api/v2/users/0772396d1f411000/logs",
+                        "self": "/api/v2/users/0772396d1f411000"
+                      },
+                      "id": "0772396d1f411000",
+                      "name": "USER_NAME",
+                      "status": "active"
+                    }
+                  }
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -11462,7 +11511,8 @@
           "Security and access endpoints",
           "Users"
         ],
-        "summary": "List all users",
+        "summary": "List users",
+        "description": "Lists users. Default limit is `20`.\n\n#### Required permissions\n\n- `read-user` permission\n- To list all users, pass an **Op** InfluxDB API token.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11493,7 +11543,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of users",
+            "description": "Success. The response contains a list of `users`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11514,13 +11564,14 @@
           "Users"
         ],
         "summary": "Create a user",
+        "description": "Creates a user and returns the newly created user.\n\n#### Required permissions\n\n- `write-users`. Requires an InfluxDB API **Op** token.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "User to create",
+          "description": "The user to create.",
           "required": true,
           "content": {
             "application/json": {
@@ -11532,7 +11583,7 @@
         },
         "responses": {
           "201": {
-            "description": "User created",
+            "description": "Success.\nThe response contains the newly created user.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11541,11 +11592,50 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "tokenNotAuthorized": {
+                    "summary": "API token doesn't have `write:users` permission",
+                    "value": {
+                      "code": "unauthorized",
+                      "message": "write:users/09d8462ce0764000 is unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
             "description": "Unexpected error",
             "$ref": "#/components/responses/GeneralServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "cURL: create a user and set a password",
+            "lang": "Shell",
+            "source": "\n# Create the user and assign the user ID to a variable.\nUSER_ID=$(curl --request POST \\\n          \"http://localhost:8086/api/v2/users/\" \\\n          --header \"Authorization: Token INFLUX_OP_TOKEN\" \\\n          --header 'Content-type: application/json' \\\n          --data-binary @- << EOF | jq -r '.id'\n          {\n            \"name\": \"USER_NAME\",\n            \"status\": \"active\"\n          }\nEOF\n)\n\n# Pass the user ID and a password to set the password for the user.\ncurl request POST \"http://localhost:8086/api/v2/users/$USER_ID/password/\" \\\n  --header \"Authorization: Token INFLUX_OP_TOKEN\" \\\n  --header 'Content-type: application/json' \\\n  --data '{ \"password\": \"USER_PASSWORD\" }'\n"
+          }
+        ]
       }
     },
     "/users/{userID}": {
@@ -21879,7 +21969,7 @@
             "type": "string"
           },
           "parseMode": {
-            "description": "Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to \"MarkdownV2\" .",
+            "description": "Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options. Defaults to \"MarkdownV2\".",
             "type": "string",
             "enum": [
               "MarkdownV2",
@@ -21888,7 +21978,7 @@
             ]
           },
           "disableWebPagePreview": {
-            "description": "Disables preview of web links in the sent messages when \"true\". Defaults to \"false\" .",
+            "description": "Disables preview of web links in the sent messages when \"true\". Defaults to \"false\".",
             "type": "boolean"
           }
         }

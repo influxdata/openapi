@@ -8834,6 +8834,7 @@
           "Tasks"
         ],
         "summary": "List all owners of a task",
+        "description": "Lists all users that have owner permission for a task.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8845,12 +8846,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "The ID of the task to retrieve owners for."
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of users who have owner privileges for a task",
+            "description": "Success.\nThe response contains a list of `users` that own the task.\n\nIf the task has no owners, the response contains an empty `users` array.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8858,6 +8859,22 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -8876,7 +8893,8 @@
         "tags": [
           "Tasks"
         ],
-        "summary": "Add an owner to a task",
+        "summary": "Add an owner for a task",
+        "description": "Assigns a task `owner` role to a user.\n\nUse this endpoint to create a _resource owner_ for the task.\nA _resource owner_ is a user with `role: owner` for a specific resource.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8892,7 +8910,7 @@
           }
         ],
         "requestBody": {
-          "description": "User to add as owner",
+          "description": "A user to add as an owner of the task.",
           "required": true,
           "content": {
             "application/json": {
@@ -8904,14 +8922,45 @@
         },
         "responses": {
           "201": {
-            "description": "Added to task owners",
+            "description": "Created. The task `owner` role is assigned to the user.\nThe response body contains the resource owner with\nrole and user detail.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceOwner"
+                },
+                "examples": {
+                  "createdOwner": {
+                    "summary": "User has the owner role for the resource",
+                    "value": {
+                      "role": "owner",
+                      "links": {
+                        "logs": "/api/v2/users/0772396d1f411000/logs",
+                        "self": "/api/v2/users/0772396d1f411000"
+                      },
+                      "id": "0772396d1f411000",
+                      "name": "USER_NAME",
+                      "status": "active"
+                    }
+                  }
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -10582,9 +10631,11 @@
       "get": {
         "operationId": "GetUsers",
         "tags": [
+          "Security and access endpoints",
           "Users"
         ],
-        "summary": "List all users",
+        "summary": "List users",
+        "description": "Lists users.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -10592,7 +10643,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of users",
+            "description": "Success. The response contains a list of `users`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -10613,13 +10664,14 @@
           "Users"
         ],
         "summary": "Create a user",
+        "description": "Creates a user and returns the newly created user.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "User to create",
+          "description": "The user to create.",
           "required": true,
           "content": {
             "application/json": {
@@ -10631,7 +10683,7 @@
         },
         "responses": {
           "201": {
-            "description": "User created",
+            "description": "Success.\nThe response contains the newly created user.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -10639,6 +10691,29 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -19380,7 +19455,7 @@
             "type": "string"
           },
           "parseMode": {
-            "description": "Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to \"MarkdownV2\" .",
+            "description": "Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options. Defaults to \"MarkdownV2\".",
             "type": "string",
             "enum": [
               "MarkdownV2",
@@ -19389,7 +19464,7 @@
             ]
           },
           "disableWebPagePreview": {
-            "description": "Disables preview of web links in the sent messages when \"true\". Defaults to \"false\" .",
+            "description": "Disables preview of web links in the sent messages when \"true\". Defaults to \"false\".",
             "type": "boolean"
           }
         }
