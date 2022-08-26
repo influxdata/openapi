@@ -2359,8 +2359,15 @@ paths:
 
         -  The endpoint doesn't validate values in the query--for example:
 
-            The following query has correct syntax, but contains an incorrect `from()` property key:
+            The following Flux query has correct syntax, but contains an incorrect `from()` property key:
 
+            ```js
+            from(foo: "iot_center")
+            |> range(start: -90d)
+            |> filter(fn: (r) => r._measurement == "environment")
+            ```
+
+            The following code sample shows how to pass the query as JSON in the request body:
             ```json
             { "query": "from(foo: \"iot_center\")\
                         |> range(start: -90d)\
@@ -2386,15 +2393,19 @@ paths:
               $ref: '#/components/schemas/LanguageRequest'
       x-codeSamples:
         - lang: Shell
-          label: cURL
+          label: 'cURL: Analyze and generate AST for the query'
           source: |
-            curl --request POST 'http://localhost:8086/api/v2/query/ast' \
-            --header 'Content-Type: application/json' \
-            --header 'Accept: application/json' \
-            --header 'Authorization: Token INFLUX_API_TOKEN' \
-            --data 'from(bucket: "example-bucket")
-                      |> range(start: -5m)
-                      |> filter(fn: (r) => r._measurement == "example-measurement")'
+            curl --request POST "http://localhost:8086/api/v2/query/ast" \
+              --header 'Content-Type: application/json' \
+              --header 'Accept: application/json' \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --data-binary @- << EOL
+                  {
+                    "query": "from(bucket: \"INFLUX_BUCKET_NAME\")\
+                    |> range(start: -5m)\
+                    |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                  }
+            EOL
       responses:
         '200':
           description: |
