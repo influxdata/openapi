@@ -4,6 +4,20 @@ get:
     - Organizations
     - Security and access endpoints
   summary: List all members of an organization
+  description: |
+    Retrieves a list of all users that belong to this organization.
+
+    InfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have
+    permission to access InfluxDB.
+
+    [Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users
+    within the organization.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)
+    - [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)
+
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -11,20 +25,41 @@ get:
       schema:
         type: string
       required: true
-      description: The organization ID.
+      description: |
+        The ID of the organization to retrieve users for.
   responses:
     "200":
-      description: A list of organization members
+      description: |
+        Success.
+        The response body contains a list of all users within the organization.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceMembers.yml"
+          examples:
+            $ref: "../responses/example-responses/GetOrgsIDMembersSuccessResponse.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
     "404":
-      description: Organization not found
+      description: |
+        Not found.
+        InfluxDB can't find the organization.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested organization wasn't found.
+              value: {
+                "code": "not found",
+                "message": "404 page not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -36,6 +71,19 @@ post:
   tags:
     - Organizations
   summary: Add a member to an organization
+  description: |
+    Add a user to an organization.
+
+    InfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have
+    permission to access InfluxDB.
+
+    [Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users
+    within the organization.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)
+    - [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -43,9 +91,11 @@ post:
       schema:
         type: string
       required: true
-      description: The organization ID.
+      description: |
+        The ID of the organization.
   requestBody:
-    description: User to add as member
+    description: |
+      The user to add to the organization.
     required: true
     content:
       application/json:
@@ -53,14 +103,51 @@ post:
           $ref: "../schemas/AddResourceMemberRequestBody.yml"
   responses:
     "201":
-      description: Added to organization created
+      description: |
+        Success.
+        The response body contains the user information.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceMember.yml"
+          examples:
+            $ref: "../responses/example-responses/PostOrgsIDMembersSuccessResponse.yml"
+
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+      examples:
+        invalidRequest:
+          summary: The user `id` is missing from the request body.
+          value: {
+            "code": "invalid",
+            "message": "user id missing or invalid"
+          }
+      "401":
+        $ref: "../responses/AuthorizationError.yml"
+      "404":
+        $ref: "../responses/ResourceNotFoundError.yml"
+      "500":
+        $ref: "../responses/InternalServerError.yml"
+      default:
+        description: Unexpected error
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/Error.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/orgs/INFLUX_ORG_ID/members \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "id": "09cfb87051cbe000"
+            }
