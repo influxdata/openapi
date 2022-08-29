@@ -15,7 +15,7 @@ paths:
         - Users
       summary: List users
       description: |
-        Lists users.
+        Retrieves a list of users.
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -108,7 +108,7 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
           content:
             application/json:
@@ -210,7 +210,9 @@ paths:
                 type: object
                 properties:
                   allowed:
-                    description: True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.
+                    description: |
+                      If `true`, the InfluxDB instance hasn't had initial setup;
+                      `false` otherwise.
                     type: boolean
     post:
       operationId: PostSetup
@@ -2814,11 +2816,22 @@ paths:
 
               * The `Authorization: Token` header is missing or malformed.
               * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
+              * The token doesn't have sufficient permissions to write to this organization and bucket.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                properties:
+                  code:
+                    description: |
+                      The HTTP status code description. Default is `unauthorized`.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - unauthorized
+                  message:
+                    readOnly: true
+                    description: A human-readable message that may contain detail about the error.
+                    type: string
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource
