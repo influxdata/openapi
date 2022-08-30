@@ -4201,6 +4201,11 @@ components:
         id:
           readOnly: true
           type: string
+        labels:
+          description: The list of label names associated with the script.
+          items:
+            type: string
+          type: array
         language:
           $ref: '#/components/schemas/ScriptLanguage'
         name:
@@ -12485,6 +12490,31 @@ paths:
           default: 0
           minimum: 0
           type: integer
+      - description: The name of the script.
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      - description: |
+          A list of label names.
+          Only returns scripts that have all these labels.
+          To retrieve a script, each name you pass in `labelNames` must exactly match the label for a script.
+        in: query
+        name: labelNames
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - description: |
+          A part of the label name.
+          Returns scripts that have a label that contains this phrase.
+        in: query
+        name: labelContains
+        required: false
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -12864,6 +12894,114 @@ paths:
                           "mybucket": "air_sensor"
                           }
                       }'
+  /api/v2/scripts/{scriptID}/labels/add:
+    patch:
+      description: Adds labels to a script and returns the updated script.
+      operationId: PatchScriptsIDAddLabels
+      parameters:
+      - description: The script ID.
+        in: path
+        name: scriptID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                labels:
+                  description: A list of label names to add.
+                  example:
+                  - label1
+                  - label2
+                  - label3
+                  items:
+                    type: string
+                  type: array
+              type: object
+        description: The names of labels to add to the script.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Script'
+          description: |
+            Success.
+            The response body contains the updated script.
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ServerError'
+          description: Script not found.
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+      summary: Adds labels to a script
+      tags:
+      - Data I/O endpoints
+      - Invokable Scripts
+  /api/v2/scripts/{scriptID}/labels/remove:
+    patch:
+      description: Removes labels from a script and returns the updated script.
+      operationId: PatchScriptsIDRemoveLabels
+      parameters:
+      - description: The script ID.
+        in: path
+        name: scriptID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                labels:
+                  description: A list of label names to remove.
+                  example:
+                  - label1
+                  - label2
+                  - label3
+                  items:
+                    type: string
+                  type: array
+              type: object
+        description: The names of labels to remove from the script.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Script'
+          description: |
+            Success.
+            The response body contains the updated script.
+        "400":
+          $ref: '#/components/responses/ServerError'
+          description: Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ServerError'
+          description: Script not found.
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/ServerError'
+          description: Unexpected error.
+      summary: Removes labels from a script
+      tags:
+      - Data I/O endpoints
+      - Invokable Scripts
   /api/v2/setup:
     get:
       description: Check if setup is allowed. Returns `true` if no default user, organization,
