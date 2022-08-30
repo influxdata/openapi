@@ -6,15 +6,68 @@ get:
   summary: List users
   description: |
     Retrieves a list of users.
+
+    To limit which users are returned, pass query parameters in your request.
+
+    #### InfluxDB Cloud
+
+    - Doesn't allow listing all users through the API.
+      Use the InfluxDB Cloud user interface (UI) to manage account information.
+    - **InfluxData internal use only**.
+
+    #### Required permissions
+
+    - Listing all users requires an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token))_.
+    - Listing specific users requires `read-users` or `read-user USER_ID` permission.
+      `USER_ID` is the ID of the user that you want to list.
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
+    - in: query
+      name: name
+      schema:
+        type: string
+    - in: query
+      name: id
+      schema:
+        type: string
   responses:
     "200":
-      description: Success. The response contains a list of `users`.
+      description: |
+        Success. The response contains a list of `users`.
+
+        #### InfluxDB Cloud
+
+        - Returns an empty list (`users: []`) if the request is for listing all users and doesn't pass an _operator token_.
       content:
         application/json:
           schema:
             $ref: "../schemas/Users.yml"
+    "401":
+      description: |
+        Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed,
+          but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
@@ -25,6 +78,20 @@ post:
   summary: Create a user
   description: |
     Creates a user and returns the newly created user.
+
+    #### InfluxDB Cloud
+
+    - Doesn't allow managing users through the API.
+      Use the InfluxDB Cloud user interface (UI) to manage account information.
+    - **InfluxData internal use only**.
+
+    #### Required permissions
+
+    - _[Operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token))_
+
+    #### Related guides
+
+    - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
@@ -46,6 +113,10 @@ post:
     "401":
       description: |
         Unauthorized.
+
+        #### InfluxDB Cloud
+
+        - Returns this error for requests that don't use an _operator token_.
       content:
         application/json:
           schema:
@@ -56,7 +127,8 @@ post:
 
         The error may indicate one of the following problems:
 
-        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - The request body isn't valid--the request is well-formed,
+          but InfluxDB can't process it due to semantic errors.
         - You passed a parameter combination that InfluxDB doesn't support.
       content:
         application/json:
