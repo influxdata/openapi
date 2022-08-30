@@ -2190,8 +2190,15 @@ paths:
 
         -  The endpoint doesn't validate values in the query--for example:
 
-            The following query has correct syntax, but contains an incorrect `from()` property key:
+            The following Flux query has correct syntax, but contains an incorrect `from()` property key:
 
+            ```js
+            from(foo: "iot_center")
+            |> range(start: -90d)
+            |> filter(fn: (r) => r._measurement == "environment")
+            ```
+
+            The following code sample shows how to pass the query as JSON in the request body:
             ```json
             { "query": "from(foo: \"iot_center\")\
                         |> range(start: -90d)\
@@ -2217,15 +2224,19 @@ paths:
               $ref: '#/components/schemas/LanguageRequest'
       x-codeSamples:
         - lang: Shell
-          label: cURL
+          label: 'cURL: Analyze and generate AST for the query'
           source: |
-            curl --request POST 'http://localhost:8086/api/v2/query/ast' \
-            --header 'Content-Type: application/json' \
-            --header 'Accept: application/json' \
-            --header 'Authorization: Token INFLUX_API_TOKEN' \
-            --data 'from(bucket: "example-bucket")
-                      |> range(start: -5m)
-                      |> filter(fn: (r) => r._measurement == "example-measurement")'
+            curl --request POST "http://localhost:8086/api/v2/query/ast" \
+              --header 'Content-Type: application/json' \
+              --header 'Accept: application/json' \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --data-binary @- << EOL
+                  {
+                    "query": "from(bucket: \"INFLUX_BUCKET_NAME\")\
+                    |> range(start: -5m)\
+                    |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                  }
+            EOL
       responses:
         '200':
           description: |
@@ -6584,6 +6595,8 @@ paths:
       tags:
         - Tasks
       summary: List all owners of a task
+      description: |
+        Lists all users that have owner permission for a task.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6591,14 +6604,34 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve owners for.
       responses:
         '200':
-          description: A list of users who have owner privileges for a task
+          description: |
+            Success.
+            The response contains a list of `users` that own the task.
+
+            If the task has no owners, the response contains an empty `users` array.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwners'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -6609,7 +6642,12 @@ paths:
       operationId: PostTasksIDOwners
       tags:
         - Tasks
-      summary: Add an owner to a task
+      summary: Add an owner for a task
+      description: |
+        Assigns a task `owner` role to a user.
+
+        Use this endpoint to create a _resource owner_ for the task.
+        A _resource owner_ is a user with `role: owner` for a specific resource.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6619,7 +6657,7 @@ paths:
           required: true
           description: The task ID.
       requestBody:
-        description: User to add as owner
+        description: A user to add as an owner of the task.
         required: true
         content:
           application/json:
@@ -6627,11 +6665,41 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Added to task owners
+          description: |
+            Created. The task `owner` role is assigned to the user.
+            The response body contains the resource owner with
+            role and user detail.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
+              examples:
+                createdOwner:
+                  summary: User has the owner role for the resource
+                  value:
+                    role: owner
+                    links:
+                      logs: /api/v2/users/0772396d1f411000/logs
+                      self: /api/v2/users/0772396d1f411000
+                    id: 0772396d1f411000
+                    name: USER_NAME
+                    status: active
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -12630,14 +12698,14 @@ components:
           description: The message template as a flux interpolated string.
           type: string
         parseMode:
-          description: 'Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to "MarkdownV2" .'
+          description: 'Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options. Defaults to "MarkdownV2".'
           type: string
           enum:
             - MarkdownV2
             - HTML
             - Markdown
         disableWebPagePreview:
-          description: Disables preview of web links in the sent messages when "true". Defaults to "false" .
+          description: Disables preview of web links in the sent messages when "true". Defaults to "false".
           type: boolean
     NotificationEndpointUpdate:
       type: object

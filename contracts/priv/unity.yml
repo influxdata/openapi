@@ -221,6 +221,25 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /clusters:
+    get:
+      operationId: GetClusters
+      tags:
+        - Clusters
+      summary: Get the list of clusters
+      responses:
+        '200':
+          description: Clusters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clusters'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   /billing:
     get:
       operationId: GetBilling
@@ -588,6 +607,38 @@ paths:
           $ref: '#/components/responses/ServerError'
         '404':
           description: Invoice not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /orgs:
+    post:
+      operationId: PostOrgs
+      tags:
+        - Organizations
+      summary: Creates an organization
+      requestBody:
+        description: Information for provisioning an organization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreateRequest'
+      responses:
+        '201':
+          description: Organization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationWithToken'
+        '400':
+          description: Invalid request
+          $ref: '#/components/responses/ServerError'
+        '401':
+          description: Unauthorized bearer token
+          $ref: '#/components/responses/ServerError'
+        '409':
+          description: Organization name taken
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -1441,6 +1492,52 @@ components:
       required:
         - id
         - name
+    Cluster:
+      properties:
+        isBeta:
+          description: determines if the cluster is in beta
+          nullable: false
+          readOnly: true
+          type: string
+        priority:
+          description: priority for sorting the cluster
+          nullable: false
+          readOnly: true
+          type: string
+        isProviderAvailable:
+          description: determines if the provider is available
+          nullable: false
+          readOnly: true
+          type: string
+        isRegionAvailable:
+          description: determines if the region is available
+          nullable: false
+          readOnly: true
+          type: string
+        providerId:
+          description: the id of the cloud provider
+          nullable: false
+          readOnly: true
+          type: string
+        providerName:
+          description: the descriptive name of the cloud provider
+          nullable: false
+          readOnly: true
+          type: string
+        regionId:
+          description: the id of the region
+          nullable: false
+          readOnly: true
+          type: string
+        regionName:
+          description: the descriptive name of the region
+          nullable: false
+          readOnly: true
+          type: string
+    Clusters:
+      type: array
+      items:
+        $ref: '#/components/schemas/Cluster'
     UserAccount:
       properties:
         id:
@@ -2304,6 +2401,21 @@ components:
         - isRegionBeta
         - regionCode
         - regionName
+    OrganizationWithToken:
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+        - type: object
+          properties:
+            token:
+              description: Authentication token to manage the organization and its resources in IDPE
+              readOnly: true
+              type: string
+            links:
+              description: Links to the IDPE resources for this organization
+              readOnly: true
+              type: object
+              example:
+                resource: path/to/resource
     OrganizationSummaries:
       type: array
       items:
@@ -2326,6 +2438,26 @@ components:
           - name
           - isActive
           - isDefault
+    OrganizationCreateRequest:
+      type: object
+      properties:
+        orgName:
+          description: name of the organization
+          type: string
+        provider:
+          description: name of the cloud provider
+          type: string
+          enum:
+            - AWS
+            - GCP
+            - Azure
+        region:
+          description: name of the region within the cloud provider
+          type: string
+      required:
+        - orgName
+        - provider
+        - region
     OrganizationDefaultRequest:
       properties:
         id:
