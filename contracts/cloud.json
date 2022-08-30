@@ -13,7 +13,7 @@
   "tags": [
     {
       "name": "Authorizations",
-      "description": "Create and manage API tokens.\nAn **authorization** associates a list of permissions to an\n**organization** and provides a token for API access.\nOptionally, you can restrict an authorization and its token to a specific user.\n\n### Related guides\n\n  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).\n  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n"
+      "description": "Create and manage _API tokens_.\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\nAn authorization is only visible to the user that created it.\nOptionally, when creating an authorization, you can scope it to a specific user.\nA _user session_ carries the permissions granted by all the user's authorizations.\nTo create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).\n  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n"
     },
     {
       "name": "Buckets",
@@ -66,7 +66,7 @@
     {
       "name": "Response codes",
       "x-traitTag": true,
-      "description": "The InfluxDB API uses standard HTTP status codes for success and failure responses.\nThe response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.\n\nAPI operations may return the following HTTP status codes:\n\n| &nbsp;Code&nbsp; | Status                   | Description      |\n|:-----------:|:------------------------ |:--------------------- |\n| `200`       | Success                  |                       |\n| `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |\n| `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token does not have permission for the operation.</li></ul> |\n| `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |\n| `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |\n| `413`       | Request entity too large | Request payload exceeds the size limit. |\n| `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |\n| `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |\n| `500`       | Internal server error    |                       |\n| `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |\n"
+      "description": "The InfluxDB API uses standard HTTP status codes for success and failure responses.\nThe response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.\n\nAPI operations may return the following HTTP status codes:\n\n| &nbsp;Code&nbsp; | Status                   | Description      |\n|:-----------:|:------------------------ |:--------------------- |\n| `200`       | Success                  |                       |\n| `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |\n| `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |\n| `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |\n| `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |\n| `413`       | Request entity too large | Request payload exceeds the size limit. |\n| `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |\n| `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |\n| `500`       | Internal server error    |                       |\n| `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |\n"
     }
   ],
   "x-tagGroups": [
@@ -1568,7 +1568,7 @@
           "Write"
         ],
         "summary": "Write data",
-        "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\n\n#### InfluxDB Cloud\n\n- Takes the following steps when you send a write request:\n\n  1. Validates the request and queues the write.\n  2. If the write is queued, responds with an HTTP `204` status code.\n  3. Handles the write asynchronously and reaches eventual consistency.\n\n  An HTTP `2xx` status code acknowledges that the write or delete is queued.\n  To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\n  wait for a response before you send the next request.\n\n  Because writes are asynchronous, data might not yet be written\n  when you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the write synchronously,\n  and then responds with success or failure.\n- If all points were written successfully, returns `204`,\n  otherwise returns the first line that failed.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
+        "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\n\n#### InfluxDB Cloud\n\n- Takes the following steps when you send a write request:\n\n  1. Validates the request and queues the write.\n  2. If the write is queued, responds with an HTTP `204` status code.\n  3. Handles the write asynchronously and reaches eventual consistency.\n\n  An HTTP `2xx` status code acknowledges that the write or delete is queued.\n  To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\n  wait for a response before you send the next request.\n\n  Because writes are asynchronous, data might not yet be written\n  when you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the write synchronously,\n  and then responds with success or failure.\n- If all points were written successfully, responds with HTTP `204` status code;\n  otherwise, returns the first line that failed.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api).\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
         "requestBody": {
           "description": "Data in line protocol format.\n\nTo send compressed data, do the following:\n\n  1. Use [GZIP](https://www.gzip.org/) to compress the line protocol data.\n  2. In your request, send the compressed data and the\n     `Content-Encoding: gzip` header.\n\n#### Related guides\n\n- [Best practices for optimizing writes]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/).\n",
           "required": true,
@@ -1682,7 +1682,7 @@
             "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the write asynchronously - the write might not have completed yet.\n\n#### InfluxDB OSS\n\n- Successfully wrote all points in the batch.\n\n#### Related guides\n\n- [How to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/).\n"
           },
           "400": {
-            "description": "Bad request. The response body contains detail about the error.\n\nInfluxDB returns this error if the line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data, and indicates what was expected.\nFor partial writes, the number of points written and the number of points rejected are also included.\nFor more information, check the `rejected_points` measurement in your `_monitoring` bucket.\n\n#### InfluxDB Cloud\n\n- Returns this error for bucket schema conflicts.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
+            "description": "Bad request. The response body contains detail about the error.\n\nInfluxDB returns this error if the line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data, and indicates what was expected.\nFor partial writes, the number of points written and the number of points rejected are also included.\nFor more information, check the `rejected_points` measurement in your `_monitoring` bucket.\n\n#### InfluxDB Cloud\n\n- Returns this error for bucket schema conflicts.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` doesn't match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1846,7 +1846,7 @@
             "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the delete asynchronously - the deletion might not have completed yet.\n\nAn HTTP `2xx` status code acknowledges that the write or delete is queued.\nTo ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\nwait for a response before you send the next request.\n\nBecause writes are asynchronous, data might not yet be written\nwhen you receive the response.\n\n#### InfluxDB OSS\n\n- Deleted the data.\n"
           },
           "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` doesn't match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -3148,7 +3148,7 @@
           "Query"
         ],
         "summary": "Generate a query Abstract Syntax Tree (AST)",
-        "description": "Analyzes a Flux query and returns a complete package source [Abstract Syntax\nTree (AST)]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#abstract-syntax-tree-ast)\nfor the query.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\nA Flux query AST provides a semantic, tree-like representation with contextual\ninformation about the query. The AST illustrates how the query is distributed\ninto different components for execution.\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following Flux query has correct syntax, but contains an incorrect `from()` property key:\n\n    ```js\n    from(foo: \"iot_center\")\n    |> range(start: -90d)\n    |> filter(fn: (r) => r._measurement == \"environment\")\n    ```\n\n    The following code sample shows how to pass the query as JSON in the request body:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                |> range(start: -90d)\\\n                |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
+        "description": "Analyzes a Flux query and returns a complete package source [Abstract Syntax\nTree (AST)]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#abstract-syntax-tree-ast)\nfor the query.\n\nUse this endpoint for deep query analysis such as debugging unexpected query\nresults.\n\nA Flux query AST provides a semantic, tree-like representation with contextual\ninformation about the query. The AST illustrates how the query is distributed\ninto different components for execution.\n\n#### Limitations\n\n-  The endpoint doesn't validate values in the query--for example:\n\n    The following sample Flux query has correct syntax, but contains an incorrect `from()` property key:\n\n    ```js\n    from(foo: \"iot_center\")\n        |> range(start: -90d)\n        |> filter(fn: (r) => r._measurement == \"environment\")\n    ```\n\n    The following sample JSON shows how to pass the query in the request body:\n\n    ```js\n    from(foo: \"iot_center\")\n    |> range(start: -90d)\n    |> filter(fn: (r) => r._measurement == \"environment\")\n    ```\n\n    The following code sample shows how to pass the query as JSON in the request body:\n    ```json\n    { \"query\": \"from(foo: \\\"iot_center\\\")\\\n                    |> range(start: -90d)\\\n                    |> filter(fn: (r) => r._measurement == \\\"environment\\\")\"\n    }\n    ```\n\n    Passing this to `/api/v2/query/ast` will return a successful response\n    with a generated AST.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5023,7 +5023,7 @@
             }
           },
           "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` does not match an organization.\n",
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` doesn't match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -6314,7 +6314,8 @@
           "Organizations",
           "Security and access endpoints"
         ],
-        "summary": "List all organizations",
+        "summary": "List organizations",
+        "description": "Retrieves a list of [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization/).\n\nTo limit which organizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.\n\n#### InfluxDB Cloud\n\n- Only returns the organization that owns the token passed in the request.\n\n#### Related guides\n\n- [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6334,7 +6335,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter organizations to a specific organization name."
+            "description": "An organization name.\nOnly returns organizations with this name.\n"
           },
           {
             "in": "query",
@@ -6342,7 +6343,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter organizations to a specific organization ID."
+            "description": "An organization ID.\nOnly returns the organization with this ID.\n"
           },
           {
             "in": "query",
@@ -6350,12 +6351,12 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter organizations to a specific user ID."
+            "description": "A user ID.\nOnly returns organizations where this user is a member or owner.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of organizations",
+            "description": "Success. The response body contains a list of organizations.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6364,15 +6365,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       },
@@ -6382,13 +6388,14 @@
           "Organizations"
         ],
         "summary": "Create an organization",
+        "description": "Creates an organization and returns the newly created organization.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to use this endpoint to create organizations.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "Organization to create",
+          "description": "The organization to create.",
           "required": true,
           "content": {
             "application/json": {
@@ -6400,7 +6407,7 @@
         },
         "responses": {
           "201": {
-            "description": "Organization created",
+            "description": "Success. The organization is created.\nThe response body contains the new organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -6409,15 +6416,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GeneralServerError"
           }
         }
       }
@@ -6827,6 +6839,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all owners of an organization",
+        "description": "Retrieves a list of all owners of an organization.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6838,7 +6851,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The organization ID."
+            "description": "The ID of the organization to list owners for.\n"
           }
         ],
         "responses": {
@@ -6880,6 +6893,7 @@
           "Organizations"
         ],
         "summary": "Add an owner to an organization",
+        "description": "Adds an owner to an organization.\n\nUse this endpoint to assign the organization `owner` role to a user.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6891,11 +6905,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The organization ID."
+            "description": "The ID of the organization that you want to add an owner for."
           }
         ],
         "requestBody": {
-          "description": "User to add as owner",
+          "description": "The user to add as an owner of the organization.",
           "required": true,
           "content": {
             "application/json": {
@@ -6907,7 +6921,7 @@
         },
         "responses": {
           "201": {
-            "description": "Organization owner added",
+            "description": "Success. The user is an owner of the organization.\nThe response body contains the owner with role and user detail.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -7271,7 +7285,7 @@
             "$ref": "#/components/responses/AuthorizationError"
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8639,7 +8653,7 @@
           "Users"
         ],
         "summary": "Update a password",
-        "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud does not support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
+        "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud doesn't support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
         "security": [
           {
             "BasicAuthentication": []
@@ -8666,7 +8680,7 @@
             "description": "Success. The password was updated."
           },
           "400": {
-            "description": "Bad request.\nInfluxDB Cloud does not support changing passwords through the API and always responds with this status.\n"
+            "description": "Bad request.\nInfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.\n"
           },
           "default": {
             "description": "Unsuccessful authentication",
@@ -8684,10 +8698,12 @@
     "/tasks/{taskID}/members": {
       "get": {
         "operationId": "GetTasksIDMembers",
+        "deprecated": true,
         "tags": [
           "Tasks"
         ],
         "summary": "List all task members",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8704,7 +8720,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A list of users who have member privileges for a task",
+            "description": "Success. The response body contains a list of `users` that have\nthe `member` role for a task.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8727,10 +8743,12 @@
       },
       "post": {
         "operationId": "PostTasksIDMembers",
+        "deprecated": true,
         "tags": [
           "Tasks"
         ],
         "summary": "Add a member to a task",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nAdds a user to members of a task and returns the newly created member with\nrole and user detail.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8746,7 +8764,7 @@
           }
         ],
         "requestBody": {
-          "description": "User to add as member",
+          "description": "A user to add as a member of the task.",
           "required": true,
           "content": {
             "application/json": {
@@ -8758,7 +8776,7 @@
         },
         "responses": {
           "201": {
-            "description": "Added to task members",
+            "description": "Created. The user is added to task members.",
             "content": {
               "application/json": {
                 "schema": {
@@ -8783,10 +8801,12 @@
     "/tasks/{taskID}/members/{userID}": {
       "delete": {
         "operationId": "DeleteTasksIDMembersID",
+        "deprecated": true,
         "tags": [
           "Tasks"
         ],
         "summary": "Remove a member from a task",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8830,11 +8850,12 @@
     "/tasks/{taskID}/owners": {
       "get": {
         "operationId": "GetTasksIDOwners",
+        "deprecated": true,
         "tags": [
           "Tasks"
         ],
         "summary": "List all owners of a task",
-        "description": "Lists all users that have owner permission for a task.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nRetrieves all users that have owner permission for a task.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8851,7 +8872,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success.\nThe response contains a list of `users` that own the task.\n\nIf the task has no owners, the response contains an empty `users` array.\n",
+            "description": "Success.\nThe response contains a list of `users` that have the `owner` role for the task.\n\nIf the task has no owners, the response contains an empty `users` array.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8864,7 +8885,7 @@
             "$ref": "#/components/responses/AuthorizationError"
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8890,11 +8911,12 @@
       },
       "post": {
         "operationId": "PostTasksIDOwners",
+        "deprecated": true,
         "tags": [
           "Tasks"
         ],
         "summary": "Add an owner for a task",
-        "description": "Assigns a task `owner` role to a user.\n\nUse this endpoint to create a _resource owner_ for the task.\nA _resource owner_ is a user with `role: owner` for a specific resource.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nAssigns a task `owner` role to a user.\n\nUse this endpoint to create a _resource owner_ for the task.\nA _resource owner_ is a user with `role: owner` for a specific resource.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8950,7 +8972,7 @@
             "$ref": "#/components/responses/AuthorizationError"
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8978,10 +9000,12 @@
     "/tasks/{taskID}/owners/{userID}": {
       "delete": {
         "operationId": "DeleteTasksIDOwnersID",
+        "deprecated": true,
         "tags": [
           "Tasks"
         ],
         "summary": "Remove an owner from a task",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9030,7 +9054,7 @@
           "Users"
         ],
         "summary": "Update a password",
-        "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud does not support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
+        "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud doesn't support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
         "security": [
           {
             "BasicAuthentication": []
@@ -10635,7 +10659,7 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Lists users.\n",
+        "description": "Retrieves a list of users.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -10703,7 +10727,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -12778,7 +12802,7 @@
         }
       },
       "ExpressionStatement": {
-        "description": "May consist of an expression that does not return a value and is executed solely for its side-effects",
+        "description": "May consist of an expression that doesn't return a value and is executed solely for its side-effects",
         "type": "object",
         "properties": {
           "type": {
@@ -18378,7 +18402,7 @@
         "type": "object",
         "properties": {
           "allowed": {
-            "description": "True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.",
+            "description": "If `true`, the InfluxDB instance hasn't had initial setup;\n`false` otherwise.\n",
             "type": "boolean"
           }
         }
@@ -20917,11 +20941,25 @@
     },
     "responses": {
       "AuthorizationError": {
-        "description": "Unauthorized. The error may indicate one of the following:\n\n  * The `Authorization: Token` header is missing or malformed.\n  * The API token value is missing from the header.\n  * The token does not have sufficient permissions to write to this organization and bucket.\n",
+        "description": "Unauthorized. The error may indicate one of the following:\n\n  * The `Authorization: Token` header is missing or malformed.\n  * The API token value is missing from the header.\n  * The token doesn't have sufficient permissions to write to this organization and bucket.\n",
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "properties": {
+                "code": {
+                  "description": "The HTTP status code description. Default is `unauthorized`.\n",
+                  "readOnly": true,
+                  "type": "string",
+                  "enum": [
+                    "unauthorized"
+                  ]
+                },
+                "message": {
+                  "readOnly": true,
+                  "description": "A human-readable message that may contain detail about the error.",
+                  "type": "string"
+                }
+              }
             },
             "examples": {
               "tokenNotAuthorized": {
