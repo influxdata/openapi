@@ -10965,15 +10965,29 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Retrieves a list of users.\n",
+        "description": "Retrieves a list of users.\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### InfluxDB Cloud\n\n- Doesn't allow listing all users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | Operator token | InfluxData internal use only |\n| Listing specific user | `read-users` or `read-user USER_ID` |\n\nReplace the following:\n\n- `USER_ID`: ID of the user that you want to retrieve.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Success. The response contains a list of `users`.",
+            "description": "Success. The response contains a list of `users`.\n\n#### InfluxDB Cloud\n\n- Returns an empty list (`users: []`) if the request is for listing all users and doesn't pass an _operator token_.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -10981,6 +10995,29 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed,\n  but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -10994,7 +11031,7 @@
           "Users"
         ],
         "summary": "Create a user",
-        "description": "Creates a user and returns the newly created user.\n",
+        "description": "Creates a user and returns the newly created user.\n\n#### InfluxDB Cloud\n\n- Doesn't allow managing users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Create user | Operator token | InfluxData internal use only |\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11023,7 +11060,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized.\n",
+            "description": "Unauthorized.\n\n#### InfluxDB Cloud\n\n- Returns this error if the request doesn't use an _operator token_.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11033,7 +11070,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed,\n  but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11059,6 +11096,7 @@
           "Users"
         ],
         "summary": "Retrieve a user",
+        "description": "Retrieves a user.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11070,12 +11108,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The user ID."
+            "description": "The ID of the user to retrieve."
           }
         ],
         "responses": {
           "200": {
-            "description": "User details",
+            "description": "Success. The response body contains the user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11096,8 +11134,9 @@
           "Users"
         ],
         "summary": "Update a user",
+        "description": "Updates a user and returns the user.\n\n#### InfluxDB Cloud\n\n- Doesn't allow managing users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Update user | Operator token | InfluxData internal use only |\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "requestBody": {
-          "description": "User update to apply",
+          "description": "The user update to apply.",
           "required": true,
           "content": {
             "application/json": {
@@ -11123,7 +11162,7 @@
         ],
         "responses": {
           "200": {
-            "description": "User updated",
+            "description": "Success. The response body contains the updated user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11144,6 +11183,7 @@
           "Users"
         ],
         "summary": "Delete a user",
+        "description": "Deletes a user.\n\nFor security purposes, once an InfluxDB user account is deleted from an\norganization, the user (and their token) cannot be reactivated.\n\n#### InfluxDB Cloud\n\n- Doesn't allow managing users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Delete user | Operator token | InfluxData internal use only |\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11160,7 +11200,7 @@
         ],
         "responses": {
           "204": {
-            "description": "User deleted"
+            "description": "Success. The user is deleted."
           },
           "default": {
             "description": "Unexpected error",
@@ -15738,7 +15778,7 @@
             "description": "The name of the user.\n"
           },
           "status": {
-            "description": "The status of a user. An inactive user won't have access to resources.\n",
+            "description": "The status of a user.\nAn inactive user can't read or write resources.\n",
             "default": "active",
             "type": "string",
             "enum": [

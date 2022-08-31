@@ -19,6 +19,28 @@ paths:
       summary: List users
       description: |
         Retrieves a list of users.
+
+        To limit which users are returned, pass query parameters in your request.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow listing all users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions for InfluxDB Cloud
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | List all users | Operator token | InfluxData internal use only |
+        | Listing specific user | `read-users` or `read-user USER_ID` |
+
+        Replace the following:
+
+        - `USER_ID`: ID of the user that you want to retrieve.
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -31,41 +53,26 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: id
+          schema:
+            type: string
       responses:
         '200':
-          description: Success. The response contains a list of `users`.
+          description: |
+            Success. The response contains a list of `users`.
+
+            #### InfluxDB Cloud
+
+            - Returns an empty list (`users: []`) if the request is for listing all users and doesn't pass an _operator token_.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
-        default:
-          description: Unexpected error
-          $ref: '#/paths/~1tasks/get/responses/default'
-    post:
-      operationId: PostUsers
-      tags:
-        - Users
-      summary: Create a user
-      description: |
-        Creates a user and returns the newly created user.
-      parameters:
-        - $ref: '#/paths/~1users/get/parameters/0'
-      requestBody:
-        description: The user to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '201':
-          description: |
-            Success.
-            The response contains the newly created user.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OnboardingResponse/properties/user'
         '401':
           description: |
             Unauthorized.
@@ -111,14 +118,90 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed,
+              but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          description: |
+            Internal server error.
+            The server encountered an unexpected situation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1tasks/get/responses/default'
+    post:
+      operationId: PostUsers
+      tags:
+        - Users
+      summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow managing users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions for InfluxDB Cloud
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Create user | Operator token | InfluxData internal use only |
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
+      parameters:
+        - $ref: '#/paths/~1users/get/parameters/0'
+      requestBody:
+        description: The user to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: |
+            Success.
+            The response contains the newly created user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        '401':
+          description: |
+            Unauthorized.
+
+            #### InfluxDB Cloud
+
+            - Returns this error if the request doesn't use an _operator token_.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed,
+              but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -128,6 +211,12 @@ paths:
       tags:
         - Users
       summary: Retrieve a user
+      description: |
+        Retrieves a user.
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -135,10 +224,10 @@ paths:
           schema:
             type: string
           required: true
-          description: The user ID.
+          description: The ID of the user to retrieve.
       responses:
         '200':
-          description: User details
+          description: Success. The response body contains the user.
           content:
             application/json:
               schema:
@@ -151,8 +240,25 @@ paths:
       tags:
         - Users
       summary: Update a user
+      description: |
+        Updates a user and returns the user.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow managing users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions for InfluxDB Cloud
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Update user | Operator token | InfluxData internal use only |
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       requestBody:
-        description: User update to apply
+        description: The user update to apply.
         required: true
         content:
           application/json:
@@ -168,7 +274,7 @@ paths:
           description: The ID of the user to update.
       responses:
         '200':
-          description: User updated
+          description: Success. The response body contains the updated user.
           content:
             application/json:
               schema:
@@ -181,6 +287,26 @@ paths:
       tags:
         - Users
       summary: Delete a user
+      description: |
+        Deletes a user.
+
+        For security purposes, once an InfluxDB user account is deleted from an
+        organization, the user (and their token) cannot be reactivated.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow managing users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Delete user | Operator token | InfluxData internal use only |
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -191,7 +317,7 @@ paths:
           description: The ID of the user to delete.
       responses:
         '204':
-          description: User deleted
+          description: Success. The user is deleted.
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -341,7 +467,7 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -402,7 +528,7 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -794,7 +920,7 @@ paths:
                     code: invalid
                     message: At least one field column is required
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
     summary: Bucket Schema
     get:
@@ -889,7 +1015,7 @@ paths:
                     code: invalid
                     message: Unable to delete columns from schema
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/orgs/{orgID}/limits':
     get:
       tags:
@@ -2697,7 +2823,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -2789,7 +2915,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -2946,19 +3072,13 @@ paths:
                     code: unauthorized
                     message: unauthorized access
         '500':
-          description: |
-            Internal server error.
-            The server encountered an unexpected situation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Non 2XX error response from server.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: all tasks, basic output'
@@ -3056,7 +3176,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 fluxAndScriptError:
                   summary: The request body can't contain both flux and scriptID
@@ -3071,13 +3191,13 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: create a Flux script task'
@@ -3151,7 +3271,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -3173,7 +3293,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 org-not-found:
                   summary: Organization name not found
@@ -3191,7 +3311,7 @@ paths:
                     code: not found
                     message: organization not found
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1tasks/get/responses/default'
     patch:
@@ -3282,7 +3402,7 @@ paths:
         '404':
           $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1tasks/get/responses/default'
     delete:
@@ -3315,7 +3435,7 @@ paths:
         '404':
           $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1tasks/get/responses/default'
 components:
@@ -3529,7 +3649,8 @@ components:
                 The name of the user.
             status:
               description: |
-                The status of a user. An inactive user won't have access to resources.
+                The status of a user.
+                An inactive user can't read or write resources.
               default: active
               type: string
               enum:
