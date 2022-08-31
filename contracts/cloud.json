@@ -10973,7 +10973,8 @@
         "tags": [
           "Authorizations"
         ],
-        "summary": "List all authorizations",
+        "summary": "List authorizations",
+        "description": "Retrieves a list of authorizations.\n\nTo limit which authorizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all authorizations.\n\n#### InfluxDB Cloud\n\n- Doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in `GET /api/v2/authorizations` responses; returns `token: redacted` for all authorizations.\n\n#### Required permissions for InfluxDB Cloud\n\n- `read-authorizations`\n\n#### Related guides\n\n- [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -10984,7 +10985,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to a user ID."
+            "description": "A user ID.\nOnly returns authorizations scoped to this user.\n"
           },
           {
             "in": "query",
@@ -10992,7 +10993,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to a user name."
+            "description": "A user name.\nOnly returns authorizations scoped to this user.\n"
           },
           {
             "in": "query",
@@ -11000,7 +11001,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to an organization ID."
+            "description": "An organization ID.\nOnly returns authorizations that belong to this organization.\n"
           },
           {
             "in": "query",
@@ -11008,7 +11009,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to a organization name."
+            "description": "An organization name.\nOnly returns authorizations that belong to this organization.\n"
           },
           {
             "in": "query",
@@ -11016,12 +11017,12 @@
             "schema": {
               "type": "string"
             },
-            "description": "Find a token by value."
+            "description": "A token value.\nOnly returns the authorization that has this token.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of authorizations",
+            "description": "Success. The response body contains a list of authorizations.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11029,6 +11030,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid request",
+            "$ref": "#/components/responses/GeneralServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -11042,13 +11053,14 @@
           "Authorizations"
         ],
         "summary": "Create an authorization",
+        "description": "Creates an authorization and returns the newly created authorization.\n\nUse this endpoint to generate an API token with resource permissions.\nA permission sets `read` or `write` access to a `type` of resource or a specific resource.\n\nKeep the following in mind when creating and updating authorizations:\n\n- A permission with a resource `id` field applies only to the resource with the specified type and ID.\n- A permission that doesn't have a resource `id` applies to all resources with the type.\n- To scope an authorization to a specific user, provide the `userID` property.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "Authorization to create",
+          "description": "The authorization to create.",
           "required": true,
           "content": {
             "application/json": {
@@ -11073,11 +11085,29 @@
             "description": "Invalid request",
             "$ref": "#/components/responses/GeneralServerError"
           },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
             "description": "Unexpected error",
             "$ref": "#/components/responses/GeneralServerError"
           }
-        }
+        },
+        "x-codeSample": [
+          {
+            "lang": "Shell",
+            "label": "cURL: Create auth to read all buckets",
+            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\"action\": \"read\", \"resource\": {\"type\": \"buckets\"}}\n    ]\n  }\nEOF\n"
+          },
+          {
+            "lang": "Shell",
+            "label": "cURL: Create auth scoped to a user",
+            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"userID\": \"INFLUX_USER_ID\",\n    \"description\": \"iot_user write to bucket\",\n    \"permissions\": [\n      {\"action\": \"write\", \"resource\": {\"type\": \"buckets\", \"id: \"INFLUX_BUCKET_ID\"}}\n    ]\n  }\nEOF\n"
+          }
+        ]
       }
     },
     "/authorizations/{authID}": {

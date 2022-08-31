@@ -225,7 +225,7 @@ components:
             readOnly: true
             type: object
           org:
-            description: The name of the organization that the token is scoped to.
+            description: The name of the organization that owns the token.
             readOnly: true
             type: string
           orgID:
@@ -249,11 +249,11 @@ components:
             readOnly: true
             type: string
           user:
-            description: The name of the user that created and owns the token.
+            description: The name of the user that the token is scoped to.
             readOnly: true
             type: string
           userID:
-            description: The ID of the user that created and owns the token.
+            description: The ID of the user that the token is scoped to.
             readOnly: true
             type: string
         type: object
@@ -6504,30 +6504,57 @@ paths:
       - System information endpoints
   /api/v2/authorizations:
     get:
+      description: |
+        Retrieves a list of authorizations.
+
+        To limit which authorizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all authorizations.
+
+        #### InfluxDB Cloud
+
+        - Doesn't expose [API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token) values in `GET /api/v2/authorizations` responses; returns `token: redacted` for all authorizations.
+
+        #### Required permissions for InfluxDB Cloud
+
+        - `read-authorizations`
+
+        #### Related guides
+
+        - [View tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/).
       operationId: GetAuthorizations
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: Only show authorizations that belong to a user ID.
+      - description: |
+          A user ID.
+          Only returns authorizations scoped to this user.
         in: query
         name: userID
         schema:
           type: string
-      - description: Only show authorizations that belong to a user name.
+      - description: |
+          A user name.
+          Only returns authorizations scoped to this user.
         in: query
         name: user
         schema:
           type: string
-      - description: Only show authorizations that belong to an organization ID.
+      - description: |
+          An organization ID.
+          Only returns authorizations that belong to this organization.
         in: query
         name: orgID
         schema:
           type: string
-      - description: Only show authorizations that belong to a organization name.
+      - description: |
+          An organization name.
+          Only returns authorizations that belong to this organization.
         in: query
         name: org
         schema:
           type: string
-      - description: Find a token by value.
+      - description: |
+          A token value.
+          Only returns the authorization that has this token.
         in: query
         name: token
         schema:
@@ -6538,14 +6565,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorizations'
-          description: A list of authorizations
+          description: Success. The response body contains a list of authorizations.
+        "400":
+          $ref: '#/components/responses/GeneralServerError'
+          description: Invalid request
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
-      summary: List all authorizations
+      summary: List authorizations
       tags:
       - Authorizations
     post:
+      description: |
+        Creates an authorization and returns the newly created authorization.
+
+        Use this endpoint to generate an API token with resource permissions.
+        A permission sets `read` or `write` access to a `type` of resource or a specific resource.
+
+        Keep the following in mind when creating and updating authorizations:
+
+        - A permission with a resource `id` field applies only to the resource with the specified type and ID.
+        - A permission that doesn't have a resource `id` applies to all resources with the type.
+        - To scope an authorization to a specific user, provide the `userID` property.
+
+        #### Related guides
+
+        - [Create a token](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/).
       operationId: PostAuthorizations
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -6554,7 +6603,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Authorization'
-        description: Authorization to create
+        description: The authorization to create.
         required: true
       responses:
         "201":
@@ -6566,12 +6615,50 @@ paths:
         "400":
           $ref: '#/components/responses/GeneralServerError'
           description: Invalid request
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
       summary: Create an authorization
       tags:
       - Authorizations
+      x-codeSample:
+      - label: 'cURL: Create auth to read all buckets'
+        lang: Shell
+        source: |
+          curl --request POST \
+          "http://localhost:8086/api/v2/authorizations" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header 'Content-Type: application/json' \
+          --data @- << EOF
+            {
+              "orgID": "INFLUX_ORG_ID",
+              "description": "iot_users read buckets",
+              "permissions": [
+                {"action": "read", "resource": {"type": "buckets"}}
+              ]
+            }
+          EOF
+      - label: 'cURL: Create auth scoped to a user'
+        lang: Shell
+        source: |
+          curl --request POST \
+          "http://localhost:8086/api/v2/authorizations" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header 'Content-Type: application/json' \
+          --data @- << EOF
+            {
+              "orgID": "INFLUX_ORG_ID",
+              "userID": "INFLUX_USER_ID",
+              "description": "iot_user write to bucket",
+              "permissions": [
+                {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+              ]
+            }
+          EOF
   /api/v2/authorizations/{authID}:
     delete:
       operationId: DeleteAuthorizationsID
