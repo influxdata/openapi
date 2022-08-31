@@ -16329,14 +16329,21 @@ paths:
   /api/v2/users/{userID}/password:
     post:
       description: |
+        Updates a user password.
+
         #### InfluxDB Cloud
 
-        InfluxDB Cloud doesn't support changing user passwords through the API.
-        Use the InfluxDB Cloud user interface to update your password.
+        - Doesn't support changing user passwords through the API.
+          Use the InfluxDB Cloud user interface (UI) to update a password.
+
+        #### Related guides
+
+        - [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/).
+        - [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/).
       operationId: PostUsersIDPassword
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The user ID.
+      - description: The ID of the user.
         in: path
         name: userID
         required: true
@@ -16347,21 +16354,32 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PasswordResetBody'
-        description: New password
+        description: The new password to set for the user.
         required: true
       responses:
         "204":
-          description: Password successfully updated
+          description: Success. The password is updated.
         "400":
-          description: |
-            Bad request.
-            InfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.
-        default:
           content:
             application/json:
+              examples:
+                updatePasswordNotAllowed:
+                  summary: Cloud API can't update passwords
+                  value:
+                    code: invalid
+                    message: passwords cannot be changed through the InfluxDB Cloud
+                      API
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Unsuccessful authentication
+          description: |
+            Bad request.
+
+            #### InfluxDB Cloud
+
+            - Doesn't support changing passwords through the API; always responds with this status.
+        default:
+          $ref: '#/components/responses/GeneralServerError'
+          description: Unexpected error
       security:
       - BasicAuthentication: []
       summary: Update a password
