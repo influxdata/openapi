@@ -9,11 +9,16 @@ get:
 
     To limit which users are returned, pass query parameters in your request.
 
-    #### Required permissions
+    #### Required permissions for InfluxDB OSS
 
-    - `read-user USER_ID` permission.
-      `USER_ID` is the ID of the user that you want to list.
-    - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.
+    | Action | Permission required | Restriction |
+    |:-------|:--------------------|:------------|
+    | List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+    | List a specific user | `read-users` or `read-user USER_ID` | |
+
+    Replace the following:
+
+    - `USER_ID`: ID of the user that you want to retrieve.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - $ref: "../../common/parameters/Offset.yml"
@@ -55,7 +60,8 @@ get:
 
         The error may indicate one of the following problems:
 
-        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - The request body isn't valid--the request is well-formed,
+          but InfluxDB can't process it due to semantic errors.
         - You passed a parameter combination that InfluxDB doesn't support.
       content:
         application/json:
@@ -72,11 +78,37 @@ post:
     - Users
   summary: Create a user
   description: |
-    Creates a user and returns the newly created user.
+    Creates a user that can access InfluxDB. The response contains the new user.
+
+    Use this endpoint to create a user that can sign in to start a [user session]()
+    through one of the following interfaces:
+
+      - InfluxDB UI
+      - `/api/v2/signin` InfluxDB API endpoint.
+      - InfluxDB CLI
+
+    This endpoint represents the first two steps in a four-step process to allow a user
+    to sign in with a username and password and then access data in an organization:
+
+      1. Send a `POST` request to `/api/v2/users` to create a user. `name` is required.
+      2. Extract the `id` value from the API response for step 1.
+      3. Send a `POST` request to any of the following endpoints, passing the user ID from step 2:
+
+        - [`/api/v2/authorizations`](): creates an [authorization]() with [permissions]() and an [API token]() scoped to the user.
+        - [`/api/v2/organizations/ORG_ID/members`](): adds the user as a [member]() of an organization.
+        - [`/api/v2/organizations/ORG_ID/owners`](): adds the user as an [owner]() of an organization.
+      4. Send a `POST` request to [`/api/v2/users/USER_ID/password`](), passing the user ID from step 2, to create a password for the user.
 
     #### Required permissions
 
-    - `write-users`. Requires an InfluxDB API **Op** token.
+    | Action | Permission required | Restriction |
+    |:-------|:--------------------|:------------|
+    | Create a user | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+
+    #### Related guides
+
+    - [Create a user](https://docs.influxdata.com/influxdb/latest/users/create-user/).
+    - [Create an API token scoped to a user](https://docs.influxdata.com/influxdb/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
