@@ -7,11 +7,13 @@ get:
     Retrieves a list of authorizations.
 
     To limit which authorizations are returned, pass query parameters in your request.
-    If no query parameters are passed, InfluxDB returns all authorizations.
+    If no query parameters are passed, InfluxDB returns all authorizations for the organization.
 
     #### InfluxDB Cloud
 
-    - InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in `GET /api/v2/authorizations` responses; returns `token: redacted` for all authorizations.
+    - InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+      values in `GET /api/v2/authorizations` responses;
+      returns `token: redacted` for all authorizations.
 
     #### Required permissions for InfluxDB Cloud
 
@@ -80,16 +82,31 @@ post:
     - Authorizations
   summary: Create an authorization
   description: |
-    Creates an authorization and returns the newly created authorization.
+    Creates an authorization.
 
-    Use this endpoint to generate an API token with resource permissions.
-    A permission sets `read` or `write` access to a `type` of resource or a specific resource.
+    Use this endpoint to create an authorization, which generates an API token
+    with permissions to `read` or `write` to a specific resource or `type` of resource.
+    The response contains the new authorization with the generated API token.
 
     Keep the following in mind when creating and updating authorizations:
 
-    - A permission with a resource `id` field applies only to the resource with the specified type and ID.
-    - A permission that doesn't have a resource `id` applies to all resources with the type.
+    - To apply a permission to a specific resource, specify the resource `id` field.
+    - To apply a permission to all resources with the type, omit the resource `id`.
     - To scope an authorization to a specific user, provide the `userID` property.
+
+    #### Limitations
+
+    To follow best practices for secure API token generation and retrieval,
+    InfluxDB Cloud enforces access restrictions on API tokens.
+
+    - InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.
+    - You can’t change access (read/write) permissions for an API token after it’s created.
+    - Tokens stop working when the user who created the token is deleted.
+
+    We recommend the following for managing your tokens:
+
+    - Create a generic user to create and manage tokens for writing data.
+    - Store your tokens in a secure password vault for future access.
 
     #### Related guides
 
