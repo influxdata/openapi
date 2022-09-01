@@ -17,7 +17,7 @@
   "tags": [
     {
       "name": "Authorizations",
-      "description": "Create and manage _API tokens_.\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\nAn authorization is only visible to the user that created it.\nOptionally, when creating an authorization, you can scope it to a specific user.\nA _user session_ carries the permissions granted by all the user's authorizations.\nTo create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).\n  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n"
+      "description": "Create and manage authorizations (API tokens).\n\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\nIn InfluxDB Cloud, an authorization with `read-authorizations` permission\ncan be used to view other authorizations.\nOptionally, when creating an authorization, you can scope it to a specific user.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### User sessions with authorizations\n\nIf a user signs in with username and password, creating a _user session_,\nthe session carries the permissions granted by all the user's authorizations.\nTo create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n  - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).\n  - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).\n  - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n"
     },
     {
       "name": "Buckets",
@@ -42,6 +42,10 @@
     {
       "name": "Templates",
       "description": "Export and apply InfluxDB **templates**.\nManage **stacks** of templated InfluxDB resources.\n\nInfluxDB templates are prepackaged configurations for\neverything from dashboards and Telegraf to notifications and alerts.\nUse InfluxDB templates to quickly configure a fresh instance of InfluxDB,\nback up your dashboard configuration, or share your configuration with the\nInfluxData community.\n\nUse the `/api/v2/templates` endpoints to export templates and apply templates.\n\n**InfluxDB stacks** are stateful InfluxDB templates that let you\nadd, update, and remove installed template resources over time, avoid duplicating\nresources when applying the same or similar templates more than once, and\napply changes to distributed instances of InfluxDB OSS or InfluxDB Cloud.\n\nUse the `/api/v2/stacks` endpoints to manage installed template resources.\n\n#### Related guides\n\n- [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)\n- [InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/)\n"
+    },
+    {
+      "name": "Users",
+      "description": "Retrieve specific users.\n\nInfluxDB Cloud lets you invite and collaborate with multiple users in your organization.\nTo invite and remove users from your organization, use the InfluxDB Cloud user interface (UI);\nyou can't use the InfluxDB API to manage users in InfluxDB Cloud.\nOnce a user is added to your organization, you can use the\n`GET /api/v2/users` and `GET /api/v2/users/USER_ID` API endpoints to\nview specific members.\n\n#### User sessions with authorizations\n\nOptionally, you can scope an authorization (and its API token) to a user.\nIf a user signs in with username and password, creating a _user session_,\nthe session carries the permissions granted by all the user's authorizations.\nTo create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n"
     },
     {
       "name": "Write",
@@ -10977,7 +10981,8 @@
         "tags": [
           "Authorizations"
         ],
-        "summary": "List all authorizations",
+        "summary": "List authorizations",
+        "description": "Retrieves a list of authorizations.\n\nTo limit which authorizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all authorizations for the organization.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n  values in `GET /api/v2/authorizations` responses;\n  returns `token: redacted` for all authorizations.\n\n#### Required permissions for InfluxDB Cloud\n\n- `read-authorizations`\n\n#### Related guides\n\n- [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -10988,7 +10993,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to a user ID."
+            "description": "A user ID.\nOnly returns authorizations scoped to this user.\n"
           },
           {
             "in": "query",
@@ -10996,7 +11001,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to a user name."
+            "description": "A user name.\nOnly returns authorizations scoped to this user.\n"
           },
           {
             "in": "query",
@@ -11004,7 +11009,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to an organization ID."
+            "description": "An organization ID.\nOnly returns authorizations that belong to this organization.\n"
           },
           {
             "in": "query",
@@ -11012,7 +11017,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Only show authorizations that belong to a organization name."
+            "description": "An organization name.\nOnly returns authorizations that belong to this organization.\n"
           },
           {
             "in": "query",
@@ -11020,12 +11025,12 @@
             "schema": {
               "type": "string"
             },
-            "description": "Find a token by value."
+            "description": "A token value.\nOnly returns the authorization that has this token.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of authorizations",
+            "description": "Success. The response body contains a list of authorizations.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11033,6 +11038,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid request",
+            "$ref": "#/components/responses/GeneralServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -11046,13 +11061,14 @@
           "Authorizations"
         ],
         "summary": "Create an authorization",
+        "description": "Creates an authorization.\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\nThe response contains the new authorization with the generated API token.\n\nKeep the following in mind when creating and updating authorizations:\n\n- To apply a permission to a specific resource, specify the resource `id` field.\n- To apply a permission to all resources with the type, omit the resource `id`.\n- To scope an authorization to a specific user, provide the `userID` property.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "Authorization to create",
+          "description": "The authorization to create.",
           "required": true,
           "content": {
             "application/json": {
@@ -11077,11 +11093,29 @@
             "description": "Invalid request",
             "$ref": "#/components/responses/GeneralServerError"
           },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
             "description": "Unexpected error",
             "$ref": "#/components/responses/GeneralServerError"
           }
-        }
+        },
+        "x-codeSample": [
+          {
+            "lang": "Shell",
+            "label": "cURL: Create auth to read all buckets",
+            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\"action\": \"read\", \"resource\": {\"type\": \"buckets\"}}\n    ]\n  }\nEOF\n"
+          },
+          {
+            "lang": "Shell",
+            "label": "cURL: Create auth scoped to a user",
+            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"userID\": \"INFLUX_USER_ID\",\n    \"description\": \"iot_user write to bucket\",\n    \"permissions\": [\n      {\"action\": \"write\", \"resource\": {\"type\": \"buckets\", \"id: \"INFLUX_BUCKET_ID\"}}\n    ]\n  }\nEOF\n"
+          }
+        ]
       }
     },
     "/authorizations/{authID}": {

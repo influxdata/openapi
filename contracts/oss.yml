@@ -12,14 +12,26 @@ servers:
 tags:
   - name: Authorizations
     description: |
-      Create and manage _API tokens_.
+      Create and manage authorizations (API tokens).
+
       An _authorization_ contains a list of `read` and `write`
       permissions for organization resources and provides an API token for authentication.
       An authorization belongs to an organization and only contains permissions for that organization.
 
-      An authorization is only visible to the user that created it.
-      Optionally, when creating an authorization, you can scope it to a specific user.
-      A _user session_ carries all the permissions granted by all the user's authorizations.
+      #### Limitations
+
+      API tokens are visible to the user who created the authorization and to any
+      user with an _[operator token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/#operator-token)_.
+      In InfluxDB OSS, even if an API token has `read-authorizations` permission, the
+      token can't be used to view its authorization details.
+      Tokens stop working when the user who created the token is deleted.
+
+      We recommend creating a generic user to create and manage tokens for writing data.
+
+      #### User sessions with authorizations
+
+      If a user signs in with username and password, creating a _user session_,
+      the session carries the permissions granted by all the user's authorizations.
       To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
 
       ### Related endpoints
@@ -99,6 +111,24 @@ tags:
 
       - [InfluxDB stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
       - [InfluxDB templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/)
+  - name: Users
+    description: |
+      Manage users for your organization.
+      Users are those with access to InfluxDB.
+      To grant a user permission to access data, add them as a member of an
+      organization and provide them with an API token.
+
+      #### User sessions with authorizations
+
+      Optionally, you can scope an authorization (and its API token) to a user.
+      If a user signs in with username and password, creating a _user session_,
+      the session carries the permissions granted by all the user's authorizations.
+      To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+
+      #### Related guides
+
+      - [Manage users](https://docs.influxdata.com/influxdb/v2.3/influxdb/latest/users/).
+      - [Create a token scoped to a user](https://docs.influxdata.com/influxdb/v2.3/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user).
   - name: Write
     description: |
       Write time series data to buckets.
@@ -9108,15 +9138,16 @@ paths:
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations.
 
-        #### InfluxDB Cloud
-
-        - Doesn't expose [API token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token) values in `GET /api/v2/authorizations` responses; returns `token: redacted` for all authorizations.
-
         #### InfluxDB OSS
 
         - Returns
           [API token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token) values in authorizations.
-        - Requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to view authorizations.
+        - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+          InfluxDB OSS returns authorizations for all organizations in the instance.
+
+        #### Required permissions
+
+        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
         #### Related guides
 
@@ -9172,16 +9203,27 @@ paths:
         - Authorizations
       summary: Create an authorization
       description: |
-        Creates an authorization and returns the newly created authorization.
+        Creates an authorization.
 
-        Use this endpoint to generate an API token with resource permissions.
-        A permission sets `read` or `write` access to a `type` of resource.
+        Use this endpoint to create an authorization, which generates an API token
+        with permissions to `read` or `write` to a specific resource or `type` of resource.
+        The response contains the new authorization with the generated API token.
 
         Keep the following in mind when creating and updating authorizations:
 
-        - A permission with a resource `id` applies only to the resource specified by the ID.
-        - A permission that doesn't have a resource `id` applies to all resources of resource `type`.
+        - To apply a permission to a specific resource, specify the resource `id` field.
+        - To apply a permission to all resources with the type, omit the resource `id`.
         - To scope an authorization to a specific user, provide the `userID` property.
+
+        #### Limitations
+
+        - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
+          user with an _[operator token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/#operator-token)_.
+        - Even if an API token has `read-authorizations` permission, the
+          token can't be used to view its authorization details.
+        - Tokens stop working when the user who created the token is deleted.
+
+        We recommend creating a generic user to create and manage tokens for writing data.
 
         #### Related guides
 
@@ -16540,15 +16582,15 @@ components:
             userID:
               readOnly: true
               type: string
-              description: The ID of the user that created and owns the token.
+              description: The ID of the user that the token is scoped to.
             user:
               readOnly: true
               type: string
-              description: The name of the user that created and owns the token.
+              description: The name of the user that the token is scoped to.
             org:
               readOnly: true
               type: string
-              description: The name of the organization that the token is scoped to.
+              description: The name of the organization that owns the token.
             links:
               type: object
               readOnly: true

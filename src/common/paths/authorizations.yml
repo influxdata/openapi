@@ -10,15 +10,16 @@ get:
     To limit which authorizations are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all authorizations.
 
-    #### InfluxDB Cloud
-
-    - Doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in `GET /api/v2/authorizations` responses; returns `token: redacted` for all authorizations.
-
     #### InfluxDB OSS
 
     - Returns
       [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
-    - Requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to view authorizations.
+    - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+      InfluxDB OSS returns authorizations for all organizations in the instance.
+
+    #### Required permissions
+
+    - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
     #### Related guides
 
@@ -76,16 +77,27 @@ post:
     - Authorizations
   summary: Create an authorization
   description: |
-    Creates an authorization and returns the newly created authorization.
+    Creates an authorization.
 
-    Use this endpoint to generate an API token with resource permissions.
-    A permission sets `read` or `write` access to a `type` of resource.
+    Use this endpoint to create an authorization, which generates an API token
+    with permissions to `read` or `write` to a specific resource or `type` of resource.
+    The response contains the new authorization with the generated API token.
 
     Keep the following in mind when creating and updating authorizations:
 
-    - A permission with a resource `id` applies only to the resource specified by the ID.
-    - A permission that doesn't have a resource `id` applies to all resources of resource `type`.
+    - To apply a permission to a specific resource, specify the resource `id` field.
+    - To apply a permission to all resources with the type, omit the resource `id`.
     - To scope an authorization to a specific user, provide the `userID` property.
+
+    #### Limitations
+
+    - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
+      user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
+    - Even if an API token has `read-authorizations` permission, the
+      token can't be used to view its authorization details.
+    - Tokens stop working when the user who created the token is deleted.
+
+    We recommend creating a generic user to create and manage tokens for writing data.
 
     #### Related guides
 
