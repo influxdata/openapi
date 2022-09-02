@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: Authzd Internal API
+  version: 0.1.0
+  description: |
+    Internal API endpoints for Authzd.
+    These operations can only be called internally from other services.
+servers:
+  - url: /
+paths:
+  /access/authorize:
+    patch:
+      operationId: PostAuthorize
+      summary: Authorize incoming requests.
+      description: |
+        Authorizes list of org-scoped operation requests and returns the
+        corresponding access filters.
+
+        #### Limitations
+
+        - This is an internal API and can only be called from other services.
+      requestBody:
+        description: |
+          The operation requests that need to be authorized.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessAuthorizeRequest'
+      responses:
+        '204':
+          description: |
+            Success.
+            The operations are authorized.
+          headers:
+            influxdb-access-filters:
+              description: The authorized data filters to apply on the storage layer.
+              schema:
+                $ref: '#/components/schemas/AccessFilters'
+        '400':
+          description: Bad request.
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '403':
+          description: Invalid policy/token.
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Requested `resourceId` is not in the policy.
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Unexpected error.
+          $ref: '#/components/responses/ServerError'
+  /access/authorize-global:
+    patch:
+      operationId: PostAuthorizeGlobal
+      summary: Authorize incoming global operation requests.
+      description: |
+        Authorizes a list of global operation requests. If the policy/token
+        is org-scoped the request is unauthorized.
+
+        #### Limitations
+
+        - This is an internal API and can only be called from other services.
+      requestBody:
+        description: |
+          The operation requests that need to be authorized.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessAuthorizeRequest'
+      responses:
+        '204':
+          description: |
+            Success.
+            The operations are authorized.
+        '400':
+          description: Bad request.
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Unexpected error.
+          $ref: '#/components/responses/ServerError'
+components:
+  responses:
+    ServerError:
+      description: Non 2XX error response from server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationError:
+      description: |
+        Unauthorized. The error may indicate one of the following:
+
+          * The `Authorization: Token` header is missing or malformed.
+          * The API token value is missing from the header.
+          * The token doesn't have sufficient permissions to write to this organization and bucket.
+      content:
+        application/json:
+          schema:
+            properties:
+              code:
+                description: |
+                  The HTTP status code description. Default is `unauthorized`.
+                readOnly: true
+                type: string
+                enum:
+                  - unauthorized
+              message:
+                readOnly: true
+                description: A human-readable message that may contain detail about the error.
+                type: string
+          examples:
+            tokenNotAuthorized:
+              summary: Token is not authorized to access a resource
+              value:
+                code: unauthorized
+                message: unauthorized access
+    InternalServerError:
+      description: |
+        Internal server error.
+        The server encountered an unexpected situation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      properties:
+        code:
+          description: code is the machine-readable error code.
+          readOnly: true
+          type: string
+          enum:
+            - internal error
+            - not found
+            - conflict
+            - invalid
+            - unprocessable entity
+            - empty value
+            - unavailable
+            - forbidden
+            - too many requests
+            - unauthorized
+            - method not allowed
+            - request too large
+            - unsupported media type
+        message:
+          readOnly: true
+          description: Human-readable message.
+          type: string
+        op:
+          readOnly: true
+          description: Describes the logical code operation when the error occurred. Useful for debugging.
+          type: string
+        err:
+          readOnly: true
+          description: Stack of errors that occurred during processing of the request. Useful for debugging.
+          type: string
+      required:
+        - code
+    AccessAuthorizeRequest:
+      type: object
+      properties:
+        requestedOperations:
+          description: The list of operation requests.
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                description: The `read` or `write` action for the operation.
+                type: string
+                required: true
+              resourceType:
+                description: The type of resource for the operation.
+                type: string
+                required: true
+              resourceId:
+                description: The resource ID to perform the operation on (optional).
+                type: string
+                required: false
+      example:
+        - action: read
+          resourceType: buckets
+          resourceId: 09afa23ff13e4000
+    AccessFilters:
+      type: object
+      properties:
+        readFilter:
+          description: |
+            The map of access filters for the `read` action.
+            The key is the resource type and the value is a data filter.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DataFilter'
+        writeFilter:
+          description: |
+            The map of access filters for the `write` action.
+            The key is the resource type and the value is a data filter.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DataFilter'
+      example:
+        readFilter:
+          - buckets:
+              resourceType: buckets
+              orgId: 09afa23ff13e4000
+        writeFilter:
+          - buckets:
+              resourceType: buckets
+              orgId: 09afa23ff13e4000
+              resourceIds:
+                - f01234567deadbee
+    DataFilter:
+      type: object
+      properties:
+        resourceType:
+          description: The type of resource for the filter.
+          type: string
+        orgId:
+          description: The authorized organization ID for the resource type.
+          type: string
+        resourceIds:
+          description: The authorized resource IDs for the resource type (optional).
+          type: array
+          items:
+            type: string

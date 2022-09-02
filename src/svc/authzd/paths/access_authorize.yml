@@ -1,0 +1,44 @@
+patch:
+  operationId: PostAuthorize
+  summary: Authorize incoming requests.
+  description: |
+    Authorizes list of org-scoped operation requests and returns the
+    corresponding access filters.
+
+    #### Limitations
+
+    - This is an internal API and can only be called from other services.
+  requestBody:
+    description: |
+      The operation requests that need to be authorized.
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/AccessAuthorizeRequest.yml'
+  responses:
+    '204':
+      description: |
+        Success.
+        The operations are authorized.
+      headers:
+        influxdb-access-filters:
+          description: The authorized data filters to apply on the storage layer.
+          schema:
+            $ref: '../schemas/AccessFilters.yml'
+    '400':
+      description: Bad request.
+      $ref: '../../../common/responses/ServerError.yml'
+    '401':
+      $ref: '../../../common/responses/AuthorizationError.yml'
+    '403':
+      description: Invalid policy/token.
+      $ref: '../../../common/responses/ServerError.yml'
+    '404':
+      description: Requested `resourceId` is not in the policy.
+      $ref: '../../../common/responses/ServerError.yml'
+    '500':
+      $ref: '../../../common/responses/InternalServerError.yml'
+    default:
+      description: Unexpected error.
+      $ref: '../../../common/responses/ServerError.yml'
