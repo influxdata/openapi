@@ -13,6 +13,9 @@ info:
     InfluxDB executes your script with the key-value pairs as arguments and returns the result.
 
     For more information and examples, see [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /
 paths:
@@ -64,6 +67,31 @@ paths:
             type: integer
             minimum: 0
             default: 0
+        - in: query
+          name: name
+          required: false
+          description: The name of the script.
+          schema:
+            type: string
+        - in: query
+          name: labelNames
+          required: false
+          description: |
+            A list of label names.
+            Only returns scripts that have all these labels.
+            To retrieve a script, each name you pass in `labelNames` must exactly match the label for a script.
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: labelContains
+          required: false
+          description: |
+            A part of the label name.
+            Returns scripts that have a label that contains this phrase.
+          schema:
+            type: string
       responses:
         '200':
           description: |
@@ -433,6 +461,114 @@ paths:
                             "mybucket": "air_sensor"
                             }
                         }'
+  '/scripts/{scriptID}/labels/add':
+    patch:
+      operationId: PatchScriptsIDAddLabels
+      tags:
+        - Data I/O endpoints
+        - Invokable Scripts
+      summary: Adds labels to a script
+      description: Adds labels to a script and returns the updated script.
+      parameters:
+        - in: path
+          name: scriptID
+          description: The script ID.
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: The names of labels to add to the script.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                labels:
+                  description: A list of label names to add.
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - label1
+                    - label2
+                    - label3
+      responses:
+        '200':
+          description: |
+            Success.
+            The response body contains the updated script.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Script'
+        '400':
+          description: Bad request.
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: Script not found.
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Unexpected error.
+          $ref: '#/components/responses/ServerError'
+  '/scripts/{scriptID}/labels/remove':
+    patch:
+      operationId: PatchScriptsIDRemoveLabels
+      tags:
+        - Data I/O endpoints
+        - Invokable Scripts
+      summary: Removes labels from a script
+      description: Removes labels from a script and returns the updated script.
+      parameters:
+        - in: path
+          name: scriptID
+          description: The script ID.
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: The names of labels to remove from the script.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                labels:
+                  description: A list of label names to remove.
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - label1
+                    - label2
+                    - label3
+      responses:
+        '200':
+          description: |
+            Success.
+            The response body contains the updated script.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Script'
+        '400':
+          description: Bad request.
+          $ref: '#/components/responses/ServerError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: Script not found.
+          $ref: '#/components/responses/ServerError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Unexpected error.
+          $ref: '#/components/responses/ServerError'
 components:
   responses:
     ServerError:
@@ -447,11 +583,22 @@ components:
 
           * The `Authorization: Token` header is missing or malformed.
           * The API token value is missing from the header.
-          * The token does not have sufficient permissions to write to this organization and bucket.
+          * The token doesn't have sufficient permissions to write to this organization and bucket.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            properties:
+              code:
+                description: |
+                  The HTTP status code description. Default is `unauthorized`.
+                readOnly: true
+                type: string
+                enum:
+                  - unauthorized
+              message:
+                readOnly: true
+                description: A human-readable message that may contain detail about the error.
+                type: string
           examples:
             tokenNotAuthorized:
               summary: Token is not authorized to access a resource
@@ -528,6 +675,11 @@ components:
           type: string
           format: date-time
           readOnly: true
+        labels:
+          type: array
+          items:
+            type: string
+          description: The list of label names associated with the script.
       required:
         - name
         - orgID

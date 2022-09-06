@@ -4,6 +4,9 @@ info:
   version: 2.0.0
   description: |
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /api/v2
 paths:
@@ -900,12 +903,15 @@ paths:
         - Users
       summary: List users
       description: |
-        Lists users. Default limit is `20`.
+        Retrieves a list of users. Default limit is `20`.
+
+        To limit which users are returned, pass query parameters in your request.
 
         #### Required permissions
 
-        - `read-user` permission
-        - To list all users, pass an **Op** InfluxDB API token.
+        - `read-user USER_ID` permission.
+          `USER_ID` is the ID of the user that you want to list.
+        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
@@ -949,38 +955,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
-        default:
-          description: Unexpected error
-          $ref: '#/paths/~1config/get/responses/401'
-    post:
-      operationId: PostUsers
-      tags:
-        - Users
-      summary: Create a user
-      description: |
-        Creates a user and returns the newly created user.
-
-        #### Required permissions
-
-        - `write-users`. Requires an InfluxDB API **Op** token.
-      parameters:
-        - $ref: '#/paths/~1ready/get/parameters/0'
-      requestBody:
-        description: The user to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '201':
-          description: |
-            Success.
-            The response contains the newly created user.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OnboardingResponse/properties/user'
         '401':
           description: |
             Unauthorized.
@@ -1032,14 +1006,79 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          description: |
+            Internal server error.
+            The server encountered an unexpected situation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1config/get/responses/401'
+    post:
+      operationId: PostUsers
+      tags:
+        - Users
+      summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
+
+        #### Required permissions
+
+        - `write-users`. Requires an InfluxDB API **Op** token.
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: The user to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: |
+            Success.
+            The response contains the newly created user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+              examples:
+                tokenNotAuthorized:
+                  summary: 'API token doesn''t have `write:users` permission'
+                  value:
+                    code: unauthorized
+                    message: 'write:users/09d8462ce0764000 is unauthorized'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -1047,17 +1086,16 @@ paths:
         - label: 'cURL: create a user and set a password'
           lang: Shell
           source: |
-
             # Create the user and assign the user ID to a variable.
             USER_ID=$(curl --request POST \
-                      "http://localhost:8086/api/v2/users/" \
-                      --header "Authorization: Token INFLUX_OP_TOKEN" \
-                      --header 'Content-type: application/json' \
-                      --data-binary @- << EOF | jq -r '.id'
-                      {
-                        "name": "USER_NAME",
-                        "status": "active"
-                      }
+                    "http://localhost:8086/api/v2/users/" \
+                    --header "Authorization: Token INFLUX_OP_TOKEN" \
+                    --header 'Content-type: application/json' \
+                    --data-binary @- << EOF | jq -r '.id'
+                    {
+                      "name": "USER_NAME",
+                      "status": "active"
+                    }
             EOF
             )
 
@@ -1158,7 +1196,9 @@ paths:
                 type: object
                 properties:
                   allowed:
-                    description: True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.
+                    description: |
+                      If `true`, the InfluxDB instance hasn't had initial setup;
+                      `false` otherwise.
                     type: boolean
     post:
       operationId: PostSetup
@@ -1191,36 +1231,69 @@ paths:
       tags:
         - Authorizations
         - Security and access endpoints
-      summary: List all authorizations
+      summary: List authorizations
+      description: |
+        Retrieves a list of authorizations.
+
+        To limit which authorizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all authorizations.
+
+        #### InfluxDB OSS
+
+        - Returns
+          [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
+        - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+          InfluxDB OSS returns authorizations for all organizations in the instance.
+
+        #### Required permissions
+
+        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+
+        #### Related guides
+
+        - [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/).
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
           name: userID
           schema:
             type: string
-          description: Only show authorizations that belong to a user ID.
+          description: |
+            A user ID.
+            Only returns authorizations scoped to this user.
         - in: query
           name: user
           schema:
             type: string
-          description: Only show authorizations that belong to a user name.
+          description: |
+            A user name.
+            Only returns authorizations scoped to this user.
         - in: query
           name: orgID
           schema:
             type: string
-          description: Only show authorizations that belong to an organization ID.
+          description: An organization ID. Only returns authorizations that belong to this organization.
         - in: query
           name: org
           schema:
             type: string
-          description: Only show authorizations that belong to a organization name.
+          description: |
+            An organization name.
+            Only returns authorizations that belong to this organization.
       responses:
         '200':
-          description: A list of authorizations
+          description: Success. The response body contains a list of authorizations.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorizations'
+        '400':
+          description: Invalid request
+          $ref: '#/paths/~1config/get/responses/401'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -1229,10 +1302,36 @@ paths:
       tags:
         - Authorizations
       summary: Create an authorization
+      description: |
+        Creates an authorization.
+
+        Use this endpoint to create an authorization, which generates an API token
+        with permissions to `read` or `write` to a specific resource or `type` of resource.
+        The response contains the new authorization with the generated API token.
+
+        Keep the following in mind when creating and updating authorizations:
+
+        - To apply a permission to a specific resource, specify the resource `id` field.
+        - To apply a permission to all resources with the type, omit the resource `id`.
+        - To scope an authorization to a specific user, provide the `userID` property.
+
+        #### Limitations
+
+        - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
+          user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
+        - Even if an API token has `read-authorizations` permission, the
+          token can't be used to view its authorization details.
+        - Tokens stop working when the user who created the token is deleted.
+
+        We recommend creating a generic user to create and manage tokens for writing data.
+
+        #### Related guides
+
+        - [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       requestBody:
-        description: Authorization to create
+        description: The authorization to create.
         required: true
         content:
           application/json:
@@ -1240,7 +1339,7 @@ paths:
               $ref: '#/components/schemas/AuthorizationPostRequest'
       responses:
         '201':
-          description: Authorization created
+          description: Created. The response body contains the newly created authorization.
           content:
             application/json:
               schema:
@@ -1248,9 +1347,47 @@ paths:
         '400':
           description: Invalid request
           $ref: '#/paths/~1config/get/responses/401'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
+      x-codeSample:
+        - lang: Shell
+          label: 'cURL: Create auth to read all buckets'
+          source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "description": "iot_users read buckets",
+                "permissions": [
+                  {"action": "read", "resource": {"type": "buckets"}}
+                ]
+              }
+            EOF
+        - lang: Shell
+        - label: 'cURL: Create auth scoped to a user'
+        - source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "userID": "INFLUX_USER_ID",
+                "description": "iot_user write to bucket",
+                "permissions": [
+                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+                ]
+              }
+            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -1513,7 +1650,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     get:
       operationId: GetSources
       tags:
@@ -1538,7 +1675,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/sources/{sourceID}':
     delete:
       operationId: DeleteSourcesID
@@ -1561,13 +1698,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     patch:
       operationId: PatchSourcesID
       tags:
@@ -1600,13 +1737,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     get:
       operationId: GetSourcesID
       tags:
@@ -1632,13 +1769,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/sources/{sourceID}/health':
     get:
       operationId: GetSourcesIDHealth
@@ -1671,7 +1808,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/sources/{sourceID}/buckets':
     get:
       operationId: GetSourcesIDBuckets
@@ -1712,13 +1849,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   /scrapers:
     get:
       operationId: GetScrapers
@@ -1782,7 +1919,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}':
     get:
       operationId: GetScrapersID
@@ -1809,7 +1946,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     delete:
       operationId: DeleteScrapersID
       tags:
@@ -1831,7 +1968,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     patch:
       operationId: PatchScrapersID
       summary: Update a scraper target
@@ -1864,7 +2001,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/labels':
     get:
       operationId: GetScrapersIDLabels
@@ -1896,7 +2033,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     post:
       operationId: PostScrapersIDLabels
       tags:
@@ -1959,7 +2096,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/labels/{labelID}':
     delete:
       operationId: DeleteScrapersIDLabelsID
@@ -1988,13 +2125,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/members':
     get:
       operationId: GetScrapersIDMembers
@@ -2032,7 +2169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     post:
       operationId: PostScrapersIDMembers
       tags:
@@ -2073,7 +2210,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/members/{userID}':
     delete:
       operationId: DeleteScrapersIDMembersID
@@ -2102,7 +2239,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/owners':
     get:
       operationId: GetScrapersIDOwners
@@ -2140,7 +2277,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     post:
       operationId: PostScrapersIDOwners
       tags:
@@ -2192,7 +2329,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   '/scrapers/{scraperTargetID}/owners/{userID}':
     delete:
       operationId: DeleteScrapersIDOwnersID
@@ -2221,7 +2358,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   /backup/kv:
     get:
       operationId: GetBackupKV
@@ -2344,7 +2481,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -2585,7 +2722,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
         default:
           $ref: '#/paths/~1config/get/responses/401'
   /remotes:
@@ -4608,7 +4745,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -4685,7 +4822,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -4845,11 +4982,22 @@ paths:
 
               * The `Authorization: Token` header is missing or malformed.
               * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
+              * The token doesn't have sufficient permissions to write to this organization and bucket.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                properties:
+                  code:
+                    description: |
+                      The HTTP status code description. Default is `unauthorized`.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - unauthorized
+                  message:
+                    readOnly: true
+                    description: A human-readable message that may contain detail about the error.
+                    type: string
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource
@@ -4857,13 +5005,7 @@ paths:
                     code: unauthorized
                     message: unauthorized access
         '500':
-          description: |
-            Internal server error.
-            The server encountered an unexpected situation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1config/get/responses/401'
       x-codeSamples:
@@ -4915,7 +5057,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -4930,13 +5072,13 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: create a task'
@@ -4990,7 +5132,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -5012,7 +5154,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 org-not-found:
                   summary: Organization name not found
@@ -5030,7 +5172,7 @@ paths:
                     code: not found
                     message: organization not found
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1config/get/responses/401'
     patch:
@@ -5076,7 +5218,7 @@ paths:
         '404':
           $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1config/get/responses/401'
     delete:
@@ -5109,7 +5251,7 @@ paths:
         '404':
           $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
         '500':
-          $ref: '#/paths/~1tasks/get/responses/500'
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1config/get/responses/401'
 components:
@@ -5147,7 +5289,9 @@ components:
             permissions:
               type: array
               minItems: 1
-              description: List of permissions for an authorization.  An authorization must have at least one permission.
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
               items:
                 $ref: '#/components/schemas/Permission'
             id:
@@ -5156,19 +5300,20 @@ components:
             token:
               readOnly: true
               type: string
-              description: Token used to authenticate API requests.
+              description: |
+                The API token for authenticating InfluxDB API and CLI requests.
             userID:
               readOnly: true
               type: string
-              description: The ID of the user that created and owns the token.
+              description: The ID of the user that the token is scoped to.
             user:
               readOnly: true
               type: string
-              description: The name of the user that created and owns the token.
+              description: The name of the user that the token is scoped to.
             org:
               readOnly: true
               type: string
-              description: The name of the organization that the token is scoped to.
+              description: The name of the organization that owns the token.
             links:
               type: object
               readOnly: true
@@ -5202,14 +5347,18 @@ components:
           properties:
             orgID:
               type: string
-              description: The ID of the organization that the authorization is scoped to.
+              description: |
+                The ID of the organization that owns the authorization.
             userID:
               type: string
-              description: The ID of the user that the authorization is scoped to.
+              description: |
+                The ID of the user that the authorization is scoped to.
             permissions:
               type: array
               minItems: 1
-              description: List of permissions for an auth.  An auth must have at least one Permission.
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
               items:
                 $ref: '#/components/schemas/Permission'
     Permission:
@@ -5255,18 +5404,28 @@ components:
             - remotes
             - replications
             - instance
+          description: |
+            The type of resource.
+            In a `permission`, applies the permission to all resources of this type.
         id:
           type: string
-          description: If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type.
+          description: |
+            The ID of a specific resource.
+            In a `permission`, applies the permission to only the resource with this ID.
         name:
           type: string
-          description: Optional name of the resource if the resource has a name field.
+          description: |
+            Optional: A name for the resource.
+            Not all resource types have a name field.
         orgID:
           type: string
-          description: If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type.
+          description: |
+            The ID of the organization that owns the resource.
+            In a `permission`, applies the permission to all resources of `type` owned by this organization.
         org:
           type: string
-          description: Optional name of the organization of the organization with orgID.
+          description: |
+            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:

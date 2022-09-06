@@ -4,6 +4,9 @@ info:
   version: 2.0.1
   description: |
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /api/v2
 paths:
@@ -15,7 +18,7 @@ paths:
         - Users
       summary: List users
       description: |
-        Lists users.
+        Retrieves a list of users.
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -108,7 +111,7 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
           content:
             application/json:
@@ -210,7 +213,9 @@ paths:
                 type: object
                 properties:
                   allowed:
-                    description: True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.
+                    description: |
+                      If `true`, the InfluxDB instance hasn't had initial setup;
+                      `false` otherwise.
                     type: boolean
     post:
       operationId: PostSetup
@@ -266,41 +271,77 @@ paths:
       operationId: GetAuthorizations
       tags:
         - Authorizations
-      summary: List all authorizations
+      summary: List authorizations
+      description: |
+        Retrieves a list of authorizations.
+
+        To limit which authorizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all authorizations for the organization.
+
+        #### InfluxDB Cloud
+
+        - InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+          values in `GET /api/v2/authorizations` responses;
+          returns `token: redacted` for all authorizations.
+
+        #### Required permissions for InfluxDB Cloud
+
+        - `read-authorizations`
+
+        #### Related guides
+
+        - [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/).
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: query
           name: userID
           schema:
             type: string
-          description: Only show authorizations that belong to a user ID.
+          description: |
+            A user ID.
+            Only returns authorizations scoped to this user.
         - in: query
           name: user
           schema:
             type: string
-          description: Only show authorizations that belong to a user name.
+          description: |
+            A user name.
+            Only returns authorizations scoped to this user.
         - in: query
           name: orgID
           schema:
             type: string
-          description: Only show authorizations that belong to an organization ID.
+          description: |
+            An organization ID.
+            Only returns authorizations that belong to this organization.
         - in: query
           name: org
           schema:
             type: string
-          description: Only show authorizations that belong to a organization name.
+          description: |
+            An organization name.
+            Only returns authorizations that belong to this organization.
         - in: query
           name: token
           schema:
             type: string
-          description: Find a token by value.
+          description: |
+            A token value.
+            Only returns the authorization that has this token.
       responses:
         '200':
-          description: A list of authorizations
+          description: Success. The response body contains a list of authorizations.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorizations'
+        '400':
+          description: Invalid request
+          $ref: '#/paths/~1tasks/get/responses/default'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -309,10 +350,40 @@ paths:
       tags:
         - Authorizations
       summary: Create an authorization
+      description: |
+        Creates an authorization.
+
+        Use this endpoint to create an authorization, which generates an API token
+        with permissions to `read` or `write` to a specific resource or `type` of resource.
+        The response contains the new authorization with the generated API token.
+
+        Keep the following in mind when creating and updating authorizations:
+
+        - To apply a permission to a specific resource, specify the resource `id` field.
+        - To apply a permission to all resources with the type, omit the resource `id`.
+        - To scope an authorization to a specific user, provide the `userID` property.
+
+        #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB Cloud enforces access restrictions on API tokens.
+
+        - InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.
+        - You can’t change access (read/write) permissions for an API token after it’s created.
+        - Tokens stop working when the user who created the token is deleted.
+
+        We recommend the following for managing your tokens:
+
+        - Create a generic user to create and manage tokens for writing data.
+        - Store your tokens in a secure password vault for future access.
+
+        #### Related guides
+
+        - [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       requestBody:
-        description: Authorization to create
+        description: The authorization to create.
         required: true
         content:
           application/json:
@@ -328,9 +399,47 @@ paths:
         '400':
           description: Invalid request
           $ref: '#/paths/~1tasks/get/responses/default'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
+      x-codeSample:
+        - lang: Shell
+          label: 'cURL: Create auth to read all buckets'
+          source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "description": "iot_users read buckets",
+                "permissions": [
+                  {"action": "read", "resource": {"type": "buckets"}}
+                ]
+              }
+            EOF
+        - lang: Shell
+          label: 'cURL: Create auth scoped to a user'
+          source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "userID": "INFLUX_USER_ID",
+                "description": "iot_user write to bucket",
+                "permissions": [
+                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+                ]
+              }
+            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -2814,11 +2923,22 @@ paths:
 
               * The `Authorization: Token` header is missing or malformed.
               * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
+              * The token doesn't have sufficient permissions to write to this organization and bucket.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+                properties:
+                  code:
+                    description: |
+                      The HTTP status code description. Default is `unauthorized`.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - unauthorized
+                  message:
+                    readOnly: true
+                    description: A human-readable message that may contain detail about the error.
+                    type: string
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource

@@ -5,13 +5,15 @@ get:
     - Users
   summary: List users
   description: |
-    Lists users. Default limit is `20`.
+    Retrieves a list of users. Default limit is `20`.
+
+    To limit which users are returned, pass query parameters in your request.
 
     #### Required permissions
 
-    - `read-user` permission
-    - To list all users, pass an **Op** InfluxDB API token.
-
+    - `read-user USER_ID` permission.
+      `USER_ID` is the ID of the user that you want to list.
+    - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - $ref: "../../common/parameters/Offset.yml"
@@ -32,6 +34,35 @@ get:
         application/json:
           schema:
             $ref: "../../common/schemas/Users.yml"
+    "401":
+      description: |
+        Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            tokenNotAuthorized:
+              summary: API token doesn't have `write:users` permission
+              value:
+                {
+                  "code": "unauthorized",
+                  "message": "write:users/09d8462ce0764000 is unauthorized"
+              }
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
@@ -85,7 +116,7 @@ post:
 
         The error may indicate one of the following problems:
 
-        - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
         - You passed a parameter combination that InfluxDB doesn't support.
       content:
         application/json:
@@ -97,20 +128,19 @@ post:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
   x-codeSamples:
-    -  label: "cURL: create a user and set a password"
-       lang: Shell
-       source: |
-
+    - label: "cURL: create a user and set a password"
+      lang: Shell
+      source: |
         # Create the user and assign the user ID to a variable.
         USER_ID=$(curl --request POST \
-                  "http://localhost:8086/api/v2/users/" \
-                  --header "Authorization: Token INFLUX_OP_TOKEN" \
-                  --header 'Content-type: application/json' \
-                  --data-binary @- << EOF | jq -r '.id'
-                  {
-                    "name": "USER_NAME",
-                    "status": "active"
-                  }
+                "http://localhost:8086/api/v2/users/" \
+                --header "Authorization: Token INFLUX_OP_TOKEN" \
+                --header 'Content-type: application/json' \
+                --data-binary @- << EOF | jq -r '.id'
+                {
+                  "name": "USER_NAME",
+                  "status": "active"
+                }
         EOF
         )
 
