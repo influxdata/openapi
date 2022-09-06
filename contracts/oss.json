@@ -109,7 +109,7 @@
       "post": {
         "operationId": "PostSignin",
         "summary": "Create a user session.",
-        "description": "Authenticates ***Basic Auth*** credentials for a user. If successful, creates a new UI session for the user.",
+        "description": "Authenticates ***Basic Auth*** credentials for a user and generates a user\nsession.\n\nTo authenticate a user, pass the HTTP `Authorization` header with the\n`Basic` scheme and the base64-encoded username and password--for example:\n\n  ```sh\n  Authorization: Basic USERNAME:PASSWORD\n  ```\n\nIn InfluxDB Cloud, the username is the email address the user signed up with.\n\n_Note that many HTTP clients provide a Basic authentication option that\naccepts the `USERNAME:PASSWORD` syntax and encodes the credentials before\nsending the request.\nTo learn more about HTTP authentication, see\n[Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._\n\nIf authentication is successful, InfluxDB creates a new session for the user\nand then returns the session cookie in the `Set-Cookie` response header.\nUser sessions exist only in memory.\nThey expire within ten minutes and during restarts of the InfluxDB instance.\n\n#### User sessions with authorizations\n\n- In InfluxDB Cloud, a user session inherits all the user's permissions for\n  the organization.\n- In InfluxDB OSS, a user session inherits all the user's permissions for all\n  the organizations that the user belongs to.\n\n#### Related endpoints\n\n- [Signout](#tag/Signout)\n",
         "tags": [
           "Signin"
         ],
@@ -125,10 +125,10 @@
         ],
         "responses": {
           "204": {
-            "description": "Success. User authenticated."
+            "description": "Success.\nThe user is authenticated.\nThe `Set-Cookie` response header contains the session cookie.\n"
           },
           "401": {
-            "description": "Unauthorized access.",
+            "description": "Unauthorized.\nThis error may be caused by one of the following problems:\n  - The user doesn't have access.\n  - The user passed incorrect credentials in the request.\n  - The credentials are formatted incorrectly in the request.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -138,7 +138,7 @@
             }
           },
           "403": {
-            "description": "User account is disabled.",
+            "description": "Forbidden. The user account is disabled.",
             "content": {
               "application/json": {
                 "schema": {
@@ -157,7 +157,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: signin with --user option encoding",
+            "source": "curl --request POST http://localhost:8086/api/v2/signin \\\n     --user \"USERNAME:PASSWORD\"\n"
+          }
+        ]
       }
     },
     "/signout": {
@@ -8986,7 +8993,7 @@
             "description": "Success. The password is updated."
           },
           "400": {
-            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't support changing passwords through the API; always responds with this status.\n"
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't support changing passwords through the API; always responds with this status.\n"
           },
           "default": {
             "description": "Unsuccessful authentication",
@@ -9396,7 +9403,7 @@
             "description": "Success. The password is updated."
           },
           "400": {
-            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't support changing passwords through the API; always responds with this status.\n",
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't support changing passwords through the API; always responds with this status.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11852,7 +11859,7 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Retrieves a list of users. Default limit is `20`.\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### Required permissions\n\n- `read-user USER_ID` permission.\n  `USER_ID` is the ID of the user that you want to list.\n- InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.\n",
+        "description": "Retrieves a list of users. Default limit is `20`.\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### Required permissions for InfluxDB OSS\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |\n| List a specific user | `read-users` or `read-user USER_ID` | |\n\nReplace the following:\n\n- `USER_ID`: ID of the user that you want to retrieve.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11912,7 +11919,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed,\n  but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11936,7 +11943,7 @@
           "Users"
         ],
         "summary": "Create a user",
-        "description": "Creates a user and returns the newly created user.\n\n#### Required permissions\n\n- `write-users`. Requires an InfluxDB API **Op** token.\n",
+        "description": "Creates a user that can access InfluxDB. The response contains the new user.\n\nUse this endpoint to create a user that can sign in to start a [user session]()\nthrough one of the following interfaces:\n\n  - InfluxDB UI\n  - `/api/v2/signin` InfluxDB API endpoint.\n  - InfluxDB CLI\n\nThis endpoint represents the first two steps in a four-step process to allow a user\nto sign in with a username and password and then access data in an organization:\n\n  1. Send a `POST` request to `/api/v2/users` to create a user. `name` is required.\n  2. Extract the `id` value from the API response for step 1.\n  3. Send a `POST` request to any of the following endpoints, passing the user ID from step 2:\n\n    - [`/api/v2/authorizations`](): creates an [authorization]() with [permissions]() and an [API token]() scoped to the user.\n    - [`/api/v2/organizations/ORG_ID/members`](): adds the user as a [member]() of an organization.\n    - [`/api/v2/organizations/ORG_ID/owners`](): adds the user as an [owner]() of an organization.\n  4. Send a `POST` request to [`/api/v2/users/USER_ID/password`](), passing the user ID from step 2, to create a password for the user.\n\n#### Required permissions\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Create a user | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |\n\n#### Related guides\n\n- [Create a user](https://docs.influxdata.com/influxdb/latest/users/create-user/).\n- [Create an API token scoped to a user](https://docs.influxdata.com/influxdb/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"

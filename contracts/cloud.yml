@@ -240,7 +240,40 @@ paths:
     post:
       operationId: PostSignin
       summary: Create a user session.
-      description: 'Authenticates ***Basic Auth*** credentials for a user. If successful, creates a new UI session for the user.'
+      description: |
+        Authenticates ***Basic Auth*** credentials for a user and generates a user
+        session.
+
+        To authenticate a user, pass the HTTP `Authorization` header with the
+        `Basic` scheme and the base64-encoded username and password--for example:
+
+          ```sh
+          Authorization: Basic USERNAME:PASSWORD
+          ```
+
+        In InfluxDB Cloud, the username is the email address the user signed up with.
+
+        _Note that many HTTP clients provide a Basic authentication option that
+        accepts the `USERNAME:PASSWORD` syntax and encodes the credentials before
+        sending the request.
+        To learn more about HTTP authentication, see
+        [Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._
+
+        If authentication is successful, InfluxDB creates a new session for the user
+        and then returns the session cookie in the `Set-Cookie` response header.
+        User sessions exist only in memory.
+        They expire within ten minutes and during restarts of the InfluxDB instance.
+
+        #### User sessions with authorizations
+
+        - In InfluxDB Cloud, a user session inherits all the user's permissions for
+          the organization.
+        - In InfluxDB OSS, a user session inherits all the user's permissions for all
+          the organizations that the user belongs to.
+
+        #### Related endpoints
+
+        - [Signout](#tag/Signout)
       tags:
         - Signin
       security:
@@ -249,15 +282,23 @@ paths:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
         '204':
-          description: Success. User authenticated.
+          description: |
+            Success.
+            The user is authenticated.
+            The `Set-Cookie` response header contains the session cookie.
         '401':
-          description: Unauthorized access.
+          description: |
+            Unauthorized.
+            This error may be caused by one of the following problems:
+              - The user doesn't have access.
+              - The user passed incorrect credentials in the request.
+              - The credentials are formatted incorrectly in the request.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: User account is disabled.
+          description: Forbidden. The user account is disabled.
           content:
             application/json:
               schema:
@@ -268,6 +309,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: 'cURL: signin with --user option encoding'
+          source: |
+            curl --request POST http://localhost:8086/api/v2/signin \
+                 --user "USERNAME:PASSWORD"
   /signout:
     post:
       operationId: PostSignout
@@ -7221,7 +7268,7 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Doesn't support changing passwords through the API; always responds with this status.
+            - InfluxDB Cloud doesn't support changing passwords through the API; always responds with this status.
         default:
           description: Unsuccessful authentication
           content:
@@ -7537,7 +7584,7 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Doesn't support changing passwords through the API; always responds with this status.
+            - InfluxDB Cloud doesn't support changing passwords through the API; always responds with this status.
           content:
             application/json:
               schema:
@@ -8501,7 +8548,7 @@ paths:
 
         #### InfluxDB Cloud
 
-        - Doesn't allow listing all users through the API.
+        - InfluxDB Cloud doesn't allow listing all users through the API.
           Use the InfluxDB Cloud user interface (UI) to manage account information.
 
         #### Required permissions for InfluxDB Cloud
@@ -8509,7 +8556,7 @@ paths:
         | Action | Permission required | Restriction |
         |:-------|:--------------------|:------------|
         | List all users | Operator token | InfluxData internal use only |
-        | Listing specific user | `read-users` or `read-user USER_ID` |
+        | List a specific user | `read-users` or `read-user USER_ID` |
 
         Replace the following:
 
@@ -8535,7 +8582,9 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Returns an empty list (`users: []`) if the request is for listing all users and doesn't pass an _operator token_.
+            - Returns an empty `users` list if you don't pass _`id`_ or _`name`_ parameters and don't use an
+              _operator token_.
+              Only InfluxData can access InfluxDB Cloud operator tokens.
           content:
             application/json:
               schema:
@@ -8571,12 +8620,31 @@ paths:
         - Users
       summary: Create a user
       description: |
-        Creates a user and returns the newly created user.
+        Creates a user that can access InfluxDB. The response contains the new user.
 
         #### InfluxDB Cloud
 
-        - Doesn't allow managing users through the API.
+        - InfluxDB Cloud doesn't allow managing users through the API.
           Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        Use this endpoint to create a user that can sign in to start a [user session]()
+        through one of the following interfaces:
+
+          - InfluxDB UI
+          - `/api/v2/signin` InfluxDB API endpoint.
+          - InfluxDB CLI
+
+        This endpoint represents the first two steps in a four-step process to allow a user
+        to sign in with a username and password and then access data in an organization:
+
+          1. Send a `POST` request to `/api/v2/users` to create a user. `name` is required.
+          2. Extract the `id` value from the API response for step 1.
+          3. Send a `POST` request to any of the following endpoints, passing the user ID from step 2:
+
+            - [`/api/v2/authorizations`](): creates an [authorization]() with [permissions]() and an [API token]() scoped to the user.
+            - [`/api/v2/organizations/ORG_ID/members`](): adds the user as a [member]() of an organization.
+            - [`/api/v2/organizations/ORG_ID/owners`](): adds the user as an [owner]() of an organization.
+          4. Send a `POST` request to [`/api/v2/users/USER_ID/password`](), passing the user ID from step 2, to create a password for the user.
 
         #### Required permissions for InfluxDB Cloud
 
@@ -8612,6 +8680,7 @@ paths:
             #### InfluxDB Cloud
 
             - Returns this error if the request doesn't use an _operator token_.
+              Only InfluxData can access InfluxDB Cloud operator tokens.
           content:
             application/json:
               schema:
