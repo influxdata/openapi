@@ -4,15 +4,40 @@ info:
   version: 2.0.0
   description: |
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /api/v2
 tags:
   - name: Authorizations
     description: |
-      Create and manage API tokens.
-      An **authorization** associates a list of permissions to an
-      **organization** and provides a token for API access.
-      Optionally, you can restrict an authorization and its token to a specific user.
+      Create and manage authorizations (API tokens).
+
+      An _authorization_ contains a list of `read` and `write`
+      permissions for organization resources and provides an API token for authentication.
+      An authorization belongs to an organization and only contains permissions for that organization.
+
+      #### Limitations
+
+      API tokens are visible to the user who created the authorization and to any
+      user with an _[operator token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/#operator-token)_.
+      In InfluxDB OSS, even if an API token has `read-authorizations` permission, the
+      token can't be used to view its authorization details.
+      Tokens stop working when the user who created the token is deleted.
+
+      We recommend creating a generic user to create and manage tokens for writing data.
+
+      #### User sessions with authorizations
+
+      If a user signs in with username and password, creating a _user session_,
+      the session carries the permissions granted by all the user's authorizations.
+      To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+
+      ### Related endpoints
+
+      - [Signin](#tag/Signin)
+      - [Signout](#tag/Signout)
 
       ### Related guides
 
@@ -86,6 +111,24 @@ tags:
 
       - [InfluxDB stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
       - [InfluxDB templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/)
+  - name: Users
+    description: |
+      Manage users for your organization.
+      Users are those with access to InfluxDB.
+      To grant a user permission to access data, add them as a member of an
+      organization and provide them with an API token.
+
+      #### User sessions with authorizations
+
+      Optionally, you can scope an authorization (and its API token) to a user.
+      If a user signs in with username and password, creating a _user session_,
+      the session carries the permissions granted by all the user's authorizations.
+      To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+
+      #### Related guides
+
+      - [Manage users](https://docs.influxdata.com/influxdb/v2.3/influxdb/latest/users/).
+      - [Create a token scoped to a user](https://docs.influxdata.com/influxdb/v2.3/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user).
   - name: Write
     description: |
       Write time series data to buckets.
@@ -150,8 +193,8 @@ tags:
       |:-----------:|:------------------------ |:--------------------- |
       | `200`       | Success                  |                       |
       | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
-      | `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token does not have permission for the operation.</li></ul> |
-      | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token does not have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/latest/security/tokens/)</li></ul> |
+      | `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
+      | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/latest/security/tokens/)</li></ul> |
       | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
       | `413`       | Request entity too large | Request payload exceeds the size limit. |
       | `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
@@ -1104,8 +1147,8 @@ paths:
 
         - Validates the request, handles the write synchronously,
           and then responds with success or failure.
-        - If all points were written successfully, returns `204`,
-          otherwise returns the first line that failed.
+        - If all points were written successfully, responds with HTTP `204` status code;
+          otherwise, returns the first line that failed.
 
         #### Required permissions
 
@@ -1293,7 +1336,7 @@ paths:
 
             #### InfluxDB OSS
 
-            - Returns this error if `org` or `orgID` does not match an organization.
+            - Returns this error if `org` or `orgID` doesn't match an organization.
           content:
             application/json:
               schema:
@@ -1542,7 +1585,7 @@ paths:
 
             #### InfluxDB OSS
 
-            - Returns this error if `org` or `orgID` does not match an organization.
+            - Returns this error if `org` or `orgID` doesn't match an organization.
           content:
             application/json:
               schema:
@@ -2358,12 +2401,27 @@ paths:
 
         -  The endpoint doesn't validate values in the query--for example:
 
-            The following query has correct syntax, but contains an incorrect `from()` property key:
+            The following sample Flux query has correct syntax, but contains an incorrect `from()` property key:
 
+            ```js
+            from(foo: "iot_center")
+                |> range(start: -90d)
+                |> filter(fn: (r) => r._measurement == "environment")
+            ```
+
+            The following sample JSON shows how to pass the query in the request body:
+
+            ```js
+            from(foo: "iot_center")
+            |> range(start: -90d)
+            |> filter(fn: (r) => r._measurement == "environment")
+            ```
+
+            The following code sample shows how to pass the query as JSON in the request body:
             ```json
             { "query": "from(foo: \"iot_center\")\
-                        |> range(start: -90d)\
-                        |> filter(fn: (r) => r._measurement == \"environment\")"
+                            |> range(start: -90d)\
+                            |> filter(fn: (r) => r._measurement == \"environment\")"
             }
             ```
 
@@ -2385,15 +2443,19 @@ paths:
               $ref: '#/components/schemas/LanguageRequest'
       x-codeSamples:
         - lang: Shell
-          label: cURL
+          label: 'cURL: Analyze and generate AST for the query'
           source: |
-            curl --request POST 'http://localhost:8086/api/v2/query/ast' \
-            --header 'Content-Type: application/json' \
-            --header 'Accept: application/json' \
-            --header 'Authorization: Token INFLUX_API_TOKEN' \
-            --data 'from(bucket: "example-bucket")
-                      |> range(start: -5m)
-                      |> filter(fn: (r) => r._measurement == "example-measurement")'
+            curl --request POST "http://localhost:8086/api/v2/query/ast" \
+              --header 'Content-Type: application/json' \
+              --header 'Accept: application/json' \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --data-binary @- << EOL
+                  {
+                    "query": "from(bucket: \"INFLUX_BUCKET_NAME\")\
+                    |> range(start: -5m)\
+                    |> filter(fn: (r) => r._measurement == \"example-measurement\")"
+                  }
+            EOL
       responses:
         '200':
           description: |
@@ -3774,7 +3836,7 @@ paths:
 
             #### InfluxDB OSS
 
-            - Returns this error if `org` or `orgID` does not match an organization.
+            - Returns this error if `org` or `orgID` doesn't match an organization.
           content:
             application/json:
               schema:
@@ -4091,6 +4153,10 @@ paths:
       tags:
         - Buckets
       summary: Retrieve a bucket
+      description: |
+        Retrieves a bucket.
+
+        Use this endpoint to retrieve information for a specific bucket.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4098,14 +4164,58 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to retrieve.
       responses:
         '200':
-          description: Bucket details
+          description: |
+            Success.
+            The response body contains the bucket information.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bucket'
+              examples:
+                successResponse:
+                  value:
+                    id: 37407e232b3911d8
+                    orgID: bea7ea952287f70d
+                    type: user
+                    schemaType: implicit
+                    description: bucket for air sensor data
+                    name: air-sensor
+                    retentionRules:
+                      - type: expire
+                        everySeconds: 2592000
+                    createdAt: '2022-08-03T23:04:41.073704121Z'
+                    updatedAt: '2022-08-03T23:04:41.073704228Z'
+                    links:
+                      labels: /api/v2/buckets/37407e232b3911d8/labels
+                      members: /api/v2/buckets/37407e232b3911d8/members
+                      org: /api/v2/orgs/INFLUX_ORG_ID
+                      owners: /api/v2/buckets/37407e232b3911d8/owners
+                      self: /api/v2/buckets/37407e232b3911d8
+                      write: /api/v2/write?org=INFLUX_ORG_ID&bucket=37407e232b3911d8
+                    labels: []
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: |
+            Not found.
+            Bucket not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested bucket wasn't found.
+                  value:
+                    code: not found
+                    message: bucket not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -4117,8 +4227,26 @@ paths:
       tags:
         - Buckets
       summary: Update a bucket
+      description: |
+        Updates a bucket.
+
+        Use this endpoint to update properties
+        (`name`, `description`, and `retentionRules`) of a bucket.
+
+        #### InfluxDB Cloud
+
+        - Requires the `retentionRules` property in the request body. If you don't
+        provide `retentionRules`, InfluxDB responds with an HTTP `403` status code.
+
+        #### InfluxDB OSS
+
+        - Doesn't require `retentionRules`.
+
+        #### Related Guides
+
+        - [Update a bucket](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/update-bucket/)
       requestBody:
-        description: Bucket update to apply
+        description: The bucket update to apply.
         required: true
         content:
           application/json:
@@ -4139,17 +4267,130 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bucket'
+              examples:
+                successResponse:
+                  value:
+                    id: 37407e232b3911d8
+                    orgID: INFLUX_ORG_ID
+                    type: user
+                    schemaType: implicit
+                    description: bucket holding air sensor data
+                    name: air_sensor
+                    retentionRules:
+                      - type: expire
+                        everySeconds: 2592000
+                    createdAt: '2022-08-03T23:04:41.073704121Z'
+                    updatedAt: '2022-08-07T22:49:49.422962913Z'
+                    links:
+                      labels: /api/v2/buckets/37407e232b3911d8/labels
+                      members: /api/v2/buckets/37407e232b3911d8/members
+                      org: /api/v2/orgs/INFLUX_ORG_ID
+                      owners: /api/v2/buckets/37407e232b3911d8/owners
+                      self: /api/v2/buckets/37407e232b3911d8
+                      write: /api/v2/write?org=INFLUX_ORG_ID&bucket=37407e232b3911d8
+                    labels: []
+        '400':
+          description: |
+            Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidJSONStringValue:
+                  summary: Invalid JSON
+                  description: |
+                    If the request body contains invalid JSON, InfluxDB returns `invalid`
+                    with detail about the problem.
+                  value:
+                    code: invalid
+                    message: 'invalid json: invalid character ''\'''' looking for beginning of value'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '403':
+          description: |
+            Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidRetention:
+                  summary: |
+                    The retention policy provided exceeds the max retention for the
+                    organization.
+                  value:
+                    code: forbidden
+                    message: provided retention exceeds orgs maximum retention duration
+        '404':
+          description: |
+            Not found.
+            Bucket not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested bucket wasn't found.
+                  value:
+                    code: not found
+                    message: bucket not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request PATCH "http://localhost:8086/api/v2/buckets/BUCKET_ID \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "name": "air_sensor",
+                  "description": "bucket holding air sensor data",
+                  "retentionRules": [
+                      {
+                          "type": "expire",
+                          "everySeconds": 2592000
+                      }
+                  ]
+                }'
     delete:
       operationId: DeleteBucketsID
       tags:
         - Buckets
       summary: Delete a bucket
+      description: |
+        Deletes a bucket and all associated records.
+
+        #### InfluxDB Cloud
+
+        - Does the following when you send a delete request:
+
+          1. Validates the request and queues the delete.
+          2. Returns an HTTP `204` status code if queued; _error_ otherwise.
+          3. Handles the delete asynchronously.
+
+        #### InfluxDB OSS
+
+        - Validates the request, handles the delete synchronously,
+        and then responds with success or failure.
+
+        #### Limitations
+
+        - Only one bucket can be deleted per request.
+
+        #### Related Guides
+
+        - [Delete a bucket](https://docs.influxdata.com/influxdb/v2.3/organizations/buckets/delete-bucket/#delete-a-bucket-in-the-influxdb-ui)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4157,28 +4398,85 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the bucket to delete.
+          description: |
+            Bucket ID.
+            The ID of the bucket to delete.
       responses:
         '204':
-          description: Delete has been accepted
-        '404':
-          description: Bucket not found
+          description: |
+            Success.
+
+            #### InfluxDB Cloud
+              - The bucket is queued for deletion.
+
+            #### InfluxDB OSS
+              - The bucket is deleted.
+        '400':
+          description: |
+            Bad Request.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                invalidID:
+                  summary: |
+                    Invalid ID.
+                  value:
+                    code: invalid
+                    message: id must have a length of 16 bytes
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: |
+            Not found.
+            Bucket not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested bucket was not found.
+                  value:
+                    code: not found
+                    message: bucket not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request DELETE "http://localhost:8086/api/v2/buckets/BUCKET_ID" \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header 'Accept: application/json'
   '/buckets/{bucketID}/labels':
     get:
       operationId: GetBucketsIDLabels
       tags:
         - Buckets
       summary: List all labels for a bucket
+      description: |
+        Retrieves a list of all labels for a bucket.
+
+        Labels are objects that contain `labelID`, `name`, `description`, and `color`
+        key-value pairs. They may be used for grouping and filtering InfluxDB
+        resources.
+        Labels are also capable of grouping across different resources--for example,
+        you can apply a label named `air_sensor` to a bucket and a task to quickly
+        organize resources.
+
+        #### Related guides
+
+        - Use the [`/api/v2/labels` InfluxDB API endpoint](#tag/Labels) to retrieve and manage labels.
+        - [Manage labels in the InfluxDB UI](https://docs.influxdata.com/influxdb/v2.3/visualize-data/labels/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4186,14 +4484,34 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            The ID of the bucket to retrieve labels for.
       responses:
         '200':
-          description: A list of all labels for a bucket
+          description: |
+            Success.
+            The response body contains a list of all labels for the bucket.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelsResponse'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/labels
+                    labels:
+                      - id: 09cbd068e7ebb000
+                        orgID: INFLUX_ORG_ID
+                        name: production_buckets
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -4205,6 +4523,24 @@ paths:
       tags:
         - Buckets
       summary: Add a label to a bucket
+      description: |
+        Adds a label to a bucket and returns the new label information.
+
+        Labels are objects that contain `labelID`, `name`, `description`, and `color`
+        key-value pairs. They may be used for grouping and filtering across one or
+        more kinds of **resources**--for example, you can apply a label named
+        `air_sensor` to a bucket and a task to quickly organize resources.
+
+        #### Limitations
+
+        - Before adding a label to a bucket, you must create the label if you
+          haven't already. To create a label with the InfluxDB API, send a `POST`
+          request to the [`/api/v2/labels` endpoint](#operation/PostLabels)).
+
+        #### Related guides
+
+        - Use the [`/api/v2/labels` InfluxDB API endpoint](#tag/Labels) to retrieve and manage labels.
+        - [Manage labels in the InfluxDB UI](https://docs.influxdata.com/influxdb/v2.3/visualize-data/labels/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4212,9 +4548,11 @@ paths:
           schema:
             type: string
           required: true
-          description: The bucket ID.
+          description: |
+            Bucket ID.
+            The ID of the bucket to label.
       requestBody:
-        description: Label to add
+        description: An object that contains a _`labelID`_ to add to the bucket.
         required: true
         content:
           application/json:
@@ -4222,17 +4560,68 @@ paths:
               $ref: '#/components/schemas/LabelMapping'
       responses:
         '201':
-          description: The newly added label
+          description: |
+            Success.
+            The response body contains the label information.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelResponse'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/labels
+                    label:
+                      id: 09cbd068e7ebb000
+                      orgID: INFLUX_ORG_ID
+                      name: production_buckets
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The `labelID` is missing from the request body.
+              value:
+                code: invalid
+                message: label id is required
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '422':
+          description: |
+            Unprocessable entity.
+            Label already exists on the resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                conflictingResource:
+                  summary: |
+                    Label already exists on the resource.
+                  value:
+                    code: conflict
+                    message: 'Cannot add label, label already exists on resource'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "http://localhost:8086/api/v2/buckets/BUCKETS_ID/labels \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "labelID": "09cbd068e7ebb000"
+                }'
   '/buckets/{bucketID}/labels/{labelID}':
     delete:
       operationId: DeleteBucketsIDLabelsID
@@ -4728,7 +5117,20 @@ paths:
       tags:
         - Organizations
         - Security and access endpoints
-      summary: List all organizations
+      summary: List organizations
+      description: |
+        Retrieves a list of [organizations](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization/).
+
+        To limit which organizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.
+
+        #### InfluxDB Cloud
+
+        - Only returns the organization that owns the token passed in the request.
+
+        #### Related guides
+
+        - [View organizations](https://docs.influxdata.com/influxdb/v2.3/organizations/view-orgs/).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - $ref: '#/components/parameters/Offset'
@@ -4738,39 +5140,55 @@ paths:
           name: org
           schema:
             type: string
-          description: Filter organizations to a specific organization name.
+          description: |
+            An organization name.
+            Only returns organizations with this name.
         - in: query
           name: orgID
           schema:
             type: string
-          description: Filter organizations to a specific organization ID.
+          description: |
+            An organization ID.
+            Only returns the organization with this ID.
         - in: query
           name: userID
           schema:
             type: string
-          description: Filter organizations to a specific user ID.
+          description: |
+            A user ID.
+            Only returns organizations where this user is a member or owner.
       responses:
         '200':
-          description: A list of organizations
+          description: Success. The response body contains a list of organizations.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organizations'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
     post:
       operationId: PostOrgs
       tags:
         - Organizations
       summary: Create an organization
+      description: |
+        Creates an organization and returns the newly created organization.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow you to use this endpoint to create organizations.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: Organization to create
+        description: The organization to create.
         required: true
         content:
           application/json:
@@ -4778,17 +5196,23 @@ paths:
               $ref: '#/components/schemas/PostOrganizationRequest'
       responses:
         '201':
-          description: Organization created
+          description: |
+            Success. The organization is created.
+            The response body contains the new organization.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/GeneralServerError'
   '/orgs/{orgID}':
     get:
       operationId: GetOrgsID
@@ -5039,6 +5463,8 @@ paths:
         - Organizations
         - Security and access endpoints
       summary: List all owners of an organization
+      description: |
+        Retrieves a list of all owners of an organization.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5046,7 +5472,8 @@ paths:
           schema:
             type: string
           required: true
-          description: The organization ID.
+          description: |
+            The ID of the organization to list owners for.
       responses:
         '200':
           description: A list of organization owners
@@ -5071,6 +5498,25 @@ paths:
       tags:
         - Organizations
       summary: Add an owner to an organization
+      description: |
+        Adds an owner to an organization.
+
+        Use this endpoint to assign the organization `owner` role to a user.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Required permissions
+
+        - `write-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.
+
+        #### Related endpoints
+
+        - [Authorizations](#tag/Authorizations)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5078,9 +5524,9 @@ paths:
           schema:
             type: string
           required: true
-          description: The organization ID.
+          description: The ID of the organization that you want to add an owner for.
       requestBody:
-        description: User to add as owner
+        description: The user to add as an owner of the organization.
         required: true
         content:
           application/json:
@@ -5088,7 +5534,9 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Organization owner added
+          description: |
+            Success. The user is an owner of the organization.
+            The response body contains the owner with role and user detail.
           content:
             application/json:
               schema:
@@ -5377,7 +5825,7 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but the InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
           content:
             application/json:
@@ -5932,6 +6380,11 @@ paths:
         Schedules a task run to start immediately, ignoring scheduled runs.
 
         Use this endpoint to manually start a task run.
+        Scheduled runs will continue to run as scheduled.
+        This may result in concurrently running tasks.
+
+        To _retry_ a previous run (and avoid creating a new run),
+        use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry`](#operation/PostTasksIDRunsIDRetry) endpoint.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5974,13 +6427,13 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve runs for.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The run ID.
+          description: The ID of the run to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task run.
@@ -6033,7 +6486,7 @@ paths:
 
         #### InfluxDB Cloud
 
-          - Doesn't support this operation.
+        - Doesn't support this operation.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6041,7 +6494,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to cancel.
         - in: path
           name: runID
           schema:
@@ -6055,7 +6508,8 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Doesn't support this operation.
+            - Doesn't support this operation.
+            - Doesn't return this status.
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -6068,7 +6522,7 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Always returns this error; cancelling a task run is not supported.
+              - Always returns this error; doesn't support cancelling tasks.
 
             #### InfluxDB OSS
 
@@ -6087,6 +6541,14 @@ paths:
       tags:
         - Tasks
       summary: Retry a task run
+      description: |
+        Queues a task run to retry and returns the newly scheduled run.
+
+        To manually start a _new_ task run, use the [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
+
+        #### Limitations
+
+        - The task must be _active_ (`status: "active"`).
       requestBody:
         content:
           application/json; charset=utf-8:
@@ -6099,26 +6561,60 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retry.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The run ID.
+          description: The ID of the task run to retry.
       responses:
         '200':
-          description: Run that has been queued
+          description: Success. The response body contains the queued run.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Run'
-        default:
-          description: Unexpected error
+              examples:
+                retryTaskRun:
+                  summary: A task run scheduled to retry
+                  value:
+                    links:
+                      logs: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/logs
+                      retry: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/retry
+                      self: /api/v2/tasks/09a776832f381000/runs/09d60ffe08738000
+                      task: /api/v2/tasks/09a776832f381000
+                    id: 09d60ffe08738000
+                    taskID: 09a776832f381000
+                    status: scheduled
+                    scheduledFor: '2022-08-15T00:00:00Z'
+                    requestedAt: '2022-08-16T20:05:11.84145Z'
+        '400':
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            InfluxDB may return this error for the following reasons:
+
+            - The task has `status: inactive`.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                inactiveTask:
+                  summary: Can't retry an inactive task
+                  value:
+                    code: invalid
+                    message: 'failed to retry run: inactive task'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/GeneralServerError'
   '/tasks/{taskID}/logs':
     get:
       operationId: GetTasksIDLogs
@@ -6191,6 +6687,11 @@ paths:
       tags:
         - Tasks
       summary: Retrieve all logs for a run
+      description: |
+        Retrieves all logs for a task run.
+        A log is a list of run events with `runID`, `time`, and `message` properties.
+
+        Use this endpoint to help analyze task performance and troubleshoot failed task runs.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6411,7 +6912,7 @@ paths:
       description: |
         #### InfluxDB Cloud
 
-        InfluxDB Cloud does not support changing user passwords through the API.
+        InfluxDB Cloud doesn't support changing user passwords through the API.
         Use the InfluxDB Cloud user interface to update your password.
       security:
         - BasicAuthentication: []
@@ -6430,7 +6931,7 @@ paths:
         '400':
           description: |
             Bad request.
-            InfluxDB Cloud does not support changing passwords through the API and always responds with this status.
+            InfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.
         default:
           description: Unsuccessful authentication
           content:
@@ -6440,9 +6941,13 @@ paths:
   '/tasks/{taskID}/members':
     get:
       operationId: GetTasksIDMembers
+      deprecated: true
       tags:
         - Tasks
       summary: List all task members
+      description: |
+        **Deprecated**: Tasks don't use `owner` and `member` roles.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6453,7 +6958,9 @@ paths:
           description: The task ID.
       responses:
         '200':
-          description: A list of users who have member privileges for a task
+          description: |
+            Success. The response body contains a list of `users` that have
+            the `member` role for a task.
           content:
             application/json:
               schema:
@@ -6466,9 +6973,16 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: PostTasksIDMembers
+      deprecated: true
       tags:
         - Tasks
       summary: Add a member to a task
+      description: |
+        **Deprecated**: Tasks don't use `owner` and `member` roles.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        Adds a user to members of a task and returns the newly created member with
+        role and user detail.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6478,7 +6992,7 @@ paths:
           required: true
           description: The task ID.
       requestBody:
-        description: User to add as member
+        description: A user to add as a member of the task.
         required: true
         content:
           application/json:
@@ -6486,7 +7000,7 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Added to task members
+          description: Created. The user is added to task members.
           content:
             application/json:
               schema:
@@ -6500,9 +7014,13 @@ paths:
   '/tasks/{taskID}/members/{userID}':
     delete:
       operationId: DeleteTasksIDMembersID
+      deprecated: true
       tags:
         - Tasks
       summary: Remove a member from a task
+      description: |
+        **Deprecated**: Tasks don't use `owner` and `member` roles.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6529,9 +7047,15 @@ paths:
   '/tasks/{taskID}/owners':
     get:
       operationId: GetTasksIDOwners
+      deprecated: true
       tags:
         - Tasks
       summary: List all owners of a task
+      description: |
+        **Deprecated**: Tasks don't use `owner` and `member` roles.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        Retrieves all users that have owner permission for a task.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6539,14 +7063,34 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to retrieve owners for.
       responses:
         '200':
-          description: A list of users who have owner privileges for a task
+          description: |
+            Success.
+            The response contains a list of `users` that have the `owner` role for the task.
+
+            If the task has no owners, the response contains an empty `users` array.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwners'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -6555,9 +7099,18 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: PostTasksIDOwners
+      deprecated: true
       tags:
         - Tasks
-      summary: Add an owner to a task
+      summary: Add an owner for a task
+      description: |
+        **Deprecated**: Tasks don't use `owner` and `member` roles.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        Assigns a task `owner` role to a user.
+
+        Use this endpoint to create a _resource owner_ for the task.
+        A _resource owner_ is a user with `role: owner` for a specific resource.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6567,7 +7120,7 @@ paths:
           required: true
           description: The task ID.
       requestBody:
-        description: User to add as owner
+        description: A user to add as an owner of the task.
         required: true
         content:
           application/json:
@@ -6575,11 +7128,41 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Added to task owners
+          description: |
+            Created. The task `owner` role is assigned to the user.
+            The response body contains the resource owner with
+            role and user detail.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
+              examples:
+                createdOwner:
+                  summary: User has the owner role for the resource
+                  value:
+                    role: owner
+                    links:
+                      logs: /api/v2/users/0772396d1f411000/logs
+                      self: /api/v2/users/0772396d1f411000
+                    id: 0772396d1f411000
+                    name: USER_NAME
+                    status: active
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -6589,9 +7172,13 @@ paths:
   '/tasks/{taskID}/owners/{userID}':
     delete:
       operationId: DeleteTasksIDOwnersID
+      deprecated: true
       tags:
         - Tasks
       summary: Remove an owner from a task
+      description: |
+        **Deprecated**: Tasks don't use `owner` and `member` roles.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6625,7 +7212,7 @@ paths:
       description: |
         #### InfluxDB Cloud
 
-        InfluxDB Cloud does not support changing user passwords through the API.
+        InfluxDB Cloud doesn't support changing user passwords through the API.
         Use the InfluxDB Cloud user interface to update your password.
       security:
         - BasicAuthentication: []
@@ -8441,7 +9028,17 @@ paths:
       tags:
         - Security and access endpoints
         - Users
-      summary: List all users
+      summary: List users
+      description: |
+        Retrieves a list of users. Default limit is `20`.
+
+        To limit which users are returned, pass query parameters in your request.
+
+        #### Required permissions
+
+        - `read-user USER_ID` permission.
+          `USER_ID` is the ID of the user that you want to list.
+        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - $ref: '#/components/parameters/Offset'
@@ -8457,11 +9054,38 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of users
+          description: Success. The response contains a list of `users`.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                tokenNotAuthorized:
+                  summary: 'API token doesn''t have `write:users` permission'
+                  value:
+                    code: unauthorized
+                    message: 'write:users/09d8462ce0764000 is unauthorized'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
@@ -8470,10 +9094,16 @@ paths:
       tags:
         - Users
       summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
+
+        #### Required permissions
+
+        - `write-users`. Requires an InfluxDB API **Op** token.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: User to create
+        description: The user to create.
         required: true
         content:
           application/json:
@@ -8481,14 +9111,65 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: User created
+          description: |
+            Success.
+            The response contains the newly created user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                tokenNotAuthorized:
+                  summary: 'API token doesn''t have `write:users` permission'
+                  value:
+                    code: unauthorized
+                    message: 'write:users/09d8462ce0764000 is unauthorized'
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
+      x-codeSamples:
+        - label: 'cURL: create a user and set a password'
+          lang: Shell
+          source: |
+            # Create the user and assign the user ID to a variable.
+            USER_ID=$(curl --request POST \
+                    "http://localhost:8086/api/v2/users/" \
+                    --header "Authorization: Token INFLUX_OP_TOKEN" \
+                    --header 'Content-type: application/json' \
+                    --data-binary @- << EOF | jq -r '.id'
+                    {
+                      "name": "USER_NAME",
+                      "status": "active"
+                    }
+            EOF
+            )
+
+            # Pass the user ID and a password to set the password for the user.
+            curl request POST "http://localhost:8086/api/v2/users/$USER_ID/password/" \
+              --header "Authorization: Token INFLUX_OP_TOKEN" \
+              --header 'Content-type: application/json' \
+              --data '{ "password": "USER_PASSWORD" }'
   '/users/{userID}':
     get:
       operationId: GetUsersID
@@ -8610,36 +9291,69 @@ paths:
       tags:
         - Authorizations
         - Security and access endpoints
-      summary: List all authorizations
+      summary: List authorizations
+      description: |
+        Retrieves a list of authorizations.
+
+        To limit which authorizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all authorizations.
+
+        #### InfluxDB OSS
+
+        - Returns
+          [API token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token) values in authorizations.
+        - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+          InfluxDB OSS returns authorizations for all organizations in the instance.
+
+        #### Required permissions
+
+        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+
+        #### Related guides
+
+        - [View tokens](https://docs.influxdata.com/influxdb/v2.3/security/tokens/view-tokens/).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: query
           name: userID
           schema:
             type: string
-          description: Only show authorizations that belong to a user ID.
+          description: |
+            A user ID.
+            Only returns authorizations scoped to this user.
         - in: query
           name: user
           schema:
             type: string
-          description: Only show authorizations that belong to a user name.
+          description: |
+            A user name.
+            Only returns authorizations scoped to this user.
         - in: query
           name: orgID
           schema:
             type: string
-          description: Only show authorizations that belong to an organization ID.
+          description: An organization ID. Only returns authorizations that belong to this organization.
         - in: query
           name: org
           schema:
             type: string
-          description: Only show authorizations that belong to a organization name.
+          description: |
+            An organization name.
+            Only returns authorizations that belong to this organization.
       responses:
         '200':
-          description: A list of authorizations
+          description: Success. The response body contains a list of authorizations.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorizations'
+        '400':
+          description: Invalid request
+          $ref: '#/components/responses/GeneralServerError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
@@ -8648,10 +9362,36 @@ paths:
       tags:
         - Authorizations
       summary: Create an authorization
+      description: |
+        Creates an authorization.
+
+        Use this endpoint to create an authorization, which generates an API token
+        with permissions to `read` or `write` to a specific resource or `type` of resource.
+        The response contains the new authorization with the generated API token.
+
+        Keep the following in mind when creating and updating authorizations:
+
+        - To apply a permission to a specific resource, specify the resource `id` field.
+        - To apply a permission to all resources with the type, omit the resource `id`.
+        - To scope an authorization to a specific user, provide the `userID` property.
+
+        #### Limitations
+
+        - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
+          user with an _[operator token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/#operator-token)_.
+        - Even if an API token has `read-authorizations` permission, the
+          token can't be used to view its authorization details.
+        - Tokens stop working when the user who created the token is deleted.
+
+        We recommend creating a generic user to create and manage tokens for writing data.
+
+        #### Related guides
+
+        - [Create a token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/create-token/).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: Authorization to create
+        description: The authorization to create.
         required: true
         content:
           application/json:
@@ -8659,7 +9399,7 @@ paths:
               $ref: '#/components/schemas/AuthorizationPostRequest'
       responses:
         '201':
-          description: Authorization created
+          description: Created. The response body contains the newly created authorization.
           content:
             application/json:
               schema:
@@ -8667,9 +9407,47 @@ paths:
         '400':
           description: Invalid request
           $ref: '#/components/responses/GeneralServerError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
+      x-codeSample:
+        - lang: Shell
+          label: 'cURL: Create auth to read all buckets'
+          source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "description": "iot_users read buckets",
+                "permissions": [
+                  {"action": "read", "resource": {"type": "buckets"}}
+                ]
+              }
+            EOF
+        - lang: Shell
+        - label: 'cURL: Create auth scoped to a user'
+        - source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "userID": "INFLUX_USER_ID",
+                "description": "iot_user write to bucket",
+                "permissions": [
+                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+                ]
+              }
+            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -10553,8 +11331,7 @@ paths:
         - Tasks
       summary: Retrieve a task
       description: |
-        Retrieves a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)
-        by ID.
+        Retrieves a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -10588,7 +11365,7 @@ paths:
       description: |
         Updates a task and then cancels all scheduled runs of the task.
 
-        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
         To update a task, pass an object that contains the updated key-value pairs.
@@ -10608,7 +11385,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to update.
       responses:
         '200':
           description: Success. The response body contains the updated task.
@@ -10648,7 +11425,7 @@ paths:
           description: The ID of the task to delete.
       responses:
         '204':
-          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+          description: Success. The task and runs are deleted. Scheduled runs are canceled.
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -10914,7 +11691,7 @@ components:
         init:
           $ref: '#/components/schemas/Expression'
     ExpressionStatement:
-      description: May consist of an expression that does not return a value and is executed solely for its side-effects
+      description: May consist of an expression that doesn't return a value and is executed solely for its side-effects
       type: object
       properties:
         type:
@@ -11435,16 +12212,29 @@ components:
             $ref: '#/components/schemas/Bucket'
     RetentionRules:
       type: array
-      description: Rules to expire or retain data.  No rules means data never expires.
+      description: |
+        Retention rules to expire or retain data.
+        #### InfluxDB Cloud
+
+        - `retentionRules` is required.
+
+        #### InfluxDB OSS
+
+        - `retentionRules` isn't required.
       items:
         $ref: '#/components/schemas/RetentionRule'
     PatchBucketRequest:
       type: object
-      description: Updates to an existing bucket resource.
+      description: |
+        An object that contains updated bucket properties to apply.
       properties:
         name:
           type: string
+          description: |
+            The name of the bucket.
         description:
+          description: |
+            A description of the bucket.
           type: string
         retentionRules:
           $ref: '#/components/schemas/PatchRetentionRules'
@@ -11455,7 +12245,6 @@ components:
         $ref: '#/components/schemas/PatchRetentionRule'
     PatchRetentionRule:
       type: object
-      description: Updates to a rule to expire or retain data.
       properties:
         type:
           type: string
@@ -11465,15 +12254,33 @@ components:
         everySeconds:
           type: integer
           format: int64
-          description: Duration in seconds for how long data will be kept in the database. 0 means infinite.
+          description: |
+            The number of seconds to keep data.
+            Default duration is `2592000` (30 days).
+            `0` represents infinite retention.
           example: 86400
+          default: 2592000
           minimum: 0
         shardGroupDurationSeconds:
           type: integer
           format: int64
-          description: Shard duration measured in seconds.
+          description: |
+            The [shard group duration](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#shard).
+            The number of seconds that each shard group covers.
+
+            #### InfluxDB Cloud
+
+            - Doesn't use `shardGroupDurationsSeconds`.
+
+            #### InfluxDB OSS
+
+            - Default value depends on the [bucket retention period](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/#shard-group-duration).
+
+            #### Related guides
+
+            - InfluxDB [shards and shard groups](https://docs.influxdata.com/influxdb/v2.3/reference/internals/shards/)
       required:
-        - type
+        - everySeconds
     RetentionRule:
       type: object
       properties:
@@ -13252,6 +14059,8 @@ components:
         - showNoteWhenEmpty
         - position
       properties:
+        adaptiveZoomHide:
+          type: boolean
         timeFormat:
           type: string
         type:
@@ -13358,6 +14167,8 @@ components:
         - note
         - showNoteWhenEmpty
       properties:
+        adaptiveZoomHide:
+          type: boolean
         timeFormat:
           type: string
         type:
@@ -13453,6 +14264,8 @@ components:
         - decimalPlaces
         - position
       properties:
+        adaptiveZoomHide:
+          type: boolean
         timeFormat:
           type: string
         type:
@@ -13671,6 +14484,8 @@ components:
         - xSuffix
         - ySuffix
       properties:
+        adaptiveZoomHide:
+          type: boolean
         timeFormat:
           type: string
         type:
@@ -13783,6 +14598,8 @@ components:
         - ySuffix
         - binSize
       properties:
+        adaptiveZoomHide:
+          type: boolean
         timeFormat:
           type: string
         type:
@@ -14150,6 +14967,8 @@ components:
         - queries
         - colors
       properties:
+        adaptiveZoomHide:
+          type: boolean
         type:
           type: string
           enum:
@@ -14887,7 +15706,9 @@ components:
       type: object
       properties:
         allowed:
-          description: True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.
+          description: |
+            If `true`, the InfluxDB instance hasn't had initial setup;
+            `false` otherwise.
           type: boolean
     PasswordResetBody:
       properties:
@@ -15011,6 +15832,9 @@ components:
       type: object
       properties:
         labelID:
+          description: |
+            Label ID.
+            The ID of the label to attach.
           type: string
     LabelsResponse:
       type: object
@@ -15599,14 +16423,14 @@ components:
           description: The message template as a flux interpolated string.
           type: string
         parseMode:
-          description: 'Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options . Defaults to "MarkdownV2" .'
+          description: 'Parse mode of the message text per https://core.telegram.org/bots/api#formatting-options. Defaults to "MarkdownV2".'
           type: string
           enum:
             - MarkdownV2
             - HTML
             - Markdown
         disableWebPagePreview:
-          description: Disables preview of web links in the sent messages when "true". Defaults to "false" .
+          description: Disables preview of web links in the sent messages when "true". Defaults to "false".
           type: boolean
     NotificationEndpointUpdate:
       type: object
@@ -15778,7 +16602,7 @@ components:
               description: 'Specifies the Telegram bot token. See https://core.telegram.org/bots#creating-a-new-bot .'
               type: string
             channel:
-              description: 'ID of the telegram channel, a chat_id in https://core.telegram.org/bots/api#sendmessage .'
+              description: 'The ID of the telegram channel; a chat_id in https://core.telegram.org/bots/api#sendmessage .'
               type: string
     NotificationEndpointType:
       type: string
@@ -15792,14 +16616,14 @@ components:
       properties:
         id:
           type: string
-          description: ID of the DBRP mapping.
+          description: The ID of the DBRP mapping.
           readOnly: true
         orgID:
           type: string
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
         bucketID:
           type: string
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
         database:
           type: string
           description: InfluxDB v1 database
@@ -15839,13 +16663,13 @@ components:
       properties:
         orgID:
           type: string
-          description: ID of the organization that owns this mapping.
+          description: The ID of the organization.
         org:
           type: string
-          description: Name of the organization that owns this mapping.
+          description: The name of the organization that owns this mapping.
         bucketID:
           type: string
-          description: ID of the bucket used as the target for the translation.
+          description: The ID of the bucket used as the target for the translation.
         database:
           type: string
           description: InfluxDB v1 database
@@ -15898,11 +16722,13 @@ components:
               readOnly: true
             orgID:
               type: string
-              description: ID of the organization that the authorization is scoped to.
+              description: The ID of the organization.
             permissions:
               type: array
               minItems: 1
-              description: List of permissions for an authorization.  An authorization must have at least one permission.
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
               items:
                 $ref: '#/components/schemas/Permission'
             id:
@@ -15911,19 +16737,20 @@ components:
             token:
               readOnly: true
               type: string
-              description: Token used to authenticate API requests.
+              description: |
+                The API token for authenticating InfluxDB API and CLI requests.
             userID:
               readOnly: true
               type: string
-              description: ID of the user that created and owns the token.
+              description: The ID of the user that the token is scoped to.
             user:
               readOnly: true
               type: string
-              description: Name of the user that created and owns the token.
+              description: The name of the user that the token is scoped to.
             org:
               readOnly: true
               type: string
-              description: Name of the organization that the token is scoped to.
+              description: The name of the organization that owns the token.
             links:
               type: object
               readOnly: true
@@ -15957,14 +16784,18 @@ components:
           properties:
             orgID:
               type: string
-              description: ID of org that authorization is scoped to.
+              description: |
+                The ID of the organization that owns the authorization.
             userID:
               type: string
-              description: ID of user that authorization is scoped to.
+              description: |
+                The ID of the user that the authorization is scoped to.
             permissions:
               type: array
               minItems: 1
-              description: List of permissions for an auth.  An auth must have at least one Permission.
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
               items:
                 $ref: '#/components/schemas/Permission'
     Permission:
@@ -16010,18 +16841,28 @@ components:
             - remotes
             - replications
             - instance
+          description: |
+            The type of resource.
+            In a `permission`, applies the permission to all resources of this type.
         id:
           type: string
-          description: If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type.
+          description: |
+            The ID of a specific resource.
+            In a `permission`, applies the permission to only the resource with this ID.
         name:
           type: string
-          description: Optional name of the resource if the resource has a name field.
+          description: |
+            Optional: A name for the resource.
+            Not all resource types have a name field.
         orgID:
           type: string
-          description: If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type.
+          description: |
+            The ID of the organization that owns the resource.
+            In a `permission`, applies the permission to all resources of `type` owned by this organization.
         org:
           type: string
-          description: Optional name of the organization of the organization with orgID.
+          description: |
+            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
@@ -16434,7 +17275,7 @@ components:
         nodeID:
           type: integer
           format: int64
-          description: ID of the node that owns a shard.
+          description: The ID of the node that owns the shard.
       required:
         - nodeID
     SubscriptionManifests:
@@ -16825,11 +17666,22 @@ components:
 
           * The `Authorization: Token` header is missing or malformed.
           * The API token value is missing from the header.
-          * The token does not have sufficient permissions to write to this organization and bucket.
+          * The token doesn't have sufficient permissions to write to this organization and bucket.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            properties:
+              code:
+                description: |
+                  The HTTP status code description. Default is `unauthorized`.
+                readOnly: true
+                type: string
+                enum:
+                  - unauthorized
+              message:
+                readOnly: true
+                description: A human-readable message that may contain detail about the error.
+                type: string
           examples:
             tokenNotAuthorized:
               summary: Token is not authorized to access a resource

@@ -3,6 +3,10 @@ get:
   tags:
     - Buckets
   summary: Retrieve a bucket
+  description: |
+    Retrieves a bucket.
+
+    Use this endpoint to retrieve information for a specific bucket.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,14 +14,39 @@ get:
       schema:
         type: string
       required: true
-      description: The bucket ID.
+      description: |
+        The ID of the bucket to retrieve.
   responses:
     "200":
-      description: Bucket details
+      description: |
+        Success.
+        The response body contains the bucket information.
       content:
         application/json:
           schema:
             $ref: "../schemas/Bucket.yml"
+          examples:
+            $ref: "../responses/example-responses/GetBucketsIDSuccessResponse.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      description: |
+        Not found.
+        Bucket not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested bucket wasn't found.
+              value: {
+                "code": "not found",
+                "message": "bucket not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -29,8 +58,26 @@ patch:
   tags:
     - Buckets
   summary: Update a bucket
+  description: |
+    Updates a bucket.
+
+    Use this endpoint to update properties
+    (`name`, `description`, and `retentionRules`) of a bucket.
+
+    #### InfluxDB Cloud
+
+    - Requires the `retentionRules` property in the request body. If you don't
+    provide `retentionRules`, InfluxDB responds with an HTTP `403` status code.
+
+    #### InfluxDB OSS
+
+    - Doesn't require `retentionRules`.
+
+    #### Related Guides
+
+    - [Update a bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/update-bucket/)
   requestBody:
-    description: Bucket update to apply
+    description: The bucket update to apply.
     required: true
     content:
       application/json:
@@ -51,17 +98,113 @@ patch:
         application/json:
           schema:
             $ref: "../schemas/Bucket.yml"
+          examples:
+            $ref: "../responses/example-responses/PatchBucketsIDSuccessResponse.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "400":
+      description: |
+        Bad Request.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            invalidJSONStringValue:
+              summary: Invalid JSON
+              description: |
+                If the request body contains invalid JSON, InfluxDB returns `invalid`
+                with detail about the problem.
+              value: {
+                "code": "invalid",
+                "message": "invalid json: invalid character '\\'' looking for beginning of value"
+              }
+    "403":
+      description: |
+        Forbidden.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            invalidRetention:
+              summary: |
+                The retention policy provided exceeds the max retention for the
+                organization.
+              value: {
+                "code": "forbidden",
+                "message": "provided retention exceeds orgs maximum retention duration"
+              }
+    "404":
+      description: |
+        Not found.
+        Bucket not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested bucket wasn't found.
+              value: {
+                "code": "not found",
+                "message": "bucket not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request PATCH "http://localhost:8086/api/v2/buckets/BUCKET_ID \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "air_sensor",
+              "description": "bucket holding air sensor data",
+              "retentionRules": [
+                  {
+                      "type": "expire",
+                      "everySeconds": 2592000
+                  }
+              ]
+            }'
 delete:
   operationId: DeleteBucketsID
   tags:
     - Buckets
   summary: Delete a bucket
+  description: |
+    Deletes a bucket and all associated records.
+
+    #### InfluxDB Cloud
+
+    - Does the following when you send a delete request:
+
+      1. Validates the request and queues the delete.
+      2. Returns an HTTP `204` status code if queued; _error_ otherwise.
+      3. Handles the delete asynchronously.
+
+    #### InfluxDB OSS
+
+    - Validates the request, handles the delete synchronously,
+    and then responds with success or failure.
+
+    #### Limitations
+
+    - Only one bucket can be deleted per request.
+
+    #### Related Guides
+
+    - [Delete a bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/delete-bucket/#delete-a-bucket-in-the-influxdb-ui)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -69,19 +212,64 @@ delete:
       schema:
         type: string
       required: true
-      description: The ID of the bucket to delete.
+      description: |
+        Bucket ID.
+        The ID of the bucket to delete.
   responses:
     "204":
-      description: Delete has been accepted
-    "404":
-      description: Bucket not found
+      description: |
+        Success.
+
+        #### InfluxDB Cloud
+          - The bucket is queued for deletion.
+
+        #### InfluxDB OSS
+          - The bucket is deleted.
+    "400":
+      description: |
+        Bad Request.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            invalidID:
+              summary: |
+                Invalid ID.
+              value: {
+                "code": "invalid",
+                "message": "id must have a length of 16 bytes"
+              }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      description: |
+        Not found.
+        Bucket not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested bucket was not found.
+              value: {
+                "code": "not found",
+                "message": "bucket not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request DELETE "http://localhost:8086/api/v2/buckets/BUCKET_ID" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header 'Accept: application/json'

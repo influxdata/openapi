@@ -4,6 +4,9 @@ info:
   version: 2.0.1
   description: |
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /api/v2
 paths:
@@ -11,8 +14,11 @@ paths:
     get:
       operationId: GetUsers
       tags:
+        - Security and access endpoints
         - Users
-      summary: List all users
+      summary: List users
+      description: |
+        Retrieves a list of users.
       parameters:
         - in: header
           name: Zap-Trace-Span
@@ -27,7 +33,7 @@ paths:
             type: string
       responses:
         '200':
-          description: A list of users
+          description: Success. The response contains a list of `users`.
           content:
             application/json:
               schema:
@@ -40,10 +46,12 @@ paths:
       tags:
         - Users
       summary: Create a user
+      description: |
+        Creates a user and returns the newly created user.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       requestBody:
-        description: User to create
+        description: The user to create.
         required: true
         content:
           application/json:
@@ -51,11 +59,66 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: User created
+          description: |
+            Success.
+            The response contains the newly created user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        '401':
+          description: |
+            Unauthorized.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: code is the machine-readable error code.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - internal error
+                      - not found
+                      - conflict
+                      - invalid
+                      - unprocessable entity
+                      - empty value
+                      - unavailable
+                      - forbidden
+                      - too many requests
+                      - unauthorized
+                      - method not allowed
+                      - request too large
+                      - unsupported media type
+                  message:
+                    readOnly: true
+                    description: Human-readable message.
+                    type: string
+                  op:
+                    readOnly: true
+                    description: Describes the logical code operation when the error occurred. Useful for debugging.
+                    type: string
+                  err:
+                    readOnly: true
+                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
+                    type: string
+                required:
+                  - code
+        '422':
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -150,7 +213,9 @@ paths:
                 type: object
                 properties:
                   allowed:
-                    description: True means that the influxdb instance has NOT had initial setup; false means that the database has been setup.
+                    description: |
+                      If `true`, the InfluxDB instance hasn't had initial setup;
+                      `false` otherwise.
                     type: boolean
     post:
       operationId: PostSetup
@@ -206,41 +271,77 @@ paths:
       operationId: GetAuthorizations
       tags:
         - Authorizations
-      summary: List all authorizations
+      summary: List authorizations
+      description: |
+        Retrieves a list of authorizations.
+
+        To limit which authorizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all authorizations for the organization.
+
+        #### InfluxDB Cloud
+
+        - InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+          values in `GET /api/v2/authorizations` responses;
+          returns `token: redacted` for all authorizations.
+
+        #### Required permissions for InfluxDB Cloud
+
+        - `read-authorizations`
+
+        #### Related guides
+
+        - [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/).
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: query
           name: userID
           schema:
             type: string
-          description: Only show authorizations that belong to a user ID.
+          description: |
+            A user ID.
+            Only returns authorizations scoped to this user.
         - in: query
           name: user
           schema:
             type: string
-          description: Only show authorizations that belong to a user name.
+          description: |
+            A user name.
+            Only returns authorizations scoped to this user.
         - in: query
           name: orgID
           schema:
             type: string
-          description: Only show authorizations that belong to an organization ID.
+          description: |
+            An organization ID.
+            Only returns authorizations that belong to this organization.
         - in: query
           name: org
           schema:
             type: string
-          description: Only show authorizations that belong to a organization name.
+          description: |
+            An organization name.
+            Only returns authorizations that belong to this organization.
         - in: query
           name: token
           schema:
             type: string
-          description: Find a token by value.
+          description: |
+            A token value.
+            Only returns the authorization that has this token.
       responses:
         '200':
-          description: A list of authorizations
+          description: Success. The response body contains a list of authorizations.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorizations'
+        '400':
+          description: Invalid request
+          $ref: '#/paths/~1tasks/get/responses/default'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -249,10 +350,40 @@ paths:
       tags:
         - Authorizations
       summary: Create an authorization
+      description: |
+        Creates an authorization.
+
+        Use this endpoint to create an authorization, which generates an API token
+        with permissions to `read` or `write` to a specific resource or `type` of resource.
+        The response contains the new authorization with the generated API token.
+
+        Keep the following in mind when creating and updating authorizations:
+
+        - To apply a permission to a specific resource, specify the resource `id` field.
+        - To apply a permission to all resources with the type, omit the resource `id`.
+        - To scope an authorization to a specific user, provide the `userID` property.
+
+        #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB Cloud enforces access restrictions on API tokens.
+
+        - InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.
+        - You can’t change access (read/write) permissions for an API token after it’s created.
+        - Tokens stop working when the user who created the token is deleted.
+
+        We recommend the following for managing your tokens:
+
+        - Create a generic user to create and manage tokens for writing data.
+        - Store your tokens in a secure password vault for future access.
+
+        #### Related guides
+
+        - [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       requestBody:
-        description: Authorization to create
+        description: The authorization to create.
         required: true
         content:
           application/json:
@@ -268,9 +399,47 @@ paths:
         '400':
           description: Invalid request
           $ref: '#/paths/~1tasks/get/responses/default'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1tasks/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
+      x-codeSample:
+        - lang: Shell
+          label: 'cURL: Create auth to read all buckets'
+          source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "description": "iot_users read buckets",
+                "permissions": [
+                  {"action": "read", "resource": {"type": "buckets"}}
+                ]
+              }
+            EOF
+        - lang: Shell
+          label: 'cURL: Create auth scoped to a user'
+          source: |
+            curl --request POST \
+            "http://localhost:8086/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "userID": "INFLUX_USER_ID",
+                "description": "iot_user write to bucket",
+                "permissions": [
+                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+                ]
+              }
+            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -625,7 +794,7 @@ paths:
                     code: invalid
                     message: At least one field column is required
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
     summary: Bucket Schema
     get:
@@ -720,7 +889,7 @@ paths:
                     code: invalid
                     message: Unable to delete columns from schema
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   '/orgs/{orgID}/limits':
     get:
       tags:
@@ -730,7 +899,7 @@ paths:
       parameters:
         - in: path
           name: orgID
-          description: ID of the organization.
+          description: The ID of the organization.
           required: true
           schema:
             type: string
@@ -759,7 +928,7 @@ paths:
       parameters:
         - in: path
           name: orgID
-          description: ID of the organization.
+          description: The ID of the organization.
           required: true
           schema:
             type: string
@@ -979,6 +1148,8 @@ paths:
                                             - decimalPlaces
                                             - position
                                           properties:
+                                            adaptiveZoomHide:
+                                              type: boolean
                                             timeFormat:
                                               type: string
                                             type:
@@ -1225,6 +1396,8 @@ paths:
                                             - showNoteWhenEmpty
                                             - position
                                           properties:
+                                            adaptiveZoomHide:
+                                              type: boolean
                                             timeFormat:
                                               type: string
                                             type:
@@ -1611,6 +1784,8 @@ paths:
                                             - queries
                                             - colors
                                           properties:
+                                            adaptiveZoomHide:
+                                              type: boolean
                                             type:
                                               type: string
                                               enum:
@@ -1895,6 +2070,8 @@ paths:
                                             - xSuffix
                                             - ySuffix
                                           properties:
+                                            adaptiveZoomHide:
+                                              type: boolean
                                             timeFormat:
                                               type: string
                                             type:
@@ -2006,6 +2183,8 @@ paths:
                                             - ySuffix
                                             - binSize
                                           properties:
+                                            adaptiveZoomHide:
+                                              type: boolean
                                             timeFormat:
                                               type: string
                                             type:
@@ -2212,6 +2391,8 @@ paths:
                                             - note
                                             - showNoteWhenEmpty
                                           properties:
+                                            adaptiveZoomHide:
+                                              type: boolean
                                             timeFormat:
                                               type: string
                                             type:
@@ -2516,7 +2697,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
     get:
       operationId: GetDashboards
       tags:
@@ -2608,7 +2789,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
   /tasks:
     get:
       operationId: GetTasks
@@ -2742,11 +2923,22 @@ paths:
 
               * The `Authorization: Token` header is missing or malformed.
               * The API token value is missing from the header.
-              * The token does not have sufficient permissions to write to this organization and bucket.
+              * The token doesn't have sufficient permissions to write to this organization and bucket.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                properties:
+                  code:
+                    description: |
+                      The HTTP status code description. Default is `unauthorized`.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - unauthorized
+                  message:
+                    readOnly: true
+                    description: A human-readable message that may contain detail about the error.
+                    type: string
               examples:
                 tokenNotAuthorized:
                   summary: Token is not authorized to access a resource
@@ -2760,13 +2952,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
         default:
           description: Non 2XX error response from server.
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: all tasks, basic output'
@@ -2784,14 +2976,51 @@ paths:
         Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
 
         Use this endpoint to create a scheduled task that runs a Flux script.
-        In your task, provide one of the following:
-
-          - _`flux`_ property with an inline Flux script
-          - _`scriptID`_ property with an [invokable script](#tag/Invokable-Scripts) ID
 
         #### InfluxDB Cloud
 
-          - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.
+        - You can use either `flux` or `scriptID` to provide the task script.
+
+          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+              ```json
+              {
+                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+                from(bucket: \"telegraf\")
+                  |> range(start: -1h)
+                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                  |> aggregateWindow(every: 1h, fn: max)
+                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                "status": "active",
+                "description": "This task downsamples CPU data every hour"
+              }
+              ```
+
+          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
+            for the task to run.
+            To pass task options when using `scriptID`, pass the options as
+            properties in the request body--for example:
+
+              ```json
+              {
+                "name": "CPU Total 1 Hour New",
+                "description": "This task downsamples CPU data every hour",
+                "every": "1h",
+                "scriptID": "SCRIPT_ID",
+                "scriptParameters":
+                  {
+                    "rangeStart": "-1h",
+                    "bucket": "telegraf",
+                    "filterField": "cpu-total"
+                  }
+                }
+              ```
+
+        #### Limitations:
+
+          - You can't use `flux` and `scriptID` for the same task.
 
         #### Related guides
 
@@ -2827,39 +3056,7 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  code:
-                    description: code is the machine-readable error code.
-                    readOnly: true
-                    type: string
-                    enum:
-                      - internal error
-                      - not found
-                      - conflict
-                      - invalid
-                      - unprocessable entity
-                      - empty value
-                      - unavailable
-                      - forbidden
-                      - too many requests
-                      - unauthorized
-                      - method not allowed
-                      - request too large
-                      - unsupported media type
-                  message:
-                    readOnly: true
-                    description: Human-readable message.
-                    type: string
-                  op:
-                    readOnly: true
-                    description: Describes the logical code operation when the error occurred. Useful for debugging.
-                    type: string
-                  err:
-                    readOnly: true
-                    description: Stack of errors that occurred during processing of the request. Useful for debugging.
-                    type: string
-                required:
-                  - code
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 fluxAndScriptError:
                   summary: The request body can't contain both flux and scriptID
@@ -2880,7 +3077,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
       x-codeSamples:
         - lang: Shell
           label: 'cURL: create a Flux script task'
@@ -2927,8 +3124,7 @@ paths:
         - Tasks
       summary: Retrieve a task
       description: |
-        Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
-        by ID.
+        Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -2955,7 +3151,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
@@ -2977,7 +3173,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/paths/~1tasks/post/responses/400/content/application~1json/schema'
+                $ref: '#/paths/~1users/post/responses/401/content/application~1json/schema'
               examples:
                 org-not-found:
                   summary: Organization name not found
@@ -3006,12 +3202,57 @@ paths:
       description: |
         Updates a task and then cancels all scheduled runs of the task.
 
-        Use this endpoint to modify task properties (for example: `cron`, `name`, `flux`, `status`).
+        Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
         To update a task, pass an object that contains the updated key-value pairs.
         To activate or inactivate a task, set the `status` property.
         _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+
+        #### InfluxDB Cloud
+
+        - You can use either `flux` or `scriptID` to provide the task script.
+
+          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+              ```json
+              {
+                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+                from(bucket: \"telegraf\")
+                  |> range(start: -1h)
+                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                  |> aggregateWindow(every: 1h, fn: max)
+                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                "status": "active",
+                "description": "This task downsamples CPU data every hour"
+              }
+              ```
+
+          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
+            for the task to run.
+            To pass task options when using `scriptID`, pass the options as
+            properties in the request body--for example:
+
+              ```json
+              {
+                "name": "CPU Total 1 Hour New",
+                "description": "This task downsamples CPU data every hour",
+                "every": "1h",
+                "scriptID": "SCRIPT_ID",
+                "scriptParameters":
+                  {
+                    "rangeStart": "-1h",
+                    "bucket": "telegraf",
+                    "filterField": "cpu-total"
+                  }
+                }
+              ```
+
+        #### Limitations:
+
+        - You can't use `flux` and `scriptID` for the same task.
       requestBody:
         description: An object that contains updated task properties to apply.
         required: true
@@ -3026,7 +3267,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: The ID of the task to update.
       responses:
         '200':
           description: Success. The response body contains the updated task.
@@ -3066,7 +3307,7 @@ paths:
           description: The ID of the task to delete.
       responses:
         '204':
-          description: Success. Task and runs are deleted. Scheduled runs are canceled.
+          description: Success. The task and runs are deleted. Scheduled runs are canceled.
         '400':
           $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
         '401':
@@ -3163,7 +3404,7 @@ components:
               readOnly: true
             orgID:
               type: string
-              description: ID of org that authorization is scoped to.
+              description: The ID of the organization that the authorization is scoped to.
             permissions:
               type: array
               minItems: 1
@@ -3180,15 +3421,15 @@ components:
             userID:
               readOnly: true
               type: string
-              description: ID of user that created and owns the token.
+              description: The ID of the user that created and owns the token.
             user:
               readOnly: true
               type: string
-              description: Name of user that created and owns the token.
+              description: The name of the user that created and owns the token.
             org:
               readOnly: true
               type: string
-              description: Name of the org token is scoped to.
+              description: The name of the organization that the token is scoped to.
             links:
               type: object
               readOnly: true
@@ -3425,7 +3666,15 @@ components:
               readOnly: true
             retentionRules:
               type: array
-              description: Rules to expire or retain data.  No rules means data never expires.
+              description: |
+                Retention rules to expire or retain data.
+                #### InfluxDB Cloud
+
+                - `retentionRules` is required.
+
+                #### InfluxDB OSS
+
+                - `retentionRules` isn't required.
               items:
                 type: object
                 properties:
@@ -3741,10 +3990,10 @@ components:
           readOnly: true
         orgID:
           type: string
-          description: ID of the organization that the measurement schema is associated with.
+          description: The ID of the organization.
         bucketID:
           type: string
-          description: ID of the bucket that the measurement schema is associated with.
+          description: The ID of the bucket that the measurement schema is associated with.
         name:
           type: string
           nullable: false
