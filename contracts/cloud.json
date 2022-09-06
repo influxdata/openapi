@@ -6689,6 +6689,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all members of an organization",
+        "description": "Retrieves a list of all users that belong to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of\nmembers from.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6700,29 +6701,76 @@
               "type": "string"
             },
             "required": true,
-            "description": "The organization ID."
+            "description": "The ID of the organization to retrieve users for.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of organization members",
+            "description": "Success.\nThe response body contains a list of all users within the organization.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceMembers"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "links": {
+                        "self": "/api/v2/orgs/055aa4783aa38398/members"
+                      },
+                      "users": [
+                        {
+                          "role": "member",
+                          "links": {
+                            "self": "/api/v2/users/791df274afd48a83"
+                          },
+                          "id": "791df274afd48a83",
+                          "name": "example_user_1",
+                          "status": "active"
+                        },
+                        {
+                          "role": "owner",
+                          "links": {
+                            "self": "/api/v2/users/09cfb87051cbe000"
+                          },
+                          "id": "09cfb87051cbe000",
+                          "name": "example_user_2",
+                          "status": "active"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
           "404": {
-            "description": "Organization not found",
+            "description": "Not found.\nInfluxDB can't find the organization.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "The requested organization wasn't found.\n",
+                    "value": {
+                      "code": "not found",
+                      "message": "404 page not found"
+                    }
+                  }
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -6742,6 +6790,7 @@
           "Organizations"
         ],
         "summary": "Add a member to an organization",
+        "description": "Add a user to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you want add a member to.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6753,11 +6802,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The organization ID."
+            "description": "The ID of the organization.\n"
           }
         ],
         "requestBody": {
-          "description": "User to add as member",
+          "description": "The user to add to the organization.\n",
           "required": true,
           "content": {
             "application/json": {
@@ -6769,14 +6818,48 @@
         },
         "responses": {
           "201": {
-            "description": "Added to organization created",
+            "description": "Success.\nThe response body contains the user information.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceMember"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "role": "member",
+                      "links": {
+                        "self": "/api/v2/users/09cfb87051cbe000"
+                      },
+                      "id": "09cfb87051cbe000",
+                      "name": "example_user_1",
+                      "status": "active"
+                    }
+                  }
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError",
+            "examples": {
+              "invalidRequest": {
+                "summary": "The user `id` is missing from the request body.",
+                "value": {
+                  "code": "invalid",
+                  "message": "user id missing or invalid"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -6788,7 +6871,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"http://localhost:8086/api/v2/orgs/INFLUX_ORG_ID/members \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"id\": \"09cfb87051cbe000\"\n    }'\n"
+          }
+        ]
       }
     },
     "/orgs/{orgID}/members/{userID}": {
@@ -6799,6 +6889,7 @@
           "Security and access endpoints"
         ],
         "summary": "Remove a member from an organization",
+        "description": "Removes a member from an organization.\n\nUse this endpoint to remove a user's member privileges from a bucket. This\nremoves the user's `read` and `write` permissions from the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you want to remove an\nowner from.\n\n#### Related guides\n\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6810,7 +6901,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the member to remove."
+            "description": "The ID of the user to remove."
           },
           {
             "in": "path",
@@ -6819,12 +6910,21 @@
               "type": "string"
             },
             "required": true,
-            "description": "The organization ID."
+            "description": "The ID of the organization to remove a user from."
           }
         ],
         "responses": {
           "204": {
-            "description": "Member removed"
+            "description": "Success.\nThe user is no longer a member of the organization.\n"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -6847,7 +6947,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all owners of an organization",
-        "description": "Retrieves a list of all owners of an organization.\n",
+        "description": "Retrieves a list of all owners of an organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners from.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6869,6 +6969,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResourceOwners"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "links": {
+                        "self": "/api/v2/orgs/055aa4783aa38398/owners"
+                      },
+                      "users": [
+                        {
+                          "role": "owner",
+                          "links": {
+                            "self": "/api/v2/users/09cfb87051cbe000"
+                          },
+                          "id": "09cfb87051cbe000",
+                          "name": "example_user_2",
+                          "status": "active"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -6923,6 +7043,19 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AddResourceMemberRequestBody"
+              },
+              "examples": {
+                "successResponse": {
+                  "value": {
+                    "role": "owner",
+                    "links": {
+                      "self": "/api/v2/users/09cfb87051cbe000"
+                    },
+                    "id": "09cfb87051cbe000",
+                    "name": "example_user_1",
+                    "status": "active"
+                  }
+                }
               }
             }
           }
@@ -6938,6 +7071,18 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
             "description": "Unexpected error",
             "content": {
@@ -6948,7 +7093,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"http://localhost:8086/api/v2/orgs/INFLUX_ORG_ID/owners \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"id\": \"09cfb87051cbe000\"\n    }'\n"
+          }
+        ]
       }
     },
     "/orgs/{orgID}/owners/{userID}": {
@@ -6959,6 +7111,7 @@
           "Security and access endpoints"
         ],
         "summary": "Remove an owner from an organization",
+        "description": "Removes an [owner]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner) from\nthe organization.\n\nOrganization owners have permission to delete organizations and remove user and member\npermissions from the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n- `write-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you want remove an owner\nfrom.\n\n#### Related endpoints\n- [Authorizations](#tag/Authorizations)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6970,7 +7123,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the owner to remove."
+            "description": "The ID of the user to remove."
           },
           {
             "in": "path",
@@ -6979,12 +7132,21 @@
               "type": "string"
             },
             "required": true,
-            "description": "The organization ID."
+            "description": "The ID of the organization to remove an owner from.\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "Owner removed"
+            "description": "Success.\nThe user is no longer an owner of the organization.\n"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
