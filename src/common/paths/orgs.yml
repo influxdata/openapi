@@ -50,6 +50,8 @@ get:
         application/json:
           schema:
             $ref: "../schemas/Organizations.yml"
+          examples:
+            $ref: "../responses/example-responses/GetOrgsSuccessResponse.yml"
     "400":
       $ref: "../responses/BadRequestError.yml"
     "401":
@@ -66,11 +68,16 @@ post:
     - Organizations
   summary: Create an organization
   description: |
-    Creates an organization and returns the newly created organization.
+    Creates an [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+    and returns the newly created organization.
 
     #### InfluxDB Cloud
 
     - Doesn't allow you to use this endpoint to create organizations.
+
+    #### Related guides
+
+    - [Manage organizations]({{% INFLUXDB_DOCS_URL %}}/organizations)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
@@ -82,15 +89,24 @@ post:
           $ref: "../schemas/PostOrganizationRequest.yml"
   responses:
     "201":
-      description: |
-        Success. The organization is created.
-        The response body contains the new organization.
+      description:
+        Created.
+        The response body contains the organization information.
       content:
         application/json:
           schema:
             $ref: "../schemas/Organization.yml"
+          examples:
+            $ref: "../responses/example-responses/PostOrgsSuccessResponse.yml"
     "400":
       $ref: "../responses/BadRequestError.yml"
+      examples:
+        invalidRequest:
+          summary: The `name` field is missing from the request body.
+          value: {
+            "code": "invalid",
+            "message": "org name is empty"
+          }
     "401":
       $ref: "../responses/AuthorizationError.yml"
     "404":
@@ -98,4 +114,20 @@ post:
     "500":
       $ref: "../responses/InternalServerError.yml"
     default:
-      $ref: "../responses/ServerError.yml"
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/orgs \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "INFLUX_ORG",
+              "description: "Example InfluxDB organization"
+            }'

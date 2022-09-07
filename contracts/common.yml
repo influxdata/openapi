@@ -4796,6 +4796,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organizations'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/orgs
+                    orgs:
+                      - links:
+                          buckets: /api/v2/buckets?org=INFLUX_ORG
+                          dashboards: /api/v2/dashboards?org=INFLUX_ORG
+                          labels: /api/v2/orgs/INFLUX_ORG_ID/labels
+                          logs: /api/v2/orgs/INFLUX_ORG_ID/logs
+                          members: /api/v2/orgs/INFLUX_ORG_ID/members
+                          owners: /api/v2/orgs/INFLUX_ORG_ID/owners
+                          secrets: /api/v2/orgs/INFLUX_ORG_ID/secrets
+                          self: /api/v2/orgs/INFLUX_ORG_ID
+                          tasks: /api/v2/tasks?org=InfluxData
+                        id: INFLUX_ORG_ID
+                        name: INFLUX_ORG
+                        description: Example InfluxDB organization
+                        createdAt: '2022-07-17T23:00:30.778487Z'
+                        updatedAt: '2022-07-17T23:00:30.778487Z'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -4812,11 +4833,16 @@ paths:
         - Organizations
       summary: Create an organization
       description: |
-        Creates an organization and returns the newly created organization.
+        Creates an [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization)
+        and returns the newly created organization.
 
         #### InfluxDB Cloud
 
         - Doesn't allow you to use this endpoint to create organizations.
+
+        #### Related guides
+
+        - [Manage organizations](https://docs.influxdata.com/influxdb/v2.3/organizations)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
@@ -4828,9 +4854,164 @@ paths:
               $ref: '#/components/schemas/PostOrganizationRequest'
       responses:
         '201':
+          description: Created. The response body contains the organization information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      buckets: /api/v2/buckets?org=INFLUX_ORG
+                      dashboards: /api/v2/dashboards?org=INFLUX_ORG
+                      labels: /api/v2/orgs/INFLUX_ORG_ID/labels
+                      logs: /api/v2/orgs/INFLUX_ORG_ID/logs
+                      members: /api/v2/orgs/INFLUX_ORG_ID/members
+                      owners: /api/v2/orgs/INFLUX_ORG_ID/owners
+                      secrets: /api/v2/orgs/INFLUX_ORG_ID/secrets
+                      self: /api/v2/orgs/INFLUX_ORG_ID
+                      tasks: /api/v2/tasks?org=INFLUX_ORG
+                    id: INFLUX_ORG_ID
+                    name: INFLUX_ORG
+                    description: ''
+                    createdAt: '2022-08-24T23:05:52.881317Z'
+                    updatedAt: '2022-08-24T23:05:52.881318Z'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The `name` field is missing from the request body.
+              value:
+                code: invalid
+                message: org name is empty
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "http://localhost:8086/api/v2/orgs \
+              --header "Authorization: Token INFLUX_API_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "name": "INFLUX_ORG",
+                  "description: "Example InfluxDB organization"
+                }'
+  '/orgs/{orgID}':
+    get:
+      operationId: GetOrgsID
+      tags:
+        - Organizations
+        - Security and access endpoints
+      summary: Retrieve an organization
+      description: |
+        Retrieves an organization.
+
+        Use this endpoint to retrieve information for a specific organization.
+
+        #### Related guides
+
+        - [View organization](https://docs.influxdata.com/influxdb/v2.3/organizations/view-orgs/)
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgID
+          schema:
+            type: string
+          required: true
           description: |
-            Success. The organization is created.
-            The response body contains the new organization.
+            The ID of the organization to retrieve.
+      responses:
+        '200':
+          description: |
+            Success.
+            The response body contains the organization information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          description: |
+            Not found.
+            Organization not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested organization wasn't found.
+                  value:
+                    code: not found
+                    message: organization not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      operationId: PatchOrgsID
+      tags:
+        - Organizations
+      summary: Update an organization
+      description: |
+        Updates an organization.
+
+        Use this endpoint to update properties
+        (`name`, `description`) of an organization.
+
+        Updating an organization’s name affects all resources that reference the
+        organization by name, including the following:
+
+        - Queries
+        - Dashboards
+        - Tasks
+        - Telegraf configurations
+        - Templates
+
+        If you change an organization name, be sure to update the organization name
+        in these resources as well.
+
+        #### Related Guides
+
+        - [Update an organization](https://docs.influxdata.com/influxdb/v2.3/organizations/update-org/)
+      requestBody:
+        description: The organization update to apply.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchOrganizationRequest'
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgID
+          schema:
+            type: string
+          required: true
+          description: |
+            The ID of the organization to update.
+      responses:
+        '200':
+          description: Success. The response body contains the updated organization.
           content:
             application/json:
               schema:
@@ -4844,63 +5025,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
         default:
-          $ref: '#/components/responses/GeneralServerError'
-  '/orgs/{orgID}':
-    get:
-      operationId: GetOrgsID
-      tags:
-        - Organizations
-        - Security and access endpoints
-      summary: Retrieve an organization
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: path
-          name: orgID
-          schema:
-            type: string
-          required: true
-          description: The ID of the organization to get.
-      responses:
-        '200':
-          description: Organization details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organization'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    patch:
-      operationId: PatchOrgsID
-      tags:
-        - Organizations
-      summary: Update an organization
-      requestBody:
-        description: Organization update to apply
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchOrganizationRequest'
-      parameters:
-        - $ref: '#/components/parameters/TraceSpan'
-        - in: path
-          name: orgID
-          schema:
-            type: string
-          required: true
-          description: The ID of the organization to get.
-      responses:
-        '200':
-          description: Organization updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Organization'
-        default:
           description: Unexpected error
           content:
             application/json:
@@ -4911,6 +5035,32 @@ paths:
       tags:
         - Organizations
       summary: Delete an organization
+      description: |
+        Deletes an organization.
+
+        Deleting an organization from InfluxDB Cloud can't be undone.
+        Once deleted, all data associated with the organization is removed.
+
+        #### InfluxDB Cloud
+
+        - Does the following when you send a delete request:
+
+          1. Validates the request and queues the delete.
+          2. Returns an HTTP `204` status code if queued; _error_ otherwise.
+          3. Handles the delete asynchronously.
+
+        #### InfluxDB OSS
+
+        - Validates the request, handles the delete synchronously,
+        and then responds with success or failure.
+
+        #### Limitations
+
+        - Only one organization can be deleted per request.
+
+        #### Related guides
+
+        - [Delete organization](https://docs.influxdata.com/influxdb/v2.3/organizations/delete-orgs/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -4918,16 +5068,39 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the organization to delete.
+          description: |
+            The ID of the organization to delete.
       responses:
         '204':
-          description: Delete has been accepted
+          description: |
+            Success.
+
+            #### InfluxDB Cloud
+              - The organization is queued for deletion.
+
+            #### InfluxDB OSS
+              - The organization is deleted.
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
         '404':
-          description: Organization not found
+          description: |
+            Not found.
+            InfluxDB can't find the organization.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested organization was not found.
+                  value:
+                    code: not found
+                    message: org not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -9057,19 +9230,27 @@ components:
       properties:
         name:
           type: string
+          description: |
+            The name of the organization.
         description:
           type: string
+          description: |
+            The description of the organization.
       required:
         - name
     PatchOrganizationRequest:
       type: object
+      description: |
+        An object that contains updated organization properties to apply.
       properties:
         name:
           type: string
-          description: New name to set on the organization
+          description: |
+            The name of the organization.
         description:
           type: string
-          description: New description to set on the organization
+          description: |
+            The description of the organization.
     TemplateApply:
       type: object
       properties:

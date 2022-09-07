@@ -4,6 +4,14 @@ get:
     - Organizations
     - Security and access endpoints
   summary: Retrieve an organization
+  description: |
+    Retrieves an organization.
+
+    Use this endpoint to retrieve information for a specific organization.
+
+    #### Related guides
+
+    - [View organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -11,14 +19,37 @@ get:
       schema:
         type: string
       required: true
-      description: The ID of the organization to get.
+      description: |
+        The ID of the organization to retrieve.
   responses:
     "200":
-      description: Organization details
+      description: |
+        Success.
+        The response body contains the organization information.
       content:
         application/json:
           schema:
             $ref: "../schemas/Organization.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      description: |
+        Not found.
+        Organization not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested organization wasn't found.
+              value: {
+                "code": "not found",
+                "message": "organization not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -30,8 +61,29 @@ patch:
   tags:
     - Organizations
   summary: Update an organization
+  description: |
+    Updates an organization.
+
+    Use this endpoint to update properties
+    (`name`, `description`) of an organization.
+
+    Updating an organization’s name affects all resources that reference the
+    organization by name, including the following:
+
+    - Queries
+    - Dashboards
+    - Tasks
+    - Telegraf configurations
+    - Templates
+
+    If you change an organization name, be sure to update the organization name
+    in these resources as well.
+
+    #### Related Guides
+
+    - [Update an organization]({{% INFLUXDB_DOCS_URL %}}/organizations/update-org/)
   requestBody:
-    description: Organization update to apply
+    description: The organization update to apply.
     required: true
     content:
       application/json:
@@ -44,14 +96,25 @@ patch:
       schema:
         type: string
       required: true
-      description: The ID of the organization to get.
+      description: |
+        The ID of the organization to update.
   responses:
     "200":
-      description: Organization updated
+      description:
+        Success.
+        The response body contains the updated organization.
       content:
         application/json:
           schema:
             $ref: "../schemas/Organization.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -63,6 +126,32 @@ delete:
   tags:
     - Organizations
   summary: Delete an organization
+  description: |
+    Deletes an organization.
+
+    Deleting an organization from InfluxDB Cloud can't be undone.
+    Once deleted, all data associated with the organization is removed.
+
+    #### InfluxDB Cloud
+
+    - Does the following when you send a delete request:
+
+      1. Validates the request and queues the delete.
+      2. Returns an HTTP `204` status code if queued; _error_ otherwise.
+      3. Handles the delete asynchronously.
+
+    #### InfluxDB OSS
+
+    - Validates the request, handles the delete synchronously,
+    and then responds with success or failure.
+
+    #### Limitations
+
+    - Only one organization can be deleted per request.
+
+    #### Related guides
+
+    - [Delete organization]({{% INFLUXDB_DOCS_URL %}}/organizations/delete-orgs/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -70,16 +159,40 @@ delete:
       schema:
         type: string
       required: true
-      description: The ID of the organization to delete.
+      description: |
+        The ID of the organization to delete.
   responses:
     "204":
-      description: Delete has been accepted
+      description: |
+        Success.
+
+        #### InfluxDB Cloud
+          - The organization is queued for deletion.
+
+        #### InfluxDB OSS
+          - The organization is deleted.
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
     "404":
-      description: Organization not found
+      description: |
+        Not found.
+        InfluxDB can't find the organization.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested organization was not found.
+              value: {
+                "code": "not found",
+                "message": "org not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
