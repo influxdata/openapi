@@ -4998,6 +4998,36 @@ paths:
         - Organizations
         - Security and access endpoints
       summary: List all members of an organization
+      description: |
+        Retrieves a list of all users that belong to an organization.
+
+        InfluxDB [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) have
+        permission to access InfluxDB.
+
+        [Members](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#member) are users
+        within the organization.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Member permissions are separate from API token permissions.
+        - Member permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `read-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of
+        members from.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/v2.3/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/v2.3/organizations/members/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5005,20 +5035,56 @@ paths:
           schema:
             type: string
           required: true
-          description: The organization ID.
+          description: |
+            The ID of the organization to retrieve users for.
       responses:
         '200':
-          description: A list of organization members
+          description: |
+            Success.
+            The response body contains a list of all users within the organization.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceMembers'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/orgs/055aa4783aa38398/members
+                    users:
+                      - role: member
+                        links:
+                          self: /api/v2/users/791df274afd48a83
+                        id: 791df274afd48a83
+                        name: example_user_1
+                        status: active
+                      - role: owner
+                        links:
+                          self: /api/v2/users/09cfb87051cbe000
+                        id: 09cfb87051cbe000
+                        name: example_user_2
+                        status: active
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
         '404':
-          description: Organization not found
+          description: |
+            Not found.
+            InfluxDB can't find the organization.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: |
+                    The requested organization wasn't found.
+                  value:
+                    code: not found
+                    message: 404 page not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -5030,6 +5096,34 @@ paths:
       tags:
         - Organizations
       summary: Add a member to an organization
+      description: |
+        Add a user to an organization.
+
+        InfluxDB [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) have
+        permission to access InfluxDB.
+
+        [Members](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#member) are users
+        within the organization.
+
+        #### InfluxDB Cloud
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Member permissions are separate from API token permissions.
+        - Member permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `write-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you want add a member to.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/v2.3/users/)
+        - [Manage members](https://docs.influxdata.com/influxdb/v2.3/organizations/members/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5037,9 +5131,11 @@ paths:
           schema:
             type: string
           required: true
-          description: The organization ID.
+          description: |
+            The ID of the organization.
       requestBody:
-        description: User to add as member
+        description: |
+          The user to add to the organization.
         required: true
         content:
           application/json:
@@ -5047,17 +5143,53 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Added to organization created
+          description: |
+            Success.
+            The response body contains the user information.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceMember'
+              examples:
+                successResponse:
+                  value:
+                    role: member
+                    links:
+                      self: /api/v2/users/09cfb87051cbe000
+                    id: 09cfb87051cbe000
+                    name: example_user_1
+                    status: active
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The user `id` is missing from the request body.
+              value:
+                code: invalid
+                message: user id missing or invalid
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "http://localhost:8086/api/v2/orgs/INFLUX_ORG_ID/members \
+              --header "Authorization: Token INFLUX_API_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "id": "09cfb87051cbe000"
+                }'
   '/orgs/{orgID}/members/{userID}':
     delete:
       operationId: DeleteOrgsIDMembersID
@@ -5065,6 +5197,32 @@ paths:
         - Organizations
         - Security and access endpoints
       summary: Remove a member from an organization
+      description: |
+        Removes a member from an organization.
+
+        Use this endpoint to remove a user's member privileges from a bucket. This
+        removes the user's `read` and `write` permissions from the organization.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Member permissions are separate from API token permissions.
+        - Member permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `write-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you want to remove an
+        owner from.
+
+        #### Related guides
+
+        - [Manage members](https://docs.influxdata.com/influxdb/v2.3/organizations/members/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5072,16 +5230,24 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the member to remove.
+          description: The ID of the user to remove.
         - in: path
           name: orgID
           schema:
             type: string
           required: true
-          description: The organization ID.
+          description: The ID of the organization to remove a user from.
       responses:
         '204':
-          description: Member removed
+          description: |
+            Success.
+            The user is no longer a member of the organization.
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -5097,6 +5263,18 @@ paths:
       summary: List all owners of an organization
       description: |
         Retrieves a list of all owners of an organization.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Required permissions
+
+        - `read-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a
+        list of owners from.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5113,6 +5291,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwners'
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/orgs/055aa4783aa38398/owners
+                    users:
+                      - role: owner
+                        links:
+                          self: /api/v2/users/09cfb87051cbe000
+                        id: 09cfb87051cbe000
+                        name: example_user_2
+                        status: active
         '404':
           description: Organization not found
           content:
@@ -5164,6 +5354,15 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
+            examples:
+              successResponse:
+                value:
+                  role: owner
+                  links:
+                    self: /api/v2/users/09cfb87051cbe000
+                  id: 09cfb87051cbe000
+                  name: example_user_1
+                  status: active
       responses:
         '201':
           description: |
@@ -5173,12 +5372,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "http://localhost:8086/api/v2/orgs/INFLUX_ORG_ID/owners \
+              --header "Authorization: Token INFLUX_API_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "id": "09cfb87051cbe000"
+                }'
   '/orgs/{orgID}/owners/{userID}':
     delete:
       operationId: DeleteOrgsIDOwnersID
@@ -5186,6 +5404,31 @@ paths:
         - Organizations
         - Security and access endpoints
       summary: Remove an owner from an organization
+      description: |
+        Removes an [owner](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#owner) from
+        the organization.
+
+        Organization owners have permission to delete organizations and remove user and member
+        permissions from the organization.
+
+        #### InfluxDB Cloud
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Owner permissions are separate from API token permissions.
+        - Owner permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `write-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you want remove an owner
+        from.
+
+        #### Related endpoints
+        - [Authorizations](#tag/Authorizations)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -5193,16 +5436,25 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the owner to remove.
+          description: The ID of the user to remove.
         - in: path
           name: orgID
           schema:
             type: string
           required: true
-          description: The organization ID.
+          description: |
+            The ID of the organization to remove an owner from.
       responses:
         '204':
-          description: Owner removed
+          description: |
+            Success.
+            The user is no longer an owner of the organization.
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '404':
+          $ref: '#/components/responses/ResourceNotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
