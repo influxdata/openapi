@@ -1,13 +1,16 @@
 get:
   operationId: GetUsers
   tags:
+    - Security and access endpoints
     - Users
-  summary: List all users
+  summary: List users
+  description: |
+    Retrieves a list of users.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   responses:
     "200":
-      description: A list of users
+      description: Success. The response contains a list of `users`.
       content:
         application/json:
           schema:
@@ -20,10 +23,12 @@ post:
   tags:
     - Users
   summary: Create a user
+  description: |
+    Creates a user and returns the newly created user.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: User to create
+    description: The user to create.
     required: true
     content:
       application/json:
@@ -31,11 +36,34 @@ post:
           $ref: "../schemas/User.yml"
   responses:
     "201":
-      description: User created
+      description: |
+        Success.
+        The response contains the newly created user.
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/UserResponse.yml"
+    "401":
+      description: |
+        Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'

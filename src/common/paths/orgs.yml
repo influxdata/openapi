@@ -3,13 +3,20 @@ get:
   tags:
     - Organizations
     - Security and access endpoints
-  summary: List all organizations
+  summary: List organizations
   description: |
-    Retrieves a list of [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+    Retrieves a list of [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization/).
+
+    To limit which organizations are returned, pass query parameters in your request.
+    If no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.
+
+    #### InfluxDB Cloud
+
+    - Only returns the organization that owns the token passed in the request.
 
     #### Related guides
 
-    - [Manage organizations]({{% INFLUXDB_DOCS_URL %}}/organizations)
+    - [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/).
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - $ref: "../parameters/Offset.yml"
@@ -20,25 +27,25 @@ get:
       schema:
         type: string
       description: |
-        The name of the organization to retrieve.
+        An organization name.
+        Only returns organizations with this name.
     - in: query
       name: orgID
       schema:
         type: string
       description: |
-        The ID of the organization to retrieve.
+        An organization ID.
+        Only returns the organization with this ID.
     - in: query
       name: userID
       schema:
         type: string
       description: |
         A user ID.
-        Only returns organizations associated with this user.
+        Only returns organizations where this user is a member or owner.
   responses:
     "200":
-      description: |
-        Success.
-        The response body contains a list of organizations.
+      description: Success. The response body contains a list of organizations.
       content:
         application/json:
           schema:
@@ -49,26 +56,24 @@ get:
       $ref: "../responses/BadRequestError.yml"
     "401":
       $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
     "500":
       $ref: "../responses/InternalServerError.yml"
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+      $ref: "../responses/ServerError.yml"
 post:
   operationId: PostOrgs
   tags:
     - Organizations
   summary: Create an organization
   description: |
-    Creates an [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+    Creates an [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+    and returns the newly created organization.
 
     #### InfluxDB Cloud
 
-    - Doesn't allow creating additional organizations with the API;. only the
-    default organization is available.
+    - Doesn't allow you to use this endpoint to create organizations.
 
     #### Related guides
 
@@ -76,7 +81,7 @@ post:
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
-    description: Organization to create
+    description: The organization to create.
     required: true
     content:
       application/json:

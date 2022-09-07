@@ -4,6 +4,33 @@ delete:
     - Organizations
     - Security and access endpoints
   summary: Remove a member from an organization
+  description: |
+    Removes a member from an organization.
+
+    Use this endpoint to remove a user's member privileges from a bucket. This
+    removes the user's `read` and `write` permissions from the organization.
+
+    #### InfluxDB Cloud
+
+    - Doesn't use `owner` and `member` roles.
+      Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    #### Limitations
+
+    - Member permissions are separate from API token permissions.
+    - Member permissions are used in the context of the InfluxDB UI.
+
+    #### Required permissions
+
+    - `write-orgs INFLUX_ORG_ID`
+
+    `INFLUX_ORG_ID` is the ID of the organization that you want to remove an
+    owner from.
+
+    #### Related guides
+
+    - [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)
+
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -11,16 +38,24 @@ delete:
       schema:
         type: string
       required: true
-      description: The ID of the member to remove.
+      description: The ID of the user to remove.
     - in: path
       name: orgID
       schema:
         type: string
       required: true
-      description: The organization ID.
+      description: The ID of the organization to remove a user from.
   responses:
     "204":
-      description: Member removed
+      description: |
+        Success.
+        The user is no longer a member of the organization.
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
