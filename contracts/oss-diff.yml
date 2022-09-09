@@ -1893,34 +1893,43 @@ paths:
       operationId: GetScrapers
       tags:
         - Scraper Targets
-      summary: List all scraper targets
+      summary: List scraper targets
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
           name: name
-          description: Specifies the name of the scraper target.
+          description: |
+            A scraper target name.
+            Only returns scraper targets with the specified name.
           schema:
             type: string
         - in: query
           name: id
-          description: 'List of scraper target IDs to return. If both `id` and `owner` are specified, only `id` is used.'
+          description: |
+            A list of scraper target IDs.
+            Only returns the specified scraper targets.
+            If you pass both `id` and `owner`, only `id` is used.
           schema:
             type: array
             items:
               type: string
         - in: query
           name: orgID
-          description: Specifies the organization ID of the scraper target.
+          description: |
+            An organization ID.
+            Only returns scraper targets that belong to the specified organization.
           schema:
             type: string
         - in: query
           name: org
-          description: Specifies the organization name of the scraper target.
+          description: |
+            An organization name.
+            Only returns scraper targets that belong to the specified organization.
           schema:
             type: string
       responses:
         '200':
-          description: All scraper targets
+          description: Success. The response body contains the list of scraper targets.
           content:
             application/json:
               schema:
@@ -1941,7 +1950,10 @@ paths:
               $ref: '#/components/schemas/ScraperTargetRequest'
       responses:
         '201':
-          description: Scraper target created
+          description: |
+            Success.
+            The scraper target is created.
+            The response body contains the scraper target.
           content:
             application/json:
               schema:
@@ -4809,7 +4821,10 @@ paths:
               - UpdatedAt
         - in: query
           name: id
-          description: 'A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.'
+          description: |
+            A list of dashboard IDs.
+            Only returns the specified dashboards.
+            If you pass both `id` and `owner`, only `id` is used.
           schema:
             type: array
             items:
@@ -5054,7 +5069,7 @@ paths:
         - Tasks
       summary: Create a task
       description: |
-        Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
+        Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the task.
 
         #### Related guides
 
@@ -5156,11 +5171,8 @@ paths:
         '400':
           description: |
             Bad request.
+            InfluxDB is unable to parse the request.
             The response body contains detail about the error.
-
-            #### InfluxDB OSS
-
-            - Returns this error if an incorrect value is passed for `org` or `orgID`.
           content:
             application/json:
               schema:
@@ -5168,6 +5180,8 @@ paths:
               examples:
                 orgProvidedNotFound:
                   summary: The org or orgID passed doesn't own the token passed in the header
+                  description: |
+                    For some endpoints, **InfluxDB OSS** may return this error if an incorrect value is passed for `org` or `orgID`.
                   value:
                     code: invalid
                     message: 'failed to decode request body: organization not found'
@@ -5438,7 +5452,7 @@ components:
             - instance
           description: |
             The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
+            In a `permission`, applies the permission to all resources of the specified type.
         id:
           type: string
           description: |
@@ -5453,11 +5467,12 @@ components:
           type: string
           description: |
             The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
+            In a `permission`, applies the permission to all resources that have the specified
+            `type` and that belong to this organization.
         org:
           type: string
           description: |
-            Optional: The name of the organization with `orgID`.
+            Optional: The name of the organization specified by `orgID`.
     User:
       properties:
         id:
@@ -5509,11 +5524,16 @@ components:
           type: integer
           deprecated: true
           description: |
-            Retention period *in nanoseconds* for the new bucket. This key's name has been misleading since OSS 2.0 GA, please transition to use `retentionPeriodSeconds`
+            **Deprecated**: Use `retentionPeriodSeconds` instead.
+
+            A retention period _in nanoseconds_ for the new bucket.
         token:
           type: string
           description: |
-            Authentication token to set on the initial user. If not specified, the server will generate a token.
+            An API token to scope to the initial user.
+
+            If you don't provide a token, InfluxDB generates a token
+            and scopes it to the user.
       required:
         - username
         - org
@@ -5673,14 +5693,15 @@ components:
             retentionRules:
               type: array
               description: |
-                Retention rules to expire or retain data.
+                A list of retention rules that expire or retain data.
+
                 #### InfluxDB Cloud
 
                 - `retentionRules` is required.
 
                 #### InfluxDB OSS
 
-                - `retentionRules` isn't required.
+                - `retentionRules` is optional.
               items:
                 type: object
                 properties:
@@ -5708,7 +5729,7 @@ components:
 
                       #### InfluxDB Cloud
 
-                      - Doesn't use `shardGroupDurationsSeconds`.
+                      - Doesn't use `shardGroupDurationSeconds`.
 
                       #### InfluxDB OSS
 
