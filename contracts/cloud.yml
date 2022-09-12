@@ -66,20 +66,54 @@ tags:
         - [Manage buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/)
   - name: Invokable Scripts
     description: |
-      Manage and execute scripts as API endpoints in InfluxDB.
+      Store, manage, and execute scripts in InfluxDB.
 
-      An API Invokable Script assigns your custom Flux script to a new
-      InfluxDB API endpoint for your organization.
-      Invokable scripts let you execute your script as an HTTP request to the endpoint.
+      An invokable script stores your custom Flux script and lets you execute
+      the script from tasks and API requests.
+      To use invocation parameters, include `params` references in your script--for example: `params.myparameter`.
+      When you invoke the script, you pass `params` with key-value pairs for your parameters.
+      Then, InfluxDB executes your script and returns the result.
 
-      Invokable scripts accept parameters.
-      Add parameter references in your script as `params.myparameter`.
-      When you `invoke` your script, you send parameters as key-value pairs in the `params` object.
-      Then, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.
+      To create a script, you can use the [`POST /api/v2/scripts`](#operation/PostScripts) endpoint.
+      After you create a script, extract the script `id` from the response.
+      With the script ID, you can [invoke the script as an API endpoint](#use-an-api-endpoint-to-invoke-a-script)
+      or [add the script to a task](#add-a-script-to-a-task).
+
+      #### Invoke a script as an API endpoint
+
+      Once you create a script, InfluxDB generates an [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke) for your
+      organization.
+      To invoke the script, send an HTTP request to the endpoint.
+
+      `POST https://INFLUX_CLOUD_URL/api/v2/scripts/SCRIPT_ID/invoke`
+
+      In your request, replace the following:
+        - **`INFLUX_CLOUD_URL`**: the domain for your InfluxDB Cloud account.
+        - **`SCRIPT_ID`**: the ID of your invokable script.
+
+      To provide parameter values to the script, pass the following in the request body:
+
+        - A `params` object with key-value pairs for parameters referenced in the script
+
+      For more information and examples, see how to [invoke custom scripts as
+      API endpoints](/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
+
+      #### Add a script to a task
+
+      Once you create a script, you can create or update a task to execute the script.
+
+      To create or update a task, you can use the [`/api/v2/tasks` endpoints](#tag/Tasks).
+      Pass the following in the request body:
+        - `scriptID`: the ID of the script to execute
+        - `scriptParameters`: an object with key-value pairs for parameters referenced in the script
+
+      For more information and examples, see how to
+      [create a task that references a script](/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
 
       ### Related guides
 
       - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+      - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
   - name: Delete
     description: |
       Delete data from an InfluxDB bucket.

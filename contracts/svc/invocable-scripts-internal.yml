@@ -12,7 +12,6 @@ paths:
     patch:
       operationId: PatchScriptsBulkUpdateLabel
       tags:
-        - Data I/O endpoints
         - Invokable Scripts
       summary: Update a label name in all scripts in the organization.
       description: |
@@ -40,8 +39,22 @@ paths:
             Success.
             The label name is updated for all scripts owned by the organization.
         '400':
-          description: Bad request.
-          $ref: '#/components/responses/ServerError'
+          description: |
+            Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                orgProvidedNotFound:
+                  summary: The org or orgID passed doesn't own the token passed in the header
+                  description: |
+                    For some endpoints, **InfluxDB OSS** may return this error if an incorrect value is passed for `org` or `orgID`.
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500':

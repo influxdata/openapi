@@ -4243,14 +4243,14 @@ components:
         orgID:
           type: string
         script:
-          description: script to be executed
+          description: The script to execute.
           type: string
         updatedAt:
           format: date-time
           readOnly: true
           type: string
         url:
-          description: invocation endpoint address
+          description: The invocation endpoint address.
           type: string
       required:
       - name
@@ -13078,7 +13078,7 @@ paths:
       operationId: GetScripts
       parameters:
       - description: |
-          Limits the number of scripts returned. Default is `100`.
+          The maximum number of scripts to return. Default is `100`.
         in: query
         name: limit
         required: false
@@ -13106,7 +13106,8 @@ paths:
       - description: |
           A list of label names.
           Only returns scripts that have all these labels.
-          To retrieve a script, each name you pass in `labelNames` must exactly match the label for a script.
+          To retrieve a script, each name you pass in `labelNames` must exactly
+          match the label for a script.
         in: query
         name: labelNames
         required: false
@@ -13168,6 +13169,8 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the error.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "500":
@@ -13193,7 +13196,7 @@ paths:
     post:
       description: |
         Creates an [invokable script](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
-        and returns the created script.
+        and returns the script.
 
         #### Related guides
 
@@ -13229,31 +13232,7 @@ paths:
             Success.
             The response body contains the script and its metadata.
         "400":
-          content:
-            application/json:
-              examples:
-                invalidCharacterValue:
-                  description: |
-                    If the request body contains an invalid character, returns
-                    `invalid` with detail about the problem.
-                  summary: Invalid character
-                  value:
-                    code: invalid
-                    details: []
-                    message: invalid character ',' looking for beginning of value
-                invalidJSONStringValue:
-                  description: |
-                    If the request body contains invalid JSON, returns `invalid`
-                    with detail about the problem.
-                  summary: Invalid JSON
-                  value:
-                    code: invalid
-                    message: 'invalid json: invalid character ''\'''' looking for
-                      beginning of value'
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: |
-            Bad request.
+          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "422":
@@ -13298,7 +13277,8 @@ paths:
               }'
   /api/v2/scripts/{scriptID}:
     delete:
-      description: Deletes a script and all associated records.
+      description: Deletes a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+        and all associated records.
       operationId: DeleteScriptsID
       parameters:
       - description: The ID of the script to delete.
@@ -13310,6 +13290,10 @@ paths:
       responses:
         "204":
           description: The script is deleted.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
@@ -13317,10 +13301,13 @@ paths:
       tags:
       - Invokable Scripts
     get:
-      description: Uses script ID to retrieve details of an invokable script.
+      description: |
+        Retrieves a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
       operationId: GetScriptsID
       parameters:
-      - description: The script ID.
+      - description: |
+          The script ID.
+          Returns the specified script.
         in: path
         name: scriptID
         required: true
@@ -13332,17 +13319,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Script'
-          description: The requested script object.
+          description: Success. The response body contains the script.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/ServerError'
-          description: Unexpected error
+          description: Unexpected error.
       summary: Retrieve a script
       tags:
       - Data I/O endpoints
       - Invokable Scripts
     patch:
       description: |
-        Updates properties (`name`, `description`, and `script`) of an invokable script.
+        Updates a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/) and returns the script.
+
+        Use this endpoint to update the properties (`name`, `description`, and `script`) of an invokable script.
       operationId: PatchScriptsID
       parameters:
       - description: The script ID.
@@ -13356,7 +13349,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ScriptUpdateRequest'
-        description: Script update to apply
+        description: The script update to apply.
         required: true
       responses:
         "200":
@@ -13364,7 +13357,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Script'
-          description: The updated script.
+          description: Success. The response body contains the script.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error
@@ -13439,6 +13438,8 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the error.
           headers:
             X-Platform-Error-Code:
               description: |
@@ -13503,10 +13504,13 @@ paths:
                       }'
   /api/v2/scripts/{scriptID}/labels/add:
     patch:
-      description: Adds labels to a script and returns the script.
+      description: Adds labels to a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+        and returns the script.
       operationId: PatchScriptsIDAddLabels
       parameters:
-      - description: The script ID.
+      - description: |
+          The script ID.
+          Specifies the script to add labels to.
         in: path
         name: scriptID
         required: true
@@ -13527,7 +13531,7 @@ paths:
                     type: string
                   type: array
               type: object
-        description: The names of labels to add to the script.
+        description: The labels to add to the script.
         required: true
       responses:
         "200":
@@ -13539,8 +13543,7 @@ paths:
             Success.
             The response body contains the updated script.
         "400":
-          $ref: '#/components/responses/ServerError'
-          description: Bad request.
+          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "404":
@@ -13551,9 +13554,8 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error.
-      summary: Adds labels to a script
+      summary: Add labels to a script
       tags:
-      - Data I/O endpoints
       - Invokable Scripts
   /api/v2/scripts/{scriptID}/labels/remove:
     patch:
@@ -13593,8 +13595,7 @@ paths:
             Success.
             The response body contains the updated script.
         "400":
-          $ref: '#/components/responses/ServerError'
-          description: Bad request.
+          $ref: '#/components/responses/BadRequestError'
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "404":
@@ -13605,9 +13606,8 @@ paths:
         default:
           $ref: '#/components/responses/ServerError'
           description: Unexpected error.
-      summary: Removes labels from a script
+      summary: Remove labels from a script
       tags:
-      - Data I/O endpoints
       - Invokable Scripts
   /api/v2/setup:
     get:
@@ -17687,20 +17687,54 @@ tags:
       - [Manage buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/)
   name: Buckets
 - description: |
-    Manage and execute scripts as API endpoints in InfluxDB.
+    Store, manage, and execute scripts in InfluxDB.
 
-    An API Invokable Script assigns your custom Flux script to a new
-    InfluxDB API endpoint for your organization.
-    Invokable scripts let you execute your script as an HTTP request to the endpoint.
+    An invokable script stores your custom Flux script and lets you execute
+    the script from tasks and API requests.
+    To use invocation parameters, include `params` references in your script--for example: `params.myparameter`.
+    When you invoke the script, you pass `params` with key-value pairs for your parameters.
+    Then, InfluxDB executes your script and returns the result.
 
-    Invokable scripts accept parameters.
-    Add parameter references in your script as `params.myparameter`.
-    When you `invoke` your script, you send parameters as key-value pairs in the `params` object.
-    Then, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.
+    To create a script, you can use the [`POST /api/v2/scripts`](#operation/PostScripts) endpoint.
+    After you create a script, extract the script `id` from the response.
+    With the script ID, you can [invoke the script as an API endpoint](#use-an-api-endpoint-to-invoke-a-script)
+    or [add the script to a task](#add-a-script-to-a-task).
+
+    #### Invoke a script as an API endpoint
+
+    Once you create a script, InfluxDB generates an [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke) for your
+    organization.
+    To invoke the script, send an HTTP request to the endpoint.
+
+    `POST https://INFLUX_CLOUD_URL/api/v2/scripts/SCRIPT_ID/invoke`
+
+    In your request, replace the following:
+      - **`INFLUX_CLOUD_URL`**: the domain for your InfluxDB Cloud account.
+      - **`SCRIPT_ID`**: the ID of your invokable script.
+
+    To provide parameter values to the script, pass the following in the request body:
+
+      - A `params` object with key-value pairs for parameters referenced in the script
+
+    For more information and examples, see how to [invoke custom scripts as
+    API endpoints](/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
+
+    #### Add a script to a task
+
+    Once you create a script, you can create or update a task to execute the script.
+
+    To create or update a task, you can use the [`/api/v2/tasks` endpoints](#tag/Tasks).
+    Pass the following in the request body:
+      - `scriptID`: the ID of the script to execute
+      - `scriptParameters`: an object with key-value pairs for parameters referenced in the script
+
+    For more information and examples, see how to
+    [create a task that references a script](/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
 
     ### Related guides
 
     - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+    - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
   name: Invokable Scripts
 - description: |
     Delete data from an InfluxDB bucket.
