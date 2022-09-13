@@ -1,26 +1,36 @@
 summary: Bucket schemas
 get:
   summary: List all measurement schemas of a bucket
+  description: |
+    Retrieves a list of measurement [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+    for a bucket.
   operationId: getMeasurementSchemas
   parameters:
     - in: query
       name: org
-      description: The name of the organization.
+      description: |
+        Organization name.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: orgID
-      description: The identifier of the organization.
+      description: |
+        Organization ID.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: name
-      description: The name of the measurement to return schemas for.
+      description: |
+        Measurement name.
+        Only returns measurement schemas with this name.
       schema:
         type: string
     - in: path
       name: bucketID
-      description: The identifier of the bucket.
+      description: |
+        The ID of the bucket to retrieve schemas from.
       schema:
         type: string
       required: true
@@ -38,11 +48,37 @@ get:
         application/json:
           schema:
             $ref: "../schemas/MeasurementSchemaList.yml"
+    '400':
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            invalidSchemaType:
+              summary: Invalid schema type.
+              value: {
+                "code": "invalid",
+                "message": "bucket schemaType must be explicit"
+              }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
     '404':
       description: Bucket not found
       $ref: '../../common/responses/ServerError.yml'
+    "500":
+      $ref: "../responses/InternalServerError.yml"
 post:
   summary: Create a measurement schema for a bucket
+  description: |
+    Creates a [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+    for a bucket.
+    
+    #### Related guides
+    
+    - [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).
+    - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)
   operationId: createMeasurementSchema
   parameters:
     - in: query
@@ -70,7 +106,9 @@ post:
           $ref: "../schemas/MeasurementSchemaCreateRequest.yml"
   responses:
     '201':
-      description: The created measurement schema.
+      description: |
+        Success.
+        The response body contains the measurement schema.
       headers:
         ETag:
           description: The current version of the measurement schema
@@ -81,7 +119,8 @@ post:
           schema:
             $ref: "../schemas/MeasurementSchema.yml"
     '400':
-      description: Client error with create request
+      description: |
+        Bad request.
       content:
         application/json:
           examples:
@@ -129,3 +168,33 @@ post:
                 message: At least one field column is required
           schema:
             $ref: "../../common/schemas/Error.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "temperature",
+              "column": [
+                {
+                  "type": "tag",
+                  "name": "location"
+                },
+                {
+                  "type": "field",
+                  "name": "value",
+                  "dataType": "float"
+                },
+                {
+                  "type": "timestamp",
+                  "name": "time"
+                }
+              ]
+            }'
