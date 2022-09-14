@@ -55,20 +55,26 @@ tags:
         - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)
   - name: Invokable Scripts
     description: |
-      Manage and execute scripts as API endpoints in InfluxDB.
+      Store, manage, and execute scripts in InfluxDB.
+      A script stores your custom Flux script and provides an invokable
+      endpoint that accepts runtime parameters.
+      In a script, you can specify custom runtime parameters
+      (`params`)--for example, `params.myparameter`.
+      Once you create a script, InfluxDB generates an
+      [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke)
+      for your organization.
+      You can run the script from API requests and tasks, defining parameter
+      values for each run.
+      When the script runs, InfluxDB replaces `params` references in the
+      script with the runtime parameter values you define.
 
-      An API Invokable Script assigns your custom Flux script to a new
-      InfluxDB API endpoint for your organization.
-      Invokable scripts let you execute your script as an HTTP request to the endpoint.
+      Use the `/api/v2/scripts` endpoints to create and manage scripts.
+      See related guides to learn how to define parameters and execute scripts.
 
-      Invokable scripts accept parameters.
-      Add parameter references in your script as `params.myparameter`.
-      When you `invoke` your script, you send parameters as key-value pairs in the `params` object.
-      Then, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.
+      #### Related guides
 
-      ### Related guides
-
-      - [Invoke custom scripts]({{% INFLUXDB_DOCS_URL %}}/api-guide/api-invokable-scripts/).
+      - [Invoke custom scripts]({{% INFLUXDB_DOCS_URL %}}/api-guide/api-invokable-scripts/) from API requests.
+      - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
   - name: Delete
     description: |
       Delete data from an InfluxDB bucket.
@@ -204,9 +210,10 @@ tags:
       |:-----------:|:------------------------ |:--------------------- |
       | `200`       | Success                  |                       |
       | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
-      | `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
+      | `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your [_monitoring bucket](/influxdb/cloud/reference/internals/system-buckets/#_monitoring-system-bucket).</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
       | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |
       | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
+      | `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example, you send a `POST` request to an endpoint that only allows `GET`. |
       | `413`       | Request entity too large | Request payload exceeds the size limit. |
       | `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
       | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |

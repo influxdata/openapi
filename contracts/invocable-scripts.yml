@@ -43,14 +43,14 @@ paths:
             $ {"scripts":[]}
             ```
 
-        #### Related Guides
+        #### Related guides
 
         - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       parameters:
         - in: query
           name: limit
           description: |
-            Limits the number of scripts returned. Default is `100`.
+            The maximum number of scripts to return. Default is `100`.
           required: false
           schema:
             type: integer
@@ -62,7 +62,7 @@ paths:
           required: false
           description: |
             The offset for pagination.
-            The number of records to skip.
+            Specifies the number of records to skip in the result.
           schema:
             type: integer
             minimum: 0
@@ -78,8 +78,9 @@ paths:
           required: false
           description: |
             A list of label names.
-            Only returns scripts that have all these labels.
-            To retrieve a script, each name you pass in `labelNames` must exactly match the label for a script.
+            Only returns scripts that have all the specified labels.
+            To retrieve a script, each name you pass in `labelNames` must exactly
+            match the label for a script.
           schema:
             type: array
             items:
@@ -89,7 +90,7 @@ paths:
           required: false
           description: |
             A part of the label name.
-            Returns scripts that have a label that contains this phrase.
+            Returns scripts that have a label that contains the specified phrase.
           schema:
             type: string
       responses:
@@ -124,6 +125,8 @@ paths:
         '400':
           description: |
             Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the error.
           content:
             application/json:
               schema:
@@ -160,9 +163,9 @@ paths:
       summary: Create a script
       description: |
         Creates an [invokable script](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
-        and returns the created script.
+        and returns the script.
 
-        #### Related Guides
+        #### Related guides
 
         - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
         - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/).
@@ -194,30 +197,7 @@ paths:
                     createdAt: '2022-07-17T23:43:26.660308Z'
                     updatedAt: '2022-07-17T23:43:26.660308Z'
         '400':
-          description: |
-            Bad request.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                invalidJSONStringValue:
-                  summary: Invalid JSON
-                  description: |
-                    If the request body contains invalid JSON, returns `invalid`
-                    with detail about the problem.
-                  value:
-                    code: invalid
-                    message: 'invalid json: invalid character ''\'''' looking for beginning of value'
-                invalidCharacterValue:
-                  summary: Invalid character
-                  description: |
-                    If the request body contains an invalid character, returns
-                    `invalid` with detail about the problem.
-                  value:
-                    code: invalid
-                    message: 'invalid character '','' looking for beginning of value'
-                    details: []
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '422':
@@ -264,23 +244,30 @@ paths:
         - Data I/O endpoints
         - Invokable Scripts
       summary: Retrieve a script
-      description: Uses script ID to retrieve details of an invokable script.
+      description: |
+        Retrieves a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
       parameters:
         - in: path
           name: scriptID
           schema:
             type: string
           required: true
-          description: The script ID.
+          description: |
+            A script ID.
+            Specifies the script to retrieve.
       responses:
         '200':
-          description: The requested script object.
+          description: Success. The response body contains the script.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Script'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
-          description: Unexpected error
+          description: Unexpected error.
           $ref: '#/components/responses/ServerError'
     patch:
       operationId: PatchScriptsID
@@ -288,9 +275,11 @@ paths:
         - Invokable Scripts
       summary: Update a script
       description: |
-        Updates properties (`name`, `description`, and `script`) of an invokable script.
+        Updates a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/) and returns the script.
+
+        Use this endpoint to update the properties (`name`, `description`, and `script`) of an invokable script.
       requestBody:
-        description: Script update to apply
+        description: The script update to apply.
         required: true
         content:
           application/json:
@@ -302,14 +291,22 @@ paths:
           schema:
             type: string
           required: true
-          description: The script ID.
+          description: |
+            A script ID.
+            Specifies the script to update.
       responses:
         '200':
-          description: The updated script.
+          description: Success. The response body contains the updated script.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Script'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -318,17 +315,23 @@ paths:
       tags:
         - Invokable Scripts
       summary: Delete a script
-      description: Deletes a script and all associated records.
+      description: 'Deletes a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/) and all associated records.'
       parameters:
         - in: path
           name: scriptID
           schema:
             type: string
           required: true
-          description: The ID of the script to delete.
+          description: |
+            A script ID.
+            Specifies the script to delete.
       responses:
         '204':
-          description: The script is deleted.
+          description: Success. The script is deleted.
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -340,18 +343,20 @@ paths:
         - Invokable Scripts
       summary: Invoke a script
       description: |
-        Invokes a script and substitutes `params` keys referenced in the script with
-        `params` key-values sent in the request body--for example:
+        Runs a script and returns the result.
+        When the script runs, InfluxDB replaces `params` keys referenced in the script with
+        `params` key-values passed in the request body--for example:
 
-        The following script contains the parameter _`mybucket`_:
+        The following sample script contains a _`mybucket`_ parameter :
 
         ```json
         "script": "from(bucket: params.mybucket)
                     |> range(start: -7d)
                     |> limit(n:1)"
         ```
+
         The following example `POST /api/v2/scripts/SCRIPT_ID/invoke` request body
-        passes a value for _`mybucket`_:
+        passes a value for the _`mybucket`_ parameter:
 
         ```json
         {
@@ -361,14 +366,14 @@ paths:
         }
         ```
 
-        #### Related Guides
-        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+        #### Related guides
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
       parameters:
         - in: path
           name: scriptID
           description: |
-            Script ID.
-            Only returns scripts with this ID.
+            A script ID.
+            Specifies the script to execute.
           schema:
             type: string
           required: true
@@ -394,6 +399,8 @@ paths:
         '400':
           description: |
             Bad request.
+            InfluxDB is unable to parse the request.
+            The response body contains detail about the error.
           headers:
             X-Platform-Error-Code:
               description: |
@@ -430,13 +437,15 @@ paths:
               examples:
                 scriptNotFound:
                   summary: |
-                    The requested script was not found.
+                    Script not found
+                  description: InfluxDB can't find the requested script.
                   value:
                     code: not found
                     message: script "09afa3b220fe400" not found
                 bucketNotFound:
                   summary: |
-                    The requested bucket was not found.
+                    Bucket not found
+                  description: InfluxDB can't find the requested bucket.
                   value:
                     code: not found
                     message: 'failed to initialize execute state: could not find bucket "test-bucket"'
@@ -465,19 +474,22 @@ paths:
     patch:
       operationId: PatchScriptsIDAddLabels
       tags:
-        - Data I/O endpoints
         - Invokable Scripts
-      summary: Adds labels to a script
-      description: Adds labels to a script and returns the updated script.
+      summary: Add labels to a script
+      description: |
+        Adds labels to a [script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+        and returns the script.
       parameters:
         - in: path
           name: scriptID
-          description: The script ID.
+          description: |
+            The script ID.
+            Specifies the script to add labels to.
           schema:
             type: string
           required: true
       requestBody:
-        description: The names of labels to add to the script.
+        description: The labels to add to the script.
         required: true
         content:
           application/json:
@@ -503,8 +515,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Script'
         '400':
-          description: Bad request.
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
@@ -519,19 +530,18 @@ paths:
     patch:
       operationId: PatchScriptsIDRemoveLabels
       tags:
-        - Data I/O endpoints
         - Invokable Scripts
-      summary: Removes labels from a script
-      description: Removes labels from a script and returns the updated script.
+      summary: Remove labels from a script
+      description: Removes labels from a script and returns the script.
       parameters:
         - in: path
           name: scriptID
-          description: The script ID.
+          description: A script ID. Specifies the script to remove labels from.
           schema:
             type: string
           required: true
       requestBody:
-        description: The names of labels to remove from the script.
+        description: The labels to remove from the script.
         required: true
         content:
           application/json:
@@ -557,8 +567,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Script'
         '400':
-          description: Bad request.
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
@@ -605,6 +614,24 @@ components:
               value:
                 code: unauthorized
                 message: unauthorized access
+    BadRequestError:
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        #### InfluxDB OSS
+
+        - Returns this error if an incorrect value is passed for `org` or `orgID`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            orgProvidedNotFound:
+              summary: The org or orgID passed doesn't own the token passed in the header
+              value:
+                code: invalid
+                message: 'failed to decode request body: organization not found'
     InternalServerError:
       description: |
         Internal server error.
@@ -660,13 +687,13 @@ components:
         orgID:
           type: string
         script:
-          description: script to be executed
+          description: The script to execute.
           type: string
         language:
           $ref: '#/components/schemas/ScriptLanguage'
         url:
           type: string
-          description: invocation endpoint address
+          description: The invocation endpoint address.
         createdAt:
           type: string
           format: date-time
