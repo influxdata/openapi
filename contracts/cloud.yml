@@ -67,53 +67,25 @@ tags:
   - name: Invokable Scripts
     description: |
       Store, manage, and execute scripts in InfluxDB.
+      A script stores your custom Flux script and provides an invokable
+      endpoint that accepts runtime parameters.
+      In a script, you can specify custom runtime parameters
+      (`params`)--for example, `params.myparameter`.
+      Once you create a script, InfluxDB generates an
+      [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke)
+      for your organization.
+      You can run the script from API requests and tasks, defining parameter
+      values for each run.
+      When the script runs, InfluxDB replaces `params` references in the
+      script with the runtime parameter values you define.
 
-      An invokable script stores your custom Flux script and lets you execute
-      the script from tasks and API requests.
-      To use invocation parameters, include `params` references in your script--for example: `params.myparameter`.
-      When you invoke the script, you pass `params` with key-value pairs for your parameters.
-      Then, InfluxDB executes your script and returns the result.
+      Use the `/api/v2/scripts` endpoints to create and manage scripts.
+      See related guides to learn how to define parameters and execute scripts.
 
-      To create a script, you can use the [`POST /api/v2/scripts`](#operation/PostScripts) endpoint.
-      After you create a script, extract the script `id` from the response.
-      With the script ID, you can [invoke the script as an API endpoint](#invoke-a-script-as-an-api-endpoint)
-      or [add the script to a task](#add-a-script-to-a-task).
+      #### Related guides
 
-      #### Invoke a script as an API endpoint
-
-      Once you create a script, InfluxDB generates an [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke) for your
-      organization.
-      To invoke the script, send an HTTP request to the following endpoint:
-
-      `POST https://INFLUX_CLOUD_URL/api/v2/scripts/SCRIPT_ID/invoke`
-
-      In your request, replace the following:
-        - **`INFLUX_CLOUD_URL`**: the domain for your InfluxDB Cloud account.
-        - **`SCRIPT_ID`**: the ID of your invokable script.
-
-      To provide parameter values to the script, pass the following in the request body:
-
-        - A `params` object with key-value pairs for parameters referenced in the script
-
-      For more information and examples, see how to [invoke custom scripts as
-      API endpoints](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
-
-      #### Add a script to a task
-
-      Once you create a script, you can create or update a task to execute the script.
-
-      To create or update a task, you can use the [`/api/v2/tasks` endpoints](#tag/Tasks).
-      Pass the following in the request body:
-        - `scriptID`: the ID of the script to execute
-        - `scriptParameters`: an object with key-value pairs for parameters referenced in the script
-
-      For more information and examples, see how to
-      [create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
-
-      ### Related guides
-
-      - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
-      - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
+      - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/) from API requests.
+      - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
   - name: Delete
     description: |
       Delete data from an InfluxDB bucket.
@@ -247,10 +219,10 @@ tags:
       |:-----------:|:------------------------ |:--------------------- |
       | `200`       | Success                  |                       |
       | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
-      | `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
+      | `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your [_monitoring bucket](/influxdb/cloud/reference/internals/system-buckets/#_monitoring-system-bucket).</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
       | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |
       | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
-      | `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example: you sent a `POST` request for an endpoint that only allows `GET`. |
+      | `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example, you send a `POST` request to an endpoint that only allows `GET`. |
       | `413`       | Request entity too large | Request payload exceeds the size limit. |
       | `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
       | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
