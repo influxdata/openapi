@@ -109,7 +109,7 @@
       "post": {
         "operationId": "PostSignin",
         "summary": "Create a user session.",
-        "description": "Authenticates ***Basic Auth*** credentials for a user. If successful, creates a new UI session for the user.",
+        "description": "Authenticates [Basic authentication credentials](#section/Authentication/BasicAuthentication)\nfor a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user),\nand then, if successful, generates a user session.\n\nTo authenticate a user, pass the HTTP `Authorization` header with the\n`Basic` scheme and the base64-encoded username and password--for example:\n\n  ```sh\n  Authorization: Basic USERNAME:PASSWORD\n  ```\n\nIn InfluxDB Cloud, the username is the email address the user signed up with.\n\n_Note that many HTTP clients provide a Basic authentication option that\naccepts the `USERNAME:PASSWORD` syntax and encodes the credentials before\nsending the request.\nTo learn more about HTTP authentication, see\n[Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._\n\nIf authentication is successful, InfluxDB creates a new session for the user\nand then returns the session cookie in the `Set-Cookie` response header.\nUser sessions exist only in memory.\nThey expire within ten minutes and during restarts of the InfluxDB instance.\n\n#### User sessions with authorizations\n\n- In InfluxDB Cloud, a user session inherits all the user's permissions for\n  the organization.\n- In InfluxDB OSS, a user session inherits all the user's permissions for all\n  the organizations that the user belongs to.\n\n#### Related endpoints\n\n- [Signout](#tag/Signout)\n",
         "tags": [
           "Signin"
         ],
@@ -125,10 +125,10 @@
         ],
         "responses": {
           "204": {
-            "description": "Success. User authenticated."
+            "description": "Success.\nThe user is authenticated.\nThe `Set-Cookie` response header contains the session cookie.\n"
           },
           "401": {
-            "description": "Unauthorized access.",
+            "description": "Unauthorized.\nThis error may be caused by one of the following problems:\n  - The user doesn't have access.\n  - The user passed incorrect credentials in the request.\n  - The credentials are formatted incorrectly in the request.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -138,7 +138,7 @@
             }
           },
           "403": {
-            "description": "User account is disabled.",
+            "description": "Forbidden. The user account is disabled.",
             "content": {
               "application/json": {
                 "schema": {
@@ -157,7 +157,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: signin with --user option encoding",
+            "source": "curl --request POST http://localhost:8086/api/v2/signin \\\n     --user \"USERNAME:PASSWORD\"\n"
+          }
+        ]
       }
     },
     "/signout": {
@@ -8959,7 +8966,7 @@
           "Users"
         ],
         "summary": "Update a password",
-        "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud doesn't support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
+        "description": "Updates the password for the signed-in [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nThis endpoint represents the third step in the following three-step process to let a\nuser with a user session update their password:\n  1. Pass the user's [Basic authentication credentials](#section/Authentication/BasicAuthentication) to the `POST /api/v2/signin`\n     endpoint to create a user session and generate a session cookie.\n  2. From the response in the first step, extract the session cookie (`Set-Cookie`) header.\n  3. Pass the following in a request to the `PUT /api/v2/me/password` endpoint:\n     - The `Set-Cookie` header from the second step\n     - The `Authorization Basic` header with the user's _Basic authentication_ credentials\n     - `{\"password\": \"NEW_PASSWORD\"}` in the request body\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update your password.\n\n#### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n- [Users](#tag/Users)\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/).\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/).\n",
         "security": [
           {
             "BasicAuthentication": []
@@ -8968,6 +8975,16 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "name": "influxdb-oss-session",
+            "in": "cookie",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The user session cookie for the\n[user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user)\nsigned in with [Basic authentication credentials](#section/Authentication/BasicAuthentication).\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL%}}/users/).\n",
+            "example": "influxdb-oss-session=19aaaZZZGOvP2GGryXVT2qYftlFKu3bIopurM6AGFow1yF1abhtOlbHfsc-d8gozZFC_6WxmlQIAwLMW5xs523w=="
           }
         ],
         "requestBody": {
@@ -8983,10 +9000,13 @@
         },
         "responses": {
           "204": {
-            "description": "Success. The password was updated."
+            "description": "Success. The password is updated."
           },
           "400": {
-            "description": "Bad request.\nInfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.\n"
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage through the API; always responds with this status.\n\n#### InfluxDB OSS\n\n- Doesn't understand a value passed in the request.\n"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
           },
           "default": {
             "description": "Unsuccessful authentication",
@@ -9360,7 +9380,7 @@
           "Users"
         ],
         "summary": "Update a password",
-        "description": "#### InfluxDB Cloud\n\nInfluxDB Cloud doesn't support changing user passwords through the API.\nUse the InfluxDB Cloud user interface to update your password.\n",
+        "description": "Updates a user password.\n\nUse this endpoint to let a user authenticate with\n[Basic authentication credentials](#section/Authentication/BasicAuthentication)\nand set a new password.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage user passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update a password.\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/).\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/).\n",
         "security": [
           {
             "BasicAuthentication": []
@@ -9377,11 +9397,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The user ID."
+            "description": "The ID of the user to set the password for."
           }
         ],
         "requestBody": {
-          "description": "New password",
+          "description": "The new password to set for the user.",
           "required": true,
           "content": {
             "application/json": {
@@ -9393,22 +9413,39 @@
         },
         "responses": {
           "204": {
-            "description": "Password successfully updated"
+            "description": "Success. The password is updated."
           },
           "400": {
-            "description": "Bad request.\nInfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.\n"
-          },
-          "default": {
-            "description": "Unsuccessful authentication",
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage passwords through the API; always responds with this status.\n\n#### InfluxDB OSS\n\n- Doesn't understand a value passed in the request.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "updatePasswordNotAllowed": {
+                    "summary": "Cloud API can't update passwords",
+                    "value": {
+                      "code": "invalid",
+                      "message": "passwords cannot be changed through the InfluxDB Cloud API"
+                    }
+                  }
                 }
               }
             }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/GeneralServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: use Basic auth to update the user password",
+            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --user \"USERNAME:PASSWORD\" \\\n  --data-binary @- << EOF\n    {\"password\": \"\"}\nEOF\n"
+          }
+        ]
       }
     },
     "/checks": {
@@ -10965,15 +11002,31 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Retrieves a list of users.\n",
+        "description": "Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't allow listing all users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | Operator token | InfluxData internal use only |\n| List a specific user | `read-users` or `read-user USER_ID` |\n\nReplace the following:\n\n- `USER_ID`: ID of the user that you want to retrieve.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            },
+            "description": "A user name.\nOnly lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
+          },
+          {
+            "in": "query",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "A user id.\nOnly lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success. The response contains a list of `users`.",
+            "description": "Success. The response contains a list of `users`.\n\n#### InfluxDB Cloud\n\n- Returns an empty `users` list if you don't pass _`id`_ or _`name`_ parameters and don't use an\n  _operator token_.\n  Only InfluxData can access InfluxDB Cloud operator tokens.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -10981,6 +11034,29 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed,\n  but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -10994,7 +11070,7 @@
           "Users"
         ],
         "summary": "Create a user",
-        "description": "Creates a user and returns the newly created user.\n",
+        "description": "(InfluxData internal use only)\n\nCreates and returns a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user)\nthat can access InfluxDB.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't allow managing users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Create user | Operator token | InfluxData internal use only |\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11013,7 +11089,7 @@
         },
         "responses": {
           "201": {
-            "description": "Success.\nThe response contains the newly created user.\n",
+            "description": "Success.\nThe response body contains the user.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11023,7 +11099,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized.\n",
+            "description": "Unauthorized.\n\n#### InfluxDB Cloud\n\n- Returns this error if the request doesn't use an _operator token_.\n  Only InfluxData can access InfluxDB Cloud operator tokens.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11033,7 +11109,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
+            "description": "Unprocessable entity.\n\nThe error may indicate one of the following problems:\n\n- The request body isn't valid--the request is well-formed,\n  but InfluxDB can't process it due to semantic errors.\n- You passed a parameter combination that InfluxDB doesn't support.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -11059,6 +11135,7 @@
           "Users"
         ],
         "summary": "Retrieve a user",
+        "description": "Retrieves a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11070,12 +11147,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The user ID."
+            "description": "A user ID.\nRetrieves the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "User details",
+            "description": "Success. The response body contains the user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11096,8 +11173,9 @@
           "Users"
         ],
         "summary": "Update a user",
+        "description": "(InfluxData internal use only)\n\nUpdates a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) and returns the user.\n\n#### InfluxDB Cloud\n\n- Doesn't allow managing users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Update user | Operator token | InfluxData internal use only |\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "requestBody": {
-          "description": "User update to apply",
+          "description": "The user update to apply.",
           "required": true,
           "content": {
             "application/json": {
@@ -11118,12 +11196,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the user to update."
+            "description": "A user ID.\nUpdates the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "User updated",
+            "description": "Success. The response body contains the updated user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11144,6 +11222,7 @@
           "Users"
         ],
         "summary": "Delete a user",
+        "description": "(InfluxData internal use only)\n\nDeletes a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nFor security purposes, once an InfluxDB user account is deleted from an\norganization, the user (and their token) cannot be reactivated.\n\n#### InfluxDB Cloud\n\n- Doesn't allow managing users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| Delete user | Operator token | InfluxData internal use only |\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11155,12 +11234,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the user to delete."
+            "description": "A user ID.\nDeletes the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "User deleted"
+            "description": "Success. The user is deleted."
           },
           "default": {
             "description": "Unexpected error",
@@ -11291,7 +11370,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A user ID.\nOnly returns authorizations scoped to this user.\n"
+            "description": "A user ID.\nOnly returns authorizations scoped to the specified\n[user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           },
           {
             "in": "query",
@@ -11299,7 +11378,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A user name.\nOnly returns authorizations scoped to this user.\n"
+            "description": "A user name.\nOnly returns authorizations scoped to the specified\n[user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           },
           {
             "in": "query",
@@ -11307,7 +11386,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An organization ID.\nOnly returns authorizations that belong to this organization.\n"
+            "description": "An organization ID.\nOnly returns authorizations that belong to the specified\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n"
           },
           {
             "in": "query",
@@ -11315,7 +11394,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An organization name.\nOnly returns authorizations that belong to this organization.\n"
+            "description": "An organization name.\nOnly returns authorizations that belong to the specified\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n"
           },
           {
             "in": "query",
@@ -11323,7 +11402,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A token value.\nOnly returns the authorization that has this token.\n"
+            "description": "An API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) value.\nReturns the authorization for the specified token.\n"
           }
         ],
         "responses": {
@@ -11359,7 +11438,7 @@
           "Authorizations"
         ],
         "summary": "Create an authorization",
-        "description": "Creates an authorization.\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\nThe response contains the new authorization with the generated API token.\n\nKeep the following in mind when creating and updating authorizations:\n\n- To apply a permission to a specific resource, specify the resource `id` field.\n- To apply a permission to all resources with the type, omit the resource `id`.\n- To scope an authorization to a specific user, provide the `userID` property.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n",
+        "description": "Creates an authorization and returns the authorization with the\ngenerated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\n\nKeep the following in mind when creating and updating authorizations:\n\n- To apply a permission to a specific resource, specify the resource `id` field.\n- To apply a permission to all resources with the type, omit the resource `id`.\n- To scope an authorization to a specific user, provide the `userID` property.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11378,7 +11457,7 @@
         },
         "responses": {
           "201": {
-            "description": "Authorization created",
+            "description": "Success. The authorization is created. The response body contains the authorization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -13806,12 +13885,12 @@
               },
               "orgID": {
                 "type": "string",
-                "description": "The ID of the organization."
+                "description": "The organization ID.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.\n"
               },
               "permissions": {
                 "type": "array",
                 "minItems": 1,
-                "description": "A list of permissions for an authorization.\nAn authorization must have at least one permission.\n",
+                "description": "The list of permissions.\nAn authorization must have at least one permission.\n",
                 "items": {
                   "required": [
                     "action",
@@ -13883,27 +13962,28 @@
               },
               "id": {
                 "readOnly": true,
-                "type": "string"
+                "type": "string",
+                "description": "The authorization ID."
               },
               "token": {
                 "readOnly": true,
                 "type": "string",
-                "description": "The API token for authenticating InfluxDB API and CLI requests.\n"
+                "description": "The API token.\n[Tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are\nused to authenticate InfluxDB API requests and `influx` CLI commands.\nIf authenticated, the token is allowed the permissions of the _authorization_.\nThe token value is unique to the authorization.\n"
               },
               "userID": {
                 "readOnly": true,
                 "type": "string",
-                "description": "The ID of the user that the token is scoped to."
+                "description": "The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization."
               },
               "user": {
                 "readOnly": true,
                 "type": "string",
-                "description": "The name of the user that the token is scoped to."
+                "description": "The user name.\nSpecifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.\nIf the authorization is _scoped_ to a user, the user;\notherwise, the creator of the authorization.\n"
               },
               "org": {
                 "readOnly": true,
                 "type": "string",
-                "description": "The name of the organization that owns the token."
+                "description": "The organization name.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the token is scoped to.\n"
               },
               "links": {
                 "type": "object",
@@ -15960,14 +16040,14 @@
           "id": {
             "readOnly": true,
             "type": "string",
-            "description": "The ID of the user.\n"
+            "description": "The user ID.\n"
           },
           "name": {
             "type": "string",
-            "description": "The name of the user.\n"
+            "description": "The user name.\n"
           },
           "status": {
-            "description": "The status of a user. An inactive user won't have access to resources.\n",
+            "description": "The status of a user.\nAn inactive user can't read or write resources.\n",
             "default": "active",
             "type": "string",
             "enum": [

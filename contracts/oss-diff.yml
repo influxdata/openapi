@@ -903,15 +903,21 @@ paths:
         - Users
       summary: List users
       description: |
-        Retrieves a list of users. Default limit is `20`.
+        Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        Default limit is `20`.
 
         To limit which users are returned, pass query parameters in your request.
 
-        #### Required permissions
+        #### Required permissions for InfluxDB OSS
 
-        - `read-user USER_ID` permission.
-          `USER_ID` is the ID of the user that you want to list.
-        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+        | List a specific user | `read-users` or `read-user USER_ID` | |
+
+        Replace the following:
+
+        - `USER_ID`: the ID of the user that you want to retrieve.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
@@ -944,10 +950,16 @@ paths:
           name: name
           schema:
             type: string
+          description: |
+            A user name.
+            Only lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: id
           schema:
             type: string
+          description: |
+            A user ID.
+            Only lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
       responses:
         '200':
           description: Success. The response contains a list of `users`.
@@ -1006,7 +1018,8 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed,
+              but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
           content:
             application/json:
@@ -1029,11 +1042,34 @@ paths:
         - Users
       summary: Create a user
       description: |
-        Creates a user and returns the newly created user.
+        Creates a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that can access InfluxDB.
+        Returns the user.
+
+        Use this endpoint to create a user that can sign in to start a [user session]()
+        through one of the following interfaces:
+
+          - InfluxDB UI
+          - `/api/v2/signin` InfluxDB API endpoint.
+          - InfluxDB CLI
+
+        This endpoint represents the first two steps in a four-step process to allow a user
+        to authenticate with a username and password, and then access data in an organization:
+
+          1. Create a user: send a `POST` request to `POST /api/v2/users`. `name` is required.
+          2. Extract the user ID (`id`) value from the API response for _step 1_.
+          3. Create an authorization (and API token) for the user: send a `POST` request to [`POST /api/v2/authorizations`](#operation/PostAuthorizations), passing the user ID (`id`) from _step 2_.
+          4. Create a password for the user: send a `POST` request to [`POST /api/v2/users/USER_ID/password`](#operation/PostUsersIDPassword), passing the user ID from _step 2_.
 
         #### Required permissions
 
-        - `write-users`. Requires an InfluxDB API **Op** token.
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Create a user | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+
+        #### Related guides
+
+        - [Create a user](https://docs.influxdata.com/influxdb/latest/users/create-user/).
+        - [Create an API token scoped to a user](https://docs.influxdata.com/influxdb/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user)
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       requestBody:
@@ -1047,7 +1083,7 @@ paths:
         '201':
           description: |
             Success.
-            The response contains the newly created user.
+            The response body contains the user.
           content:
             application/json:
               schema:
@@ -1111,6 +1147,12 @@ paths:
         - Security and access endpoints
         - Users
       summary: Retrieve a user
+      description: |
+        Retrieves a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -1118,10 +1160,12 @@ paths:
           schema:
             type: string
           required: true
-          description: The user ID.
+          description: |
+            A user ID.
+            Retrieves the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
       responses:
         '200':
-          description: User details
+          description: Success. The response body contains the user.
           content:
             application/json:
               schema:
@@ -1260,26 +1304,26 @@ paths:
             type: string
           description: |
             A user ID.
-            Only returns authorizations scoped to this user.
+            Only returns authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: user
           schema:
             type: string
           description: |
             A user name.
-            Only returns authorizations scoped to this user.
+            Only returns authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: orgID
           schema:
             type: string
-          description: An organization ID. Only returns authorizations that belong to this organization.
+          description: 'An organization ID. Only returns authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).'
         - in: query
           name: org
           schema:
             type: string
           description: |
             An organization name.
-            Only returns authorizations that belong to this organization.
+            Only returns authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
       responses:
         '200':
           description: Success. The response body contains a list of authorizations.
@@ -5382,12 +5426,17 @@ components:
         id:
           readOnly: true
           type: string
+          description: The user ID.
         oauthID:
           type: string
+          description: The OAuth ID.
         name:
           type: string
+          description: The user name.
         status:
-          description: If inactive the user is inactive.
+          description: |
+            If `inactive`, the user is inactive.
+            Default is `active`.
           default: active
           type: string
           enum:
@@ -5444,14 +5493,15 @@ components:
               readOnly: true
               type: string
               description: |
-                The ID of the user.
+                The user ID.
             name:
               type: string
               description: |
-                The name of the user.
+                The user name.
             status:
               description: |
-                The status of a user. An inactive user won't have access to resources.
+                The status of a user.
+                An inactive user can't read or write resources.
               default: active
               type: string
               enum:
@@ -5655,35 +5705,48 @@ components:
                   readOnly: true
                 orgID:
                   type: string
-                  description: The ID of the organization.
+                  description: |
+                    The organization ID.
+                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
                 permissions:
                   type: array
                   minItems: 1
                   description: |
-                    A list of permissions for an authorization.
+                    The list of permissions.
                     An authorization must have at least one permission.
                   items:
                     $ref: '#/components/schemas/Permission'
                 id:
                   readOnly: true
                   type: string
+                  description: The authorization ID.
                 token:
                   readOnly: true
                   type: string
                   description: |
-                    The API token for authenticating InfluxDB API and CLI requests.
+                    The API token.
+                    [Tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+                    used to authenticate InfluxDB API requests and `influx` CLI commands.
+                    If authenticated, the token is allowed the permissions of the _authorization_.
+                    The token value is unique to the authorization.
                 userID:
                   readOnly: true
                   type: string
-                  description: The ID of the user that the token is scoped to.
+                  description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
                 user:
                   readOnly: true
                   type: string
-                  description: The name of the user that the token is scoped to.
+                  description: |
+                    The user name.
+                    Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
+                    If the authorization is _scoped_ to a user, the user;
+                    otherwise, the creator of the authorization.
                 org:
                   readOnly: true
                   type: string
-                  description: The name of the organization that owns the token.
+                  description: |
+                    The organization name.
+                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the token is scoped to.
                 links:
                   type: object
                   readOnly: true
