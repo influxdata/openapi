@@ -6815,9 +6815,11 @@ paths:
         - Tasks
       summary: Retry a task run
       description: |
-        Queues a task run to retry and returns the newly scheduled run.
+        Queues a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)  run to
+        retry and returns the scheduled run.
 
-        To manually start a _new_ task run, use the [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
+        To manually start a _new_ task run, use the
+        [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
 
         #### Limitations
 
@@ -6834,13 +6836,21 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to retry.
+          description: |
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)  ID.
+            Specifies the task to retry.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The ID of the task run to retry.
+          description: |
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) run ID.
+            Specifies the task run to retry.
+
+            To find a task run ID, use the
+            [`GET /api/v2/tasks/{taskID}/runs` endpoint](#operation/GetTasksIDRuns)
+            to list task runs.
       responses:
         '200':
           description: Success. The response body contains the queued run.
@@ -7254,8 +7264,7 @@ paths:
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Adds a user to members of a task and returns the newly created member with
-        role and user detail.
+        Adds a user to members of a task and returns the member.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -11356,17 +11365,20 @@ paths:
         - Tasks
       summary: List tasks
       description: |
-        Retrieves a list of [tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/).
+        Retrieves a list of [tasks](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
+
+        #### Related guides
+          - [Process data with InfluxDB tasks](https://docs.influxdata.com/influxdb/v2.3/process-data/).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: query
           name: name
           description: |
-            Task name.
-            Only returns tasks with this name.
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) name.
+            Only returns tasks with the specified name.
             Different tasks may have the same name.
           schema:
             type: string
@@ -11375,29 +11387,29 @@ paths:
           schema:
             type: string
           description: |
-            Task ID.
-            Only returns tasks created after this task.
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) ID.
+            Only returns tasks created after the specified task.
         - in: query
           name: user
           schema:
             type: string
           description: |
-            User ID.
-            Only returns tasks owned by this user.
+            A [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) ID.
+            Only returns tasks owned by the specified user.
         - in: query
           name: org
           schema:
             type: string
           description: |
-            Organization name.
-            Only returns tasks owned by this organization.
+            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) name.
+            Only returns tasks owned by the specified organization.
         - in: query
           name: orgID
           schema:
             type: string
           description: |
-            Organization ID.
-            Only returns tasks owned by this organization.
+            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) ID.
+            Only returns tasks owned by the specified organization.
         - in: query
           name: status
           schema:
@@ -11406,8 +11418,8 @@ paths:
               - active
               - inactive
           description: |
-            Task status (`active` or `inactive`).
-            Only returns tasks with this status.
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) status.
+            Only returns tasks that have the specified status (`active` or `inactive`).
         - in: query
           name: limit
           schema:
@@ -11416,15 +11428,20 @@ paths:
             maximum: 500
             default: 100
           description: |
-            Limits the number of tasks returned.
-            The minimum is `1`, the maximum is `500`, and the default is `100`.
+            The maximum number of [tasks](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to return.
+            Default is `100`.
+            The minimum is `1` and the maximum is `500`.
+
+            To reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_).
+            For more information about the `basic` response, see the _`type`_ parameter.
         - in: query
           name: type
           description: |
-            Task type (`basic` or `system`).
-
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) type (`basic` or `system`).
+            Default is `system`.
+            Specifies the level of detail for tasks in the response.
             The default (`system`) response contains all the metadata properties for tasks.
-            To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
+            To reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).
           required: false
           schema:
             default: ''
@@ -11444,7 +11461,10 @@ paths:
               examples:
                 basicTypeTaskOutput:
                   summary: Basic output
-                  description: Task fields returned with `?type=basic`
+                  description: |
+                    A sample response body for the `?type=basic` parameter.
+                    `type=basic` omits some task fields (`createdAt` and `updatedAt`)
+                    and field values (`org`, `flux`) in the response.
                   value:
                     links:
                       self: /api/v2/tasks?limit=100
@@ -11469,7 +11489,9 @@ paths:
                         lastRunStatus: success
                 systemTypeTaskOutput:
                   summary: System output
-                  description: Task fields returned with `?type=system`
+                  description: |
+                    A sample response body for the `?type=system` parameter.
+                    `type=system` returns all task fields.
                   value:
                     links:
                       self: /api/v2/tasks?limit=100
@@ -11521,7 +11543,7 @@ paths:
         - Tasks
       summary: Create a task
       description: |
-        Creates a [task](https://docs.influxdata.com/influxdb/v2.3/process-data/) and returns the created task.
+        Creates a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)  and returns the task.
 
         #### Related guides
 
@@ -11540,7 +11562,7 @@ paths:
               $ref: '#/components/schemas/TaskCreateRequest'
       responses:
         '201':
-          description: Success. The response body contains a `tasks` list with the new task.
+          description: Success. The response body contains a `tasks` list with the task.
           content:
             application/json:
               schema:
@@ -17812,43 +17834,60 @@ components:
           readOnly: true
           type: string
         orgID:
-          description: The ID of the organization that owns the task.
+          description: |
+            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) ID.
+            Specifies the organization that owns the task.
           type: string
         org:
-          description: The name of the organization that owns the task.
+          description: |
+            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) name.
+            Specifies the organization that owns the task.
           type: string
         name:
           description: The name of the task.
           type: string
         ownerID:
-          description: The ID of the user who owns the Task.
+          description: |
+            A [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) ID.
+            Specifies the owner of the task.
+
+            To find a user ID, you can use the
+            [`GET /api/v2/users` endpoint](#operation/GetUsers) to
+            list users.
           type: string
         description:
-          description: The description of the task.
+          description: A description of the task.
           type: string
         status:
           $ref: '#/components/schemas/TaskStatusType'
         labels:
           $ref: '#/components/schemas/Labels'
         authorizationID:
-          description: The ID of the authorization used when the task communicates with the query engine.
+          description: |
+            An authorization ID.
+            Specifies the authorization used when the task communicates with the query engine.
+
+            To find an authorization ID, you can use the
+            [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
+            list authorizations.
           type: string
         flux:
-          description: The Flux script that the task runs.
+          description: The Flux script that the task executes.
           type: string
+          format: flux
         every:
-          description: 'An interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
+          description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
           type: string
           format: duration
         cron:
-          description: '[Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB bases cron runs on the system time.'
+          description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
           type: string
         offset:
           description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
           type: string
           format: duration
         latestCompleted:
-          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/flux/v0.x/data-types/basic/time/#time-syntax)) of the latest scheduled and completed run.'
+          description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
           type: string
           format: date-time
           readOnly: true
