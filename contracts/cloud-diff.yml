@@ -334,7 +334,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Authorizations'
+                type: object
+                properties:
+                  links:
+                    readOnly: true
+                    $ref: '#/paths/~1dashboards/get/responses/200/content/application~1json/schema/properties/links'
+                  authorizations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OnboardingResponse/properties/auth'
         '400':
           description: Invalid request
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -388,14 +396,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Authorization'
+              $ref: '#/components/schemas/OnboardingResponse/properties/auth'
       responses:
         '201':
           description: Authorization created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Authorization'
+                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
         '400':
           description: Invalid request
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -460,7 +468,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Authorization'
+                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -476,7 +484,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Authorization/allOf/0'
+              properties:
+                status:
+                  description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+                  default: active
+                  type: string
+                  enum:
+                    - active
+                    - inactive
+                description:
+                  type: string
+                  description: A description of the token.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -491,7 +509,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Authorization'
+                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
         default:
           description: Unexpected error
           $ref: '#/paths/~1tasks/get/responses/default'
@@ -3449,83 +3467,6 @@ components:
             - write
         resource:
           $ref: '#/components/schemas/Resource'
-    Authorization:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - properties:
-            status:
-              description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
-              default: active
-              type: string
-              enum:
-                - active
-                - inactive
-            description:
-              type: string
-              description: A description of the token.
-        - type: object
-          properties:
-            createdAt:
-              type: string
-              format: date-time
-              readOnly: true
-            updatedAt:
-              type: string
-              format: date-time
-              readOnly: true
-            orgID:
-              type: string
-              description: The ID of the organization that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: List of permissions for an auth.  An auth must have at least one Permission.
-              items:
-                $ref: '#/components/schemas/Permission'
-            id:
-              readOnly: true
-              type: string
-            token:
-              readOnly: true
-              type: string
-              description: Passed via the Authorization Header and Token Authentication type.
-            userID:
-              readOnly: true
-              type: string
-              description: The ID of the user that created and owns the token.
-            user:
-              readOnly: true
-              type: string
-              description: The name of the user that created and owns the token.
-            org:
-              readOnly: true
-              type: string
-              description: The name of the organization that the token is scoped to.
-            links:
-              type: object
-              readOnly: true
-              example:
-                self: /api/v2/authorizations/1
-                user: /api/v2/users/12
-              properties:
-                self:
-                  readOnly: true
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
-                user:
-                  readOnly: true
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
-    Authorizations:
-      type: object
-      properties:
-        links:
-          readOnly: true
-          $ref: '#/paths/~1dashboards/get/responses/200/content/application~1json/schema/properties/links'
-        authorizations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Authorization'
     User:
       properties:
         id:
@@ -3789,7 +3730,126 @@ components:
             - name
             - retentionRules
         auth:
-          $ref: '#/components/schemas/Authorization'
+          required:
+            - orgID
+            - permissions
+          allOf:
+            - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
+            - type: object
+              properties:
+                createdAt:
+                  type: string
+                  format: date-time
+                  readOnly: true
+                updatedAt:
+                  type: string
+                  format: date-time
+                  readOnly: true
+                orgID:
+                  type: string
+                  description: The ID of the organization.
+                permissions:
+                  type: array
+                  minItems: 1
+                  description: |
+                    A list of permissions for an authorization.
+                    An authorization must have at least one permission.
+                  items:
+                    required:
+                      - action
+                      - resource
+                    properties:
+                      action:
+                        type: string
+                        enum:
+                          - read
+                          - write
+                      resource:
+                        type: object
+                        required:
+                          - type
+                        properties:
+                          type:
+                            type: string
+                            enum:
+                              - authorizations
+                              - buckets
+                              - dashboards
+                              - orgs
+                              - sources
+                              - tasks
+                              - telegrafs
+                              - users
+                              - variables
+                              - scrapers
+                              - secrets
+                              - labels
+                              - views
+                              - documents
+                              - notificationRules
+                              - notificationEndpoints
+                              - checks
+                              - dbrp
+                              - notebooks
+                              - annotations
+                              - remotes
+                              - replications
+                              - instance
+                            description: |
+                              The type of resource.
+                              In a `permission`, applies the permission to all resources of this type.
+                          id:
+                            type: string
+                            description: |
+                              The ID of a specific resource.
+                              In a `permission`, applies the permission to only the resource with this ID.
+                          name:
+                            type: string
+                            description: |
+                              Optional: A name for the resource.
+                              Not all resource types have a name field.
+                          orgID:
+                            type: string
+                            description: |
+                              The ID of the organization that owns the resource.
+                              In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                          org:
+                            type: string
+                            description: |
+                              Optional: The name of the organization with `orgID`.
+                id:
+                  readOnly: true
+                  type: string
+                token:
+                  readOnly: true
+                  type: string
+                  description: |
+                    The API token for authenticating InfluxDB API and CLI requests.
+                userID:
+                  readOnly: true
+                  type: string
+                  description: The ID of the user that the token is scoped to.
+                user:
+                  readOnly: true
+                  type: string
+                  description: The name of the user that the token is scoped to.
+                org:
+                  readOnly: true
+                  type: string
+                  description: The name of the organization that owns the token.
+                links:
+                  type: object
+                  readOnly: true
+                  example:
+                    self: /api/v2/authorizations/1
+                    user: /api/v2/users/12
+                  properties:
+                    self:
+                      readOnly: true
+                      $ref: '#/components/schemas/Task/properties/links/properties/self'
+                    user:
+                      readOnly: true
+                      $ref: '#/components/schemas/Task/properties/links/properties/self'
     Limit:
       type: object
       description: These are org limits similar to those configured in/by quartz.
