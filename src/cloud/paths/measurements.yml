@@ -4,26 +4,31 @@ get:
   description: |
     Retrieves a list of measurement [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
     for a bucket.
+
+    #### Related guides
+
+    - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)
+
   operationId: getMeasurementSchemas
   parameters:
     - in: query
       name: org
       description: |
-        Organization name.
+        An organization name.
         Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: orgID
       description: |
-        Organization ID.
+        An organization ID.
         Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: name
       description: |
-        Measurement name.
+        A measurement name.
         Only returns measurement schemas with this name.
       schema:
         type: string
@@ -54,7 +59,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../schemas/Error.yml"
+            $ref: "../../common/schemas/Error.yml"
           examples:
             invalidSchemaType:
               summary: Invalid schema type.
@@ -63,37 +68,49 @@ get:
                 "message": "bucket schemaType must be explicit"
               }
     "401":
-      $ref: "../responses/AuthorizationError.yml"
+      $ref: "../../common/responses/AuthorizationError.yml"
     '404':
-      description: Bucket not found
-      $ref: '../../common/responses/ServerError.yml'
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
     "500":
-      $ref: "../responses/InternalServerError.yml"
+      $ref: "../../common/responses/InternalServerError.yml"
 post:
   summary: Create a measurement schema for a bucket
   description: |
-    Creates a [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+    Creates a measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
     for a bucket.
-    
+
+    Schemas are used to define data and prevent invalid data from being written
+    to a bucket.
+
+    #### Limitations
+
+    - Buckets must be created with an "explict" `schemaType` in order to use
+    schemas.
+
     #### Related guides
-    
+
     - [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).
     - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)
   operationId: createMeasurementSchema
   parameters:
     - in: query
       name: org
-      description: The name of the organization.
+      description: |
+        An organization name.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: orgID
-      description: The identifier of the organization.
+      description: |
+        An organization ID.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: path
       name: bucketID
-      description: The identifier of the bucket.
+      description: |
+        The ID of the bucket to add a schema to.
       schema:
         type: string
       required: true
@@ -169,9 +186,11 @@ post:
           schema:
             $ref: "../../common/schemas/Error.yml"
     "401":
-      $ref: "../responses/AuthorizationError.yml"
+      $ref: "../../common/responses/AuthorizationError.yml"
+    '404':
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
     "500":
-      $ref: "../responses/InternalServerError.yml"
+      $ref: "../../common/responses/InternalServerError.yml"
   x-codeSamples:
     - lang: Shell
       label: cURL

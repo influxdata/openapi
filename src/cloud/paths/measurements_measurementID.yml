@@ -1,27 +1,35 @@
 summary: Bucket Schema
 get:
-  summary: Retrieve measurement schema information
+  summary: Retrieve a measurement schema
+  description: |
+    Retrieves a measurement [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).
   operationId: getMeasurementSchema
   parameters:
     - in: query
       name: org
-      description: The name of the organization.
+      description: |
+        Organization name.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: orgID
-      description: The identifier of the organization.
+      description: |
+        Organization ID.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: path
       name: bucketID
-      description: The identifier of the bucket.
+      description: |
+        The ID of the bucket to retrieve schemas from.
       schema:
         type: string
       required: true
     - in: path
       name: measurementID
-      description: The identifier of the measurement.
+      description: |
+        The ID of the measurement schema to retrieve.
       schema:
         type: string
       required: true
@@ -35,34 +43,59 @@ get:
           description: The current version of the measurement schema
           schema:
             type: string
-
       content:
         application/json:
           schema:
             $ref: "../schemas/MeasurementSchema.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    '404':
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
 patch:
   summary: Update a measurement schema
+  description: |
+    Updates a measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).
+
+    Use this endpoint to update the columns of a measurement schema. The `name`,
+    `type`, and `dataType` fields of the column can be updated.
+
+    #### Limitations
+
+    - The `name` of the measurement can't be updated.
+
+    #### Related guides
+
+    - [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).
+    - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/).
   operationId: updateMeasurementSchema
   parameters:
     - in: query
       name: org
-      description: The name of the organization.
+      description: |
+        Organization name.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: query
       name: orgID
-      description: The identifier of the organization.
+      description: |
+        Organization ID.
+        Only returns schemas owned by this organization.
       schema:
         type: string
     - in: path
       name: bucketID
-      description: The identifier of the bucket.
+      description: |
+        The ID of the bucket to retrieve schemas from.
       schema:
         type: string
       required: true
     - in: path
       name: measurementID
-      description: The identifier of the measurement.
+      description: |
+        The ID of the measurement schema to retrieve.
       schema:
         type: string
       required: true
@@ -75,13 +108,16 @@ patch:
           $ref: "../schemas/MeasurementSchemaUpdateRequest.yml"
   responses:
     '200':
-      description: The updated measurement schema
+      description: |
+        Success.
+        The response body contains the measurement schema.
       content:
         application/json:
           schema:
             $ref: "../schemas/MeasurementSchema.yml"
     '400':
-      description: Client error updating measurement schema
+      description: |
+        Bad request.
       content:
         application/json:
           examples:
@@ -95,3 +131,34 @@ patch:
                 message: Unable to delete columns from schema
           schema:
             $ref: "../../common/schemas/Error.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    '404':
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
+    x-codeSamples:
+      - lang: Shell
+        label: cURL
+        source: |
+          curl --request PATCH "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+                "column": [
+                  {
+                    "type": "tag",
+                    "name": "location"
+                  },
+                  {
+                    "type": "field",
+                    "name": "value",
+                    "dataType": "float"
+                  },
+                  {
+                    "type": "timestamp",
+                    "name": "time"
+                  }
+                ]
+              }'
