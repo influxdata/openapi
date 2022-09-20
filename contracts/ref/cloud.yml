@@ -7696,7 +7696,7 @@ paths:
           $ref: '#/components/responses/BadRequestError'
           examples:
             invalidRequest:
-              summary: The `userID` is missing from the request body.
+              summary: The user `id` is missing from the request body.
               value:
                 code: invalid
                 message: user id missing or invalid
@@ -7720,7 +7720,7 @@ paths:
         lang: Shell
         source: |
           curl --request POST "http://localhost:8086/api/v2/buckets/BUCKET_ID/members \
-            --header "Authorization: Token INFLUX_TOKEN" \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
             --header "Accept: application/json" \
             --header "Content-Type: application/json" \
             --data '{
@@ -7777,10 +7777,42 @@ paths:
       - Buckets
   /api/v2/buckets/{bucketID}/owners:
     get:
+      description: |
+        Retrieves a list of all [owners](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#owner)
+        for a bucket.
+
+        Bucket owners have permission to delete buckets and remove user and member
+        permissions from the bucket.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Owner permissions are separate from API token permissions.
+        - Owner permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `read-orgs INFLUX_ORG_ID`
+
+        `INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a
+        list of owners for.
+
+        #### Related endpoints
+
+        - [Authorizations](#tag/Authorizations)
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
       operationId: GetBucketsIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The bucket ID.
+      - description: |
+          The ID of the bucket to retrieve owners for.
         in: path
         name: bucketID
         required: true
@@ -7790,9 +7822,31 @@ paths:
         "200":
           content:
             application/json:
+              examples:
+                successResponse:
+                  value:
+                    links:
+                      self: /api/v2/buckets/BUCKET_ID/owners
+                    users:
+                    - id: d88d182d91b0950f
+                      links:
+                        self: /api/v2/users/d88d182d91b0950f
+                      name: example-owner
+                      role: owner
+                      status: active
               schema:
                 $ref: '#/components/schemas/ResourceOwners'
-          description: A list of bucket owners
+          description: |
+            Success.
+            The response body contains a list of all owners for the bucket.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -7803,10 +7857,41 @@ paths:
       tags:
       - Buckets
     post:
+      description: |
+        Adds an owner to a bucket and returns the [owners](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#owner)
+        with role and user detail.
+
+        Use this endpoint to create a _resource owner_ for the bucket.
+        Bucket owners have permission to delete buckets and remove user and member
+        permissions from the bucket.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Owner permissions are separate from API token permissions.
+        - Owner permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `write-orgs INFLUX_ORG_ID`
+        `INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.
+
+        #### Related endpoints
+
+        - [Authorizations](#tag/Authorizations)
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
       operationId: PostBucketsIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The bucket ID.
+      - description: |
+          The ID of the bucket to add an owner for.
         in: path
         name: bucketID
         required: true
@@ -7815,9 +7900,18 @@ paths:
       requestBody:
         content:
           application/json:
+            examples:
+              successResponse:
+                value:
+                  id: d88d182d91b0950f
+                  links:
+                    self: /api/v2/users/d88d182d91b0950f
+                  name: example-user
+                  role: owner
+                  status: active
             schema:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
-        description: User to add as owner
+        description: A user to add as an owner for the bucket.
         required: true
       responses:
         "201":
@@ -7825,7 +7919,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceOwner'
-          description: Success. The user is an owner of the bucket
+          description: |
+            Created.
+            The bucket `owner` role is assigned to the user.
+            The response body contains the resource owner with
+            role and user detail.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+          examples:
+            invalidRequest:
+              summary: The user `id` is missing from the request body.
+              value:
+                code: invalid
+                message: user id missing or invalid
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
@@ -7835,18 +7947,59 @@ paths:
       summary: Add an owner to a bucket
       tags:
       - Buckets
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST "http://localhost:8086/api/v2/buckets/BUCKET_ID/owners \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+                "id": "09cfb87051cbe000"
+              }
   /api/v2/buckets/{bucketID}/owners/{userID}:
     delete:
+      description: |
+        Removes an owner from a bucket.
+
+        Use this endpoint to remove a user's `owner` role for a bucket.
+
+        #### InfluxDB Cloud
+
+        - Doesn't use `owner` and `member` roles.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        #### Limitations
+
+        - Owner permissions are separate from API token permissions.
+        - Owner permissions are used in the context of the InfluxDB UI.
+
+        #### Required permissions
+
+        - `write-orgs INFLUX_ORG_ID`
+        `INFLUX_ORG_ID` is the ID of the organization that you want to remove an owner
+        from.
+
+        #### Related endpoints
+
+        - [Authorizations](#tag/Authorizations)
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/users/)
       operationId: DeleteBucketsIDOwnersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the owner to remove.
+      - description: |
+          The ID of the owner to remove.
         in: path
         name: userID
         required: true
         schema:
           type: string
-      - description: The bucket ID.
+      - description: |
+          The ID of the bucket to remove an owner from.
         in: path
         name: bucketID
         required: true
@@ -7854,7 +8007,15 @@ paths:
           type: string
       responses:
         "204":
-          description: Owner removed
+          description: |
+            Success.
+            The user is no longer an owner of the bucket.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           content:
             application/json:
