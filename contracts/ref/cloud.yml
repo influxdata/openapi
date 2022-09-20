@@ -209,6 +209,7 @@ components:
             readOnly: true
             type: string
           id:
+            description: The authorization ID.
             readOnly: true
             type: string
           links:
@@ -225,15 +226,19 @@ components:
             readOnly: true
             type: object
           org:
-            description: The name of the organization that owns the token.
+            description: |
+              The organization name.
+              Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the token is scoped to.
             readOnly: true
             type: string
           orgID:
-            description: The ID of the organization.
+            description: |
+              The organization ID.
+              Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
             type: string
           permissions:
             description: |
-              A list of permissions for an authorization.
+              The list of permissions.
               An authorization must have at least one permission.
             items:
               $ref: '#/components/schemas/Permission'
@@ -241,7 +246,11 @@ components:
             type: array
           token:
             description: |
-              The API token for authenticating InfluxDB API and CLI requests.
+              The API token.
+              [Tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+              used to authenticate InfluxDB API requests and `influx` CLI commands.
+              If authenticated, the token is allowed the permissions of the _authorization_.
+              The token value is unique to the authorization.
             readOnly: true
             type: string
           updatedAt:
@@ -249,11 +258,17 @@ components:
             readOnly: true
             type: string
           user:
-            description: The name of the user that the token is scoped to.
+            description: |
+              The user name.
+              Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
+              If the authorization is _scoped_ to a user, the user;
+              otherwise, the creator of the authorization.
             readOnly: true
             type: string
           userID:
-            description: The ID of the user that the token is scoped to.
+            description: The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user)
+              that owns the authorization. If _scoped_, the user that the authorization
+              is scoped to; otherwise, the creator of the authorization.
             readOnly: true
             type: string
         type: object
@@ -3622,7 +3637,8 @@ components:
             To use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:
 
             ```json
-              query: "from(bucket: params.mybucket) |> range(start: params.rangeStart) |> limit(n:1)"
+              query: "from(bucket: params.mybucket)\
+                          |> range(start: params.rangeStart) |> limit(n:1)"
             ```
 
             and pass _`params`_ with the key-value pairs--for example:
@@ -4627,7 +4643,7 @@ components:
             An authorization ID.
             Specifies the authorization used when the task communicates with the query engine.
 
-            To find an authorization ID, you can use the
+            To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
             list authorizations.
           type: string
@@ -4740,7 +4756,7 @@ components:
 
             #### Related guides
 
-            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
           type: string
         scriptParameters:
           description: |
@@ -6170,7 +6186,7 @@ components:
       properties:
         id:
           description: |
-            The ID of the user.
+            The user ID.
           readOnly: true
           type: string
         links:
@@ -6184,12 +6200,13 @@ components:
           type: object
         name:
           description: |
-            The name of the user.
+            The user name.
           type: string
         status:
           default: active
           description: |
-            The status of a user. An inactive user won't have access to resources.
+            The status of a user.
+            An inactive user can't read or write resources.
           enum:
           - active
           - inactive
@@ -6477,15 +6494,19 @@ components:
         ### Basic authentication scheme
 
         Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
-          - **username**: InfluxDB Cloud username
-          - **password**: InfluxDB Cloud API token
+
+        - **username**: InfluxDB Cloud username
+        - **password**: InfluxDB Cloud API token
 
         #### Example
 
-        `curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
-              --user "exampleuser@influxdata.com":"INFLUX_API_TOKEN"`
+        ```sh
+        curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
+              --user "exampleuser@influxdata.com":"INFLUX_API_TOKEN"
+        ```
 
         Replace the following:
+
         - *`exampleuser@influxdata.com`*: the email address that you signed up with
         - *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
       scheme: basic
@@ -6495,21 +6516,19 @@ components:
         Use the [Token authentication](#section/Authentication/TokenAuthentication)
         scheme to authenticate to the InfluxDB API.
 
-
         In your API requests, send an `Authorization` header.
         For the header value, provide the word `Token` followed by a space and an InfluxDB API token.
         The word `Token` is case-sensitive.
 
-
         ### Syntax
 
-        `Authorization: Token YOUR_INFLUX_API_TOKEN`
-
+        `Authorization: Token INFLUX_API_TOKEN`
 
         For more information and examples, see the following:
-          - [`/authorizations`](#tag/Authorizations) endpoint.
-          - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication).
-          - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/).
+
+        - [`/authorizations`(#tag/Authorizations) endpoints]
+        - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication)
+        - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)
       in: header
       name: Authorization
       type: apiKey
@@ -6553,41 +6572,45 @@ paths:
 
         #### Related guides
 
-        - [View tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/).
+        - [View tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/)
       operationId: GetAuthorizations
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
           A user ID.
-          Only returns authorizations scoped to this user.
+          Only returns authorizations scoped to the specified
+          [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: query
         name: userID
         schema:
           type: string
       - description: |
           A user name.
-          Only returns authorizations scoped to this user.
+          Only returns authorizations scoped to the specified
+          [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: query
         name: user
         schema:
           type: string
       - description: |
           An organization ID.
-          Only returns authorizations that belong to this organization.
+          Only returns authorizations that belong to the specified
+          [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
         in: query
         name: orgID
         schema:
           type: string
       - description: |
           An organization name.
-          Only returns authorizations that belong to this organization.
+          Only returns authorizations that belong to the specified
+          [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
         in: query
         name: org
         schema:
           type: string
       - description: |
-          A token value.
-          Only returns the authorization that has this token.
+          An API [token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token) value.
+          Returns the authorization for the specified token.
         in: query
         name: token
         schema:
@@ -6614,11 +6637,11 @@ paths:
       - Authorizations
     post:
       description: |
-        Creates an authorization.
+        Creates an authorization and returns the authorization with the
+        generated API [token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token).
 
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
-        The response contains the new authorization with the generated API token.
 
         Keep the following in mind when creating and updating authorizations:
 
@@ -6642,7 +6665,7 @@ paths:
 
         #### Related guides
 
-        - [Create a token](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/).
+        - [Create a token](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/)
       operationId: PostAuthorizations
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -6659,7 +6682,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: Authorization created
+          description: |
+            Success. The authorization is created. The response body contains the authorization.
         "400":
           $ref: '#/components/responses/GeneralServerError'
           description: Invalid request
@@ -6799,7 +6823,7 @@ paths:
           10 buckets.
 
           ```sh
-          $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
+          $ curl --request GET "INFLUX_URL/api/v2/buckets?limit=1&offset=50"
 
           $ {
               "links": {
@@ -9570,7 +9594,7 @@ paths:
 
         #### Related guides
 
-        - [Delete data](https://docs.influxdata.com/influxdb/cloud/write-data/delete-data/).
+        - [Delete data](https://docs.influxdata.com/influxdb/cloud/write-data/delete-data/)
         - Learn how to use [delete predicate syntax](https://docs.influxdata.com/influxdb/cloud/reference/syntax/delete-predicate/).
         - Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)
           and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).
@@ -9642,7 +9666,7 @@ paths:
 
           #### Related guides
 
-          - [Delete data](https://docs.influxdata.com/influxdb/cloud/write-data/delete-data/).
+          - [Delete data](https://docs.influxdata.com/influxdb/cloud/write-data/delete-data/)
           - Learn how to use [delete predicate syntax](https://docs.influxdata.com/influxdb/cloud/reference/syntax/delete-predicate/).
         required: true
       responses:
@@ -9901,13 +9925,50 @@ paths:
   /api/v2/me/password:
     put:
       description: |
+        Updates the password for the signed-in [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+
+        This endpoint represents the third step in the following three-step process to let a
+        user with a user session update their password:
+          1. Pass the user's [Basic authentication credentials](#section/Authentication/BasicAuthentication) to the `POST /api/v2/signin`
+             endpoint to create a user session and generate a session cookie.
+          2. From the response in the first step, extract the session cookie (`Set-Cookie`) header.
+          3. Pass the following in a request to the `PUT /api/v2/me/password` endpoint:
+             - The `Set-Cookie` header from the second step
+             - The `Authorization Basic` header with the user's _Basic authentication_ credentials
+             - `{"password": "NEW_PASSWORD"}` in the request body
+
         #### InfluxDB Cloud
 
-        InfluxDB Cloud doesn't support changing user passwords through the API.
-        Use the InfluxDB Cloud user interface to update your password.
+        - Doesn't allow you to manage passwords through the API.
+          Use the InfluxDB Cloud user interface (UI) to update your password.
+
+        #### Related endpoints
+
+        - [Signin](#tag/Signin)
+        - [Signout](#tag/Signout)
+        - [Users](#tag/Users)
+
+        #### Related guides
+
+        - [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)
+        - [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)
       operationId: PutMePassword
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
+      - description: |
+          The user session cookie for the
+          [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user)
+          signed in with [Basic authentication credentials](#section/Authentication/BasicAuthentication).
+
+          #### Related guides
+
+          - [Manage users]({{% INFLUXDB_DOCS_URL%}}/users/)
+        example: influxdb-oss-session=19aaaZZZGOvP2GGryXVT2qYftlFKu3bIopurM6AGFow1yF1abhtOlbHfsc-d8gozZFC_6WxmlQIAwLMW5xs523w==
+        in: cookie
+        name: influxdb-oss-session
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -9917,11 +9978,20 @@ paths:
         required: true
       responses:
         "204":
-          description: Success. The password was updated.
+          description: Success. The password is updated.
         "400":
           description: |
             Bad request.
-            InfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.
+
+            #### InfluxDB Cloud
+
+            - Doesn't allow you to manage through the API; always responds with this status.
+
+            #### InfluxDB OSS
+
+            - Doesn't understand a value passed in the request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
         default:
           content:
             application/json:
@@ -10566,7 +10636,7 @@ paths:
 
         #### Related guides
 
-        - [View organizations](https://docs.influxdata.com/influxdb/cloud/organizations/view-orgs/).
+        - [View organizations](https://docs.influxdata.com/influxdb/cloud/organizations/view-orgs/)
       operationId: GetOrgs
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -10745,7 +10815,7 @@ paths:
 
         #### Related guides
 
-        - [Delete organization](https://docs.influxdata.com/influxdb/cloud/organizations/delete-orgs/)
+        - [Delete organizations](https://docs.influxdata.com/influxdb/cloud/organizations/delete-orgs/)
       operationId: DeleteOrgsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -10804,7 +10874,7 @@ paths:
 
         #### Related guides
 
-        - [View organization](https://docs.influxdata.com/influxdb/cloud/organizations/view-orgs/)
+        - [View organizations](https://docs.influxdata.com/influxdb/cloud/organizations/view-orgs/)
       operationId: GetOrgsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11654,7 +11724,7 @@ paths:
 
         #### Related guides
 
-        - [Query with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/query-data/execute-queries/influx-api/).
+        - [Query with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/query-data/execute-queries/influx-api/)
         - [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)
       operationId: PostQuery
       parameters:
@@ -11870,14 +11940,12 @@ paths:
 
                     The following sample query is missing the _`bucket`_ property key:
 
-                      ```json
-                      {
-                        "query": "from(: \"iot_center\")\
-
-                        ...
-
-                      }
-                      ```
+                    ```json
+                    {
+                      "query": "from(: \"iot_center\")\
+                      ...
+                    }
+                    ```
                   summary: Missing property key error
                   value:
                     errors:
@@ -11998,6 +12066,7 @@ paths:
             ```
 
             The following code sample shows how to pass the query as JSON in the request body:
+
             ```json
             { "query": "from(foo: \"iot_center\")\
                             |> range(start: -90d)\
@@ -12436,7 +12505,7 @@ paths:
 
         #### Related Guides
 
-        - [List of all Flux functions](https://docs.influxdata.com/influxdb/cloud/flux/v0.x/stdlib/all-functions/).
+        - [List of all Flux functions](https://docs.influxdata.com/influxdb/cloud/flux/v0.x/stdlib/all-functions/)
       operationId: GetQuerySuggestions
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -13089,7 +13158,7 @@ paths:
 
         #### Related Guides
 
-        - [List of all Flux functions](https://docs.influxdata.com/influxdb/cloud/flux/v0.x/stdlib/all-functions/).
+        - [List of all Flux functions](https://docs.influxdata.com/influxdb/cloud/flux/v0.x/stdlib/all-functions/)
       operationId: GetQuerySuggestionsName
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -13177,14 +13246,14 @@ paths:
         - Paging with an `offset` greater than the number of records will result in
         an empty response--for example:
 
-          The following request is paging to the 50th record, but the user has only
+          The following sample request pages to the 50th record, but the user has only
           created two scripts.
 
-            ```sh
-            $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
+          ```sh
+          $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
 
-            $ {"scripts":[]}
-            ```
+          $ {"scripts":[]}
+          ```
 
         #### Related guides
 
@@ -13203,7 +13272,7 @@ paths:
           type: integer
       - description: |
           The offset for pagination.
-          Specifies the number of records to skip in the result.
+          Skips the specified number of records in the result.
         in: query
         name: offset
         required: false
@@ -13211,7 +13280,7 @@ paths:
           default: 0
           minimum: 0
           type: integer
-      - description: The name of the script.
+      - description: The script name. Lists scripts with the specified name.
         in: query
         name: name
         required: false
@@ -13314,8 +13383,8 @@ paths:
 
         #### Related guides
 
-        - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
-        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/).
+        - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+        - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
       operationId: PostScripts
       requestBody:
         content:
@@ -13397,7 +13466,7 @@ paths:
       parameters:
       - description: |
           A script ID.
-          Specifies the script to delete.
+          Deletes the specified script.
         in: path
         name: scriptID
         required: true
@@ -13423,7 +13492,7 @@ paths:
       parameters:
       - description: |
           A script ID.
-          Specifies the script to retrieve.
+          Retrieves the specified script.
         in: path
         name: scriptID
         required: true
@@ -13456,7 +13525,7 @@ paths:
       parameters:
       - description: |
           A script ID.
-          Specifies the script to update.
+          Updates the specified script.
         in: path
         name: scriptID
         required: true
@@ -13515,12 +13584,13 @@ paths:
         ```
 
         #### Related guides
-        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+
+        - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       operationId: PostScriptsIDInvoke
       parameters:
       - description: |
           A script ID.
-          Specifies the script to execute.
+          Runs the specified script.
         in: path
         name: scriptID
         required: true
@@ -13633,7 +13703,7 @@ paths:
       parameters:
       - description: |
           The script ID.
-          Specifies the script to add labels to.
+          Adds labels to the specified script.
         in: path
         name: scriptID
         required: true
@@ -13685,7 +13755,9 @@ paths:
       description: Removes labels from a script and returns the script.
       operationId: PatchScriptsIDRemoveLabels
       parameters:
-      - description: A script ID. Specifies the script to remove labels from.
+      - description: |
+          A script ID.
+          Removes labels from the specified script.
         in: path
         name: scriptID
         required: true
@@ -13802,26 +13874,67 @@ paths:
       - Setup
   /api/v2/signin:
     post:
-      description: Authenticates ***Basic Auth*** credentials for a user. If successful,
-        creates a new UI session for the user.
+      description: |
+        Authenticates [Basic authentication credentials](#section/Authentication/BasicAuthentication)
+        for a [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user),
+        and then, if successful, generates a user session.
+
+        To authenticate a user, pass the HTTP `Authorization` header with the
+        `Basic` scheme and the base64-encoded username and password--for example:
+
+        ```sh
+        Authorization: Basic USERNAME:PASSWORD
+        ```
+
+        In InfluxDB Cloud, the username is the email address the user signed up with.
+
+        _Note that many HTTP clients provide a Basic authentication option that
+        accepts the `USERNAME:PASSWORD` syntax and encodes the credentials before
+        sending the request.
+        To learn more about HTTP authentication, see
+        [Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._
+
+        If authentication is successful, InfluxDB creates a new session for the user
+        and then returns the session cookie in the `Set-Cookie` response header.
+        User sessions exist only in memory.
+        They expire within ten minutes and during restarts of the InfluxDB instance.
+
+        #### User sessions with authorizations
+
+        - In InfluxDB Cloud, a user session inherits all the user's permissions for
+          the organization.
+        - In InfluxDB OSS, a user session inherits all the user's permissions for all
+          the organizations that the user belongs to.
+
+        #### Related endpoints
+
+        - [Signout](#tag/Signout)
       operationId: PostSignin
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       responses:
         "204":
-          description: Success. User authenticated.
+          description: |
+            Success.
+            The user is authenticated.
+            The `Set-Cookie` response header contains the session cookie.
         "401":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Unauthorized access.
+          description: |
+            Unauthorized.
+            This error may be caused by one of the following problems:
+              - The user doesn't have access.
+              - The user passed incorrect credentials in the request.
+              - The credentials are formatted incorrectly in the request.
         "403":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: User account is disabled.
+          description: Forbidden. The user account is disabled.
         default:
           content:
             application/json:
@@ -13833,6 +13946,12 @@ paths:
       summary: Create a user session.
       tags:
       - Signin
+      x-codeSamples:
+      - label: 'cURL: signin with --user option encoding'
+        lang: Shell
+        source: |
+          curl --request POST http://localhost:8086/api/v2/signin \
+               --user "USERNAME:PASSWORD"
   /api/v2/signout:
     post:
       description: Expires the current UI session for the user.
@@ -14396,44 +14515,44 @@ paths:
 
           - `flux`: a string of "raw" Flux that contains task options and the script--for example:
 
-              ```json
-              {
-                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-                from(bucket: \"telegraf\")
-                  |> range(start: -1h)
-                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                  |> aggregateWindow(every: 1h, fn: max)
-                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-                "status": "active",
-                "description": "This task downsamples CPU data every hour"
-              }
-              ```
+            ```json
+            {
+              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+              from(bucket: \"telegraf\")
+                |> range(start: -1h)
+                |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                |> aggregateWindow(every: 1h, fn: max)
+                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+              "status": "active",
+              "description": "This task downsamples CPU data every hour"
+            }
+            ```
 
           - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
             for the task to run.
             To pass task options when using `scriptID`, pass the options as
             properties in the request body--for example:
 
-              ```json
-              {
-                "name": "CPU Total 1 Hour New",
-                "description": "This task downsamples CPU data every hour",
-                "every": "1h",
-                "scriptID": "SCRIPT_ID",
-                "scriptParameters":
-                  {
-                    "rangeStart": "-1h",
-                    "bucket": "telegraf",
-                    "filterField": "cpu-total"
-                  }
+            ```json
+            {
+              "name": "CPU Total 1 Hour New",
+              "description": "This task downsamples CPU data every hour",
+              "every": "1h",
+              "scriptID": "SCRIPT_ID",
+              "scriptParameters":
+                {
+                  "rangeStart": "-1h",
+                  "bucket": "telegraf",
+                  "filterField": "cpu-total"
                 }
-              ```
+              }
+            ```
 
         #### Limitations:
 
-          - You can't use `flux` and `scriptID` for the same task.
+        - You can't use `flux` and `scriptID` for the same task.
 
         #### Related guides
 
@@ -14483,8 +14602,8 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
-              - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
+            - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
+            - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "500":
@@ -14626,40 +14745,40 @@ paths:
 
           - `flux`: a string of "raw" Flux that contains task options and the script--for example:
 
-              ```json
-              {
-                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-                from(bucket: \"telegraf\")
-                  |> range(start: -1h)
-                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                  |> aggregateWindow(every: 1h, fn: max)
-                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-                "status": "active",
-                "description": "This task downsamples CPU data every hour"
-              }
-              ```
+            ```json
+            {
+              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+              from(bucket: \"telegraf\")
+                |> range(start: -1h)
+                |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                |> aggregateWindow(every: 1h, fn: max)
+                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+              "status": "active",
+              "description": "This task downsamples CPU data every hour"
+            }
+            ```
 
           - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
             for the task to run.
             To pass task options when using `scriptID`, pass the options as
             properties in the request body--for example:
 
-              ```json
-              {
-                "name": "CPU Total 1 Hour New",
-                "description": "This task downsamples CPU data every hour",
-                "every": "1h",
-                "scriptID": "SCRIPT_ID",
-                "scriptParameters":
-                  {
-                    "rangeStart": "-1h",
-                    "bucket": "telegraf",
-                    "filterField": "cpu-total"
-                  }
+            ```json
+            {
+              "name": "CPU Total 1 Hour New",
+              "description": "This task downsamples CPU data every hour",
+              "every": "1h",
+              "scriptID": "SCRIPT_ID",
+              "scriptParameters":
+                {
+                  "rangeStart": "-1h",
+                  "bucket": "telegraf",
+                  "filterField": "cpu-total"
                 }
-              ```
+              }
+            ```
 
         #### Limitations:
 
@@ -15224,7 +15343,7 @@ paths:
         This may result in concurrently running tasks.
 
         To _retry_ a previous run (and avoid creating a new run),
-        use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry`](#operation/PostTasksIDRunsIDRetry) endpoint.
+        use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry` endpoint](#operation/PostTasksIDRunsIDRetry).
       operationId: PostTasksIDRuns
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -15466,7 +15585,7 @@ paths:
         retry and returns the scheduled run.
 
         To manually start a _new_ task run, use the
-        [`POST /api/v2/tasks/{taskID}/runs`](#operation/PostTasksIDRuns) endpoint.
+        [`POST /api/v2/tasks/{taskID}/runs` endpoint](#operation/PostTasksIDRuns).
 
         #### Limitations
 
@@ -16341,17 +16460,82 @@ paths:
   /api/v2/users:
     get:
       description: |
-        Retrieves a list of users.
+        Retrieves a list of [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+
+        To limit which users are returned, pass query parameters in your request.
+
+        #### InfluxDB Cloud
+
+        - InfluxDB Cloud doesn't allow listing all users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions for InfluxDB Cloud
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | List all users | Operator token | InfluxData internal use only |
+        | List a specific user | `read-users` or `read-user USER_ID` |
+
+        Replace the following:
+
+        - `USER_ID`: ID of the user that you want to retrieve.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)
       operationId: GetUsers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
+      - description: |
+          A user name.
+          Only lists the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+        in: query
+        name: name
+        schema:
+          type: string
+      - description: |
+          A user id.
+          Only lists the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+        in: query
+        name: id
+        schema:
+          type: string
       responses:
         "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
-          description: Success. The response contains a list of `users`.
+          description: |
+            Success. The response contains a list of `users`.
+
+            #### InfluxDB Cloud
+
+            - Returns an empty `users` list if you don't pass _`id`_ or _`name`_ parameters and don't use an
+              _operator token_.
+              Only InfluxData can access InfluxDB Cloud operator tokens.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Unauthorized.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Unprocessable entity.
+
+            The error may indicate one of the following problems:
+
+            - The request body isn't valid--the request is well-formed,
+              but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support.
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
@@ -16361,7 +16545,25 @@ paths:
       - Users
     post:
       description: |
-        Creates a user and returns the newly created user.
+        (InfluxData internal use only)
+
+        Creates and returns a [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user)
+        that can access InfluxDB.
+
+        #### InfluxDB Cloud
+
+        - InfluxDB Cloud doesn't allow managing users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions for InfluxDB Cloud
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Create user | Operator token | InfluxData internal use only |
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)
       operationId: PostUsers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -16380,7 +16582,7 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
           description: |
             Success.
-            The response contains the newly created user.
+            The response body contains the user.
         "401":
           content:
             application/json:
@@ -16388,6 +16590,11 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: |
             Unauthorized.
+
+            #### InfluxDB Cloud
+
+            - Returns this error if the request doesn't use an _operator token_.
+              Only InfluxData can access InfluxDB Cloud operator tokens.
         "422":
           content:
             application/json:
@@ -16398,7 +16605,8 @@ paths:
 
             The error may indicate one of the following problems:
 
-            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - The request body isn't valid--the request is well-formed,
+              but InfluxDB can't process it due to semantic errors.
             - You passed a parameter combination that InfluxDB doesn't support.
         "500":
           $ref: '#/components/responses/InternalServerError'
@@ -16410,10 +16618,34 @@ paths:
       - Users
   /api/v2/users/{userID}:
     delete:
+      description: |
+        (InfluxData internal use only)
+
+        Deletes a [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+
+        For security purposes, once an InfluxDB user account is deleted from an
+        organization, the user (and their token) cannot be reactivated.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow managing users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Delete user | Operator token | InfluxData internal use only |
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)
       operationId: DeleteUsersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the user to delete.
+      - description: |
+          A user ID.
+          Deletes the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: path
         name: userID
         required: true
@@ -16421,7 +16653,7 @@ paths:
           type: string
       responses:
         "204":
-          description: User deleted
+          description: Success. The user is deleted.
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
@@ -16429,10 +16661,18 @@ paths:
       tags:
       - Users
     get:
+      description: |
+        Retrieves a [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)
       operationId: GetUsersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The user ID.
+      - description: |
+          A user ID.
+          Retrieves the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: path
         name: userID
         required: true
@@ -16444,7 +16684,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-          description: User details
+          description: Success. The response body contains the user.
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
@@ -16452,10 +16692,31 @@ paths:
       tags:
       - Users
     patch:
+      description: |
+        (InfluxData internal use only)
+
+        Updates a [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) and returns the user.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow managing users through the API.
+          Use the InfluxDB Cloud user interface (UI) to manage account information.
+
+        #### Required permissions for InfluxDB Cloud
+
+        | Action | Permission required | Restriction |
+        |:-------|:--------------------|:------------|
+        | Update user | Operator token | InfluxData internal use only |
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)
       operationId: PatchUsersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the user to update.
+      - description: |
+          A user ID.
+          Updates the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: path
         name: userID
         required: true
@@ -16466,7 +16727,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        description: User update to apply
+        description: The user update to apply.
         required: true
       responses:
         "200":
@@ -16474,7 +16735,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-          description: User updated
+          description: Success. The response body contains the updated user.
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
@@ -16484,14 +16745,25 @@ paths:
   /api/v2/users/{userID}/password:
     post:
       description: |
+        Updates a user password.
+
+        Use this endpoint to let a user authenticate with
+        [Basic authentication credentials](#section/Authentication/BasicAuthentication)
+        and set a new password.
+
         #### InfluxDB Cloud
 
-        InfluxDB Cloud doesn't support changing user passwords through the API.
-        Use the InfluxDB Cloud user interface to update your password.
+        - Doesn't allow you to manage user passwords through the API.
+          Use the InfluxDB Cloud user interface (UI) to update a password.
+
+        #### Related guides
+
+        - [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)
+        - [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)
       operationId: PostUsersIDPassword
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The user ID.
+      - description: The ID of the user to set the password for.
         in: path
         name: userID
         required: true
@@ -16502,27 +16774,53 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PasswordResetBody'
-        description: New password
+        description: The new password to set for the user.
         required: true
       responses:
         "204":
-          description: Password successfully updated
+          description: Success. The password is updated.
         "400":
-          description: |
-            Bad request.
-            InfluxDB Cloud doesn't support changing passwords through the API and always responds with this status.
-        default:
           content:
             application/json:
+              examples:
+                updatePasswordNotAllowed:
+                  summary: Cloud API can't update passwords
+                  value:
+                    code: invalid
+                    message: passwords cannot be changed through the InfluxDB Cloud
+                      API
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Unsuccessful authentication
+          description: |
+            Bad request.
+
+            #### InfluxDB Cloud
+
+            - Doesn't allow you to manage passwords through the API; always responds with this status.
+
+            #### InfluxDB OSS
+
+            - Doesn't understand a value passed in the request.
+        default:
+          $ref: '#/components/responses/GeneralServerError'
+          description: Unexpected error
       security:
       - BasicAuthentication: []
       summary: Update a password
       tags:
       - Security and access endpoints
       - Users
+      x-codeSamples:
+      - label: 'cURL: use Basic auth to update the user password'
+        lang: Shell
+        source: |
+          curl --request POST \
+             "http://localhost:8086/api/v2/users/USER_ID/password" \
+            --header 'Content-type: application/json' \
+            --user "USERNAME:PASSWORD" \
+            --data-binary @- << EOF
+              {"password": ""}
+          EOF
   /api/v2/variables:
     get:
       operationId: GetVariables
@@ -16821,8 +17119,8 @@ paths:
 
         #### Related guides
 
-        - [Write data with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/write-data/developer-tools/api).
-        - [Optimize writes to InfluxDB](https://docs.influxdata.com/influxdb/cloud/write-data/best-practices/optimize-writes/).
+        - [Write data with the InfluxDB API](https://docs.influxdata.com/influxdb/cloud/write-data/developer-tools/api)
+        - [Optimize writes to InfluxDB](https://docs.influxdata.com/influxdb/cloud/write-data/best-practices/optimize-writes/)
         - [Troubleshoot issues writing data](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot/)
       operationId: PostWrite
       parameters:
@@ -16878,7 +17176,8 @@ paths:
             - Returns only `application/json` for format and limit errors.
 
           #### Related guides
-            - [Troubleshoot issues writing data](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot/).
+
+          - [Troubleshoot issues writing data](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot/)
         in: header
         name: Accept
         schema:
@@ -16961,7 +17260,7 @@ paths:
 
           #### Related guides
 
-          - [Best practices for optimizing writes](https://docs.influxdata.com/influxdb/cloud/write-data/best-practices/optimize-writes/).
+          - [Best practices for optimizing writes](https://docs.influxdata.com/influxdb/cloud/write-data/best-practices/optimize-writes/)
         required: true
       responses:
         "204":
@@ -16979,7 +17278,7 @@ paths:
 
             #### Related guides
 
-            - [How to check for write errors](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot/).
+            - [How to check for write errors](https://docs.influxdata.com/influxdb/cloud/write-data/troubleshoot/)
         "400":
           content:
             application/json:
@@ -17110,42 +17409,42 @@ paths:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
           A user ID.
-          Only returns legacy authorizations scoped to this user.
+          Only returns legacy authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         in: query
         name: userID
         schema:
           type: string
       - description: |
           A user name.
-          Only returns legacy authorizations scoped to this user.
+          Only returns legacy authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         in: query
         name: user
         schema:
           type: string
       - description: |
           An organization ID.
-          Only returns legacy authorizations that belong to this organization.
+          Only returns legacy authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         in: query
         name: orgID
         schema:
           type: string
       - description: |
           An organization name.
-          Only returns legacy authorizations that belong to this organization.
+          Only returns legacy authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         in: query
         name: org
         schema:
           type: string
       - description: |
           An authorization name token.
-          Only returns legacy authorizations with this token (name).
+          Only returns legacy authorizations with the specified name.
         in: query
         name: token
         schema:
           type: string
       - description: |
           An authorization ID.
-          Only returns the legacy authorization with this ID.
+          Returns the specified legacy authorization.
         in: query
         name: authID
         schema:
@@ -17173,7 +17472,7 @@ paths:
       - Legacy Authorizations
     post:
       description: |
-        Creates a legacy authorization and returns the newly created authorization.
+        Creates a legacy authorization and returns the legacy authorization.
 
         #### Required permissions
 
@@ -17643,7 +17942,7 @@ tags:
 
     If a user signs in with username and password, creating a _user session_,
     the session carries the permissions granted by all the user's authorizations.
-    To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+    To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
     ### Related endpoints
 
@@ -17652,9 +17951,9 @@ tags:
 
     ### Related guides
 
-      - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication).
-      - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/).
-      - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/).
+    - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication)
+    - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)
+    - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/)
   name: Authorizations
 - description: |
     Store your data in InfluxDB [buckets](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#bucket).
@@ -17666,7 +17965,7 @@ tags:
 
     ### Related guides
 
-      - [Manage buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/)
+    - [Manage buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/)
   name: Buckets
 - description: |
     Store, manage, and execute scripts in InfluxDB.
@@ -17688,7 +17987,7 @@ tags:
     #### Related guides
 
     - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/) from API requests.
-    - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+    - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
   name: Invokable Scripts
 - description: |
     Delete data from an InfluxDB bucket.
@@ -17714,9 +18013,9 @@ tags:
 
     #### Related guides
 
-    - [Get started with tasks](https://docs.influxdata.com/influxdb/cloud/process-data/get-started/).
+    - [Get started with tasks](https://docs.influxdata.com/influxdb/cloud/process-data/get-started/)
     - [Common data processing tasks](https://docs.influxdata.com/influxdb/cloud/process-data/common-tasks/)
-    - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
+    - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script)
   name: Tasks
 - description: |
     Export and apply InfluxDB **templates**.
@@ -17757,7 +18056,7 @@ tags:
     Optionally, you can scope an authorization (and its API token) to a user.
     If a user signs in with username and password, creating a _user session_,
     the session carries the permissions granted by all the user's authorizations.
-    To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+    To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
     #### Related guides
 
