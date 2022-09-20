@@ -3637,7 +3637,8 @@ components:
             To use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:
 
             ```json
-              query: "from(bucket: params.mybucket) |> range(start: params.rangeStart) |> limit(n:1)"
+              query: "from(bucket: params.mybucket)\
+                          |> range(start: params.rangeStart) |> limit(n:1)"
             ```
 
             and pass _`params`_ with the key-value pairs--for example:
@@ -6812,6 +6813,26 @@ paths:
         To limit which buckets are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all buckets up to the
         default `limit`.
+
+        #### Limitations
+
+        - Paging with an `offset` greater than the number of records will result in
+        an empty list of buckets--for example:
+
+          The following request is paging to the 50th record, but the user only has
+          10 buckets.
+
+          ```sh
+          $ curl --request GET "INFLUX_URL/api/v2/buckets?limit=1&offset=50"
+
+          $ {
+              "links": {
+                  "prev": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=49\u0026orgID=ORG_ID",
+                  "self": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=50\u0026orgID=ORG_ID"
+              },
+              "buckets": []
+            }
+          ```
 
         #### Related Guides
 
@@ -11919,14 +11940,12 @@ paths:
 
                     The following sample query is missing the _`bucket`_ property key:
 
-                      ```json
-                      {
-                        "query": "from(: \"iot_center\")\
-
-                        ...
-
-                      }
-                      ```
+                    ```json
+                    {
+                      "query": "from(: \"iot_center\")\
+                      ...
+                    }
+                    ```
                   summary: Missing property key error
                   value:
                     errors:
@@ -12047,6 +12066,7 @@ paths:
             ```
 
             The following code sample shows how to pass the query as JSON in the request body:
+
             ```json
             { "query": "from(foo: \"iot_center\")\
                             |> range(start: -90d)\
@@ -13226,14 +13246,14 @@ paths:
         - Paging with an `offset` greater than the number of records will result in
         an empty response--for example:
 
-          The following request is paging to the 50th record, but the user has only
+          The following sample request pages to the 50th record, but the user has only
           created two scripts.
 
-            ```sh
-            $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
+          ```sh
+          $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
 
-            $ {"scripts":[]}
-            ```
+          $ {"scripts":[]}
+          ```
 
         #### Related guides
 
@@ -13862,9 +13882,9 @@ paths:
         To authenticate a user, pass the HTTP `Authorization` header with the
         `Basic` scheme and the base64-encoded username and password--for example:
 
-          ```sh
-          Authorization: Basic USERNAME:PASSWORD
-          ```
+        ```sh
+        Authorization: Basic USERNAME:PASSWORD
+        ```
 
         In InfluxDB Cloud, the username is the email address the user signed up with.
 
@@ -14495,44 +14515,44 @@ paths:
 
           - `flux`: a string of "raw" Flux that contains task options and the script--for example:
 
-              ```json
-              {
-                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-                from(bucket: \"telegraf\")
-                  |> range(start: -1h)
-                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                  |> aggregateWindow(every: 1h, fn: max)
-                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-                "status": "active",
-                "description": "This task downsamples CPU data every hour"
-              }
-              ```
+            ```json
+            {
+              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+              from(bucket: \"telegraf\")
+                |> range(start: -1h)
+                |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                |> aggregateWindow(every: 1h, fn: max)
+                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+              "status": "active",
+              "description": "This task downsamples CPU data every hour"
+            }
+            ```
 
           - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
             for the task to run.
             To pass task options when using `scriptID`, pass the options as
             properties in the request body--for example:
 
-              ```json
-              {
-                "name": "CPU Total 1 Hour New",
-                "description": "This task downsamples CPU data every hour",
-                "every": "1h",
-                "scriptID": "SCRIPT_ID",
-                "scriptParameters":
-                  {
-                    "rangeStart": "-1h",
-                    "bucket": "telegraf",
-                    "filterField": "cpu-total"
-                  }
+            ```json
+            {
+              "name": "CPU Total 1 Hour New",
+              "description": "This task downsamples CPU data every hour",
+              "every": "1h",
+              "scriptID": "SCRIPT_ID",
+              "scriptParameters":
+                {
+                  "rangeStart": "-1h",
+                  "bucket": "telegraf",
+                  "filterField": "cpu-total"
                 }
-              ```
+              }
+            ```
 
         #### Limitations:
 
-          - You can't use `flux` and `scriptID` for the same task.
+        - You can't use `flux` and `scriptID` for the same task.
 
         #### Related guides
 
@@ -14582,8 +14602,8 @@ paths:
 
             #### InfluxDB Cloud
 
-              - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
-              - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
+            - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
+            - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "500":
@@ -14725,40 +14745,40 @@ paths:
 
           - `flux`: a string of "raw" Flux that contains task options and the script--for example:
 
-              ```json
-              {
-                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-                from(bucket: \"telegraf\")
-                  |> range(start: -1h)
-                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                  |> aggregateWindow(every: 1h, fn: max)
-                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-                "status": "active",
-                "description": "This task downsamples CPU data every hour"
-              }
-              ```
+            ```json
+            {
+              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+              from(bucket: \"telegraf\")
+                |> range(start: -1h)
+                |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                |> aggregateWindow(every: 1h, fn: max)
+                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+              "status": "active",
+              "description": "This task downsamples CPU data every hour"
+            }
+            ```
 
           - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
             for the task to run.
             To pass task options when using `scriptID`, pass the options as
             properties in the request body--for example:
 
-              ```json
-              {
-                "name": "CPU Total 1 Hour New",
-                "description": "This task downsamples CPU data every hour",
-                "every": "1h",
-                "scriptID": "SCRIPT_ID",
-                "scriptParameters":
-                  {
-                    "rangeStart": "-1h",
-                    "bucket": "telegraf",
-                    "filterField": "cpu-total"
-                  }
+            ```json
+            {
+              "name": "CPU Total 1 Hour New",
+              "description": "This task downsamples CPU data every hour",
+              "every": "1h",
+              "scriptID": "SCRIPT_ID",
+              "scriptParameters":
+                {
+                  "rangeStart": "-1h",
+                  "bucket": "telegraf",
+                  "filterField": "cpu-total"
                 }
-              ```
+              }
+            ```
 
         #### Limitations:
 

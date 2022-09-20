@@ -237,9 +237,9 @@ paths:
         To authenticate a user, pass the HTTP `Authorization` header with the
         `Basic` scheme and the base64-encoded username and password--for example:
 
-          ```sh
-          Authorization: Basic USERNAME:PASSWORD
-          ```
+        ```sh
+        Authorization: Basic USERNAME:PASSWORD
+        ```
 
         In InfluxDB Cloud, the username is the email address the user signed up with.
 
@@ -2476,6 +2476,7 @@ paths:
             ```
 
             The following code sample shows how to pass the query as JSON in the request body:
+
             ```json
             { "query": "from(foo: \"iot_center\")\
                             |> range(start: -90d)\
@@ -3684,14 +3685,12 @@ paths:
 
                     The following sample query is missing the _`bucket`_ property key:
 
-                      ```json
-                      {
-                        "query": "from(: \"iot_center\")\
-
-                        ...
-
-                      }
-                      ```
+                    ```json
+                    {
+                      "query": "from(: \"iot_center\")\
+                      ...
+                    }
+                    ```
                   value:
                     errors:
                       - line: 1
@@ -3942,6 +3941,26 @@ paths:
         To limit which buckets are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all buckets up to the
         default `limit`.
+
+        #### Limitations
+
+        - Paging with an `offset` greater than the number of records will result in
+        an empty list of buckets--for example:
+
+          The following request is paging to the 50th record, but the user only has
+          10 buckets.
+
+          ```sh
+          $ curl --request GET "INFLUX_URL/api/v2/buckets?limit=1&offset=50"
+
+          $ {
+              "links": {
+                  "prev": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=49\u0026orgID=ORG_ID",
+                  "self": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=50\u0026orgID=ORG_ID"
+              },
+              "buckets": []
+            }
+          ```
 
         #### Related Guides
 
@@ -12141,7 +12160,8 @@ components:
             To use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:
 
             ```json
-              query: "from(bucket: params.mybucket) |> range(start: params.rangeStart) |> limit(n:1)"
+              query: "from(bucket: params.mybucket)\
+                          |> range(start: params.rangeStart) |> limit(n:1)"
             ```
 
             and pass _`params`_ with the key-value pairs--for example:
