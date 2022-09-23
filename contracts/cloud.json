@@ -53,7 +53,7 @@
     },
     {
       "name": "Write",
-      "description": "Write time series data to buckets.\n"
+      "description": "Write time series data to [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n"
     },
     {
       "name": "Authentication",
@@ -63,22 +63,32 @@
     {
       "name": "Quick start",
       "x-traitTag": true,
-      "description": "See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.\n\n[**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.\n"
+      "description": "See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/)\nto get up and running authenticating with tokens, writing to buckets, and querying data.\n\n[**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/)\nare available for popular languages and ready to import into your application.\n"
     },
     {
-      "name": "Common parameters",
+      "name": "Supported operations",
       "x-traitTag": true,
-      "description": "Many InfluxDB API endpoints require parameters to specify resources--for example,\nwriting to a **bucket** in an **organization**.\n\n### Common query parameters\n\n| Query parameter          | Value type            | Description                                |\n|:------------------------ |:--------------------- |:-------------------------------------------|\n| `bucket`                 | string                | The bucket name or ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |\n| `bucketID`               | string                | The bucket ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |\n| `org`                    | string                | The organization name or ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |\n| `orgID`                  | 16-byte string        | The organization ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |\n"
+      "description": "The following table shows the most common operations that the InfluxDB `/api/v2` API supports.\nSome resources may support other operations that perform functions more specific to those resources.\nFor example, you can use the `PATCH /api/v2/scripts` endpoint to update properties of a script\nresource.\n\n| Operation |                                                                        |\n|:----------|:-----------------------------------------------------------------------|\n| Write     | Writes (`POST`) data to a bucket.                                      |\n| Run       | Executes (`POST`) a query or script and returns the result.            |\n| List      |\tRetrieves (`GET`) a list of zero or more resources.                    |\n| Create    |\tCreates (`POST`) a new resource and returns the resource.              |\n| Update    |\tModifies (`PUT`) an existing resource to reflect data in your request. |\n| Delete    |\tRemoves (`DELETE`) a specific resource.                                |\n"
     },
     {
       "name": "Headers",
       "x-traitTag": true,
-      "description": "InfluxDB API endpoints use standard HTTP request and response headers.\n\n**Note**: Not all operations support all headers.\n\n### Request headers\n\n| Header                   | Value type            | Description                                |\n|:------------------------ |:--------------------- |:-------------------------------------------|\n| `Accept`                 | string                | The content type that the client can understand. |\n| `Authorization`          | string                | The authorization scheme and credential. |\n| `Content-Encoding`       | string                | The compression applied to the line protocol in the request payload. |\n| `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |\n| `Content-Type`           | string                | The format of the data in the request body. |\n"
+      "description": "InfluxDB `/api/v2` API endpoints use standard HTTP request and response headers.\nThe following table shows common headers used by many InfluxDB API endpoints.\nSome endpoints may use other headers that perform functions more specific to those endpoints--for example,\nthe `POST /api/v2/write` endpoint accepts the `Content-Encoding` header to indicate the compression applied to line protocol in the request body.\n\n| Header                   | Value type            | Description                                |\n|:------------------------ |:--------------------- |:-------------------------------------------|\n| `Accept`                 | string                | The content type that the client can understand. |\n| `Authorization`          | string                | The authorization scheme and credential. |\n| `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |\n| `Content-Type`           | string                | The format of the data in the request body. |\n"
+    },
+    {
+      "name": "Common parameters",
+      "x-traitTag": true,
+      "description": "To specify resources, some InfluxDB API endpoints require parameters or\nproperties in the request--for example,\nwriting to a `bucket` resource in an `org` (_organization_ resource).\n\n### Common parameters\n\n| Query parameter          | Value type            | Description                                |\n|:------------------------ |:--------------------- |:-------------------------------------------|\n| `bucket`                 | string                | The bucket name or ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |\n| `bucketID`               | string                | The bucket ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |\n| `org`                    | string                | The organization name or ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |\n| `orgID`                  | 16-byte string        | The organization ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |\n"
+    },
+    {
+      "name": "Pagination",
+      "x-traitTag": true,
+      "description": "Some InfluxDB API [list operations](#tag/SupportedOperations) may support the following query parameters for paginating results:\n\n  | Query parameter          | Value type            | Description                                |\n  |:------------------------ |:--------------------- |:-------------------------------------------|\n  | `limit`                  | integer               | The maximum number of records to return (after other parameters are applied). |\n  | `offset`                 | integer               | The number of records to skip (before `limit`, after other parameters are applied). |\n  | `after`                  | string (resource ID)  | Only returns resources created after the specified resource. |\n\n  #### Limitations\n\n  - For specific endpoint parameters and examples, see the endpoint definition.\n  - If you specify an `offset` parameter value greater than the total number of records,\n    then InfluxDB returns an empty list in the response\n    (given `offset` skips the specified number of records).\n\n    The following example passes `offset=50` to skip the first 50 results,\n    but the user only has 10 buckets:\n\n    ```sh\n    curl --request GET \"INFLUX_URL/api/v2/buckets?limit=1&offset=50\" \\\n        --header \"Authorization: Token INFLUX_API_TOKEN\"\n    ```\n\n    The response contains the following:\n\n    ```json\n    {\n      \"links\": {\n          \"prev\": \"/api/v2/buckets?descending=false\\u0026limit=1\\u0026offset=49\\u0026orgID=ORG_ID\",\n          \"self\": \"/api/v2/buckets?descending=false\\u0026limit=1\\u0026offset=50\\u0026orgID=ORG_ID\"\n      },\n      \"buckets\": []\n    }\n    ```\n"
     },
     {
       "name": "Response codes",
       "x-traitTag": true,
-      "description": "The InfluxDB API uses standard HTTP status codes for success and failure responses.\nThe response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.\n\nAPI operations may return the following HTTP status codes:\n\n| &nbsp;Code&nbsp; | Status                   | Description      |\n|:-----------:|:------------------------ |:--------------------- |\n| `200`       | Success                  |                       |\n| `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |\n| `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your [_monitoring bucket](/influxdb/cloud/reference/internals/system-buckets/#_monitoring-system-bucket).</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |\n| `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |\n| `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |\n| `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example, you send a `POST` request to an endpoint that only allows `GET`. |\n| `413`       | Request entity too large | Request payload exceeds the size limit. |\n| `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |\n| `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |\n| `500`       | Internal server error    |                       |\n| `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |\n"
+      "description": "InfluxDB `/api/v2` API endpoints use standard HTTP status codes for success and failure responses.\nThe response body may include additional details.\nFor details about a specific operation's response,\nsee **Responses** and **Response Samples** for that operation.\n\nAPI operations may return the following HTTP status codes:\n\n| &nbsp;Code&nbsp; | Status                   | Description      |\n|:-----------:|:------------------------ |:--------------------- |\n| `200`       | Success                  |                       |\n| `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |\n| `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your [_monitoring bucket](/influxdb/cloud/reference/internals/system-buckets/#_monitoring-system-bucket).</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |\n| `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |\n| `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |\n| `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example, you send a `POST` request to an endpoint that only allows `GET`. |\n| `413`       | Request entity too large | Request payload exceeds the size limit. |\n| `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |\n| `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |\n| `500`       | Internal server error    |                       |\n| `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |\n"
     }
   ],
   "x-tagGroups": [
@@ -87,7 +97,9 @@
       "tags": [
         "Quick start",
         "Authentication",
+        "Supported operations",
         "Headers",
+        "Pagination",
         "Response codes"
       ]
     },
@@ -5094,7 +5106,7 @@
           "Buckets"
         ],
         "summary": "List buckets",
-        "description": "Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### Limitations\n\n- Paging with an `offset` greater than the number of records will result in\nan empty list of buckets--for example:\n\n  The following request is paging to the 50th record, but the user only has\n  10 buckets.\n\n  ```sh\n  $ curl --request GET \"INFLUX_URL/api/v2/buckets?limit=1&offset=50\"\n\n  $ {\n      \"links\": {\n          \"prev\": \"/api/v2/buckets?descending=false\\u0026limit=1\\u0026offset=49\\u0026orgID=ORG_ID\",\n          \"self\": \"/api/v2/buckets?descending=false\\u0026limit=1\\u0026offset=50\\u0026orgID=ORG_ID\"\n      },\n      \"buckets\": []\n    }\n  ```\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
+        "description": "Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5111,7 +5123,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "Organization name.\nThe name of the organization.\n\n#### InfluxDB Cloud\n\n - Doesn't use `org` or `orgID`.\n - Creates a bucket in the organization associated with the authorization (API token).\n\n #### InfluxDB OSS\n\n - Accepts either `org` or `orgID`.\n - InfluxDB creates the bucket within this organization.\n",
+            "description": "An organization name.\nOnly returns resources owned by the specified organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n",
             "schema": {
               "type": "string"
             }
@@ -5119,7 +5131,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "Organization ID.\nThe organization ID.\n\n#### InfluxDB Cloud\n\n - Doesn't use `org` or `orgID`.\n - Creates a bucket in the organization associated with the authorization (API token).\n\n #### InfluxDB OSS\n\n - Accepts either `org` or `orgID`.\n - InfluxDB creates the bucket within this organization.\n",
+            "description": "An organization ID.\nOnly returns resources owned by the specified organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n",
             "schema": {
               "type": "string"
             }
@@ -5127,7 +5139,7 @@
           {
             "in": "query",
             "name": "name",
-            "description": "Bucket name.\nOnly returns buckets with this specific name.\n",
+            "description": "A bucket name.\nOnly returns buckets with the specified name.\n",
             "schema": {
               "type": "string"
             }
@@ -5135,7 +5147,7 @@
           {
             "in": "query",
             "name": "id",
-            "description": "Bucket ID.\nOnly returns the bucket with this ID.\n",
+            "description": "A bucket ID.\nOnly returns the bucket with the specified ID.\n",
             "schema": {
               "type": "string"
             }
@@ -5143,7 +5155,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success.\nThe response body contains a list of buckets.\n",
+            "description": "Success.\nThe response body contains a list of `buckets`.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -5208,7 +5220,7 @@
         "x-codeSamples": [
           {
             "lang": "Shell",
-            "label": "cURL",
+            "label": "cURL: filter buckets by name",
             "source": "curl --request GET \"http://localhost:8086/api/v2/buckets?name=_monitoring\" \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\"\n"
           }
         ]
@@ -5219,14 +5231,14 @@
           "Buckets"
         ],
         "summary": "Create a bucket",
-        "description": "Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket)\nand returns the created bucket along with metadata. The default data\n[retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period)\nis 30 days.\n\n#### InfluxDB OSS\n\n- A single InfluxDB OSS instance supports active writes or queries for\napproximately 20 buckets across all organizations at a given time. Reading\nor writing to more than 20 buckets at a time can adversely affect\nperformance.\n\n#### Limitations\n\n- InfluxDB Cloud Free Plan allows users to create up to two buckets.\nExceeding the bucket quota will result in an HTTP `403` status code.\nFor additional information regarding InfluxDB Cloud offerings, see\n[InfluxDB Cloud Pricing](https://www.influxdata.com/influxdb-cloud-pricing/).\n\n#### Related Guides\n\n- [Create bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/)\n- [Create bucket CLI reference]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/bucket/create)\n",
+        "description": "Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket)\nand returns the bucket resource.\nThe default data\n[retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period)\nis 30 days.\n\n#### InfluxDB OSS\n\n- A single InfluxDB OSS instance supports active writes or queries for\napproximately 20 buckets across all organizations at a given time.\nReading or writing to more than 20 buckets at a time can adversely affect\nperformance.\n\n#### Limitations\n\n- InfluxDB Cloud Free Plan allows users to create up to two buckets.\nExceeding the bucket quota will result in an HTTP `403` status code.\nFor additional information regarding InfluxDB Cloud offerings, see\n[InfluxDB Cloud Pricing](https://www.influxdata.com/influxdb-cloud-pricing/).\n\n#### Related Guides\n\n- [Create a bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/)\n- [Create bucket CLI reference]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/bucket/create)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "Bucket to create",
+          "description": "The bucket to create.",
           "required": true,
           "content": {
             "application/json": {
@@ -5238,7 +5250,7 @@
         },
         "responses": {
           "201": {
-            "description": "Success.\nThe bucket was created.\n",
+            "description": "Success.\nThe bucket is created.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -5251,7 +5263,7 @@
                       "orgID": "INFLUX_ORG_ID",
                       "type": "user",
                       "schemaType": "implicit",
-                      "description": "bucket holding air sensor data",
+                      "description": "A bucket holding air sensor data",
                       "name": "air_sensor",
                       "retentionRules": [
                         {
@@ -5344,8 +5356,13 @@
         "x-codeSamples": [
           {
             "lang": "Shell",
+            "label": "cURL: create a bucket with retention period",
+            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"air_sensor\",\n      \"description\": \"A bucket holding air sensor data\",\n      \"orgID\": \"INFLUX_ORG_ID\",\n      \"retentionRules\": [\n          {\n              \"type\": \"expire\",\n              \"everySeconds\": 2592000,\n          }\n      ]\n    }'\n"
+          },
+          {
+            "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request POST \"http://localhost:8086/api/v2/buckets \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"air_sensor\",\n      \"description\": \"bucket holding air sensor data\",\n      \"orgID\": \"INFLUX_ORG_ID\",\n      \"retentionRules\": [\n          {\n              \"type\": \"expire\",\n              \"everySeconds\": 2592000,\n          }\n      ]\n    }'\n"
+            "source": ""
           }
         ]
       }
@@ -13068,7 +13085,7 @@
         "in": "query",
         "name": "offset",
         "required": false,
-        "description": "The offset for pagination.\nThe number of records to skip.\n",
+        "description": "The offset for pagination.\nThe number of records to skip.\n\nFor more information about pagination parameters, see [Pagination]({{% INFLUXDB_DOCS_URL %}}/api/#tag/Pagination).\n",
         "schema": {
           "type": "integer",
           "minimum": 0
@@ -13110,7 +13127,7 @@
         "schema": {
           "type": "string"
         },
-        "description": "Resource ID to seek from. Results are not inclusive of this ID. Use `after` instead of `offset`.\n"
+        "description": "A resource ID to seek from.\nReturns records created after the specified record;\nresults don't include the specified record.\n\nUse `after` instead of the `offset` parameter.\nFor more information about pagination parameters, see [Pagination]({{% INFLUXDB_DOCS_URL %}}/api/#tag/Pagination).\n"
       }
     },
     "schemas": {
@@ -14127,11 +14144,11 @@
       "PostBucketRequest": {
         "properties": {
           "orgID": {
-            "description": "Organization ID.\nThe ID of the organization.\n",
+            "description": "The organization ID.\nSpecifies the organization that owns the bucket.\n",
             "type": "string"
           },
           "name": {
-            "description": "The name of the bucket.\n",
+            "description": "The bucket name.\n",
             "type": "string"
           },
           "description": {
@@ -14139,7 +14156,7 @@
             "type": "string"
           },
           "rp": {
-            "description": "Retention policy is an InfluxDB 1.x concept that represents the duration\nof time that each data point in the retention policy persists. Use `rp`\nfor compatibility with InfluxDB 1.x.\nThe InfluxDB 2.x and Cloud equivalent is\n[retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period).\n",
+            "description": "The retention policy for the bucket.\nFor InfluxDB 1.x, specifies the duration of time that each data point\nin the retention policy persists.\n\nIf you need compatibility with InfluxDB 1.x, specify a value for the `rp` property;\notherwise, see the `retentionRules` property.\n\n[Retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp)\nis an InfluxDB 1.x concept.\nThe InfluxDB 2.x and Cloud equivalent is\n[retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period).\nThe InfluxDB `/api/v2` API uses `RetentionRules` to configure the retention period.\n",
             "type": "string",
             "default": "0"
           },
@@ -14147,7 +14164,7 @@
             "$ref": "#/components/schemas/RetentionRules"
           },
           "schemaType": {
-            "description": "Schema Type.\nUse `explicit` to enforce column names, tags, fields, and data types for\nyour data.\n\n#### InfluxDB Cloud\n\n- Default is `implicit`.\n\n#### InfluxDB OSS\n\n- Doesn't support `schemaType`.\n",
+            "description": "The schema Type. Default is `implicit`.\n\n#### InfluxDB Cloud\n\n- Use `explicit` to enforce column names, tags, fields, and data types for\nyour data.\n\n#### InfluxDB OSS\n\n- Doesn't support `explicit` bucket schemas.\n",
             "$ref": "#/components/schemas/SchemaType",
             "default": "implicit"
           }
@@ -14172,27 +14189,27 @@
             },
             "properties": {
               "labels": {
-                "description": "URL to retrieve labels for this bucket.",
+                "description": "The URL to retrieve labels for this bucket.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members that can read this bucket.",
+                "description": "The URL to retrieve members that can read this bucket.",
                 "$ref": "#/components/schemas/Link"
               },
               "org": {
-                "description": "URL to retrieve parent organization for this bucket.",
+                "description": "The URL to retrieve parent organization for this bucket.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners that can read and write to this bucket.",
+                "description": "The URL to retrieve owners that can read and write to this bucket.",
                 "$ref": "#/components/schemas/Link"
               },
               "self": {
-                "description": "URL for this bucket.",
+                "description": "The URL for this bucket.",
                 "$ref": "#/components/schemas/Link"
               },
               "write": {
-                "description": "URL to write line protocol to this bucket.",
+                "description": "The URL to write line protocol to this bucket.",
                 "$ref": "#/components/schemas/Link"
               }
             }
@@ -14265,7 +14282,7 @@
       },
       "RetentionRules": {
         "type": "array",
-        "description": "Retention rules to expire or retain data.\n#### InfluxDB Cloud\n\n- `retentionRules` is required.\n\n#### InfluxDB OSS\n\n- `retentionRules` isn't required.\n",
+        "description": "Retention rules to expire or retain data.\nThe InfluxDB `/api/v2` API uses `RetentionRules` to configure the [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period).\n\n#### InfluxDB Cloud\n\n- `retentionRules` is required.\n\n#### InfluxDB OSS\n\n- `retentionRules` isn't required.\n",
         "items": {
           "$ref": "#/components/schemas/RetentionRule"
         }
