@@ -150,7 +150,7 @@ tags:
       - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
   - name: Write
     description: |
-      Write time series data to buckets.
+      Write time series data to [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
 
   # Define x-traitTags below to describe general API features (auth, pagination, headers).
   - name: Authentication
@@ -165,16 +165,49 @@ tags:
   - name: Quick start
     x-traitTag: true
     description: |
-      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
+      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/)
+      to get up and running authenticating with tokens, writing to buckets, and querying data.
 
-      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
+      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/)
+      are available for popular languages and ready to import into your application.
+  - name: Supported operations
+    x-traitTag: true
+    description: |
+      The following table shows the most common operations that the InfluxDB `/api/v2` API supports.
+      Some resources may support other operations that perform functions more specific to those resources.
+      For example, you can use the `PATCH /api/v2/scripts` endpoint to update properties of a script
+      resource.
+
+      | Operation |                                                                        |
+      |:----------|:-----------------------------------------------------------------------|
+      | Write     | Writes (`POST`) data to a bucket.                                      |
+      | Run       | Executes (`POST`) a query or script and returns the result.            |
+      | List      |	Retrieves (`GET`) a list of zero or more resources.                    |
+      | Create    |	Creates (`POST`) a new resource and returns the resource.              |
+      | Update    |	Modifies (`PUT`) an existing resource to reflect data in your request. |
+      | Delete    |	Removes (`DELETE`) a specific resource.                                |
+  - name: Headers
+    x-traitTag: true
+    description: |
+      InfluxDB `/api/v2` API endpoints use standard HTTP request and response headers.
+      The following table shows common headers used by many InfluxDB API endpoints.
+      Some endpoints may use other headers that perform functions more specific to those endpoints--for example,
+      the `POST /api/v2/write` endpoint accepts the `Content-Encoding` header to indicate the compression applied to line protocol in the request body.
+
+      | Header                   | Value type            | Description                                |
+      |:------------------------ |:--------------------- |:-------------------------------------------|
+      | `Accept`                 | string                | The content type that the client can understand. |
+      | `Authorization`          | string                | The authorization scheme and credential. |
+      | `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |
+      | `Content-Type`           | string                | The format of the data in the request body. |
   - name: Common parameters
     x-traitTag: true
     description: |
-      Many InfluxDB API endpoints require parameters to specify resources--for example,
-      writing to a **bucket** in an **organization**.
+      To specify resources, some InfluxDB API endpoints require parameters or
+      properties in the request--for example,
+      writing to a `bucket` resource in an `org` (_organization_ resource).
 
-      ### Common query parameters
+      ### Common parameters
 
       | Query parameter          | Value type            | Description                                |
       |:------------------------ |:--------------------- |:-------------------------------------------|
@@ -182,27 +215,50 @@ tags:
       | `bucketID`               | string                | The bucket ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |
       | `org`                    | string                | The organization name or ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
       | `orgID`                  | 16-byte string        | The organization ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
-  - name: Headers
+  - name: Pagination
     x-traitTag: true
     description: |
-      InfluxDB API endpoints use standard HTTP request and response headers.
+      Some InfluxDB API [list operations](#tag/SupportedOperations) may support the following query parameters for paginating results:
 
-      **Note**: Not all operations support all headers.
+        | Query parameter          | Value type            | Description                                |
+        |:------------------------ |:--------------------- |:-------------------------------------------|
+        | `limit`                  | integer               | The maximum number of records to return (after other parameters are applied). |
+        | `offset`                 | integer               | The number of records to skip (before `limit`, after other parameters are applied). |
+        | `after`                  | string (resource ID)  | Only returns resources created after the specified resource. |
 
-      ### Request headers
+        #### Limitations
 
-      | Header                   | Value type            | Description                                |
-      |:------------------------ |:--------------------- |:-------------------------------------------|
-      | `Accept`                 | string                | The content type that the client can understand. |
-      | `Authorization`          | string                | The authorization scheme and credential. |
-      | `Content-Encoding`       | string                | The compression applied to the line protocol in the request payload. |
-      | `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |
-      | `Content-Type`           | string                | The format of the data in the request body. |
+        - For specific endpoint parameters and examples, see the endpoint definition.
+        - If you specify an `offset` parameter value greater than the total number of records,
+          then InfluxDB returns an empty list in the response
+          (given `offset` skips the specified number of records).
+
+          The following example passes `offset=50` to skip the first 50 results,
+          but the user only has 10 buckets:
+
+          ```sh
+          curl --request GET "INFLUX_URL/api/v2/buckets?limit=1&offset=50" \
+              --header "Authorization: Token INFLUX_API_TOKEN"
+          ```
+
+          The response contains the following:
+
+          ```json
+          {
+            "links": {
+                "prev": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=49\u0026orgID=ORG_ID",
+                "self": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=50\u0026orgID=ORG_ID"
+            },
+            "buckets": []
+          }
+          ```
   - name: Response codes
     x-traitTag: true
     description: |
-      The InfluxDB API uses standard HTTP status codes for success and failure responses.
-      The response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.
+      InfluxDB `/api/v2` API endpoints use standard HTTP status codes for success and failure responses.
+      The response body may include additional details.
+      For details about a specific operation's response,
+      see **Responses** and **Response Samples** for that operation.
 
       API operations may return the following HTTP status codes:
 

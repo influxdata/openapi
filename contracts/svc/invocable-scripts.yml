@@ -29,24 +29,21 @@ paths:
       description: |
         Retrieves a list of [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
 
-        #### Limitations
-
-        - Paging with an `offset` greater than the number of records will result in
-        an empty response--for example:
-
-          The following sample request pages to the 50th record, but the user has only
-          created two scripts.
-
-          ```sh
-          $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
-
-          $ {"scripts":[]}
-          ```
-
         #### Related guides
 
         - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
       parameters:
+        - in: query
+          name: offset
+          required: false
+          description: |
+            The offset for pagination.
+            The number of records to skip.
+
+            For more information about pagination parameters, see [Pagination]({{% INFLUXDB_DOCS_URL %}}/api/#tag/Pagination).
+          schema:
+            type: integer
+            minimum: 0
         - in: query
           name: limit
           description: |
@@ -57,16 +54,6 @@ paths:
             minimum: 0
             maximum: 500
             default: 100
-        - in: query
-          name: offset
-          required: false
-          description: |
-            The offset for pagination.
-            Skips the specified number of records in the result.
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
         - in: query
           name: name
           required: false
@@ -150,7 +137,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
-          label: cURL
+          label: 'cURL: retrieves the first 100 scripts.'
           source: |
             curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
               --header "Authorization: Token INFLUX_API_TOKEN" \
