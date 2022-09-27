@@ -282,6 +282,30 @@ components:
       required:
       - orgID
       - permissions
+    AuthorizationPostRequest:
+      allOf:
+      - $ref: '#/components/schemas/AuthorizationUpdateRequest'
+      - properties:
+          orgID:
+            description: |
+              The ID of the organization that owns the authorization.
+            type: string
+          permissions:
+            description: |
+              A list of permissions for an authorization.
+              An authorization must have at least one permission.
+            items:
+              $ref: '#/components/schemas/Permission'
+            minItems: 1
+            type: array
+          userID:
+            description: |
+              The ID of the user that the authorization is scoped to.
+            type: string
+        type: object
+      required:
+      - orgID
+      - permissions
     AuthorizationUpdateRequest:
       properties:
         description:
@@ -3760,36 +3784,39 @@ components:
     Resource:
       properties:
         id:
-          description: If ID is set that is a permission for a specific resource.
-            if it is not set it is a permission for all resources of that resource
-            type.
-          nullable: true
+          description: |
+            The ID of a specific resource.
+            In a `permission`, applies the permission to only the resource with this ID.
           type: string
         name:
-          description: Optional name of the resource if the resource has a name field.
-          nullable: true
+          description: |
+            Optional: A name for the resource.
+            Not all resource types have a name field.
           type: string
         org:
-          description: Optional name of the organization of the organization with
-            orgID.
-          nullable: true
+          description: |
+            Optional: The name of the organization with `orgID`.
           type: string
         orgID:
-          description: If orgID is set that is a permission for all resources owned
-            my that org. if it is not set it is a permission for all resources of
-            that resource type.
-          nullable: true
+          description: |
+            The ID of the organization that owns the resource.
+            In a `permission`, applies the permission to all resources of `type` owned by this organization.
           type: string
         type:
+          description: |
+            The type of resource.
+            In a `permission`, applies the permission to all resources of this type.
           enum:
           - authorizations
           - buckets
           - dashboards
           - orgs
+          - sources
           - tasks
           - telegrafs
           - users
           - variables
+          - scrapers
           - secrets
           - labels
           - views
@@ -3798,9 +3825,11 @@ components:
           - notificationEndpoints
           - checks
           - dbrp
-          - flows
+          - notebooks
           - annotations
-          - functions
+          - remotes
+          - replications
+          - instance
           type: string
       required:
       - type
@@ -6688,7 +6717,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Authorization'
+              $ref: '#/components/schemas/AuthorizationPostRequest'
         description: The authorization to create.
         required: true
       responses:

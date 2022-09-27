@@ -548,7 +548,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+              $ref: '#/components/schemas/AuthorizationPostRequest'
       responses:
         '201':
           description: |
@@ -637,17 +637,7 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                status:
-                  description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
-                  default: active
-                  type: string
-                  enum:
-                    - active
-                    - inactive
-                description:
-                  type: string
-                  description: A description of the token.
+              $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -3561,49 +3551,40 @@ paths:
 components:
   parameters: null
   schemas:
-    Resource:
-      type: object
+    AuthorizationPostRequest:
       required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - authorizations
-            - buckets
-            - dashboards
-            - orgs
-            - tasks
-            - telegrafs
-            - users
-            - variables
-            - secrets
-            - labels
-            - views
-            - documents
-            - notificationRules
-            - notificationEndpoints
-            - checks
-            - dbrp
-            - flows
-            - annotations
-            - functions
-        id:
-          type: string
-          nullable: true
-          description: If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type.
-        name:
-          type: string
-          nullable: true
-          description: Optional name of the resource if the resource has a name field.
-        orgID:
-          type: string
-          nullable: true
-          description: If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type.
-        org:
-          type: string
-          nullable: true
-          description: Optional name of the organization of the organization with orgID.
+        - orgID
+        - permissions
+      allOf:
+        - properties:
+            status:
+              description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+              default: active
+              type: string
+              enum:
+                - active
+                - inactive
+            description:
+              type: string
+              description: A description of the token.
+        - type: object
+          properties:
+            orgID:
+              type: string
+              description: |
+                The ID of the organization that owns the authorization.
+            userID:
+              type: string
+              description: |
+                The ID of the user that the authorization is scoped to.
+            permissions:
+              type: array
+              minItems: 1
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
+              items:
+                $ref: '#/components/schemas/Permission'
     Permission:
       required:
         - action
@@ -3616,6 +3597,59 @@ components:
             - write
         resource:
           $ref: '#/components/schemas/Resource'
+    Resource:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - authorizations
+            - buckets
+            - dashboards
+            - orgs
+            - sources
+            - tasks
+            - telegrafs
+            - users
+            - variables
+            - scrapers
+            - secrets
+            - labels
+            - views
+            - documents
+            - notificationRules
+            - notificationEndpoints
+            - checks
+            - dbrp
+            - notebooks
+            - annotations
+            - remotes
+            - replications
+            - instance
+          description: |
+            The type of resource.
+            In a `permission`, applies the permission to all resources of this type.
+        id:
+          type: string
+          description: |
+            The ID of a specific resource.
+            In a `permission`, applies the permission to only the resource with this ID.
+        name:
+          type: string
+          description: |
+            Optional: A name for the resource.
+            Not all resource types have a name field.
+        orgID:
+          type: string
+          description: |
+            The ID of the organization that owns the resource.
+            In a `permission`, applies the permission to all resources of `type` owned by this organization.
+        org:
+          type: string
+          description: |
+            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
@@ -3886,7 +3920,7 @@ components:
             - orgID
             - permissions
           allOf:
-            - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
+            - $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
             - type: object
               properties:
                 createdAt:
@@ -3909,68 +3943,7 @@ components:
                     The list of permissions.
                     An authorization must have at least one permission.
                   items:
-                    required:
-                      - action
-                      - resource
-                    properties:
-                      action:
-                        type: string
-                        enum:
-                          - read
-                          - write
-                      resource:
-                        type: object
-                        required:
-                          - type
-                        properties:
-                          type:
-                            type: string
-                            enum:
-                              - authorizations
-                              - buckets
-                              - dashboards
-                              - orgs
-                              - sources
-                              - tasks
-                              - telegrafs
-                              - users
-                              - variables
-                              - scrapers
-                              - secrets
-                              - labels
-                              - views
-                              - documents
-                              - notificationRules
-                              - notificationEndpoints
-                              - checks
-                              - dbrp
-                              - notebooks
-                              - annotations
-                              - remotes
-                              - replications
-                              - instance
-                            description: |
-                              The type of resource.
-                              In a `permission`, applies the permission to all resources of this type.
-                          id:
-                            type: string
-                            description: |
-                              The ID of a specific resource.
-                              In a `permission`, applies the permission to only the resource with this ID.
-                          name:
-                            type: string
-                            description: |
-                              Optional: A name for the resource.
-                              Not all resource types have a name field.
-                          orgID:
-                            type: string
-                            description: |
-                              The ID of the organization that owns the resource.
-                              In a `permission`, applies the permission to all resources of `type` owned by this organization.
-                          org:
-                            type: string
-                            description: |
-                              Optional: The name of the organization with `orgID`.
+                    $ref: '#/components/schemas/Permission'
                 id:
                   readOnly: true
                   type: string
