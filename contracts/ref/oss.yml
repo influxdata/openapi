@@ -17952,7 +17952,7 @@ paths:
             --header 'Content-type: application/json' \
             --header "Authorization: Token INFLUX_TOKEN" \
             --data-binary @- << EOF
-              {"password": ""}
+              {"password": "NEW_USER_PASSWORD"}
           EOF
     put:
       description: |
@@ -18025,12 +18025,15 @@ paths:
       - label: 'cURL: use Basic auth to update the user password'
         lang: Shell
         source: |
-          curl --request POST \
+          curl -c ./cookie-file.tmp --request POST \
+             "http://localhost:8086/api/v2/signin" \
+            --user "${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}"
+
+          curl -b ./cookie-file.tmp --request PUT \
              "http://localhost:8086/api/v2/users/USER_ID/password" \
             --header 'Content-type: application/json' \
-            --user "USERNAME:PASSWORD" \
             --data-binary @- << EOF
-              {"password": ""}
+              {"password": "NEW_USER_PASSWORD"}
           EOF
   /api/v2/variables:
     get:
