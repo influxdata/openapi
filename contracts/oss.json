@@ -9483,6 +9483,75 @@
           "Users"
         ],
         "summary": "Update a password",
+        "description": "Updates a user password.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage user passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update a password.\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "userID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the user to set the password for."
+          }
+        ],
+        "requestBody": {
+          "description": "The new password to set for the user.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success. The password is updated."
+          },
+          "400": {
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage passwords through the API; always responds with this status.\n\n#### InfluxDB OSS\n\n- Doesn't understand a value passed in the request.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "updatePasswordNotAllowed": {
+                    "summary": "Cloud API can't update passwords",
+                    "value": {
+                      "code": "invalid",
+                      "message": "passwords cannot be changed through the InfluxDB Cloud API"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/GeneralServerError"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: use HTTP POST to update the user password",
+            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --data-binary @- << EOF\n    {\"password\": \"NEW_USER_PASSWORD\"}\nEOF\n"
+          }
+        ]
+      },
+      "put": {
+        "operationId": "PutUsersIDPassword",
+        "tags": [
+          "Security and access endpoints",
+          "Users"
+        ],
+        "summary": "Update a password",
         "description": "Updates a user password.\n\nUse this endpoint to let a user authenticate with\n[Basic authentication credentials](#section/Authentication/BasicAuthentication)\nand set a new password.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage user passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update a password.\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)\n",
         "security": [
           {
@@ -9546,7 +9615,7 @@
           {
             "lang": "Shell",
             "label": "cURL: use Basic auth to update the user password",
-            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --user \"USERNAME:PASSWORD\" \\\n  --data-binary @- << EOF\n    {\"password\": \"\"}\nEOF\n"
+            "source": "curl -c ./cookie-file.tmp --request POST \\\n   \"http://localhost:8086/api/v2/signin\" \\\n  --user \"${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}\"\n\ncurl -b ./cookie-file.tmp --request PUT \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --data-binary @- << EOF\n    {\"password\": \"NEW_USER_PASSWORD\"}\nEOF\n"
           }
         ]
       }
