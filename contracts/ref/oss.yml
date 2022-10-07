@@ -6622,16 +6622,27 @@ openapi: 3.0.0
 paths:
   /api/v2:
     get:
+      description: |
+        Retrieves all the top level routes for the InfluxDB API.
+
+        #### Limitations
+
+        - Only returns top level routes--for example, the response contains
+        `"tasks":"/api/v2/tasks"`, and doesn't contain resource-specific routes
+        for tasks (`/api/v2/tasks/TASK_ID/...`).
       operationId: GetRoutes
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       responses:
-        default:
+        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Routes'
-          description: All routes
+          description: |
+            Success.
+            The response body contains key-value pairs with the resource name and
+            top-level route.
       summary: List all top level routes
       tags:
       - Routes
@@ -12399,35 +12410,69 @@ paths:
       - Security and access endpoints
   /ping:
     get:
-      description: Returns the status and InfluxDB version of the instance.
+      description: |
+        Retrieves the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/ping/)
       operationId: GetPing
       responses:
         "204":
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
-              description: The type of InfluxDB build.
+              description: |
+                The type of InfluxDB build.
               schema:
                 type: string
             X-Influxdb-Version:
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                  - Doesn't return version.
               schema:
                 type: integer
       servers:
       - url: ""
-      summary: Get the status and version of the instance
+      summary: Get the status of the instance
       tags:
       - Ping
       - System information endpoints
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request GET "http://localhost:8086/ping"
     head:
-      description: Returns the status and InfluxDB version of the instance.
+      description: |
+        Returns the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/ping/)
       operationId: HeadPing
       responses:
         "204":
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
@@ -12435,14 +12480,23 @@ paths:
               schema:
                 type: string
             X-Influxdb-Version:
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                - Doesn't return version.
               schema:
                 type: integer
       servers:
       - url: ""
-      summary: Get the status and version of the instance
+      summary: Get the status of the instance
       tags:
       - Ping
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request HEAD "http://localhost:8086/ping"
   /api/v2/query:
     post:
       description: |
