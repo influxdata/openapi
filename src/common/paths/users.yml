@@ -5,15 +5,21 @@ get:
     - Users
   summary: List users
   description: |
-    Retrieves a list of users. Default limit is `20`.
+    Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+    Default limit is `20`.
 
     To limit which users are returned, pass query parameters in your request.
 
-    #### Required permissions
+    #### Required permissions for InfluxDB OSS
 
-    - `read-user USER_ID` permission.
-      `USER_ID` is the ID of the user that you want to list.
-    - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token))_ to list all users.
+    | Action | Permission required | Restriction |
+    |:-------|:--------------------|:------------|
+    | List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+    | List a specific user | `read-users` or `read-user USER_ID` | |
+
+    Replace the following:
+
+    - `USER_ID`: the ID of the user that you want to retrieve.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - $ref: "../../common/parameters/Offset.yml"
@@ -23,10 +29,16 @@ get:
       name: name
       schema:
         type: string
+      description: |
+        A user name.
+        Only lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
     - in: query
       name: id
       schema:
         type: string
+      description: |
+        A user ID.
+        Only lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
   responses:
     "200":
       description: Success. The response contains a list of `users`.
@@ -55,7 +67,8 @@ get:
 
         The error may indicate one of the following problems:
 
-        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - The request body isn't valid--the request is well-formed,
+          but InfluxDB can't process it due to semantic errors.
         - You passed a parameter combination that InfluxDB doesn't support.
       content:
         application/json:
@@ -72,11 +85,34 @@ post:
     - Users
   summary: Create a user
   description: |
-    Creates a user and returns the newly created user.
+    Creates a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that can access InfluxDB.
+    Returns the user.
+
+    Use this endpoint to create a user that can sign in to start a user session
+    through one of the following interfaces:
+
+      - InfluxDB UI
+      - `/api/v2/signin` InfluxDB API endpoint
+      - InfluxDB CLI
+
+    This endpoint represents the first two steps in a four-step process to allow a user
+    to authenticate with a username and password, and then access data in an organization:
+
+      1. Create a user: send a `POST` request to `POST /api/v2/users`. `name` is required.
+      2. Extract the user ID (`id`) value from the API response for _step 1_.
+      3. Create an authorization (and API token) for the user: send a `POST` request to [`POST /api/v2/authorizations`](#operation/PostAuthorizations), passing the user ID (`id`) from _step 2_.
+      4. Create a password for the user: send a `POST` request to [`POST /api/v2/users/USER_ID/password`](#operation/PostUsersIDPassword), passing the user ID from _step 2_.
 
     #### Required permissions
 
-    - `write-users`. Requires an InfluxDB API **Op** token.
+    | Action | Permission required | Restriction |
+    |:-------|:--------------------|:------------|
+    | Create a user | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+
+    #### Related guides
+
+    - [Create a user](https://docs.influxdata.com/influxdb/latest/users/create-user/)
+    - [Create an API token scoped to a user](https://docs.influxdata.com/influxdb/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
@@ -90,7 +126,7 @@ post:
     "201":
       description: |
         Success.
-        The response contains the newly created user.
+        The response body contains the user.
       content:
         application/json:
           schema:

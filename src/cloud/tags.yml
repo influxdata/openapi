@@ -29,7 +29,7 @@ tags:
 
       If a user signs in with username and password, creating a _user session_,
       the session carries the permissions granted by all the user's authorizations.
-      To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+      To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
       ### Related endpoints
 
@@ -38,9 +38,9 @@ tags:
 
       ### Related guides
 
-        - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
-        - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
+      - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)
+      - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)
+      - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)
   - name: Buckets
     description: |
       Store your data in InfluxDB [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
@@ -52,23 +52,29 @@ tags:
 
       ### Related guides
 
-        - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)
+      - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)
   - name: Invokable Scripts
     description: |
-      Manage and execute scripts as API endpoints in InfluxDB.
+      Store, manage, and execute scripts in InfluxDB.
+      A script stores your custom Flux script and provides an invokable
+      endpoint that accepts runtime parameters.
+      In a script, you can specify custom runtime parameters
+      (`params`)--for example, `params.myparameter`.
+      Once you create a script, InfluxDB generates an
+      [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke)
+      for your organization.
+      You can run the script from API requests and tasks, defining parameter
+      values for each run.
+      When the script runs, InfluxDB replaces `params` references in the
+      script with the runtime parameter values you define.
 
-      An API Invokable Script assigns your custom Flux script to a new
-      InfluxDB API endpoint for your organization.
-      Invokable scripts let you execute your script as an HTTP request to the endpoint.
+      Use the `/api/v2/scripts` endpoints to create and manage scripts.
+      See related guides to learn how to define parameters and execute scripts.
 
-      Invokable scripts accept parameters.
-      Add parameter references in your script as `params.myparameter`.
-      When you `invoke` your script, you send parameters as key-value pairs in the `params` object.
-      Then, InfluxDB executes your script with the key-value pairs as arguments, and returns the result.
+      #### Related guides
 
-      ### Related guides
-
-      - [Invoke custom scripts]({{% INFLUXDB_DOCS_URL %}}/api-guide/api-invokable-scripts/).
+      - [Invoke custom scripts]({{% INFLUXDB_DOCS_URL %}}/api-guide/api-invokable-scripts/) from API requests.
+      - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
   - name: Delete
     description: |
       Delete data from an InfluxDB bucket.
@@ -85,7 +91,7 @@ tags:
       Retrieve data, analyze queries, and get query suggestions.
   - name: Tasks
     description: |
-      Process and analyze your data with tasks in the InfluxDB task engine.
+      Process and analyze your data with [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the InfluxDB task engine.
       With tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.
       In InfluxDB Cloud, you can create tasks that run [invokable scripts](#tag/Invokable-Scripts)
       with parameters.
@@ -94,9 +100,9 @@ tags:
 
       #### Related guides
 
-      - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/).
+      - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)
       - [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
-      - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script).
+      - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script)
   - name: Templates
     description: |
       Export and apply InfluxDB **templates**.
@@ -137,14 +143,14 @@ tags:
       Optionally, you can scope an authorization (and its API token) to a user.
       If a user signs in with username and password, creating a _user session_,
       the session carries the permissions granted by all the user's authorizations.
-      To create a user session, use the [`POST /api/v2/signin`](#operation/PostSignin) endpoint.
+      To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
       #### Related guides
 
       - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
   - name: Write
     description: |
-      Write time series data to buckets.
+      Write time series data to [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
 
   # Define x-traitTags below to describe general API features (auth, pagination, headers).
   - name: Authentication
@@ -159,16 +165,49 @@ tags:
   - name: Quick start
     x-traitTag: true
     description: |
-      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/) to get up and running authenticating with tokens, writing to buckets, and querying data.
+      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/)
+      to get up and running authenticating with tokens, writing to buckets, and querying data.
 
-      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/) are available for popular languages and ready to import into your application.
+      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/)
+      are available for popular languages and ready to import into your application.
+  - name: Supported operations
+    x-traitTag: true
+    description: |
+      The following table shows the most common operations that the InfluxDB `/api/v2` API supports.
+      Some resources may support other operations that perform functions more specific to those resources.
+      For example, you can use the `PATCH /api/v2/scripts` endpoint to update properties of a script
+      resource.
+
+      | Operation |                                                                        |
+      |:----------|:-----------------------------------------------------------------------|
+      | Write     | Writes (`POST`) data to a bucket.                                      |
+      | Run       | Executes (`POST`) a query or script and returns the result.            |
+      | List      |	Retrieves (`GET`) a list of zero or more resources.                    |
+      | Create    |	Creates (`POST`) a new resource and returns the resource.              |
+      | Update    |	Modifies (`PUT`) an existing resource to reflect data in your request. |
+      | Delete    |	Removes (`DELETE`) a specific resource.                                |
+  - name: Headers
+    x-traitTag: true
+    description: |
+      InfluxDB `/api/v2` API endpoints use standard HTTP request and response headers.
+      The following table shows common headers used by many InfluxDB API endpoints.
+      Some endpoints may use other headers that perform functions more specific to those endpoints--for example,
+      the `POST /api/v2/write` endpoint accepts the `Content-Encoding` header to indicate the compression applied to line protocol in the request body.
+
+      | Header                   | Value type            | Description                                |
+      |:------------------------ |:--------------------- |:-------------------------------------------|
+      | `Accept`                 | string                | The content type that the client can understand. |
+      | `Authorization`          | string                | The authorization scheme and credential. |
+      | `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |
+      | `Content-Type`           | string                | The format of the data in the request body. |
   - name: Common parameters
     x-traitTag: true
     description: |
-      Many InfluxDB API endpoints require parameters to specify resources--for example,
-      writing to a **bucket** in an **organization**.
+      To specify resources, some InfluxDB API endpoints require parameters or
+      properties in the request--for example,
+      writing to a `bucket` resource in an `org` (_organization_ resource).
 
-      ### Common query parameters
+      ### Common parameters
 
       | Query parameter          | Value type            | Description                                |
       |:------------------------ |:--------------------- |:-------------------------------------------|
@@ -176,27 +215,50 @@ tags:
       | `bucketID`               | string                | The bucket ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |
       | `org`                    | string                | The organization name or ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
       | `orgID`                  | 16-byte string        | The organization ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
-  - name: Headers
+  - name: Pagination
     x-traitTag: true
     description: |
-      InfluxDB API endpoints use standard HTTP request and response headers.
+      Some InfluxDB API [list operations](#tag/SupportedOperations) may support the following query parameters for paginating results:
 
-      **Note**: Not all operations support all headers.
+        | Query parameter          | Value type            | Description                                |
+        |:------------------------ |:--------------------- |:-------------------------------------------|
+        | `limit`                  | integer               | The maximum number of records to return (after other parameters are applied). |
+        | `offset`                 | integer               | The number of records to skip (before `limit`, after other parameters are applied). |
+        | `after`                  | string (resource ID)  | Only returns resources created after the specified resource. |
 
-      ### Request headers
+        #### Limitations
 
-      | Header                   | Value type            | Description                                |
-      |:------------------------ |:--------------------- |:-------------------------------------------|
-      | `Accept`                 | string                | The content type that the client can understand. |
-      | `Authorization`          | string                | The authorization scheme and credential. |
-      | `Content-Encoding`       | string                | The compression applied to the line protocol in the request payload. |
-      | `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |
-      | `Content-Type`           | string                | The format of the data in the request body. |
+        - For specific endpoint parameters and examples, see the endpoint definition.
+        - If you specify an `offset` parameter value greater than the total number of records,
+          then InfluxDB returns an empty list in the response
+          (given `offset` skips the specified number of records).
+
+          The following example passes `offset=50` to skip the first 50 results,
+          but the user only has 10 buckets:
+
+          ```sh
+          curl --request GET "INFLUX_URL/api/v2/buckets?limit=1&offset=50" \
+              --header "Authorization: Token INFLUX_API_TOKEN"
+          ```
+
+          The response contains the following:
+
+          ```json
+          {
+            "links": {
+                "prev": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=49\u0026orgID=ORG_ID",
+                "self": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=50\u0026orgID=ORG_ID"
+            },
+            "buckets": []
+          }
+          ```
   - name: Response codes
     x-traitTag: true
     description: |
-      The InfluxDB API uses standard HTTP status codes for success and failure responses.
-      The response body may include additional details. For details about a specific operation's response, see **Responses** and **Response Samples** for that operation.
+      InfluxDB `/api/v2` API endpoints use standard HTTP status codes for success and failure responses.
+      The response body may include additional details.
+      For details about a specific operation's response,
+      see **Responses** and **Response Samples** for that operation.
 
       API operations may return the following HTTP status codes:
 
@@ -204,9 +266,10 @@ tags:
       |:-----------:|:------------------------ |:--------------------- |
       | `200`       | Success                  |                       |
       | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
-      | `400`       | Bad request              | May indicate one of the following: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your `_monitoring` bucket.</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
+      | `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your [_monitoring bucket](/influxdb/cloud/reference/internals/system-buckets/#_monitoring-system-bucket).</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
       | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |
       | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
+      | `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example, you send a `POST` request to an endpoint that only allows `GET`. |
       | `413`       | Request entity too large | Request payload exceeds the size limit. |
       | `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
       | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
