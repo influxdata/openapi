@@ -14,7 +14,7 @@
         Specifies the organization that owns the task.
       type: string
     name:
-      description: The name of the task.
+      description: The task name.
       type: string
     ownerID:
       description: |
@@ -41,14 +41,6 @@
         [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
         list authorizations.
       type: string
-    flux:
-      description: |
-        The Flux script that the task executes.
-
-        #### Limitations
-          - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.
-      type: string
-      format: flux
     every:
       description: >-
         The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs.
@@ -60,6 +52,7 @@
         A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs.
         InfluxDB uses the system time when evaluating Cron expressions.
       type: string
+      format: cron
     offset:
       description: >-
         A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed.
@@ -113,10 +106,26 @@
           $ref: "../../common/schemas/Link.yml"
         labels:
           $ref: "../../common/schemas/Link.yml"
+    flux:
+      description: |
+        Flux with task options and the script for the task to run.
+
+        #### Limitations
+
+        - If you set the `flux` property, you must provide the `task` option in
+          the Flux script, and you can't set the following properties in the
+          request body:
+
+            - `scriptID`
+            - `scriptParameters`
+            - `every`
+            - `offset`
+      type: string
+      format: Flux
     scriptID:
       description: |
         A script ID.
-        Specifies the [invokable script](#tag/Invokable-Scripts) that the task executes.
+        Specifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
 
         #### Limitations
 
@@ -124,7 +133,7 @@
 
         #### Related guides
 
-        - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
+        - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
       type: string
     scriptParameters:
       description: |
@@ -138,5 +147,4 @@
         - To use `scriptParameters`, you must provide a `scriptID`.
         - If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.
       type: object
-
   required: [id, name, orgID]

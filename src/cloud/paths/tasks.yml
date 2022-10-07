@@ -153,51 +153,6 @@ post:
 
     Use this endpoint to create a scheduled task that runs a Flux script.
 
-    #### InfluxDB Cloud
-
-    - You can use either `flux` or `scriptID` to provide the task script.
-
-      - `flux`: a string of "raw" Flux that contains task options and the script--for example:
-
-        ```json
-        {
-          "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-          from(bucket: \"telegraf\")
-            |> range(start: -1h)
-            |> filter(fn: (r) => (r._measurement == \"cpu\"))
-            |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-            |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-            |> aggregateWindow(every: 1h, fn: max)
-            |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-          "status": "active",
-          "description": "This task downsamples CPU data every hour"
-        }
-        ```
-
-      - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
-        for the task to run.
-        To pass task options when using `scriptID`, pass the options as
-        properties in the request body--for example:
-
-        ```json
-        {
-          "name": "CPU Total 1 Hour New",
-          "description": "This task downsamples CPU data every hour",
-          "every": "1h",
-          "scriptID": "SCRIPT_ID",
-          "scriptParameters":
-            {
-              "rangeStart": "-1h",
-              "bucket": "telegraf",
-              "filterField": "cpu-total"
-            }
-          }
-        ```
-
-    #### Limitations:
-
-    - You can't use `flux` and `scriptID` for the same task.
-
     #### Related guides
 
     - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)
@@ -207,12 +162,67 @@ post:
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: The task to create
+    description: |
+      A task.
+
+      To provide the script that the task runs,
+      set either the `flux` property or the `scriptID` property.
+
+      If you set `scriptID`, you can set the following properties to configure the task:
+        - `cron`
+        - `every`
+        - `offset`
+        - `scriptParameters`
+
+      See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+      for examples and more information.
+
+      #### Limitations:
+
+      - You can't use `flux` and `scriptID` in the same task.
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/TaskCreateRequest.yml"
+        examples:
+          PostTaskFluxRequest:
+            summary: A task with Flux.
+            description:
+              The example shows how to set the `flux` property with Flux task options
+              and a query.
+            value:
+              {
+                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+                 from(bucket: \"telegraf\")
+                  |> range(start: -1h)
+                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                  |> aggregateWindow(every: 1h, fn: max)
+                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                "status": "active",
+                "description": "This task downsamples CPU data every hour"
+              }
+          PostTaskScriptRequest:
+            summary: A task with an invokable script.
+            description: |
+              The example shows how to set properties for a task to
+              run an [invokable script](#tag/Invokable-Scripts).
+            value:
+              {
+                "name": "CPU Total 1 Hour New",
+                "every": "1h",
+                "scriptID": "SCRIPT_ID",
+                "scriptParameters":
+                  {
+                    "rangeStart": "-1h",
+                    "bucket": "telegraf",
+                    "filterField": "cpu-total"
+                  },
+                "status": "active",
+                "description": "This task downsamples CPU data every hour"
+              }
   responses:
     "201":
       description: Success. The response body contains a `tasks` list with the new task.
@@ -260,7 +270,7 @@ post:
             $ref: "../../common/schemas/Error.yml"
   x-codeSamples:
     - lang: Shell
-      label: "cURL: create a Flux script task"
+      label: "cURL: create a task that contains a script"
       source: |
         curl https://cloud2.influxdata.com/api/v2/tasks \
         --header "Content-type: application/json" \
@@ -277,7 +287,7 @@ post:
           }
         EOF
     - lang: Shell
-      label: "cURL: create a Flux script reference task"
+      label: "cURL: create a task that runs an invokable script"
       source: |
         curl https://cloud2.influxdata.com/api/v2/tasks \
         --header "Content-type: application/json" \

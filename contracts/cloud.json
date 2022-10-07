@@ -41,7 +41,7 @@
     },
     {
       "name": "Tasks",
-      "description": "Process and analyze your data with [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the InfluxDB task engine.\nWith tasks, you can schedule Flux scripts to query, analyze, modify, and act on data.\nIn InfluxDB Cloud, you can create tasks that run [invokable scripts](#tag/Invokable-Scripts)\nwith parameters.\n\nUse the `/api/v2/tasks` endpoints to create and manage tasks, retry task runs, and retrieve run logs.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script)\n"
+      "description": "Process and analyze your data with [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the InfluxDB task engine.\nUse the `/api/v2/tasks` endpoints to schedule and manage tasks, retry task runs, and retrieve run logs.\nIn InfluxDB Cloud, a task may contain Flux (with the `flux` property)\nor reference an\n[invokable script](#tag/Invokable-Scripts) (with the `scriptID` property).\nWhen a task runs, it executes the provided script.\n\nA task that contains the `scriptID` property may also contain the\n`scriptParameters` property that defines invocation parameter values\npassed to the script at run-time.\n\nTo create or update a task that contains Flux, set the `flux` property with\na string of \"raw\" Flux that contains task options and the script.\nTo create or update a task that runs an [invokable script](#tag/Invokable-Scripts),\nset the `scriptID` property to the script ID and pass task option properties\nin the request body. For examples, see _Request samples_ for\n[Create a task](#tag/Data-IO-endpoints/operation/PostTasks).\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script)\n"
     },
     {
       "name": "Templates",
@@ -4983,7 +4983,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "The name or ID of the organization executing the query.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID`.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n",
+            "description": "The name or ID of the organization executing the query.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` or `orgID` parameters.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n",
             "schema": {
               "type": "string"
             }
@@ -4991,7 +4991,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The ID of the organization executing the query.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID`.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n",
+            "description": "The ID of the organization executing the query.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` or `orgID` parameters.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n",
             "schema": {
               "type": "string"
             }
@@ -12823,19 +12823,46 @@
           "Tasks"
         ],
         "summary": "Create a task",
-        "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.\n\nUse this endpoint to create a scheduled task that runs a Flux script.\n\n#### InfluxDB Cloud\n\n- You can use either `flux` or `scriptID` to provide the task script.\n\n  - `flux`: a string of \"raw\" Flux that contains task options and the script--for example:\n\n    ```json\n    {\n      \"flux\": \"option task = {name: \\\"CPU Total 1 Hour New\\\", every: 1h}\\\n      from(bucket: \\\"telegraf\\\")\n        |> range(start: -1h)\n        |> filter(fn: (r) => (r._measurement == \\\"cpu\\\"))\n        |> filter(fn: (r) =>\\n\\t\\t(r._field == \\\"usage_system\\\"))\n        |> filter(fn: (r) => (r.cpu == \\\"cpu-total\\\"))\n        |> aggregateWindow(every: 1h, fn: max)\n        |> to(bucket: \\\"cpu_usage_user_total_1h\\\", org: \\\"INFLUX_ORG\\\")\",\n      \"status\": \"active\",\n      \"description\": \"This task downsamples CPU data every hour\"\n    }\n    ```\n\n  - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)\n    for the task to run.\n    To pass task options when using `scriptID`, pass the options as\n    properties in the request body--for example:\n\n    ```json\n    {\n      \"name\": \"CPU Total 1 Hour New\",\n      \"description\": \"This task downsamples CPU data every hour\",\n      \"every\": \"1h\",\n      \"scriptID\": \"SCRIPT_ID\",\n      \"scriptParameters\":\n        {\n          \"rangeStart\": \"-1h\",\n          \"bucket\": \"telegraf\",\n          \"filterField\": \"cpu-total\"\n        }\n      }\n    ```\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` for the same task.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
+        "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.\n\nUse this endpoint to create a scheduled task that runs a Flux script.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "The task to create",
+          "description": "A task.\n\nTo provide the script that the task runs,\nset either the `flux` property or the `scriptID` property.\n\nIf you set `scriptID`, you can set the following properties to configure the task:\n  - `cron`\n  - `every`\n  - `offset`\n  - `scriptParameters`\n\nSee [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nfor examples and more information.\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` in the same task.\n",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TaskCreateRequest"
+              },
+              "examples": {
+                "PostTaskFluxRequest": {
+                  "summary": "A task with Flux.",
+                  "description": "The example shows how to set the `flux` property with Flux task options and a query.",
+                  "value": {
+                    "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                    "status": "active",
+                    "description": "This task downsamples CPU data every hour"
+                  }
+                },
+                "PostTaskScriptRequest": {
+                  "summary": "A task with an invokable script.",
+                  "description": "The example shows how to set properties for a task to\nrun an [invokable script](#tag/Invokable-Scripts).\n",
+                  "value": {
+                    "name": "CPU Total 1 Hour New",
+                    "every": "1h",
+                    "scriptID": "SCRIPT_ID",
+                    "scriptParameters": {
+                      "rangeStart": "-1h",
+                      "bucket": "telegraf",
+                      "filterField": "cpu-total"
+                    },
+                    "status": "active",
+                    "description": "This task downsamples CPU data every hour"
+                  }
+                }
               }
             }
           }
@@ -12897,12 +12924,12 @@
         "x-codeSamples": [
           {
             "lang": "Shell",
-            "label": "cURL: create a Flux script task",
+            "label": "cURL: create a task that contains a script",
             "source": "curl https://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"flux\": \"option task = {name: \\\"iot-center-task-1\\\", every: 30m}\\\n            from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -30d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\\\n              |> aggregateWindow(every: 1h, fn: mean)\"\n  }\nEOF\n"
           },
           {
             "lang": "Shell",
-            "label": "cURL: create a Flux script reference task",
+            "label": "cURL: create a task that runs an invokable script",
             "source": "curl https://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"scriptID\": \"085138a111448000\",\n    \"scriptParameters\":\n      {\n        \"rangeStart\": \"-30d\",\n        \"bucket\": \"air_sensor\",\n        \"filterField\": \"temperature\",\n        \"groupColumn\": \"_time\"\n      }\n  }\nEOF\n"
           }
         ]
@@ -12965,14 +12992,41 @@
           "Tasks"
         ],
         "summary": "Update a task",
-        "description": "Updates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),\nand then cancels all scheduled runs of the task.\n\nUse this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.\nOnce InfluxDB applies the update, it cancels all previously scheduled runs of the task.\n\nTo update a task, pass an object that contains the updated key-value pairs.\nTo activate or inactivate a task, set the `status` property.\n_`\"status\": \"inactive\"`_ cancels scheduled runs and prevents manual runs of the task.\n\n#### InfluxDB Cloud\n\n- Use either `flux` or `scriptID` to provide the task script.\n\n  - `flux`: a string of \"raw\" Flux that contains task options and the script--for example:\n\n    ```json\n    {\n      \"flux\": \"option task = {name: \\\"CPU Total 1 Hour New\\\", every: 1h}\\\n      from(bucket: \\\"telegraf\\\")\n        |> range(start: -1h)\n        |> filter(fn: (r) => (r._measurement == \\\"cpu\\\"))\n        |> filter(fn: (r) =>\\n\\t\\t(r._field == \\\"usage_system\\\"))\n        |> filter(fn: (r) => (r.cpu == \\\"cpu-total\\\"))\n        |> aggregateWindow(every: 1h, fn: max)\n        |> to(bucket: \\\"cpu_usage_user_total_1h\\\", org: \\\"INFLUX_ORG\\\")\",\n      \"status\": \"active\",\n      \"description\": \"This task downsamples CPU data every hour\"\n    }\n    ```\n\n  - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)\n    for the task to run.\n    To pass task options when using `scriptID`, pass the options as\n    properties in the request body--for example:\n\n    ```json\n    {\n      \"name\": \"CPU Total 1 Hour New\",\n      \"description\": \"This task downsamples CPU data every hour\",\n      \"every\": \"1h\",\n      \"scriptID\": \"SCRIPT_ID\",\n      \"scriptParameters\":\n        {\n          \"rangeStart\": \"-1h\",\n          \"bucket\": \"telegraf\",\n          \"filterField\": \"cpu-total\"\n        }\n      }\n    ```\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` for the same task.\n",
+        "description": "Updates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),\nand then cancels all scheduled runs of the task.\n\nUse this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.\nOnce InfluxDB applies the update, it cancels all previously scheduled runs of the task.\n\nTo activate or inactivate a task, set the `status` property.\n_`\"status\": \"inactive\"`_ cancels scheduled runs and prevents manual runs of the task.\n\n#### Related guides\n\n- [Update a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/update-task/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
         "requestBody": {
-          "description": "An task update to apply.",
+          "description": "A task update to apply.\n\nTo provide the script that the task runs,\nset either the `flux` property or the `scriptID` property.\n\nIf you set `scriptID`, you can set the following properties to configure the task:\n  - `cron`\n  - `every`\n  - `offset`\n  - `scriptParameters`\n\nSee [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nfor examples and more information.\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` in the same task.\n",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TaskUpdateRequest"
+              },
+              "examples": {
+                "PostTaskFluxRequest": {
+                  "summary": "A task with Flux.",
+                  "description": "The example shows how to set the `flux` property with Flux task options and a query.",
+                  "value": {
+                    "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+                    "status": "active",
+                    "description": "This task downsamples CPU data every hour"
+                  }
+                },
+                "PostTaskScriptRequest": {
+                  "summary": "A task with an invokable script.",
+                  "description": "The example shows how to set properties for a task to\nrun an [invokable script](#tag/Invokable-Scripts).\n",
+                  "value": {
+                    "name": "CPU Total 1 Hour New",
+                    "every": "1h",
+                    "scriptID": "SCRIPT_ID",
+                    "scriptParameters": {
+                      "rangeStart": "-1h",
+                      "bucket": "telegraf",
+                      "filterField": "cpu-total"
+                    },
+                    "status": "active",
+                    "description": "This task downsamples CPU data every hour"
+                  }
+                }
               }
             }
           }
@@ -13025,7 +13079,7 @@
           "Tasks"
         ],
         "summary": "Delete a task",
-        "description": "Deletes a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and associated records.\n\nUse this endpoint to delete a task and all associated records (task runs, logs, and labels).\nOnce the task is deleted, InfluxDB cancels all scheduled runs of the task.\n\nIf you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).\n",
+        "description": "Deletes a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and associated records.\n\nUse this endpoint to delete a task and all associated records (task runs, logs, and labels).\nOnce the task is deleted, InfluxDB cancels all scheduled runs of the task.\n\nTo disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -21357,7 +21411,7 @@
             "type": "string"
           },
           "name": {
-            "description": "The name of the task.",
+            "description": "The task name.",
             "type": "string"
           },
           "ownerID": {
@@ -21378,11 +21432,6 @@
             "description": "An authorization ID.\nSpecifies the authorization used when the task communicates with the query engine.\n\nTo find an authorization ID, use the\n[`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to\nlist authorizations.\n",
             "type": "string"
           },
-          "flux": {
-            "description": "The Flux script that the task executes.\n\n#### Limitations\n  - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.\n",
-            "type": "string",
-            "format": "flux"
-          },
           "every": {
             "description": "The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.",
             "type": "string",
@@ -21390,7 +21439,8 @@
           },
           "cron": {
             "description": "A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.",
-            "type": "string"
+            "type": "string",
+            "format": "cron"
           },
           "offset": {
             "description": "A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.",
@@ -21458,8 +21508,13 @@
               }
             }
           },
+          "flux": {
+            "description": "Flux with task options and the script for the task to run.\n\n#### Limitations\n\n- If you set the `flux` property, you must provide the `task` option in\n  the Flux script, and you can't set the following properties in the\n  request body:\n\n    - `scriptID`\n    - `scriptParameters`\n    - `every`\n    - `offset`\n",
+            "type": "string",
+            "format": "Flux"
+          },
           "scriptID": {
-            "description": "A script ID.\nSpecifies the [invokable script](#tag/Invokable-Scripts) that the task executes.\n\n#### Limitations\n\n- If you use the `scriptID` property, you can't use the `flux` property.\n\n#### Related guides\n\n- [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)\n",
+            "description": "A script ID.\nSpecifies the [invokable script](#tag/Invokable-Scripts) that the task runs.\n\n#### Limitations\n\n- If you use the `scriptID` property, you can't use the `flux` property.\n\n#### Related guides\n\n- [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).\n",
             "type": "string"
           },
           "scriptParameters": {
@@ -21477,48 +21532,37 @@
         "type": "object",
         "properties": {
           "orgID": {
-            "description": "The ID of the organization that owns the task.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/orgID"
           },
           "org": {
-            "description": "The name of the organization that owns the task.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/org"
           },
           "status": {
             "$ref": "#/components/schemas/TaskStatusType"
           },
-          "flux": {
-            "description": "The Flux script that the task runs.\n\n#### Limitations\n\n- If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.\n",
-            "type": "string"
-          },
           "description": {
-            "description": "The description of the task.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/description"
+          },
+          "flux": {
+            "$ref": "#/components/schemas/Task/properties/flux"
           },
           "scriptID": {
-            "description": "The ID of the script that the task runs.\n\n#### Limitations\n\n- If you use the `scriptID` property, you can't use the `flux` property.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/scriptID"
           },
           "scriptParameters": {
-            "description": "The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.\n\n#### Limitations\n\n- `scriptParameters` requires `scriptID`.\n- If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.\n",
-            "type": "object"
+            "$ref": "#/components/schemas/Task/properties/scriptParameters"
           },
           "name": {
-            "description": "The name of the task",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/name"
           },
           "every": {
-            "description": "The interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs.\n`every` also determines when the task first runs, depending on the specified time.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/every"
           },
           "cron": {
-            "description": "A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB bases cron runs on the system time.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/cron"
           },
           "offset": {
-            "description": "A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.",
-            "type": "string",
-            "format": "duration"
+            "$ref": "#/components/schemas/Task/properties/offset"
           }
         }
       },
@@ -21528,37 +21572,29 @@
           "status": {
             "$ref": "#/components/schemas/TaskStatusType"
           },
-          "flux": {
-            "description": "Update the Flux script that the task runs.",
-            "type": "string"
-          },
           "name": {
-            "description": "Update the 'name' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/name"
           },
           "every": {
-            "description": "Update the 'every' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/every"
           },
           "cron": {
-            "description": "Update the 'cron' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/cron"
           },
           "offset": {
-            "description": "Update the 'offset' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/offset"
           },
           "description": {
-            "description": "Update the description of the task.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/description"
+          },
+          "flux": {
+            "$ref": "#/components/schemas/Task/properties/flux"
           },
           "scriptID": {
-            "description": "Update the 'scriptID' of the task.",
-            "type": "string"
+            "$ref": "#/components/schemas/Task/properties/scriptID"
           },
           "scriptParameters": {
-            "description": "Update the 'scriptParameters' of the task.",
-            "type": "object"
+            "$ref": "#/components/schemas/Task/properties/scriptParameters"
           }
         }
       }
