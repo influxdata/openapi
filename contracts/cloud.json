@@ -12060,13 +12060,14 @@
     "/buckets/{bucketID}/schema/measurements": {
       "summary": "Bucket schemas",
       "get": {
-        "summary": "List all measurement schemas of a bucket",
+        "summary": "List measurement schemas of a bucket",
+        "description": "Retrieves a list of _explicit_\n[schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\n(`\"schemaType\": \"explicit\"`) for a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\n#### Related guides\n\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)\n",
         "operationId": "getMeasurementSchemas",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12074,7 +12075,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12082,7 +12083,7 @@
           {
             "in": "query",
             "name": "name",
-            "description": "The name of the measurement to return schemas for.",
+            "description": "A measurement name.\nOnly returns measurement schemas with the specified name.\n",
             "schema": {
               "type": "string"
             }
@@ -12090,7 +12091,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nLists measurement schemas for the specified bucket.\n",
             "schema": {
               "type": "string"
             },
@@ -12119,20 +12120,45 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidSchemaType": {
+                    "summary": "Invalid schema type.",
+                    "value": {
+                      "code": "invalid",
+                      "message": "bucket schemaType must be explicit"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
           "404": {
-            "description": "Bucket not found",
-            "$ref": "#/components/responses/GeneralServerError"
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       },
       "post": {
         "summary": "Create a measurement schema for a bucket",
+        "description": "Creates an _explict_ measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\nfor a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\nUse this endpoint to create schemas that prevent non-conforming write requests.\n\n#### Limitations\n\n- Buckets must be created with the \"explict\" `schemaType` in order to use\nschemas.\n\n#### Related guides\n\n- [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).\n- [Create a bucket with an explicit schema]({% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/#create-a-bucket-with-an-explicit-schema)\n",
         "operationId": "createMeasurementSchema",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12140,7 +12166,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12148,7 +12174,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nAdds a schema for the specified bucket.\n",
             "schema": {
               "type": "string"
             },
@@ -12169,7 +12195,7 @@
         },
         "responses": {
           "201": {
-            "description": "The created measurement schema.",
+            "description": "The current version of the measurement schema.",
             "headers": {
               "ETag": {
                 "description": "The current version of the measurement schema",
@@ -12187,7 +12213,7 @@
             }
           },
           "400": {
-            "description": "Client error with create request",
+            "description": "Bad request.\n",
             "content": {
               "application/json": {
                 "examples": {
@@ -12237,20 +12263,37 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"temperature\",\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
+          }
+        ]
       }
     },
     "/buckets/{bucketID}/schema/measurements/{measurementID}": {
       "summary": "Bucket Schema",
       "get": {
-        "summary": "Retrieve measurement schema information",
+        "summary": "Retrieve a measurement schema",
+        "description": "Retrieves an explicit measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).\n",
         "operationId": "getMeasurementSchema",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "Organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12258,7 +12301,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "Organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12266,7 +12309,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nRetrieves schemas for the specified bucket.\n",
             "schema": {
               "type": "string"
             },
@@ -12275,7 +12318,7 @@
           {
             "in": "path",
             "name": "measurementID",
-            "description": "The identifier of the measurement.",
+            "description": "The measurement schema ID.\nSpecifies the measurement schema to retrieve.\n",
             "schema": {
               "type": "string"
             },
@@ -12303,17 +12346,27 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       },
       "patch": {
         "summary": "Update a measurement schema",
+        "description": "Updates a measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).\n\nUse this endpoint to update the fields (`name`, `type`, and `dataType`) of a\nmeasurement schema.\n\n#### Limitations\n\n- You can't update the `name` of a measurement.\n\n#### Related guides\n\n- [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/).\n",
         "operationId": "updateMeasurementSchema",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12321,7 +12374,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12329,7 +12382,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nSpecifies the bucket to retrieve schemas for.\n",
             "schema": {
               "type": "string"
             },
@@ -12338,7 +12391,7 @@
           {
             "in": "path",
             "name": "measurementID",
-            "description": "The identifier of the measurement.",
+            "description": "A measurement schema ID.\nRetrieves the specified measurement schema.\n",
             "schema": {
               "type": "string"
             },
@@ -12359,7 +12412,7 @@
         },
         "responses": {
           "200": {
-            "description": "The updated measurement schema",
+            "description": "Success.\nThe response body contains the measurement schema.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -12369,7 +12422,7 @@
             }
           },
           "400": {
-            "description": "Client error updating measurement schema",
+            "description": "Bad request.\n",
             "content": {
               "application/json": {
                 "examples": {
@@ -12387,8 +12440,24 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request PATCH \"https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
+          }
+        ]
       }
     },
     "/orgs/{orgID}/limits": {
@@ -21313,6 +21382,7 @@
         ],
         "properties": {
           "name": {
+            "description": "The [measurement]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#measurement)\nname.\n",
             "type": "string"
           },
           "columns": {

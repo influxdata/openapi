@@ -839,27 +839,49 @@ paths:
   '/buckets/{bucketID}/schema/measurements':
     summary: Bucket schemas
     get:
-      summary: List all measurement schemas of a bucket
+      summary: List measurement schemas of a bucket
+      description: |
+        Retrieves a list of _explicit_
+        [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+        (`"schemaType": "explicit"`) for a bucket.
+
+        _Explicit_ schemas are used to enforce column names, tags, fields, and data
+        types for your data.
+
+        By default, buckets have an _implicit_ schema-type (`"schemaType": "implicit"`)
+        that conforms to your data.
+
+        #### Related guides
+
+        - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)
       operationId: getMeasurementSchemas
       parameters:
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            An organization name.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            An organization ID.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: query
           name: name
-          description: The name of the measurement to return schemas for.
+          description: |
+            A measurement name.
+            Only returns measurement schemas with the specified name.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The identifier of the bucket.
+          description: |
+            A bucket ID.
+            Lists measurement schemas for the specified bucket.
           schema:
             type: string
           required: true
@@ -877,26 +899,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchemaList'
+        '400':
+          description: |
+            Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+              examples:
+                invalidSchemaType:
+                  summary: Invalid schema type.
+                  value:
+                    code: invalid
+                    message: bucket schemaType must be explicit
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
         '404':
-          description: Bucket not found
-          $ref: '#/paths/~1tasks/get/responses/default'
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
     post:
       summary: Create a measurement schema for a bucket
+      description: |
+        Creates an _explict_ measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+        for a bucket.
+
+        _Explicit_ schemas are used to enforce column names, tags, fields, and data
+        types for your data.
+
+        By default, buckets have an _implicit_ schema-type (`"schemaType": "implicit"`)
+        that conforms to your data.
+
+        Use this endpoint to create schemas that prevent non-conforming write requests.
+
+        #### Limitations
+
+        - Buckets must be created with the "explict" `schemaType` in order to use
+        schemas.
+
+        #### Related guides
+
+        - [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).
+        - [Create a bucket with an explicit schema]({% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/#create-a-bucket-with-an-explicit-schema)
       operationId: createMeasurementSchema
       parameters:
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            An organization name.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            An organization ID.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The identifier of the bucket.
+          description: |
+            A bucket ID.
+            Adds a schema for the specified bucket.
           schema:
             type: string
           required: true
@@ -909,7 +974,7 @@ paths:
               $ref: '#/components/schemas/MeasurementSchemaCreateRequest'
       responses:
         '201':
-          description: The created measurement schema.
+          description: The current version of the measurement schema.
           headers:
             ETag:
               description: The current version of the measurement schema
@@ -920,7 +985,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
         '400':
-          description: Client error with create request
+          description: |
+            Bad request.
           content:
             application/json:
               examples:
@@ -956,31 +1022,73 @@ paths:
                     message: At least one field column is required
               schema:
                 $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+              --header "Authorization: Token INFLUX_API_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "name": "temperature",
+                  "column": [
+                    {
+                      "type": "tag",
+                      "name": "location"
+                    },
+                    {
+                      "type": "field",
+                      "name": "value",
+                      "dataType": "float"
+                    },
+                    {
+                      "type": "timestamp",
+                      "name": "time"
+                    }
+                  ]
+                }'
   '/buckets/{bucketID}/schema/measurements/{measurementID}':
     summary: Bucket Schema
     get:
-      summary: Retrieve measurement schema information
+      summary: Retrieve a measurement schema
+      description: |
+        Retrieves an explicit measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).
       operationId: getMeasurementSchema
       parameters:
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            Organization name.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            Organization ID.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The identifier of the bucket.
+          description: |
+            A bucket ID.
+            Retrieves schemas for the specified bucket.
           schema:
             type: string
           required: true
         - in: path
           name: measurementID
-          description: The identifier of the measurement.
+          description: |
+            The measurement schema ID.
+            Specifies the measurement schema to retrieve.
           schema:
             type: string
           required: true
@@ -998,29 +1106,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
     patch:
       summary: Update a measurement schema
+      description: |
+        Updates a measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).
+
+        Use this endpoint to update the fields (`name`, `type`, and `dataType`) of a
+        measurement schema.
+
+        #### Limitations
+
+        - You can't update the `name` of a measurement.
+
+        #### Related guides
+
+        - [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).
+        - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/).
       operationId: updateMeasurementSchema
       parameters:
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            An organization name.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            An organization ID.
+            Specifies the organization that owns the schema.
           schema:
             type: string
         - in: path
           name: bucketID
-          description: The identifier of the bucket.
+          description: |
+            A bucket ID.
+            Specifies the bucket to retrieve schemas for.
           schema:
             type: string
           required: true
         - in: path
           name: measurementID
-          description: The identifier of the measurement.
+          description: |
+            A measurement schema ID.
+            Retrieves the specified measurement schema.
           schema:
             type: string
           required: true
@@ -1033,13 +1169,16 @@ paths:
               $ref: '#/components/schemas/MeasurementSchemaUpdateRequest'
       responses:
         '200':
-          description: The updated measurement schema
+          description: |
+            Success.
+            The response body contains the measurement schema.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
         '400':
-          description: Client error updating measurement schema
+          description: |
+            Bad request.
           content:
             application/json:
               examples:
@@ -1051,6 +1190,37 @@ paths:
                     message: Unable to delete columns from schema
               schema:
                 $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request PATCH "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+              --header "Authorization: Token INFLUX_API_TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data '{
+                  "column": [
+                    {
+                      "type": "tag",
+                      "name": "location"
+                    },
+                    {
+                      "type": "field",
+                      "name": "value",
+                      "dataType": "float"
+                    },
+                    {
+                      "type": "timestamp",
+                      "name": "time"
+                    }
+                  ]
+                }'
   '/orgs/{orgID}/limits':
     get:
       tags:
@@ -4322,6 +4492,9 @@ components:
         - columns
       properties:
         name:
+          description: |
+            The [measurement]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#measurement)
+            name.
           type: string
         columns:
           description: Ordered collection of column definitions.
