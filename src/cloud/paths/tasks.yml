@@ -3,12 +3,16 @@ get:
   tags:
     - Data I/O endpoints
     - Tasks
-  summary: List all tasks
+  summary: List tasks
   description: |
     Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
     To limit which tasks are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
+
+    #### Related guide
+
+    - [Process data with InfluxDB tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: query
@@ -56,7 +60,7 @@ get:
           - inactive
       description: |
         A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.
-        Only returns tasks that have the specified status (`active` or `inactive`).
+        Only returns tasks that have the specified status.
     - in: query
       name: limit
       schema:
@@ -89,8 +93,11 @@ get:
     - in: query
       name: sortBy
       description: |
-        The sort field. Only `name` is supported.
-        Specifies the field used to sort records in the list.
+        The sort field.
+        Specifies the task property used to sort records in the list.
+        Default is `name`.
+
+        The parameter has one supported value: `name`.
       required: false
       schema:
         type: string
@@ -99,9 +106,10 @@ get:
     - in: query
       name: type
       description: |
-        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type (`basic` or `system`).
-        Default is `system`.
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type.
         Specifies the level of detail for tasks in the response.
+        Default is `system`.
+
         The default (`system`) response contains all the metadata properties for tasks.
         To reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).
       required: false
@@ -151,7 +159,7 @@ post:
   description: |
     Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.
 
-    Use this endpoint to create a scheduled task that runs a Flux script.
+    Use this endpoint to create a scheduled task that runs a script.
 
     #### Related guides
 
@@ -163,19 +171,23 @@ post:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
     description: |
-      A task.
+      In the request body, provide the task.
 
-      To provide the script that the task runs,
-      set either the `flux` property or the `scriptID` property.
+      Set one of the following properties to provide the script that the task runs:
+        - `flux`
+        - `scriptID`
 
-      If you set `scriptID`, you can set the following properties to configure the task:
+      If you set the `scriptID` property, you can set the following properties to configure the task:
         - `cron`
         - `every`
         - `offset`
         - `scriptParameters`
 
+      If you set the `flux` property, you must provide the `task` configuration option
+      in the Flux script.
+
       See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
-      for examples and more information.
+      for detail and examples.
 
       #### Limitations:
 
@@ -184,48 +196,17 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../schemas/TaskCreateRequest.yml"
+          oneOf:
+            - $ref: "../../common/schemas/TaskCreateRequest.yml"
+            - $ref: "../schemas/TaskWithScriptCreateRequest.yml"
         examples:
-          PostTaskFluxRequest:
-            summary: A task with Flux.
-            description:
-              The example shows how to set the `flux` property with Flux task options
-              and a query.
-            value:
-              {
-                "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-                 from(bucket: \"telegraf\")
-                  |> range(start: -1h)
-                  |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                  |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                  |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                  |> aggregateWindow(every: 1h, fn: max)
-                  |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-                "status": "active",
-                "description": "This task downsamples CPU data every hour"
-              }
-          PostTaskScriptRequest:
-            summary: A task with an invokable script.
-            description: |
-              The example shows how to set properties for a task to
-              run an [invokable script](#tag/Invokable-Scripts).
-            value:
-              {
-                "name": "CPU Total 1 Hour New",
-                "every": "1h",
-                "scriptID": "SCRIPT_ID",
-                "scriptParameters":
-                  {
-                    "rangeStart": "-1h",
-                    "bucket": "telegraf",
-                    "filterField": "cpu-total"
-                  },
-                "status": "active",
-                "description": "This task downsamples CPU data every hour"
-              }
+          TaskWithFlux:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
+          TaskWithScriptID:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithScriptRequest"
   responses:
     "201":
-      description: Success. The response body contains a `tasks` list with the new task.
+      description: Success. The response body contains a `tasks` list with the task.
       content:
         application/json:
           schema:
@@ -237,8 +218,10 @@ post:
 
         #### InfluxDB Cloud
 
-        - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
-        - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
+        - Returns this error if the task doesn't contain the `flux` property
+          or the `scriptID` property.
+        - Returns this error if the task contains `flux` _and_ `scriptID`
+          properties.
       content:
         application/json:
           schema:
@@ -268,41 +251,3 @@ post:
         application/json:
           schema:
             $ref: "../../common/schemas/Error.yml"
-  x-codeSamples:
-    - lang: Shell
-      label: "cURL: create a task that contains a script"
-      source: |
-        curl https://cloud2.influxdata.com/api/v2/tasks \
-        --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_API_TOKEN" \
-        --data-binary @- << EOF
-          {
-            "orgID": "INFLUX_ORG_ID",
-            "description": "IoT Center 30d environment average.",
-            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                    from(bucket: \"iot_center\")\
-                      |> range(start: -30d)\
-                      |> filter(fn: (r) => r._measurement == \"environment\")\
-                      |> aggregateWindow(every: 1h, fn: mean)"
-          }
-        EOF
-    - lang: Shell
-      label: "cURL: create a task that runs an invokable script"
-      source: |
-        curl https://cloud2.influxdata.com/api/v2/tasks \
-        --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_API_TOKEN" \
-        --data-binary @- << EOF
-          {
-            "orgID": "INFLUX_ORG_ID",
-            "description": "IoT Center 30d environment average.",
-            "scriptID": "085138a111448000",
-            "scriptParameters":
-              {
-                "rangeStart": "-30d",
-                "bucket": "air_sensor",
-                "filterField": "temperature",
-                "groupColumn": "_time"
-              }
-          }
-        EOF

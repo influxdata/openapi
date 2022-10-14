@@ -5,7 +5,7 @@ get:
     - Tasks
   summary: Retrieve a task
   description: |
-    Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+    Retrieves the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -39,14 +39,11 @@ patch:
     - Tasks
   summary: Update a task
   description: |
-    Updates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
+    Updates the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
     and then cancels all scheduled runs of the task.
 
     Use this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.
     Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
-
-    To activate or inactivate a task, set the `status` property.
-    _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
 
     #### Related guides
 
@@ -54,8 +51,7 @@ patch:
     - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   requestBody:
     description: |
-      A task update to apply.
-
+      In the request body, provide the task properties to update.
       To provide the script that the task runs,
       set either the `flux` property or the `scriptID` property.
 
@@ -65,22 +61,27 @@ patch:
         - `offset`
         - `scriptParameters`
 
+      If you set the `flux` property, provide the `task` configuration option
+      in the Flux script.
+
       See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
-      for examples and more information.
+      for detail and examples.
 
       #### Limitations:
 
-      - You can't use `flux` and `scriptID` in the same task.
+      - You can't set `flux` and `scriptID` properties for the same task--for
+        example, if you set the `scriptID` property, then InfluxDB sets the `flux` property
+        to an empty string (`"flux": ""`).
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/TaskUpdateRequest.yml"
         examples:
-          PostTaskFluxRequest:
-            $ref: "../../common/mediaTypes/examples/Task.yml#/PostTaskFluxRequest"
-          PostTaskScriptRequest:
-            $ref: "../../common/mediaTypes/examples/Task.yml#/PostTaskScriptRequest"
+          TaskWithFlux:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
+          TaskWithScriptID:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithScriptRequest"
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -114,12 +115,13 @@ delete:
     - Tasks
   summary: Delete a task
   description: |
-    Deletes a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and associated records.
-
-    Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+    Deletes the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+    and all associated records (task runs, logs, and labels).
     Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
 
-    To disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
+    To disable a task instead of delete it, use
+    [`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task status
+     to `inactive`.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -127,7 +129,9 @@ delete:
       schema:
         type: string
       required: true
-      description: A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID. Specifies the task to delete.
+      description: |
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
+        Specifies the task to delete.
   responses:
     "204":
       description: Success. The task and task runs are deleted. Scheduled runs are canceled.

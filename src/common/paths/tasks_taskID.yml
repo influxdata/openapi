@@ -13,7 +13,9 @@ get:
       schema:
         type: string
       required: true
-      description: The ID of the task to retrieve.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve.
   responses:
     "200":
       description: Success. The response body contains the task.
@@ -37,21 +39,27 @@ patch:
     - Tasks
   summary: Update a task
   description: |
-    Updates a task and then cancels all scheduled runs of the task.
+    Updates the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
+    and then cancels all scheduled runs of the task.
 
-    Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
+    Use this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.
     Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
-    To update a task, pass an object that contains the updated key-value pairs.
-    To activate or inactivate a task, set the `status` property.
-    _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+    #### Related guides
+
+    - [Update a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/update-task/)
+    - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   requestBody:
-    description: An object that contains updated task properties to apply.
+    description: |
+      In the request body, provide the task properties to update.
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/TaskUpdateRequest.yml"
+        examples:
+          TaskWithFlux:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -59,7 +67,9 @@ patch:
       schema:
         type: string
       required: true
-      description: The ID of the task to update.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)to update.
   responses:
     "200":
       description: Success. The response body contains the updated task.
@@ -83,12 +93,13 @@ delete:
     - Tasks
   summary: Delete a task
   description: |
-    Deletes a task and associated records.
-
-    Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+    Deletes the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+    and all associated records (task runs, logs, and labels).
     Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
 
-    If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
+    To disable a task instead of delete it, use
+    [`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task status
+     to `inactive`.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -96,7 +107,9 @@ delete:
       schema:
         type: string
       required: true
-      description: The ID of the task to delete.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to delete.
   responses:
     "204":
       description: Success. The task and runs are deleted. Scheduled runs are canceled.
