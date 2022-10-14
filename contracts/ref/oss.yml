@@ -6635,16 +6635,27 @@ openapi: 3.0.0
 paths:
   /api/v2:
     get:
+      description: |
+        Retrieves all the top level routes for the InfluxDB API.
+
+        #### Limitations
+
+        - Only returns top level routes--for example, the response contains
+        `"tasks":"/api/v2/tasks"`, and doesn't contain resource-specific routes
+        for tasks (`/api/v2/tasks/TASK_ID/...`).
       operationId: GetRoutes
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       responses:
-        default:
+        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Routes'
-          description: All routes
+          description: |
+            Success.
+            The response body contains key-value pairs with the resource name and
+            top-level route.
       summary: List all top level routes
       tags:
       - Routes
@@ -12412,35 +12423,69 @@ paths:
       - Security and access endpoints
   /ping:
     get:
-      description: Returns the status and InfluxDB version of the instance.
+      description: |
+        Retrieves the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/ping/)
       operationId: GetPing
       responses:
         "204":
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
-              description: The type of InfluxDB build.
+              description: |
+                The type of InfluxDB build.
               schema:
                 type: string
             X-Influxdb-Version:
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                  - Doesn't return version.
               schema:
                 type: integer
       servers:
       - url: ""
-      summary: Get the status and version of the instance
+      summary: Get the status of the instance
       tags:
       - Ping
       - System information endpoints
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request GET "http://localhost:8086/ping"
     head:
-      description: Returns the status and InfluxDB version of the instance.
+      description: |
+        Returns the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/ping/)
       operationId: HeadPing
       responses:
         "204":
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
@@ -12448,14 +12493,23 @@ paths:
               schema:
                 type: string
             X-Influxdb-Version:
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                - Doesn't return version.
               schema:
                 type: integer
       servers:
       - url: ""
-      summary: Get the status and version of the instance
+      summary: Get the status of the instance
       tags:
       - Ping
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request HEAD "http://localhost:8086/ping"
   /api/v2/query:
     post:
       description: |
@@ -17993,10 +18047,6 @@ paths:
       description: |
         Updates a user password.
 
-        Use this endpoint to let a user authenticate with
-        [Basic authentication credentials](#section/Authentication/BasicAuthentication)
-        and set a new password.
-
         #### InfluxDB Cloud
 
         - Doesn't allow you to manage user passwords through the API.
@@ -18050,6 +18100,82 @@ paths:
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
+      summary: Update a password
+      tags:
+      - Security and access endpoints
+      - Users
+      x-codeSamples:
+      - label: 'cURL: use HTTP POST to update the user password'
+        lang: Shell
+        source: |
+          curl --request POST \
+             "http://localhost:8086/api/v2/users/USER_ID/password" \
+            --header 'Content-type: application/json' \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --data-binary @- << EOF
+              {"password": "NEW_USER_PASSWORD"}
+          EOF
+    put:
+      description: |
+        Updates a user password.
+
+        Use this endpoint to let a user authenticate with
+        [Basic authentication credentials](#section/Authentication/BasicAuthentication)
+        and set a new password.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow you to manage user passwords through the API.
+          Use the InfluxDB Cloud user interface (UI) to update a password.
+
+        #### Related guides
+
+        - [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)
+        - [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)
+      operationId: PutUsersIDPassword
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The ID of the user to set the password for.
+        in: path
+        name: userID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetBody'
+        description: The new password to set for the user.
+        required: true
+      responses:
+        "204":
+          description: Success. The password is updated.
+        "400":
+          content:
+            application/json:
+              examples:
+                updatePasswordNotAllowed:
+                  summary: Cloud API can't update passwords
+                  value:
+                    code: invalid
+                    message: passwords cannot be changed through the InfluxDB Cloud
+                      API
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+
+            #### InfluxDB Cloud
+
+            - Doesn't allow you to manage passwords through the API; always responds with this status.
+
+            #### InfluxDB OSS
+
+            - Doesn't understand a value passed in the request.
+        default:
+          $ref: '#/components/responses/GeneralServerError'
+          description: Unexpected error
       security:
       - BasicAuthentication: []
       summary: Update a password
@@ -18060,12 +18186,15 @@ paths:
       - label: 'cURL: use Basic auth to update the user password'
         lang: Shell
         source: |
-          curl --request POST \
+          curl -c ./cookie-file.tmp --request POST \
+             "http://localhost:8086/api/v2/signin" \
+            --user "${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}"
+
+          curl -b ./cookie-file.tmp --request PUT \
              "http://localhost:8086/api/v2/users/USER_ID/password" \
             --header 'Content-type: application/json' \
-            --user "USERNAME:PASSWORD" \
             --data-binary @- << EOF
-              {"password": ""}
+              {"password": "NEW_USER_PASSWORD"}
           EOF
   /api/v2/variables:
     get:

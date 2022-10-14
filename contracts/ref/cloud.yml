@@ -2813,6 +2813,9 @@ components:
             $ref: '#/components/schemas/MeasurementSchemaColumn'
           type: array
         name:
+          description: |
+            The [measurement](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#measurement)
+            name.
           type: string
       required:
       - name
@@ -6599,16 +6602,27 @@ openapi: 3.0.0
 paths:
   /api/v2:
     get:
+      description: |
+        Retrieves all the top level routes for the InfluxDB API.
+
+        #### Limitations
+
+        - Only returns top level routes--for example, the response contains
+        `"tasks":"/api/v2/tasks"`, and doesn't contain resource-specific routes
+        for tasks (`/api/v2/tasks/TASK_ID/...`).
       operationId: GetRoutes
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       responses:
-        default:
+        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Routes'
-          description: All routes
+          description: |
+            Success.
+            The response body contains key-value pairs with the resource name and
+            top-level route.
       summary: List all top level routes
       tags:
       - Routes
@@ -8104,24 +8118,46 @@ paths:
       - Buckets
   /api/v2/buckets/{bucketID}/schema/measurements:
     get:
+      description: |
+        Retrieves a list of _explicit_
+        [schemas](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#schema)
+        (`"schemaType": "explicit"`) for a bucket.
+
+        _Explicit_ schemas are used to enforce column names, tags, fields, and data
+        types for your data.
+
+        By default, buckets have an _implicit_ schema-type (`"schemaType": "implicit"`)
+        that conforms to your data.
+
+        #### Related guides
+
+        - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)
       operationId: getMeasurementSchemas
       parameters:
-      - description: The name of the organization.
+      - description: |
+          An organization name.
+          Specifies the organization that owns the schema.
         in: query
         name: org
         schema:
           type: string
-      - description: The identifier of the organization.
+      - description: |
+          An organization ID.
+          Specifies the organization that owns the schema.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The name of the measurement to return schemas for.
+      - description: |
+          A measurement name.
+          Only returns measurement schemas with the specified name.
         in: query
         name: name
         schema:
           type: string
-      - description: The identifier of the bucket.
+      - description: |
+          A bucket ID.
+          Lists measurement schemas for the specified bucket.
         in: path
         name: bucketID
         required: true
@@ -8139,26 +8175,69 @@ paths:
               description: The current version of the bucket schema
               schema:
                 type: string
+        "400":
+          content:
+            application/json:
+              examples:
+                invalidSchemaType:
+                  summary: Invalid schema type.
+                  value:
+                    code: invalid
+                    message: bucket schemaType must be explicit
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
         "404":
-          $ref: '#/components/responses/GeneralServerError'
-          description: Bucket not found
-      summary: List all measurement schemas of a bucket
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+      summary: List measurement schemas of a bucket
       tags:
       - Bucket Schemas
     post:
+      description: |
+        Creates an _explict_ measurement [schema](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#schema)
+        for a bucket.
+
+        _Explicit_ schemas are used to enforce column names, tags, fields, and data
+        types for your data.
+
+        By default, buckets have an _implicit_ schema-type (`"schemaType": "implicit"`)
+        that conforms to your data.
+
+        Use this endpoint to create schemas that prevent non-conforming write requests.
+
+        #### Limitations
+
+        - Buckets must be created with the "explict" `schemaType` in order to use
+        schemas.
+
+        #### Related guides
+
+        - [Manage bucket schemas](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/bucket-schema/).
+        - [Create a bucket with an explicit schema](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/create-bucket/#create-a-bucket-with-an-explicit-schema)
       operationId: createMeasurementSchema
       parameters:
-      - description: The name of the organization.
+      - description: |
+          An organization name.
+          Specifies the organization that owns the schema.
         in: query
         name: org
         schema:
           type: string
-      - description: The identifier of the organization.
+      - description: |
+          An organization ID.
+          Specifies the organization that owns the schema.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The identifier of the bucket.
+      - description: |
+          A bucket ID.
+          Adds a schema for the specified bucket.
         in: path
         name: bucketID
         required: true
@@ -8175,7 +8254,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
-          description: The created measurement schema.
+          description: The current version of the measurement schema.
           headers:
             ETag:
               description: The current version of the measurement schema
@@ -8223,32 +8302,75 @@ paths:
                     message: Timestamp column is required
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Client error with create request
+          description: |
+            Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
       summary: Create a measurement schema for a bucket
       tags:
       - Bucket Schemas
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request POST "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+                "name": "temperature",
+                "column": [
+                  {
+                    "type": "tag",
+                    "name": "location"
+                  },
+                  {
+                    "type": "field",
+                    "name": "value",
+                    "dataType": "float"
+                  },
+                  {
+                    "type": "timestamp",
+                    "name": "time"
+                  }
+                ]
+              }'
     summary: Bucket schemas
   /api/v2/buckets/{bucketID}/schema/measurements/{measurementID}:
     get:
+      description: |
+        Retrieves an explicit measurement [schema](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#schema).
       operationId: getMeasurementSchema
       parameters:
-      - description: The name of the organization.
+      - description: |
+          Organization name.
+          Specifies the organization that owns the schema.
         in: query
         name: org
         schema:
           type: string
-      - description: The identifier of the organization.
+      - description: |
+          Organization ID.
+          Specifies the organization that owns the schema.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The identifier of the bucket.
+      - description: |
+          A bucket ID.
+          Retrieves schemas for the specified bucket.
         in: path
         name: bucketID
         required: true
         schema:
           type: string
-      - description: The identifier of the measurement.
+      - description: |
+          The measurement schema ID.
+          Specifies the measurement schema to retrieve.
         in: path
         name: measurementID
         required: true
@@ -8266,29 +8388,57 @@ paths:
               description: The current version of the measurement schema
               schema:
                 type: string
-      summary: Retrieve measurement schema information
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+      summary: Retrieve a measurement schema
       tags:
       - Bucket Schemas
     patch:
+      description: |
+        Updates a measurement [schema](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#schema).
+
+        Use this endpoint to update the fields (`name`, `type`, and `dataType`) of a
+        measurement schema.
+
+        #### Limitations
+
+        - You can't update the `name` of a measurement.
+
+        #### Related guides
+
+        - [Manage bucket schemas](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/bucket-schema/).
+        - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/).
       operationId: updateMeasurementSchema
       parameters:
-      - description: The name of the organization.
+      - description: |
+          An organization name.
+          Specifies the organization that owns the schema.
         in: query
         name: org
         schema:
           type: string
-      - description: The identifier of the organization.
+      - description: |
+          An organization ID.
+          Specifies the organization that owns the schema.
         in: query
         name: orgID
         schema:
           type: string
-      - description: The identifier of the bucket.
+      - description: |
+          A bucket ID.
+          Specifies the bucket to retrieve schemas for.
         in: path
         name: bucketID
         required: true
         schema:
           type: string
-      - description: The identifier of the measurement.
+      - description: |
+          A measurement schema ID.
+          Retrieves the specified measurement schema.
         in: path
         name: measurementID
         required: true
@@ -8305,7 +8455,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeasurementSchema'
-          description: The updated measurement schema
+          description: |
+            Success.
+            The response body contains the measurement schema.
         "400":
           content:
             application/json:
@@ -8319,10 +8471,42 @@ paths:
                     message: Unable to delete columns from schema
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Client error updating measurement schema
+          description: |
+            Bad request.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
       summary: Update a measurement schema
       tags:
       - Bucket Schemas
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request PATCH "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+            --header "Authorization: Token INFLUX_API_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data '{
+                "column": [
+                  {
+                    "type": "tag",
+                    "name": "location"
+                  },
+                  {
+                    "type": "field",
+                    "name": "value",
+                    "dataType": "float"
+                  },
+                  {
+                    "type": "timestamp",
+                    "name": "time"
+                  }
+                ]
+              }'
     summary: Bucket Schema
   /api/v2/checks:
     get:
@@ -11722,35 +11906,69 @@ paths:
       - Usage
   /ping:
     get:
-      description: Returns the status and InfluxDB version of the instance.
+      description: |
+        Retrieves the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/cloud/reference/cli/influx/ping/)
       operationId: GetPing
       responses:
         "204":
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
-              description: The type of InfluxDB build.
+              description: |
+                The type of InfluxDB build.
               schema:
                 type: string
             X-Influxdb-Version:
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                  - Doesn't return version.
               schema:
                 type: integer
       servers:
       - url: ""
-      summary: Get the status and version of the instance
+      summary: Get the status of the instance
       tags:
       - Ping
       - System information endpoints
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request GET "http://localhost:8086/ping"
     head:
-      description: Returns the status and InfluxDB version of the instance.
+      description: |
+        Returns the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/cloud/reference/cli/influx/ping/)
       operationId: HeadPing
       responses:
         "204":
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
@@ -11758,14 +11976,23 @@ paths:
               schema:
                 type: string
             X-Influxdb-Version:
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                - Doesn't return version.
               schema:
                 type: integer
       servers:
       - url: ""
-      summary: Get the status and version of the instance
+      summary: Get the status of the instance
       tags:
       - Ping
+      x-codeSamples:
+      - label: cURL
+        lang: Shell
+        source: |
+          curl --request HEAD "http://localhost:8086/ping"
   /api/v2/query:
     post:
       description: |
@@ -16785,10 +17012,6 @@ paths:
       description: |
         Updates a user password.
 
-        Use this endpoint to let a user authenticate with
-        [Basic authentication credentials](#section/Authentication/BasicAuthentication)
-        and set a new password.
-
         #### InfluxDB Cloud
 
         - Doesn't allow you to manage user passwords through the API.
@@ -16842,6 +17065,82 @@ paths:
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
+      summary: Update a password
+      tags:
+      - Security and access endpoints
+      - Users
+      x-codeSamples:
+      - label: 'cURL: use HTTP POST to update the user password'
+        lang: Shell
+        source: |
+          curl --request POST \
+             "http://localhost:8086/api/v2/users/USER_ID/password" \
+            --header 'Content-type: application/json' \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --data-binary @- << EOF
+              {"password": "NEW_USER_PASSWORD"}
+          EOF
+    put:
+      description: |
+        Updates a user password.
+
+        Use this endpoint to let a user authenticate with
+        [Basic authentication credentials](#section/Authentication/BasicAuthentication)
+        and set a new password.
+
+        #### InfluxDB Cloud
+
+        - Doesn't allow you to manage user passwords through the API.
+          Use the InfluxDB Cloud user interface (UI) to update a password.
+
+        #### Related guides
+
+        - [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)
+        - [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)
+      operationId: PutUsersIDPassword
+      parameters:
+      - $ref: '#/components/parameters/TraceSpan'
+      - description: The ID of the user to set the password for.
+        in: path
+        name: userID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetBody'
+        description: The new password to set for the user.
+        required: true
+      responses:
+        "204":
+          description: Success. The password is updated.
+        "400":
+          content:
+            application/json:
+              examples:
+                updatePasswordNotAllowed:
+                  summary: Cloud API can't update passwords
+                  value:
+                    code: invalid
+                    message: passwords cannot be changed through the InfluxDB Cloud
+                      API
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+
+            #### InfluxDB Cloud
+
+            - Doesn't allow you to manage passwords through the API; always responds with this status.
+
+            #### InfluxDB OSS
+
+            - Doesn't understand a value passed in the request.
+        default:
+          $ref: '#/components/responses/GeneralServerError'
+          description: Unexpected error
       security:
       - BasicAuthentication: []
       summary: Update a password
@@ -16852,12 +17151,15 @@ paths:
       - label: 'cURL: use Basic auth to update the user password'
         lang: Shell
         source: |
-          curl --request POST \
+          curl -c ./cookie-file.tmp --request POST \
+             "http://localhost:8086/api/v2/signin" \
+            --user "${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}"
+
+          curl -b ./cookie-file.tmp --request PUT \
              "http://localhost:8086/api/v2/users/USER_ID/password" \
             --header 'Content-type: application/json' \
-            --user "USERNAME:PASSWORD" \
             --data-binary @- << EOF
-              {"password": ""}
+              {"password": "NEW_USER_PASSWORD"}
           EOF
   /api/v2/variables:
     get:

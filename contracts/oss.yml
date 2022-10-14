@@ -393,8 +393,20 @@ paths:
   /ping:
     get:
       operationId: GetPing
-      summary: Get the status and version of the instance
-      description: Returns the status and InfluxDB version of the instance.
+      summary: Get the status of the instance
+      description: |
+        Retrieves the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/ping/)
       servers:
         - url: ''
       tags:
@@ -403,21 +415,43 @@ paths:
       responses:
         '204':
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
               schema:
                 type: string
-              description: The type of InfluxDB build.
+              description: |
+                The type of InfluxDB build.
             X-Influxdb-Version:
               schema:
                 type: integer
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                  - Doesn't return version.
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request GET "http://localhost:8086/ping"
     head:
       operationId: HeadPing
-      summary: Get the status and version of the instance
-      description: Returns the status and InfluxDB version of the instance.
+      summary: Get the status of the instance
+      description: |
+        Returns the status and InfluxDB version of the instance.
+
+        Use this endpoint to monitor uptime for the InfluxDB instance. The response
+        returns a HTTP `204` status code to inform you the instance is available.
+
+        #### InfluxDB Cloud
+
+        - Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.
+
+        #### Related guides
+
+        - [Influx ping](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/ping/)
       servers:
         - url: ''
       tags:
@@ -425,7 +459,7 @@ paths:
       responses:
         '204':
           description: |
-            OK.
+            Success.
             Headers contain InfluxDB version information.
           headers:
             X-Influxdb-Build:
@@ -435,19 +469,39 @@ paths:
             X-Influxdb-Version:
               schema:
                 type: integer
-              description: The version of InfluxDB.
+              description: |
+                The version of InfluxDB.
+
+                #### InfluxDB Cloud
+                - Doesn't return version.
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request HEAD "http://localhost:8086/ping"
   /:
     get:
       operationId: GetRoutes
       summary: List all top level routes
+      description: |
+        Retrieves all the top level routes for the InfluxDB API.
+
+        #### Limitations
+
+        - Only returns top level routes--for example, the response contains
+        `"tasks":"/api/v2/tasks"`, and doesn't contain resource-specific routes
+        for tasks (`/api/v2/tasks/TASK_ID/...`).
       tags:
         - Routes
         - System information endpoints
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
-        default:
-          description: All routes
+        '200':
+          description: |
+            Success.
+            The response body contains key-value pairs with the resource name and
+            top-level route.
           content:
             application/json:
               schema:
@@ -7859,6 +7913,77 @@ paths:
       description: |
         Updates a user password.
 
+        #### InfluxDB Cloud
+
+        - Doesn't allow you to manage user passwords through the API.
+          Use the InfluxDB Cloud user interface (UI) to update a password.
+
+        #### Related guides
+
+        - [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)
+        - [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: userID
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to set the password for.
+      requestBody:
+        description: The new password to set for the user.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetBody'
+      responses:
+        '204':
+          description: Success. The password is updated.
+        '400':
+          description: |
+            Bad request.
+
+            #### InfluxDB Cloud
+
+            - Doesn't allow you to manage passwords through the API; always responds with this status.
+
+            #### InfluxDB OSS
+
+            - Doesn't understand a value passed in the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                updatePasswordNotAllowed:
+                  summary: Cloud API can't update passwords
+                  value:
+                    code: invalid
+                    message: passwords cannot be changed through the InfluxDB Cloud API
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/GeneralServerError'
+      x-codeSamples:
+        - lang: Shell
+          label: 'cURL: use HTTP POST to update the user password'
+          source: |
+            curl --request POST \
+               "http://localhost:8086/api/v2/users/USER_ID/password" \
+              --header 'Content-type: application/json' \
+              --header "Authorization: Token INFLUX_TOKEN" \
+              --data-binary @- << EOF
+                {"password": "NEW_USER_PASSWORD"}
+            EOF
+    put:
+      operationId: PutUsersIDPassword
+      tags:
+        - Security and access endpoints
+        - Users
+      summary: Update a password
+      description: |
+        Updates a user password.
+
         Use this endpoint to let a user authenticate with
         [Basic authentication credentials](#section/Authentication/BasicAuthentication)
         and set a new password.
@@ -7920,12 +8045,15 @@ paths:
         - lang: Shell
           label: 'cURL: use Basic auth to update the user password'
           source: |
-            curl --request POST \
+            curl -c ./cookie-file.tmp --request POST \
+               "http://localhost:8086/api/v2/signin" \
+              --user "${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}"
+
+            curl -b ./cookie-file.tmp --request PUT \
                "http://localhost:8086/api/v2/users/USER_ID/password" \
               --header 'Content-type: application/json' \
-              --user "USERNAME:PASSWORD" \
               --data-binary @- << EOF
-                {"password": ""}
+                {"password": "NEW_USER_PASSWORD"}
             EOF
   /checks:
     get:

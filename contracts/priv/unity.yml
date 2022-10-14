@@ -8,30 +8,6 @@ info:
 servers:
   - url: /api/v2/quartz
 paths:
-  /me:
-    get:
-      operationId: GetMe
-      tags:
-        - Accounts
-        - Operators
-        - Regions
-        - Organizations
-      responses:
-        '200':
-          description: congregated meta data for an individual account and org
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Me'
-        '401':
-          description: Unauthorized
-          $ref: '#/components/responses/ServerError'
-        '404':
-          description: Cannot get account or organization for user
-          $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   /account:
     delete:
       operationId: DeleteAccount
@@ -224,6 +200,31 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /allowances/orgs/create:
+    get:
+      operationId: GetAllowancesOrgsCreate
+      tags:
+        - Allowances
+        - Organizations
+      summary: Return whether a new Organization can be created.
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      responses:
+        '200':
+          description: The Allowance
+          content:
+            application/json:
+              schema:
+                properties:
+                  allowed:
+                    type: boolean
+                    description: is the operation allowed?
+                  upgradesAvailable:
+                    type: boolean
+                    description: are there upgrades available that would affect this allowance?
+                required:
+                  - allowed
+                  - upgradesAvailable
   /clusters:
     get:
       operationId: GetClusters
@@ -2224,64 +2225,6 @@ components:
         - lastName
         - email
         - role
-    Me:
-      properties:
-        id:
-          type: string
-          description: the idpe id of the user
-        email:
-          type: string
-          description: the email associated with the user
-        accountType:
-          $ref: '#/components/schemas/AccountType'
-        billingProvider:
-          type: string
-          description: 'the billing provider for the account, nil if none'
-          enum:
-            - zuora
-            - aws
-            - gcm
-            - azure
-        clusterHost:
-          type: string
-          description: the url of the current cluster
-        isRegionBeta:
-          type: boolean
-          description: whether the region associated with the account is a beta region
-        regionCode:
-          type: string
-          description: the code associated with the region
-        regionName:
-          type: string
-          description: the name of the region
-        isOperator:
-          type: boolean
-          description: whether the user is an operator
-        operatorRole:
-          type: string
-          nullable: true
-          enum:
-            - read-only
-            - read-write
-          description: role permission whether this operator is "read-only" | "read-write"
-        accountCreatedAt:
-          type: string
-          description: an ISO8601 timestamp that indicates when the account was created
-        paygCreditStartDate:
-          type: string
-          nullable: true
-          description: 'an ISO8601 timestamp indicates if an account is part of the payg credit experiment, nil if not'
-      required:
-        - id
-        - accountCreatedAt
-        - accountType
-        - billingProvider
-        - clusterHost
-        - email
-        - isOperator
-        - isRegionBeta
-        - regionCode
-        - regionName
     OrgUsers:
       type: array
       items:
@@ -2400,16 +2343,12 @@ components:
         provider:
           type: string
           description: provider of the org
-        isRegionBeta:
-          type: boolean
-          description: is the region of the organization in beta
         clusterHost:
           type: string
           description: the url of the current cluster
       required:
         - id
         - clusterHost
-        - isRegionBeta
         - regionCode
         - regionName
     OrganizationWithToken:

@@ -222,8 +222,8 @@
     "/ping": {
       "get": {
         "operationId": "GetPing",
-        "summary": "Get the status and version of the instance",
-        "description": "Returns the status and InfluxDB version of the instance.",
+        "summary": "Get the status of the instance",
+        "description": "Retrieves the status and InfluxDB version of the instance.\n\nUse this endpoint to monitor uptime for the InfluxDB instance. The response\nreturns a HTTP `204` status code to inform you the instance is available.\n\n#### InfluxDB Cloud\n\n- Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.\n\n#### Related guides\n\n- [Influx ping]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/ping/)\n",
         "servers": [
           {
             "url": ""
@@ -235,28 +235,35 @@
         ],
         "responses": {
           "204": {
-            "description": "OK.\nHeaders contain InfluxDB version information.\n",
+            "description": "Success.\nHeaders contain InfluxDB version information.\n",
             "headers": {
               "X-Influxdb-Build": {
                 "schema": {
                   "type": "string"
                 },
-                "description": "The type of InfluxDB build."
+                "description": "The type of InfluxDB build.\n"
               },
               "X-Influxdb-Version": {
                 "schema": {
                   "type": "integer"
                 },
-                "description": "The version of InfluxDB."
+                "description": "The version of InfluxDB.\n\n#### InfluxDB Cloud\n  - Doesn't return version.\n"
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request GET \"http://localhost:8086/ping\"\n"
+          }
+        ]
       },
       "head": {
         "operationId": "HeadPing",
-        "summary": "Get the status and version of the instance",
-        "description": "Returns the status and InfluxDB version of the instance.",
+        "summary": "Get the status of the instance",
+        "description": "Returns the status and InfluxDB version of the instance.\n\nUse this endpoint to monitor uptime for the InfluxDB instance. The response\nreturns a HTTP `204` status code to inform you the instance is available.\n\n#### InfluxDB Cloud\n\n- Isn't versioned and doesn't return `X-Influxdb-Version` in the headers.\n\n#### Related guides\n\n- [Influx ping]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/ping/)\n",
         "servers": [
           {
             "url": ""
@@ -267,7 +274,7 @@
         ],
         "responses": {
           "204": {
-            "description": "OK.\nHeaders contain InfluxDB version information.\n",
+            "description": "Success.\nHeaders contain InfluxDB version information.\n",
             "headers": {
               "X-Influxdb-Build": {
                 "schema": {
@@ -279,17 +286,25 @@
                 "schema": {
                   "type": "integer"
                 },
-                "description": "The version of InfluxDB."
+                "description": "The version of InfluxDB.\n\n#### InfluxDB Cloud\n- Doesn't return version.\n"
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request HEAD \"http://localhost:8086/ping\"\n"
+          }
+        ]
       }
     },
     "/": {
       "get": {
         "operationId": "GetRoutes",
         "summary": "List all top level routes",
+        "description": "Retrieves all the top level routes for the InfluxDB API.\n\n#### Limitations\n\n- Only returns top level routes--for example, the response contains\n`\"tasks\":\"/api/v2/tasks\"`, and doesn't contain resource-specific routes\nfor tasks (`/api/v2/tasks/TASK_ID/...`).\n",
         "tags": [
           "Routes",
           "System information endpoints"
@@ -300,8 +315,8 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "All routes",
+          "200": {
+            "description": "Success.\nThe response body contains key-value pairs with the resource name and\ntop-level route.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -9483,6 +9498,75 @@
           "Users"
         ],
         "summary": "Update a password",
+        "description": "Updates a user password.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage user passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update a password.\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "path",
+            "name": "userID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the user to set the password for."
+          }
+        ],
+        "requestBody": {
+          "description": "The new password to set for the user.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success. The password is updated."
+          },
+          "400": {
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage passwords through the API; always responds with this status.\n\n#### InfluxDB OSS\n\n- Doesn't understand a value passed in the request.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "updatePasswordNotAllowed": {
+                    "summary": "Cloud API can't update passwords",
+                    "value": {
+                      "code": "invalid",
+                      "message": "passwords cannot be changed through the InfluxDB Cloud API"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "$ref": "#/components/responses/GeneralServerError"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL: use HTTP POST to update the user password",
+            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --header \"Authorization: Token INFLUX_TOKEN\" \\\n  --data-binary @- << EOF\n    {\"password\": \"NEW_USER_PASSWORD\"}\nEOF\n"
+          }
+        ]
+      },
+      "put": {
+        "operationId": "PutUsersIDPassword",
+        "tags": [
+          "Security and access endpoints",
+          "Users"
+        ],
+        "summary": "Update a password",
         "description": "Updates a user password.\n\nUse this endpoint to let a user authenticate with\n[Basic authentication credentials](#section/Authentication/BasicAuthentication)\nand set a new password.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage user passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update a password.\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)\n",
         "security": [
           {
@@ -9546,7 +9630,7 @@
           {
             "lang": "Shell",
             "label": "cURL: use Basic auth to update the user password",
-            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --user \"USERNAME:PASSWORD\" \\\n  --data-binary @- << EOF\n    {\"password\": \"\"}\nEOF\n"
+            "source": "curl -c ./cookie-file.tmp --request POST \\\n   \"http://localhost:8086/api/v2/signin\" \\\n  --user \"${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}\"\n\ncurl -b ./cookie-file.tmp --request PUT \\\n   \"http://localhost:8086/api/v2/users/USER_ID/password\" \\\n  --header 'Content-type: application/json' \\\n  --data-binary @- << EOF\n    {\"password\": \"NEW_USER_PASSWORD\"}\nEOF\n"
           }
         ]
       }
@@ -11977,13 +12061,14 @@
     "/buckets/{bucketID}/schema/measurements": {
       "summary": "Bucket schemas",
       "get": {
-        "summary": "List all measurement schemas of a bucket",
+        "summary": "List measurement schemas of a bucket",
+        "description": "Retrieves a list of _explicit_\n[schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\n(`\"schemaType\": \"explicit\"`) for a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\n#### Related guides\n\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)\n",
         "operationId": "getMeasurementSchemas",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -11991,7 +12076,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -11999,7 +12084,7 @@
           {
             "in": "query",
             "name": "name",
-            "description": "The name of the measurement to return schemas for.",
+            "description": "A measurement name.\nOnly returns measurement schemas with the specified name.\n",
             "schema": {
               "type": "string"
             }
@@ -12007,7 +12092,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nLists measurement schemas for the specified bucket.\n",
             "schema": {
               "type": "string"
             },
@@ -12036,20 +12121,45 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidSchemaType": {
+                    "summary": "Invalid schema type.",
+                    "value": {
+                      "code": "invalid",
+                      "message": "bucket schemaType must be explicit"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
           "404": {
-            "description": "Bucket not found",
-            "$ref": "#/components/responses/GeneralServerError"
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       },
       "post": {
         "summary": "Create a measurement schema for a bucket",
+        "description": "Creates an _explict_ measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\nfor a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\nUse this endpoint to create schemas that prevent non-conforming write requests.\n\n#### Limitations\n\n- Buckets must be created with the \"explict\" `schemaType` in order to use\nschemas.\n\n#### Related guides\n\n- [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).\n- [Create a bucket with an explicit schema]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/#create-a-bucket-with-an-explicit-schema)\n",
         "operationId": "createMeasurementSchema",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12057,7 +12167,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12065,7 +12175,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nAdds a schema for the specified bucket.\n",
             "schema": {
               "type": "string"
             },
@@ -12086,7 +12196,7 @@
         },
         "responses": {
           "201": {
-            "description": "The created measurement schema.",
+            "description": "The current version of the measurement schema.",
             "headers": {
               "ETag": {
                 "description": "The current version of the measurement schema",
@@ -12104,7 +12214,7 @@
             }
           },
           "400": {
-            "description": "Client error with create request",
+            "description": "Bad request.\n",
             "content": {
               "application/json": {
                 "examples": {
@@ -12154,20 +12264,37 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \"https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"temperature\",\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
+          }
+        ]
       }
     },
     "/buckets/{bucketID}/schema/measurements/{measurementID}": {
       "summary": "Bucket Schema",
       "get": {
-        "summary": "Retrieve measurement schema information",
+        "summary": "Retrieve a measurement schema",
+        "description": "Retrieves an explicit measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).\n",
         "operationId": "getMeasurementSchema",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "Organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12175,7 +12302,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "Organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12183,7 +12310,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nRetrieves schemas for the specified bucket.\n",
             "schema": {
               "type": "string"
             },
@@ -12192,7 +12319,7 @@
           {
             "in": "path",
             "name": "measurementID",
-            "description": "The identifier of the measurement.",
+            "description": "The measurement schema ID.\nSpecifies the measurement schema to retrieve.\n",
             "schema": {
               "type": "string"
             },
@@ -12220,17 +12347,27 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       },
       "patch": {
         "summary": "Update a measurement schema",
+        "description": "Updates a measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema).\n\nUse this endpoint to update the fields (`name`, `type`, and `dataType`) of a\nmeasurement schema.\n\n#### Limitations\n\n- You can't update the `name` of a measurement.\n\n#### Related guides\n\n- [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/).\n",
         "operationId": "updateMeasurementSchema",
         "parameters": [
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12238,7 +12375,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nSpecifies the organization that owns the schema.\n",
             "schema": {
               "type": "string"
             }
@@ -12246,7 +12383,7 @@
           {
             "in": "path",
             "name": "bucketID",
-            "description": "The identifier of the bucket.",
+            "description": "A bucket ID.\nSpecifies the bucket to retrieve schemas for.\n",
             "schema": {
               "type": "string"
             },
@@ -12255,7 +12392,7 @@
           {
             "in": "path",
             "name": "measurementID",
-            "description": "The identifier of the measurement.",
+            "description": "A measurement schema ID.\nRetrieves the specified measurement schema.\n",
             "schema": {
               "type": "string"
             },
@@ -12276,7 +12413,7 @@
         },
         "responses": {
           "200": {
-            "description": "The updated measurement schema",
+            "description": "Success.\nThe response body contains the measurement schema.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -12286,7 +12423,7 @@
             }
           },
           "400": {
-            "description": "Client error updating measurement schema",
+            "description": "Bad request.\n",
             "content": {
               "application/json": {
                 "examples": {
@@ -12304,8 +12441,24 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request PATCH \"https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
+          }
+        ]
       }
     },
     "/orgs/{orgID}/limits": {
@@ -21298,6 +21451,7 @@
         ],
         "properties": {
           "name": {
+            "description": "The [measurement]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#measurement)\nname.\n",
             "type": "string"
           },
           "columns": {
