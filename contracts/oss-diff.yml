@@ -1395,7 +1395,90 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest'
+              required:
+                - orgID
+                - permissions
+              allOf:
+                - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
+                - type: object
+                  properties:
+                    orgID:
+                      type: string
+                      description: |
+                        The ID of the organization that owns the authorization.
+                    userID:
+                      type: string
+                      description: |
+                        The ID of the user that the authorization is scoped to.
+                    permissions:
+                      type: array
+                      minItems: 1
+                      description: |
+                        A list of permissions for an authorization.
+                        An authorization must have at least one permission.
+                      items:
+                        required:
+                          - action
+                          - resource
+                        properties:
+                          action:
+                            type: string
+                            enum:
+                              - read
+                              - write
+                          resource:
+                            type: object
+                            required:
+                              - type
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                  - authorizations
+                                  - buckets
+                                  - dashboards
+                                  - orgs
+                                  - sources
+                                  - tasks
+                                  - telegrafs
+                                  - users
+                                  - variables
+                                  - scrapers
+                                  - secrets
+                                  - labels
+                                  - views
+                                  - documents
+                                  - notificationRules
+                                  - notificationEndpoints
+                                  - checks
+                                  - dbrp
+                                  - notebooks
+                                  - annotations
+                                  - remotes
+                                  - replications
+                                  - instance
+                                description: |
+                                  The type of resource.
+                                  In a `permission`, applies the permission to all resources of this type.
+                              id:
+                                type: string
+                                description: |
+                                  The ID of a specific resource.
+                                  In a `permission`, applies the permission to only the resource with this ID.
+                              name:
+                                type: string
+                                description: |
+                                  Optional: A name for the resource.
+                                  Not all resource types have a name field.
+                              orgID:
+                                type: string
+                                description: |
+                                  The ID of the organization that owns the resource.
+                                  In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                              org:
+                                type: string
+                                description: |
+                                  Optional: The name of the organization with `orgID`.
       responses:
         '201':
           description: Created. The response body contains the newly created authorization.
@@ -1483,7 +1566,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+              properties:
+                status:
+                  description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+                  default: active
+                  type: string
+                  enum:
+                    - active
+                    - inactive
+                description:
+                  type: string
+                  description: A description of the token.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -2084,7 +2177,7 @@ paths:
                 type: object
                 properties:
                   labels:
-                    $ref: '#/components/schemas/Task/properties/labels'
+                    $ref: '#/components/schemas/Variable/properties/labels'
                   links:
                     $ref: '#/paths/~1dashboards/get/responses/200/content/application~1json/schema/properties/links'
         default:
@@ -3139,17 +3232,17 @@ paths:
                               org: /api/v2/labels/1
                             properties:
                               self:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               cells:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               members:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               owners:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               labels:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               org:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                           id:
                             readOnly: true
                             type: string
@@ -3192,7 +3285,7 @@ paths:
                                   type: string
                                   description: The reference to a view from the views API.
                           labels:
-                            $ref: '#/components/schemas/Task/properties/labels'
+                            $ref: '#/components/schemas/Variable/properties/labels'
                   - type: object
                     allOf:
                       - $ref: '#/paths/~1dashboards/post/requestBody/content/application~1json/schema'
@@ -3209,17 +3302,17 @@ paths:
                               org: /api/v2/labels/1
                             properties:
                               self:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               cells:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               members:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               owners:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               labels:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                               org:
-                                $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                           id:
                             readOnly: true
                             type: string
@@ -3957,7 +4050,7 @@ paths:
                                                               readOnly: true
                                                               type: string
                                                             labels:
-                                                              $ref: '#/components/schemas/Task/properties/labels'
+                                                              $ref: '#/components/schemas/Variable/properties/labels'
                                                             links:
                                                               type: object
                                                               readOnly: true
@@ -3970,19 +4063,19 @@ paths:
                                                               properties:
                                                                 self:
                                                                   description: URL for this check
-                                                                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                                                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 labels:
                                                                   description: URL to retrieve labels for this check
-                                                                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                                                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 members:
                                                                   description: URL to retrieve members for this check
-                                                                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                                                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 owners:
                                                                   description: URL to retrieve owners for this check
-                                                                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                                                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 query:
                                                                   description: URL to retrieve flux script for this check
-                                                                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                                                                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                           required:
                                                             - name
                                                             - orgID
@@ -4801,7 +4894,7 @@ paths:
                                                         items:
                                                           $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/1/allOf/1/properties/cells/items/allOf/1/properties/properties/oneOf/0/properties/colors/items'
                           labels:
-                            $ref: '#/components/schemas/Task/properties/labels'
+                            $ref: '#/components/schemas/Variable/properties/labels'
         default:
           description: Unexpected error
           content:
@@ -4868,11 +4961,11 @@ paths:
                       URI pointers for additional paged results.
                     properties:
                       next:
-                        $ref: '#/components/schemas/Task/properties/links/properties/self'
+                        $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                       self:
-                        $ref: '#/components/schemas/Task/properties/links/properties/self'
+                        $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                       prev:
-                        $ref: '#/components/schemas/Task/properties/links/properties/self'
+                        $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                     required:
                       - self
                   dashboards:
@@ -5131,14 +5224,14 @@ paths:
                   $ref: '#/components/schemas/Task/properties/orgID'
                 org:
                   $ref: '#/components/schemas/Task/properties/org'
-                flux:
-                  $ref: '#/components/schemas/Task/properties/flux'
-                status:
-                  $ref: '#/components/schemas/Task/properties/status'
                 name:
                   $ref: '#/components/schemas/Task/properties/name'
                 description:
                   $ref: '#/components/schemas/Task/properties/description'
+                flux:
+                  $ref: '#/components/schemas/Task/properties/flux'
+                status:
+                  $ref: '#/components/schemas/Task/properties/status'
               required:
                 - flux
             examples:
@@ -5367,105 +5460,6 @@ paths:
 components:
   parameters: null
   schemas:
-    AuthorizationPostRequest:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - properties:
-            status:
-              description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
-              default: active
-              type: string
-              enum:
-                - active
-                - inactive
-            description:
-              type: string
-              description: A description of the token.
-        - type: object
-          properties:
-            orgID:
-              type: string
-              description: |
-                The ID of the organization that owns the authorization.
-            userID:
-              type: string
-              description: |
-                The ID of the user that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: |
-                A list of permissions for an authorization.
-                An authorization must have at least one permission.
-              items:
-                $ref: '#/components/schemas/Permission'
-    Permission:
-      required:
-        - action
-        - resource
-      properties:
-        action:
-          type: string
-          enum:
-            - read
-            - write
-        resource:
-          $ref: '#/components/schemas/Resource'
-    Resource:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - authorizations
-            - buckets
-            - dashboards
-            - orgs
-            - sources
-            - tasks
-            - telegrafs
-            - users
-            - variables
-            - scrapers
-            - secrets
-            - labels
-            - views
-            - documents
-            - notificationRules
-            - notificationEndpoints
-            - checks
-            - dbrp
-            - notebooks
-            - annotations
-            - remotes
-            - replications
-            - instance
-          description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
-        id:
-          type: string
-          description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
-        name:
-          type: string
-          description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
-        orgID:
-          type: string
-          description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
-        org:
-          type: string
-          description: |
-            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
@@ -5579,21 +5573,21 @@ components:
                 dashboards: /api/v2/dashboards?org=myorg
               properties:
                 self:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 members:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 owners:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 labels:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 secrets:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 buckets:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 tasks:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 dashboards:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             id:
               readOnly: true
               type: string
@@ -5633,22 +5627,22 @@ components:
               properties:
                 labels:
                   description: The URL to retrieve labels for this bucket.
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 members:
                   description: The URL to retrieve members that can read this bucket.
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 org:
                   description: The URL to retrieve parent organization for this bucket.
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 owners:
                   description: The URL to retrieve owners that can read and write to this bucket.
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 self:
                   description: The URL for this bucket.
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 write:
                   description: The URL to write line protocol to this bucket.
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             id:
               readOnly: true
               type: string
@@ -5730,7 +5724,7 @@ components:
                 required:
                   - everySeconds
             labels:
-              $ref: '#/components/schemas/Task/properties/labels'
+              $ref: '#/components/schemas/Variable/properties/labels'
           required:
             - name
             - retentionRules
@@ -5739,7 +5733,7 @@ components:
             - orgID
             - permissions
           allOf:
-            - $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+            - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
             - type: object
               properties:
                 createdAt:
@@ -5762,7 +5756,7 @@ components:
                     The list of permissions.
                     An authorization must have at least one permission.
                   items:
-                    $ref: '#/components/schemas/Permission'
+                    $ref: '#/paths/~1authorizations/post/requestBody/content/application~1json/schema/allOf/1/properties/permissions/items'
                 id:
                   readOnly: true
                   type: string
@@ -5803,10 +5797,10 @@ components:
                   properties:
                     self:
                       readOnly: true
-                      $ref: '#/components/schemas/Task/properties/links/properties/self'
+                      $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                     user:
                       readOnly: true
-                      $ref: '#/components/schemas/Task/properties/links/properties/self'
+                      $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
     Variable:
       type: object
       required:
@@ -5841,7 +5835,9 @@ components:
           items:
             type: string
         labels:
-          $ref: '#/components/schemas/Task/properties/labels'
+          type: array
+          items:
+            $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1labels/post/responses/201/content/application~1json/schema/properties/label'
         arguments:
           type: object
           oneOf:
@@ -6040,15 +6036,18 @@ components:
                 organization: /api/v2/orgs/1
               properties:
                 self:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  type: string
+                  format: uri
+                  readOnly: true
+                  description: URI of resource.
                 members:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 owners:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 bucket:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                 organization:
-                  $ref: '#/components/schemas/Task/properties/links/properties/self'
+                  $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
     ScraperTargetResponses:
       type: object
       properties:
@@ -6436,30 +6435,32 @@ components:
         id:
           readOnly: true
           type: string
+          description: |
+            The resource ID that InfluxDB uses to uniquely identify the task.
         orgID:
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
-            Specifies the organization that owns the task.
+            An organization ID.
+            Identifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.
           type: string
         org:
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
-            Specifies the organization that owns the task.
+            An organization name.
+            Identifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.
           type: string
         name:
           description: The name of the task.
           type: string
-        ownerID:
-          description: |
-            A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
-            Specifies the owner of the task.
-
-            To find a user ID, you can use the
-            [`GET /api/v2/users` endpoint](#operation/GetUsers) to
-            list users.
-          type: string
         description:
           description: A description of the task.
+          type: string
+        ownerID:
+          description: |
+            A user ID.
+            Identifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the task.
+
+            To find a user ID, use the
+            [`GET /api/v2/users` endpoint](#operation/GetUsers) to
+            list users.
           type: string
         status:
           type: string
@@ -6469,13 +6470,11 @@ components:
           description: |
             `inactive` cancels scheduled runs and prevents manual runs of the task.
         labels:
-          type: array
-          items:
-            $ref: '#/paths/~1scrapers~1%7BscraperTargetID%7D~1labels/post/responses/201/content/application~1json/schema/properties/label'
+          $ref: '#/components/schemas/Variable/properties/labels'
         authorizationID:
           description: |
             An authorization ID.
-            Specifies the authorization used when the task communicates with the query engine.
+            Identifies the authorization used when the task communicates with the query engine.
 
             To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
@@ -6485,11 +6484,6 @@ components:
           description: |
             Flux with [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
             and the script for the task to run.
-
-            #### Limitations
-
-            - If you set the `flux` property, you must pass the `task` option in
-              the Flux.
 
             #### Related guides
 
@@ -6543,20 +6537,17 @@ components:
             logs: /api/v2/tasks/1/logs
           properties:
             self:
-              type: string
-              format: uri
-              readOnly: true
-              description: URI of resource.
+              $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             owners:
-              $ref: '#/components/schemas/Task/properties/links/properties/self'
+              $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             members:
-              $ref: '#/components/schemas/Task/properties/links/properties/self'
+              $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             runs:
-              $ref: '#/components/schemas/Task/properties/links/properties/self'
+              $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             logs:
-              $ref: '#/components/schemas/Task/properties/links/properties/self'
+              $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
             labels:
-              $ref: '#/components/schemas/Task/properties/links/properties/self'
+              $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
       required:
         - id
         - name
@@ -6568,23 +6559,17 @@ components:
         status:
           $ref: '#/components/schemas/Task/properties/status'
         flux:
-          description: The Flux script that the task runs.
-          type: string
+          $ref: '#/components/schemas/Task/properties/flux'
         name:
-          description: Update the 'name' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/Task/properties/name'
         every:
-          description: Update the 'every' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/Task/properties/every'
         cron:
-          description: Update the 'cron' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/Task/properties/cron'
         offset:
-          description: Update the 'offset' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/Task/properties/offset'
         description:
-          description: Update the description of the task.
-          type: string
+          $ref: '#/components/schemas/Task/properties/description'
   responses: null
   securitySchemes:
     TokenAuthentication:

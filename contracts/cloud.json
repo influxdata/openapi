@@ -14251,6 +14251,38 @@
           }
         }
       },
+      "AuthorizationPostRequest": {
+        "required": [
+          "orgID",
+          "permissions"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuthorizationUpdateRequest"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "orgID": {
+                "type": "string",
+                "description": "The ID of the organization that owns the authorization.\n"
+              },
+              "userID": {
+                "type": "string",
+                "description": "The ID of the user that the authorization is scoped to.\n"
+              },
+              "permissions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "A list of permissions for an authorization.\nAn authorization must have at least one permission.\n",
+                "items": {
+                  "$ref": "#/components/schemas/Permission"
+                }
+              }
+            }
+          }
+        ]
+      },
       "AuthorizationUpdateRequest": {
         "properties": {
           "status": {
@@ -16260,27 +16292,63 @@
         "type": "object",
         "properties": {
           "orgID": {
-            "$ref": "#/components/schemas/Task/properties/orgID"
+            "$ref": "#/components/schemas/TaskOrgID"
           },
           "org": {
-            "$ref": "#/components/schemas/Task/properties/org"
+            "$ref": "#/components/schemas/TaskOrg"
+          },
+          "name": {
+            "$ref": "#/components/schemas/TaskName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/TaskDescription"
           },
           "flux": {
-            "$ref": "#/components/schemas/Task/properties/flux"
+            "$ref": "#/components/schemas/TaskFlux"
           },
           "status": {
             "$ref": "#/components/schemas/TaskStatusType"
-          },
-          "name": {
-            "$ref": "#/components/schemas/Task/properties/name"
-          },
-          "description": {
-            "$ref": "#/components/schemas/Task/properties/description"
           }
         },
         "required": [
           "flux"
         ]
+      },
+      "TaskCron": {
+        "description": "A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.",
+        "type": "string",
+        "format": "cron"
+      },
+      "TaskDescription": {
+        "description": "A description of the task.",
+        "type": "string"
+      },
+      "TaskEvery": {
+        "description": "The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.",
+        "type": "string",
+        "format": "duration"
+      },
+      "TaskFlux": {
+        "description": "Flux with [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nand the script for the task to run.\n\n#### Related guides\n\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
+        "type": "string",
+        "format": "Flux"
+      },
+      "TaskName": {
+        "description": "The name of the task.",
+        "type": "string"
+      },
+      "TaskOffset": {
+        "description": "A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.",
+        "type": "string",
+        "format": "duration"
+      },
+      "TaskOrg": {
+        "description": "An organization name.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.\n",
+        "type": "string"
+      },
+      "TaskOrgID": {
+        "description": "An organization ID.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.\n",
+        "type": "string"
       },
       "TaskStatusType": {
         "type": "string",
@@ -16331,6 +16399,59 @@
       "Flags": {
         "type": "object",
         "additionalProperties": true
+      },
+      "Resource": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "authorizations",
+              "buckets",
+              "dashboards",
+              "orgs",
+              "sources",
+              "tasks",
+              "telegrafs",
+              "users",
+              "variables",
+              "scrapers",
+              "secrets",
+              "labels",
+              "views",
+              "documents",
+              "notificationRules",
+              "notificationEndpoints",
+              "checks",
+              "dbrp",
+              "notebooks",
+              "annotations",
+              "remotes",
+              "replications",
+              "instance"
+            ],
+            "description": "The type of resource.\nIn a `permission`, applies the permission to all resources of this type.\n"
+          },
+          "id": {
+            "type": "string",
+            "description": "The ID of a specific resource.\nIn a `permission`, applies the permission to only the resource with this ID.\n"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional: A name for the resource.\nNot all resource types have a name field.\n"
+          },
+          "orgID": {
+            "type": "string",
+            "description": "The ID of the organization that owns the resource.\nIn a `permission`, applies the permission to all resources of `type` owned by this organization.\n"
+          },
+          "org": {
+            "type": "string",
+            "description": "Optional: The name of the organization with `orgID`.\n"
+          }
+        }
       },
       "ResourceMember": {
         "allOf": [
@@ -20810,38 +20931,6 @@
           "configcat_deployments-autopromotionblocker": "#663cd0"
         }
       },
-      "AuthorizationPostRequest": {
-        "required": [
-          "orgID",
-          "permissions"
-        ],
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AuthorizationUpdateRequest"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "orgID": {
-                "type": "string",
-                "description": "The ID of the organization that owns the authorization.\n"
-              },
-              "userID": {
-                "type": "string",
-                "description": "The ID of the user that the authorization is scoped to.\n"
-              },
-              "permissions": {
-                "type": "array",
-                "minItems": 1,
-                "description": "A list of permissions for an authorization.\nAn authorization must have at least one permission.\n",
-                "items": {
-                  "$ref": "#/components/schemas/Permission"
-                }
-              }
-            }
-          }
-        ]
-      },
       "Permission": {
         "required": [
           "action",
@@ -20857,59 +20946,6 @@
           },
           "resource": {
             "$ref": "#/components/schemas/Resource"
-          }
-        }
-      },
-      "Resource": {
-        "type": "object",
-        "required": [
-          "type"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "authorizations",
-              "buckets",
-              "dashboards",
-              "orgs",
-              "sources",
-              "tasks",
-              "telegrafs",
-              "users",
-              "variables",
-              "scrapers",
-              "secrets",
-              "labels",
-              "views",
-              "documents",
-              "notificationRules",
-              "notificationEndpoints",
-              "checks",
-              "dbrp",
-              "notebooks",
-              "annotations",
-              "remotes",
-              "replications",
-              "instance"
-            ],
-            "description": "The type of resource.\nIn a `permission`, applies the permission to all resources of this type.\n"
-          },
-          "id": {
-            "type": "string",
-            "description": "The ID of a specific resource.\nIn a `permission`, applies the permission to only the resource with this ID.\n"
-          },
-          "name": {
-            "type": "string",
-            "description": "Optional: A name for the resource.\nNot all resource types have a name field.\n"
-          },
-          "orgID": {
-            "type": "string",
-            "description": "The ID of the organization that owns the resource.\nIn a `permission`, applies the permission to all resources of `type` owned by this organization.\n"
-          },
-          "org": {
-            "type": "string",
-            "description": "Optional: The name of the organization with `orgID`.\n"
           }
         }
       },
@@ -21569,26 +21605,23 @@
         "properties": {
           "id": {
             "readOnly": true,
-            "type": "string"
+            "type": "string",
+            "description": "The resource ID that InfluxDB uses to uniquely identify the task.\n"
           },
           "orgID": {
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.\nSpecifies the organization that owns the task.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskOrgID"
           },
           "org": {
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.\nSpecifies the organization that owns the task.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskOrg"
           },
           "name": {
-            "description": "The name of the task.",
-            "type": "string"
-          },
-          "ownerID": {
-            "description": "A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.\nSpecifies the owner of the task.\n\nTo find a user ID, you can use the\n[`GET /api/v2/users` endpoint](#operation/GetUsers) to\nlist users.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskName"
           },
           "description": {
-            "description": "A description of the task.",
+            "$ref": "#/components/schemas/TaskDescription"
+          },
+          "ownerID": {
+            "description": "A user ID.\nIdentifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the task.\n\nTo find a user ID, use the\n[`GET /api/v2/users` endpoint](#operation/GetUsers) to\nlist users.\n",
             "type": "string"
           },
           "status": {
@@ -21598,23 +21631,20 @@
             "$ref": "#/components/schemas/Labels"
           },
           "authorizationID": {
-            "description": "An authorization ID.\nSpecifies the authorization used when the task communicates with the query engine.\n\nTo find an authorization ID, use the\n[`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to\nlist authorizations.\n",
+            "description": "An authorization ID.\nIdentifies the authorization used when the task communicates with the query engine.\n\nTo find an authorization ID, use the\n[`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to\nlist authorizations.\n",
             "type": "string"
           },
+          "flux": {
+            "$ref": "#/components/schemas/TaskFlux"
+          },
           "every": {
-            "description": "The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.",
-            "type": "string",
-            "format": "duration"
+            "$ref": "#/components/schemas/TaskEvery"
           },
           "cron": {
-            "description": "A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.",
-            "type": "string",
-            "format": "cron"
+            "$ref": "#/components/schemas/TaskCron"
           },
           "offset": {
-            "description": "A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.",
-            "type": "string",
-            "format": "duration"
+            "$ref": "#/components/schemas/TaskOffset"
           },
           "latestCompleted": {
             "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.",
@@ -21677,18 +21707,11 @@
               }
             }
           },
-          "flux": {
-            "description": "Flux with [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nand the script for the task to run.\n\n#### Limitations\n\n- If you set the `flux` property, you must pass the `task` option in\n  the Flux.\n\n#### Related guides\n\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
-            "type": "string",
-            "format": "Flux"
-          },
           "scriptID": {
-            "description": "A script ID.\nSpecifies the [invokable script](#tag/Invokable-Scripts) that the task runs.\n\n#### Related guides\n\n- [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskScriptID"
           },
           "scriptParameters": {
-            "description": "Key-value pairs for `params` in the script.\nDefines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified\nby the `scriptID` property.\nWhen running the task, InfluxDB executes the script with the parameters\nyou provide.\n\n#### Limitations\n\n- To use the `scriptParameters` property, you must also set the `scriptID` property\n  for the task.\n\n#### Related guides\n\n- [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).\n",
-            "type": "object"
+            "$ref": "#/components/schemas/TaskScriptParameters"
           }
         },
         "required": [
@@ -21697,6 +21720,14 @@
           "orgID"
         ]
       },
+      "TaskScriptID": {
+        "description": "A script ID.\nIdentifies the [invokable script](#tag/Invokable-Scripts) that the task runs.\n\n#### Related guides\n\n- [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).\n",
+        "type": "string"
+      },
+      "TaskScriptParameters": {
+        "description": "Key-value pairs for `params` in the script.\nDefines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified\nby the `scriptID` property.\nWhen running the task, InfluxDB executes the script with the parameters\nyou provide.\n\n#### Limitations\n\n- To use the `scriptParameters` property, you must also set the `scriptID` property\n  for the task.\n\n#### Related guides\n\n- [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).\n",
+        "type": "object"
+      },
       "TaskUpdateRequest": {
         "type": "object",
         "properties": {
@@ -21704,28 +21735,28 @@
             "$ref": "#/components/schemas/TaskStatusType"
           },
           "name": {
-            "$ref": "#/components/schemas/Task/properties/name"
-          },
-          "every": {
-            "$ref": "#/components/schemas/Task/properties/every"
-          },
-          "cron": {
-            "$ref": "#/components/schemas/Task/properties/cron"
-          },
-          "offset": {
-            "$ref": "#/components/schemas/Task/properties/offset"
+            "$ref": "#/components/schemas/TaskName"
           },
           "description": {
-            "$ref": "#/components/schemas/Task/properties/description"
+            "$ref": "#/components/schemas/TaskDescription"
+          },
+          "every": {
+            "$ref": "#/components/schemas/TaskEvery"
+          },
+          "cron": {
+            "$ref": "#/components/schemas/TaskCron"
+          },
+          "offset": {
+            "$ref": "#/components/schemas/TaskOffset"
           },
           "flux": {
-            "$ref": "#/components/schemas/Task/properties/flux"
+            "$ref": "#/components/schemas/TaskFlux"
           },
           "scriptID": {
-            "$ref": "#/components/schemas/Task/properties/scriptID"
+            "$ref": "#/components/schemas/TaskScriptID"
           },
           "scriptParameters": {
-            "$ref": "#/components/schemas/Task/properties/scriptParameters"
+            "$ref": "#/components/schemas/TaskScriptParameters"
           }
         }
       },
@@ -21733,34 +21764,34 @@
         "type": "object",
         "properties": {
           "orgID": {
-            "$ref": "#/components/schemas/Task/properties/orgID"
+            "$ref": "#/components/schemas/TaskOrgID"
           },
           "org": {
-            "$ref": "#/components/schemas/Task/properties/org"
+            "$ref": "#/components/schemas/TaskOrg"
           },
-          "scriptID": {
-            "$ref": "#/components/schemas/Task/properties/scriptID"
+          "name": {
+            "$ref": "#/components/schemas/TaskName"
           },
-          "scriptParameters": {
-            "$ref": "#/components/schemas/Task/properties/scriptParameters"
+          "description": {
+            "$ref": "#/components/schemas/TaskDescription"
           },
           "every": {
-            "$ref": "#/components/schemas/Task/properties/every"
+            "$ref": "#/components/schemas/TaskEvery"
           },
           "cron": {
-            "$ref": "#/components/schemas/Task/properties/cron"
+            "$ref": "#/components/schemas/TaskCron"
           },
           "offset": {
-            "$ref": "#/components/schemas/Task/properties/offset"
+            "$ref": "#/components/schemas/TaskOffset"
           },
           "status": {
             "$ref": "#/components/schemas/TaskStatusType"
           },
-          "name": {
-            "$ref": "#/components/schemas/Task/properties/name"
+          "scriptID": {
+            "$ref": "#/components/schemas/TaskScriptID"
           },
-          "description": {
-            "$ref": "#/components/schemas/Task/properties/description"
+          "scriptParameters": {
+            "$ref": "#/components/schemas/TaskScriptParameters"
           }
         },
         "required": [

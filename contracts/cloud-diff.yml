@@ -548,7 +548,90 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest'
+              required:
+                - orgID
+                - permissions
+              allOf:
+                - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
+                - type: object
+                  properties:
+                    orgID:
+                      type: string
+                      description: |
+                        The ID of the organization that owns the authorization.
+                    userID:
+                      type: string
+                      description: |
+                        The ID of the user that the authorization is scoped to.
+                    permissions:
+                      type: array
+                      minItems: 1
+                      description: |
+                        A list of permissions for an authorization.
+                        An authorization must have at least one permission.
+                      items:
+                        required:
+                          - action
+                          - resource
+                        properties:
+                          action:
+                            type: string
+                            enum:
+                              - read
+                              - write
+                          resource:
+                            type: object
+                            required:
+                              - type
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                  - authorizations
+                                  - buckets
+                                  - dashboards
+                                  - orgs
+                                  - sources
+                                  - tasks
+                                  - telegrafs
+                                  - users
+                                  - variables
+                                  - scrapers
+                                  - secrets
+                                  - labels
+                                  - views
+                                  - documents
+                                  - notificationRules
+                                  - notificationEndpoints
+                                  - checks
+                                  - dbrp
+                                  - notebooks
+                                  - annotations
+                                  - remotes
+                                  - replications
+                                  - instance
+                                description: |
+                                  The type of resource.
+                                  In a `permission`, applies the permission to all resources of this type.
+                              id:
+                                type: string
+                                description: |
+                                  The ID of a specific resource.
+                                  In a `permission`, applies the permission to only the resource with this ID.
+                              name:
+                                type: string
+                                description: |
+                                  Optional: A name for the resource.
+                                  Not all resource types have a name field.
+                              orgID:
+                                type: string
+                                description: |
+                                  The ID of the organization that owns the resource.
+                                  In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                              org:
+                                type: string
+                                description: |
+                                  Optional: The name of the organization with `orgID`.
       responses:
         '201':
           description: |
@@ -637,7 +720,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+              properties:
+                status:
+                  description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+                  default: active
+                  type: string
+                  enum:
+                    - active
+                    - inactive
+                description:
+                  type: string
+                  description: A description of the token.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -1416,7 +1509,7 @@ paths:
                                   type: string
                                   description: The reference to a view from the views API.
                           labels:
-                            $ref: '#/components/schemas/Task/properties/labels'
+                            $ref: '#/components/schemas/Variable/properties/labels'
                   - type: object
                     allOf:
                       - $ref: '#/paths/~1dashboards/post/requestBody/content/application~1json/schema'
@@ -2181,7 +2274,7 @@ paths:
                                                               readOnly: true
                                                               type: string
                                                             labels:
-                                                              $ref: '#/components/schemas/Task/properties/labels'
+                                                              $ref: '#/components/schemas/Variable/properties/labels'
                                                             links:
                                                               type: object
                                                               readOnly: true
@@ -3025,7 +3118,7 @@ paths:
                                                         items:
                                                           $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/1/allOf/1/properties/cells/items/allOf/1/properties/properties/oneOf/0/properties/colors/items'
                           labels:
-                            $ref: '#/components/schemas/Task/properties/labels'
+                            $ref: '#/components/schemas/Variable/properties/labels'
         default:
           description: Unexpected error
           content:
@@ -3425,14 +3518,14 @@ paths:
                       $ref: '#/components/schemas/Task/properties/orgID'
                     org:
                       $ref: '#/components/schemas/Task/properties/org'
-                    flux:
-                      $ref: '#/components/schemas/Task/properties/flux'
-                    status:
-                      $ref: '#/components/schemas/Task/properties/status'
                     name:
                       $ref: '#/components/schemas/Task/properties/name'
                     description:
                       $ref: '#/components/schemas/Task/properties/description'
+                    flux:
+                      $ref: '#/components/schemas/Task/properties/flux'
+                    status:
+                      $ref: '#/components/schemas/Task/properties/status'
                   required:
                     - flux
                 - $ref: '#/components/schemas/TaskWithScriptCreateRequest'
@@ -3702,105 +3795,6 @@ components:
         description: This task runs an invokable script every hour with the defined parameters.
   parameters: null
   schemas:
-    AuthorizationPostRequest:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - properties:
-            status:
-              description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
-              default: active
-              type: string
-              enum:
-                - active
-                - inactive
-            description:
-              type: string
-              description: A description of the token.
-        - type: object
-          properties:
-            orgID:
-              type: string
-              description: |
-                The ID of the organization that owns the authorization.
-            userID:
-              type: string
-              description: |
-                The ID of the user that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: |
-                A list of permissions for an authorization.
-                An authorization must have at least one permission.
-              items:
-                $ref: '#/components/schemas/Permission'
-    Permission:
-      required:
-        - action
-        - resource
-      properties:
-        action:
-          type: string
-          enum:
-            - read
-            - write
-        resource:
-          $ref: '#/components/schemas/Resource'
-    Resource:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - authorizations
-            - buckets
-            - dashboards
-            - orgs
-            - sources
-            - tasks
-            - telegrafs
-            - users
-            - variables
-            - scrapers
-            - secrets
-            - labels
-            - views
-            - documents
-            - notificationRules
-            - notificationEndpoints
-            - checks
-            - dbrp
-            - notebooks
-            - annotations
-            - remotes
-            - replications
-            - instance
-          description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
-        id:
-          type: string
-          description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
-        name:
-          type: string
-          description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
-        orgID:
-          type: string
-          description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
-        org:
-          type: string
-          description: |
-            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
@@ -4062,7 +4056,7 @@ components:
                 required:
                   - everySeconds
             labels:
-              $ref: '#/components/schemas/Task/properties/labels'
+              $ref: '#/components/schemas/Variable/properties/labels'
           required:
             - name
             - retentionRules
@@ -4071,7 +4065,7 @@ components:
             - orgID
             - permissions
           allOf:
-            - $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+            - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
             - type: object
               properties:
                 createdAt:
@@ -4094,7 +4088,7 @@ components:
                     The list of permissions.
                     An authorization must have at least one permission.
                   items:
-                    $ref: '#/components/schemas/Permission'
+                    $ref: '#/paths/~1authorizations/post/requestBody/content/application~1json/schema/allOf/1/properties/permissions/items'
                 id:
                   readOnly: true
                   type: string
@@ -4282,7 +4276,28 @@ components:
         sort_order:
           type: integer
         labels:
-          $ref: '#/components/schemas/Task/properties/labels'
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                readOnly: true
+                type: string
+              orgID:
+                readOnly: true
+                type: string
+              name:
+                type: string
+              properties:
+                type: object
+                additionalProperties:
+                  type: string
+                description: |
+                  Key-value pairs associated with this label.
+                  To remove a property, send an update with an empty value (`""`) for the key.
+                example:
+                  color: ffb3b3
+                  description: this is a description
         arguments:
           type: object
           oneOf:
@@ -4554,30 +4569,32 @@ components:
         id:
           readOnly: true
           type: string
+          description: |
+            The resource ID that InfluxDB uses to uniquely identify the task.
         orgID:
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
-            Specifies the organization that owns the task.
+            An organization ID.
+            Identifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.
           type: string
         org:
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
-            Specifies the organization that owns the task.
+            An organization name.
+            Identifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.
           type: string
         name:
           description: The name of the task.
           type: string
-        ownerID:
-          description: |
-            A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
-            Specifies the owner of the task.
-
-            To find a user ID, you can use the
-            [`GET /api/v2/users` endpoint](#operation/GetUsers) to
-            list users.
-          type: string
         description:
           description: A description of the task.
+          type: string
+        ownerID:
+          description: |
+            A user ID.
+            Identifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the task.
+
+            To find a user ID, use the
+            [`GET /api/v2/users` endpoint](#operation/GetUsers) to
+            list users.
           type: string
         status:
           type: string
@@ -4587,37 +4604,26 @@ components:
           description: |
             `inactive` cancels scheduled runs and prevents manual runs of the task.
         labels:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                readOnly: true
-                type: string
-              orgID:
-                readOnly: true
-                type: string
-              name:
-                type: string
-              properties:
-                type: object
-                additionalProperties:
-                  type: string
-                description: |
-                  Key-value pairs associated with this label.
-                  To remove a property, send an update with an empty value (`""`) for the key.
-                example:
-                  color: ffb3b3
-                  description: this is a description
+          $ref: '#/components/schemas/Variable/properties/labels'
         authorizationID:
           description: |
             An authorization ID.
-            Specifies the authorization used when the task communicates with the query engine.
+            Identifies the authorization used when the task communicates with the query engine.
 
             To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
             list authorizations.
           type: string
+        flux:
+          description: |
+            Flux with [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+            and the script for the task to run.
+
+            #### Related guides
+
+            - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+          type: string
+          format: Flux
         every:
           description: 'The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
           type: string
@@ -4676,51 +4682,40 @@ components:
               $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
             labels:
               $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
-        flux:
-          description: |
-            Flux with [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
-            and the script for the task to run.
-
-            #### Limitations
-
-            - If you set the `flux` property, you must pass the `task` option in
-              the Flux.
-
-            #### Related guides
-
-            - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
-          type: string
-          format: Flux
         scriptID:
-          description: |
-            A script ID.
-            Specifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
-
-            #### Related guides
-
-            - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-          type: string
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          description: |
-            Key-value pairs for `params` in the script.
-            Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
-            by the `scriptID` property.
-            When running the task, InfluxDB executes the script with the parameters
-            you provide.
-
-            #### Limitations
-
-            - To use the `scriptParameters` property, you must also set the `scriptID` property
-              for the task.
-
-            #### Related guides
-
-            - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-          type: object
+          $ref: '#/components/schemas/TaskScriptParameters'
       required:
         - id
         - name
         - orgID
+    TaskScriptID:
+      description: |
+        A script ID.
+        Identifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
+
+        #### Related guides
+
+        - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+      type: string
+    TaskScriptParameters:
+      description: |
+        Key-value pairs for `params` in the script.
+        Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
+        by the `scriptID` property.
+        When running the task, InfluxDB executes the script with the parameters
+        you provide.
+
+        #### Limitations
+
+        - To use the `scriptParameters` property, you must also set the `scriptID` property
+          for the task.
+
+        #### Related guides
+
+        - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+      type: object
     TaskUpdateRequest:
       type: object
       properties:
@@ -4728,20 +4723,20 @@ components:
           $ref: '#/components/schemas/Task/properties/status'
         name:
           $ref: '#/components/schemas/Task/properties/name'
+        description:
+          $ref: '#/components/schemas/Task/properties/description'
         every:
           $ref: '#/components/schemas/Task/properties/every'
         cron:
           $ref: '#/components/schemas/Task/properties/cron'
         offset:
           $ref: '#/components/schemas/Task/properties/offset'
-        description:
-          $ref: '#/components/schemas/Task/properties/description'
         flux:
           $ref: '#/components/schemas/Task/properties/flux'
         scriptID:
-          $ref: '#/components/schemas/Task/properties/scriptID'
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          $ref: '#/components/schemas/Task/properties/scriptParameters'
+          $ref: '#/components/schemas/TaskScriptParameters'
     TaskWithScriptCreateRequest:
       type: object
       properties:
@@ -4749,10 +4744,10 @@ components:
           $ref: '#/components/schemas/Task/properties/orgID'
         org:
           $ref: '#/components/schemas/Task/properties/org'
-        scriptID:
-          $ref: '#/components/schemas/Task/properties/scriptID'
-        scriptParameters:
-          $ref: '#/components/schemas/Task/properties/scriptParameters'
+        name:
+          $ref: '#/components/schemas/Task/properties/name'
+        description:
+          $ref: '#/components/schemas/Task/properties/description'
         every:
           $ref: '#/components/schemas/Task/properties/every'
         cron:
@@ -4761,10 +4756,10 @@ components:
           $ref: '#/components/schemas/Task/properties/offset'
         status:
           $ref: '#/components/schemas/Task/properties/status'
-        name:
-          $ref: '#/components/schemas/Task/properties/name'
-        description:
-          $ref: '#/components/schemas/Task/properties/description'
+        scriptID:
+          $ref: '#/components/schemas/TaskScriptID'
+        scriptParameters:
+          $ref: '#/components/schemas/TaskScriptParameters'
       required:
         - scriptID
   responses: null

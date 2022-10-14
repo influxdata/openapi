@@ -9390,68 +9390,7 @@ components:
                 The list of permissions.
                 An authorization must have at least one permission.
               items:
-                required:
-                  - action
-                  - resource
-                properties:
-                  action:
-                    type: string
-                    enum:
-                      - read
-                      - write
-                  resource:
-                    type: object
-                    required:
-                      - type
-                    properties:
-                      type:
-                        type: string
-                        enum:
-                          - authorizations
-                          - buckets
-                          - dashboards
-                          - orgs
-                          - sources
-                          - tasks
-                          - telegrafs
-                          - users
-                          - variables
-                          - scrapers
-                          - secrets
-                          - labels
-                          - views
-                          - documents
-                          - notificationRules
-                          - notificationEndpoints
-                          - checks
-                          - dbrp
-                          - notebooks
-                          - annotations
-                          - remotes
-                          - replications
-                          - instance
-                        description: |
-                          The type of resource.
-                          In a `permission`, applies the permission to all resources of this type.
-                      id:
-                        type: string
-                        description: |
-                          The ID of a specific resource.
-                          In a `permission`, applies the permission to only the resource with this ID.
-                      name:
-                        type: string
-                        description: |
-                          Optional: A name for the resource.
-                          Not all resource types have a name field.
-                      orgID:
-                        type: string
-                        description: |
-                          The ID of the organization that owns the resource.
-                          In a `permission`, applies the permission to all resources of `type` owned by this organization.
-                      org:
-                        type: string
-                        description: |
-                          Optional: The name of the organization with `orgID`.
+                $ref: '#/components/schemas/Permission'
             id:
               readOnly: true
               type: string
@@ -9506,6 +9445,30 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Authorization'
+    AuthorizationPostRequest:
+      required:
+        - orgID
+        - permissions
+      allOf:
+        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
+        - type: object
+          properties:
+            orgID:
+              type: string
+              description: |
+                The ID of the organization that owns the authorization.
+            userID:
+              type: string
+              description: |
+                The ID of the user that the authorization is scoped to.
+            permissions:
+              type: array
+              minItems: 1
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
+              items:
+                $ref: '#/components/schemas/Permission'
     AuthorizationUpdateRequest:
       properties:
         status:
@@ -11064,40 +11027,57 @@ components:
       type: object
       properties:
         orgID:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) ID.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrgID'
         org:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) name.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrg'
+        name:
+          $ref: '#/components/schemas/TaskName'
+        description:
+          $ref: '#/components/schemas/TaskDescription'
         flux:
-          description: |
-            Flux with [task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
-            and the script for the task to run.
-
-            #### Limitations
-
-            - If you set the `flux` property, you must pass the `task` option in
-              the Flux.
-
-            #### Related guides
-
-            - [Task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
-          type: string
-          format: Flux
+          $ref: '#/components/schemas/TaskFlux'
         status:
           $ref: '#/components/schemas/TaskStatusType'
-        name:
-          description: The name of the task.
-          type: string
-        description:
-          description: A description of the task.
-          type: string
       required:
         - flux
+    TaskCron:
+      description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
+      type: string
+      format: cron
+    TaskDescription:
+      description: A description of the task.
+      type: string
+    TaskEvery:
+      description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
+      type: string
+      format: duration
+    TaskFlux:
+      description: |
+        Flux with [task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
+        and the script for the task to run.
+
+        #### Related guides
+
+        - [Task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
+      type: string
+      format: Flux
+    TaskName:
+      description: The name of the task.
+      type: string
+    TaskOffset:
+      description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
+      type: string
+      format: duration
+    TaskOrg:
+      description: |
+        An organization name.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) that owns the task.
+      type: string
+    TaskOrgID:
+      description: |
+        An organization ID.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) that owns the task.
+      type: string
     TaskStatusType:
       type: string
       enum:
@@ -11139,6 +11119,59 @@ components:
     Flags:
       type: object
       additionalProperties: true
+    Resource:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - authorizations
+            - buckets
+            - dashboards
+            - orgs
+            - sources
+            - tasks
+            - telegrafs
+            - users
+            - variables
+            - scrapers
+            - secrets
+            - labels
+            - views
+            - documents
+            - notificationRules
+            - notificationEndpoints
+            - checks
+            - dbrp
+            - notebooks
+            - annotations
+            - remotes
+            - replications
+            - instance
+          description: |
+            The type of resource.
+            In a `permission`, applies the permission to all resources of this type.
+        id:
+          type: string
+          description: |
+            The ID of a specific resource.
+            In a `permission`, applies the permission to only the resource with this ID.
+        name:
+          type: string
+          description: |
+            Optional: A name for the resource.
+            Not all resource types have a name field.
+        orgID:
+          type: string
+          description: |
+            The ID of the organization that owns the resource.
+            In a `permission`, applies the permission to all resources of `type` owned by this organization.
+        org:
+          type: string
+          description: |
+            Optional: The name of the organization with `orgID`.
     ResourceMember:
       allOf:
         - $ref: '#/components/schemas/UserResponse'
@@ -14191,6 +14224,18 @@ components:
         series_id_2: '#edf529'
         measurement_birdmigration_europe: '#663cd0'
         configcat_deployments-autopromotionblocker: '#663cd0'
+    Permission:
+      required:
+        - action
+        - resource
+      properties:
+        action:
+          type: string
+          enum:
+            - read
+            - write
+        resource:
+          $ref: '#/components/schemas/Resource'
   responses:
     AuthorizationError:
       description: |

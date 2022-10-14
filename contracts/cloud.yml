@@ -11547,6 +11547,30 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Authorization'
+    AuthorizationPostRequest:
+      required:
+        - orgID
+        - permissions
+      allOf:
+        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
+        - type: object
+          properties:
+            orgID:
+              type: string
+              description: |
+                The ID of the organization that owns the authorization.
+            userID:
+              type: string
+              description: |
+                The ID of the user that the authorization is scoped to.
+            permissions:
+              type: array
+              minItems: 1
+              description: |
+                A list of permissions for an authorization.
+                An authorization must have at least one permission.
+              items:
+                $ref: '#/components/schemas/Permission'
     AuthorizationUpdateRequest:
       properties:
         status:
@@ -13105,19 +13129,57 @@ components:
       type: object
       properties:
         orgID:
-          $ref: '#/components/schemas/Task/properties/orgID'
+          $ref: '#/components/schemas/TaskOrgID'
         org:
-          $ref: '#/components/schemas/Task/properties/org'
+          $ref: '#/components/schemas/TaskOrg'
+        name:
+          $ref: '#/components/schemas/TaskName'
+        description:
+          $ref: '#/components/schemas/TaskDescription'
         flux:
-          $ref: '#/components/schemas/Task/properties/flux'
+          $ref: '#/components/schemas/TaskFlux'
         status:
           $ref: '#/components/schemas/TaskStatusType'
-        name:
-          $ref: '#/components/schemas/Task/properties/name'
-        description:
-          $ref: '#/components/schemas/Task/properties/description'
       required:
         - flux
+    TaskCron:
+      description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
+      type: string
+      format: cron
+    TaskDescription:
+      description: A description of the task.
+      type: string
+    TaskEvery:
+      description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
+      type: string
+      format: duration
+    TaskFlux:
+      description: |
+        Flux with [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
+        and the script for the task to run.
+
+        #### Related guides
+
+        - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
+      type: string
+      format: Flux
+    TaskName:
+      description: The name of the task.
+      type: string
+    TaskOffset:
+      description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
+      type: string
+      format: duration
+    TaskOrg:
+      description: |
+        An organization name.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the task.
+      type: string
+    TaskOrgID:
+      description: |
+        An organization ID.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the task.
+      type: string
     TaskStatusType:
       type: string
       enum:
@@ -13159,6 +13221,59 @@ components:
     Flags:
       type: object
       additionalProperties: true
+    Resource:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - authorizations
+            - buckets
+            - dashboards
+            - orgs
+            - sources
+            - tasks
+            - telegrafs
+            - users
+            - variables
+            - scrapers
+            - secrets
+            - labels
+            - views
+            - documents
+            - notificationRules
+            - notificationEndpoints
+            - checks
+            - dbrp
+            - notebooks
+            - annotations
+            - remotes
+            - replications
+            - instance
+          description: |
+            The type of resource.
+            In a `permission`, applies the permission to all resources of this type.
+        id:
+          type: string
+          description: |
+            The ID of a specific resource.
+            In a `permission`, applies the permission to only the resource with this ID.
+        name:
+          type: string
+          description: |
+            Optional: A name for the resource.
+            Not all resource types have a name field.
+        orgID:
+          type: string
+          description: |
+            The ID of the organization that owns the resource.
+            In a `permission`, applies the permission to all resources of `type` owned by this organization.
+        org:
+          type: string
+          description: |
+            Optional: The name of the organization with `orgID`.
     ResourceMember:
       allOf:
         - $ref: '#/components/schemas/UserResponse'
@@ -16211,30 +16326,6 @@ components:
         series_id_2: '#edf529'
         measurement_birdmigration_europe: '#663cd0'
         configcat_deployments-autopromotionblocker: '#663cd0'
-    AuthorizationPostRequest:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
-        - type: object
-          properties:
-            orgID:
-              type: string
-              description: |
-                The ID of the organization that owns the authorization.
-            userID:
-              type: string
-              description: |
-                The ID of the user that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: |
-                A list of permissions for an authorization.
-                An authorization must have at least one permission.
-              items:
-                $ref: '#/components/schemas/Permission'
     Permission:
       required:
         - action
@@ -16247,59 +16338,6 @@ components:
             - write
         resource:
           $ref: '#/components/schemas/Resource'
-    Resource:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - authorizations
-            - buckets
-            - dashboards
-            - orgs
-            - sources
-            - tasks
-            - telegrafs
-            - users
-            - variables
-            - scrapers
-            - secrets
-            - labels
-            - views
-            - documents
-            - notificationRules
-            - notificationEndpoints
-            - checks
-            - dbrp
-            - notebooks
-            - annotations
-            - remotes
-            - replications
-            - instance
-          description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
-        id:
-          type: string
-          description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
-        name:
-          type: string
-          description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
-        orgID:
-          type: string
-          description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
-        org:
-          type: string
-          description: |
-            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
@@ -16755,30 +16793,24 @@ components:
         id:
           readOnly: true
           type: string
+          description: |
+            The resource ID that InfluxDB uses to uniquely identify the task.
         orgID:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) ID.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrgID'
         org:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) name.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrg'
         name:
-          description: The name of the task.
-          type: string
+          $ref: '#/components/schemas/TaskName'
+        description:
+          $ref: '#/components/schemas/TaskDescription'
         ownerID:
           description: |
-            A [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) ID.
-            Specifies the owner of the task.
+            A user ID.
+            Identifies the [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) that owns the task.
 
-            To find a user ID, you can use the
+            To find a user ID, use the
             [`GET /api/v2/users` endpoint](#operation/GetUsers) to
             list users.
-          type: string
-        description:
-          description: A description of the task.
           type: string
         status:
           $ref: '#/components/schemas/TaskStatusType'
@@ -16787,24 +16819,20 @@ components:
         authorizationID:
           description: |
             An authorization ID.
-            Specifies the authorization used when the task communicates with the query engine.
+            Identifies the authorization used when the task communicates with the query engine.
 
             To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
             list authorizations.
           type: string
+        flux:
+          $ref: '#/components/schemas/TaskFlux'
         every:
-          description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
-          type: string
-          format: duration
+          $ref: '#/components/schemas/TaskEvery'
         cron:
-          description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
-          type: string
-          format: cron
+          $ref: '#/components/schemas/TaskCron'
         offset:
-          description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
-          type: string
-          format: duration
+          $ref: '#/components/schemas/TaskOffset'
         latestCompleted:
           description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
           type: string
@@ -16851,95 +16879,84 @@ components:
               $ref: '#/components/schemas/Link'
             labels:
               $ref: '#/components/schemas/Link'
-        flux:
-          description: |
-            Flux with [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-            and the script for the task to run.
-
-            #### Limitations
-
-            - If you set the `flux` property, you must pass the `task` option in
-              the Flux.
-
-            #### Related guides
-
-            - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-          type: string
-          format: Flux
         scriptID:
-          description: |
-            A script ID.
-            Specifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
-
-            #### Related guides
-
-            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-          type: string
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          description: |
-            Key-value pairs for `params` in the script.
-            Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
-            by the `scriptID` property.
-            When running the task, InfluxDB executes the script with the parameters
-            you provide.
-
-            #### Limitations
-
-            - To use the `scriptParameters` property, you must also set the `scriptID` property
-              for the task.
-
-            #### Related guides
-
-            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-          type: object
+          $ref: '#/components/schemas/TaskScriptParameters'
       required:
         - id
         - name
         - orgID
+    TaskScriptID:
+      description: |
+        A script ID.
+        Identifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
+
+        #### Related guides
+
+        - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+      type: string
+    TaskScriptParameters:
+      description: |
+        Key-value pairs for `params` in the script.
+        Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
+        by the `scriptID` property.
+        When running the task, InfluxDB executes the script with the parameters
+        you provide.
+
+        #### Limitations
+
+        - To use the `scriptParameters` property, you must also set the `scriptID` property
+          for the task.
+
+        #### Related guides
+
+        - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+      type: object
     TaskUpdateRequest:
       type: object
       properties:
         status:
           $ref: '#/components/schemas/TaskStatusType'
         name:
-          $ref: '#/components/schemas/Task/properties/name'
-        every:
-          $ref: '#/components/schemas/Task/properties/every'
-        cron:
-          $ref: '#/components/schemas/Task/properties/cron'
-        offset:
-          $ref: '#/components/schemas/Task/properties/offset'
+          $ref: '#/components/schemas/TaskName'
         description:
-          $ref: '#/components/schemas/Task/properties/description'
+          $ref: '#/components/schemas/TaskDescription'
+        every:
+          $ref: '#/components/schemas/TaskEvery'
+        cron:
+          $ref: '#/components/schemas/TaskCron'
+        offset:
+          $ref: '#/components/schemas/TaskOffset'
         flux:
-          $ref: '#/components/schemas/Task/properties/flux'
+          $ref: '#/components/schemas/TaskFlux'
         scriptID:
-          $ref: '#/components/schemas/Task/properties/scriptID'
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          $ref: '#/components/schemas/Task/properties/scriptParameters'
+          $ref: '#/components/schemas/TaskScriptParameters'
     TaskWithScriptCreateRequest:
       type: object
       properties:
         orgID:
-          $ref: '#/components/schemas/Task/properties/orgID'
+          $ref: '#/components/schemas/TaskOrgID'
         org:
-          $ref: '#/components/schemas/Task/properties/org'
-        scriptID:
-          $ref: '#/components/schemas/Task/properties/scriptID'
-        scriptParameters:
-          $ref: '#/components/schemas/Task/properties/scriptParameters'
+          $ref: '#/components/schemas/TaskOrg'
+        name:
+          $ref: '#/components/schemas/TaskName'
+        description:
+          $ref: '#/components/schemas/TaskDescription'
         every:
-          $ref: '#/components/schemas/Task/properties/every'
+          $ref: '#/components/schemas/TaskEvery'
         cron:
-          $ref: '#/components/schemas/Task/properties/cron'
+          $ref: '#/components/schemas/TaskCron'
         offset:
-          $ref: '#/components/schemas/Task/properties/offset'
+          $ref: '#/components/schemas/TaskOffset'
         status:
           $ref: '#/components/schemas/TaskStatusType'
-        name:
-          $ref: '#/components/schemas/Task/properties/name'
-        description:
-          $ref: '#/components/schemas/Task/properties/description'
+        scriptID:
+          $ref: '#/components/schemas/TaskScriptID'
+        scriptParameters:
+          $ref: '#/components/schemas/TaskScriptParameters'
       required:
         - scriptID
   responses:

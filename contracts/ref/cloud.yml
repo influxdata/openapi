@@ -4720,7 +4720,7 @@ components:
         authorizationID:
           description: |
             An authorization ID.
-            Specifies the authorization used when the task communicates with the query engine.
+            Identifies the authorization used when the task communicates with the query engine.
 
             To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
@@ -4731,36 +4731,16 @@ components:
           readOnly: true
           type: string
         cron:
-          description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
-            that defines the schedule on which the task runs. InfluxDB uses the system
-            time when evaluating Cron expressions.
-          format: cron
-          type: string
+          $ref: '#/components/schemas/TaskCron'
         description:
-          description: A description of the task.
-          type: string
+          $ref: '#/components/schemas/TaskDescription'
         every:
-          description: The interval ([duration literal](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp))
-            at which the task runs. `every` also determines when the task first runs,
-            depending on the specified time.
-          format: duration
-          type: string
+          $ref: '#/components/schemas/TaskEvery'
         flux:
-          description: |
-            Flux with [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-            and the script for the task to run.
-
-            #### Limitations
-
-            - If you set the `flux` property, you must pass the `task` option in
-              the Flux.
-
-            #### Related guides
-
-            - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-          format: Flux
-          type: string
+          $ref: '#/components/schemas/TaskFlux'
         id:
+          description: |
+            The resource ID that InfluxDB uses to uniquely identify the task.
           readOnly: true
           type: string
         labels:
@@ -4805,59 +4785,26 @@ components:
           readOnly: true
           type: object
         name:
-          description: The name of the task.
-          type: string
+          $ref: '#/components/schemas/TaskName'
         offset:
-          description: A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)
-            to delay execution of the task after the scheduled time has elapsed. `0`
-            removes the offset.
-          format: duration
-          type: string
+          $ref: '#/components/schemas/TaskOffset'
         org:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) name.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrg'
         orgID:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) ID.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrgID'
         ownerID:
           description: |
-            A [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) ID.
-            Specifies the owner of the task.
+            A user ID.
+            Identifies the [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) that owns the task.
 
-            To find a user ID, you can use the
+            To find a user ID, use the
             [`GET /api/v2/users` endpoint](#operation/GetUsers) to
             list users.
           type: string
         scriptID:
-          description: |
-            A script ID.
-            Specifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
-
-            #### Related guides
-
-            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-          type: string
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          description: |
-            Key-value pairs for `params` in the script.
-            Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
-            by the `scriptID` property.
-            When running the task, InfluxDB executes the script with the parameters
-            you provide.
-
-            #### Limitations
-
-            - To use the `scriptParameters` property, you must also set the `scriptID` property
-              for the task.
-
-            #### Related guides
-
-            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-          type: object
+          $ref: '#/components/schemas/TaskScriptParameters'
         status:
           $ref: '#/components/schemas/TaskStatusType'
         updatedAt:
@@ -4872,19 +4819,89 @@ components:
     TaskCreateRequest:
       properties:
         description:
-          $ref: '#/components/schemas/Task/properties/description'
+          $ref: '#/components/schemas/TaskDescription'
         flux:
-          $ref: '#/components/schemas/Task/properties/flux'
+          $ref: '#/components/schemas/TaskFlux'
         name:
-          $ref: '#/components/schemas/Task/properties/name'
+          $ref: '#/components/schemas/TaskName'
         org:
-          $ref: '#/components/schemas/Task/properties/org'
+          $ref: '#/components/schemas/TaskOrg'
         orgID:
-          $ref: '#/components/schemas/Task/properties/orgID'
+          $ref: '#/components/schemas/TaskOrgID'
         status:
           $ref: '#/components/schemas/TaskStatusType'
       required:
       - flux
+      type: object
+    TaskCron:
+      description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
+        that defines the schedule on which the task runs. InfluxDB uses the system
+        time when evaluating Cron expressions.
+      format: cron
+      type: string
+    TaskDescription:
+      description: A description of the task.
+      type: string
+    TaskEvery:
+      description: The interval ([duration literal](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp))
+        at which the task runs. `every` also determines when the task first runs,
+        depending on the specified time.
+      format: duration
+      type: string
+    TaskFlux:
+      description: |
+        Flux with [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
+        and the script for the task to run.
+
+        #### Related guides
+
+        - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
+      format: Flux
+      type: string
+    TaskName:
+      description: The name of the task.
+      type: string
+    TaskOffset:
+      description: A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)
+        to delay execution of the task after the scheduled time has elapsed. `0` removes
+        the offset.
+      format: duration
+      type: string
+    TaskOrg:
+      description: |
+        An organization name.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the task.
+      type: string
+    TaskOrgID:
+      description: |
+        An organization ID.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the task.
+      type: string
+    TaskScriptID:
+      description: |
+        A script ID.
+        Identifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
+
+        #### Related guides
+
+        - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
+      type: string
+    TaskScriptParameters:
+      description: |
+        Key-value pairs for `params` in the script.
+        Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
+        by the `scriptID` property.
+        When running the task, InfluxDB executes the script with the parameters
+        you provide.
+
+        #### Limitations
+
+        - To use the `scriptParameters` property, you must also set the `scriptID` property
+          for the task.
+
+        #### Related guides
+
+        - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
       type: object
     TaskStatusType:
       description: |
@@ -4896,44 +4913,44 @@ components:
     TaskUpdateRequest:
       properties:
         cron:
-          $ref: '#/components/schemas/Task/properties/cron'
+          $ref: '#/components/schemas/TaskCron'
         description:
-          $ref: '#/components/schemas/Task/properties/description'
+          $ref: '#/components/schemas/TaskDescription'
         every:
-          $ref: '#/components/schemas/Task/properties/every'
+          $ref: '#/components/schemas/TaskEvery'
         flux:
-          $ref: '#/components/schemas/Task/properties/flux'
+          $ref: '#/components/schemas/TaskFlux'
         name:
-          $ref: '#/components/schemas/Task/properties/name'
+          $ref: '#/components/schemas/TaskName'
         offset:
-          $ref: '#/components/schemas/Task/properties/offset'
+          $ref: '#/components/schemas/TaskOffset'
         scriptID:
-          $ref: '#/components/schemas/Task/properties/scriptID'
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          $ref: '#/components/schemas/Task/properties/scriptParameters'
+          $ref: '#/components/schemas/TaskScriptParameters'
         status:
           $ref: '#/components/schemas/TaskStatusType'
       type: object
     TaskWithScriptCreateRequest:
       properties:
         cron:
-          $ref: '#/components/schemas/Task/properties/cron'
+          $ref: '#/components/schemas/TaskCron'
         description:
-          $ref: '#/components/schemas/Task/properties/description'
+          $ref: '#/components/schemas/TaskDescription'
         every:
-          $ref: '#/components/schemas/Task/properties/every'
+          $ref: '#/components/schemas/TaskEvery'
         name:
-          $ref: '#/components/schemas/Task/properties/name'
+          $ref: '#/components/schemas/TaskName'
         offset:
-          $ref: '#/components/schemas/Task/properties/offset'
+          $ref: '#/components/schemas/TaskOffset'
         org:
-          $ref: '#/components/schemas/Task/properties/org'
+          $ref: '#/components/schemas/TaskOrg'
         orgID:
-          $ref: '#/components/schemas/Task/properties/orgID'
+          $ref: '#/components/schemas/TaskOrgID'
         scriptID:
-          $ref: '#/components/schemas/Task/properties/scriptID'
+          $ref: '#/components/schemas/TaskScriptID'
         scriptParameters:
-          $ref: '#/components/schemas/Task/properties/scriptParameters'
+          $ref: '#/components/schemas/TaskScriptParameters'
         status:
           $ref: '#/components/schemas/TaskStatusType'
       required:
