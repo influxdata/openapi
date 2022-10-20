@@ -17,7 +17,7 @@
   "tags": [
     {
       "name": "Authorizations",
-      "description": "Create and manage authorizations (API tokens).\n\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\nIn InfluxDB Cloud, an authorization with `read-authorizations` permission\ncan be used to view other authorizations.\nOptionally, when creating an authorization, you can scope it to a specific user.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB enforces access restrictions on API tokens.\n\n- InfluxDB allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### User sessions with authorizations\n\nIf a user signs in with username and password, creating a _user session_,\nthe session carries the permissions granted by all the user's authorizations.\nTo create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n- [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)\n- [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)\n- [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n"
+      "description": "Create and manage authorizations (API tokens).\n\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\nIn InfluxDB Cloud, an authorization with `read-authorizations` permission\ncan be used to view other authorizations.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB enforces access restrictions on API tokens.\n\n- InfluxDB allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### User sessions with authorizations\n\nOptionally, when creating an authorization, you can scope it to a specific user.\nIf the user signs in with username and password, creating a _user session_,\nthe session carries the permissions granted by all the user's authorizations.\nFor more information, see [how to assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\nTo create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n- [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)\n- [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)\n- [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n"
     },
     {
       "name": "Buckets",
@@ -3758,7 +3758,7 @@
           "Query"
         ],
         "summary": "Retrieve Flux query suggestions",
-        "description": "Retrieves a list of Flux query suggestions. Each suggestion contains a\n[Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\nname and parameters.\n\nUse this endpoint to retrieve a list of Flux query suggestions used in the\nInfluxDB Flux Query Builder. Helper function names have an underscore (`_`)\nprefix and aren't meant to be used directly in queries--for example:\n\n- **Recommended**:  Use `top(n, columns=[\"_value\"], tables=<-)` to sort\n  on a column and keep the top n records instead of `_sortLimit_`.\n  `top` uses the `_sortLimit` helper function.\n\n#### Limitations\n\n- Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL\nwill result in a HTTP `301 Moved Permanently` status code. Please use\n`/api/v2/query/suggestions` without a trailing slash.\n\n- When writing a query, avoid using `_functionName()` helper functions\nexposed by this endpoint.\n\n#### Related Guides\n\n- [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/)\n",
+        "description": "Lists Flux query suggestions. Each suggestion contains a\n[Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\nname and parameters.\n\nUse this endpoint to retrieve a list of Flux query suggestions used in the\nInfluxDB Flux Query Builder. Helper function names have an underscore (`_`)\nprefix and aren't meant to be used directly in queries--for example:\n\n- **Recommended**:  Use `top(n, columns=[\"_value\"], tables=<-)` to sort\n  on a column and keep the top n records instead of `_sortLimit_`.\n  `top` uses the `_sortLimit` helper function.\n\n#### Limitations\n\n- Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL\nwill result in a HTTP `301 Moved Permanently` status code. Please use\n`/api/v2/query/suggestions` without a trailing slash.\n\n- When writing a query, avoid using `_functionName()` helper functions\nexposed by this endpoint.\n\n#### Related Guides\n\n- [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -4762,7 +4762,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A Flux Function name.\nOnly returns functions with this name.\n"
+            "description": "A [Flux function]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/) name.\n"
           }
         ],
         "responses": {
@@ -5121,7 +5121,7 @@
           "Buckets"
         ],
         "summary": "List buckets",
-        "description": "Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
+        "description": "Lists [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5732,7 +5732,7 @@
           "Buckets"
         ],
         "summary": "List all labels for a bucket",
-        "description": "Retrieves a list of all labels for a bucket.\n\nLabels are objects that contain `labelID`, `name`, `description`, and `color`\nkey-value pairs. They may be used for grouping and filtering InfluxDB\nresources.\nLabels are also capable of grouping across different resources--for example,\nyou can apply a label named `air_sensor` to a bucket and a task to quickly\norganize resources.\n\n#### Related guides\n\n- Use the [`/api/v2/labels` InfluxDB API endpoint](#tag/Labels) to retrieve and manage labels.\n- [Manage labels in the InfluxDB UI]({{% INFLUXDB_DOCS_URL %}}/visualize-data/labels/)\n",
+        "description": "Lists all labels for a bucket.\n\nLabels are objects that contain `labelID`, `name`, `description`, and `color`\nkey-value pairs. They may be used for grouping and filtering InfluxDB\nresources.\nLabels are also capable of grouping across different resources--for example,\nyou can apply a label named `air_sensor` to a bucket and a task to quickly\norganize resources.\n\n#### Related guides\n\n- Use the [`/api/v2/labels` InfluxDB API endpoint](#tag/Labels) to retrieve and manage labels.\n- [Manage labels in the InfluxDB UI]({{% INFLUXDB_DOCS_URL %}}/visualize-data/labels/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5979,7 +5979,7 @@
           "Buckets"
         ],
         "summary": "List all users with member privileges for a bucket",
-        "description": "Retrieves a list of all users for a bucket.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users in\nan organization with access to the specified resource.\n\nUse this endpoint to retrieve all users with access to a bucket.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
+        "description": "Lists all users for a bucket.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users in\nan organization with access to the specified resource.\n\nUse this endpoint to retrieve all users with access to a bucket.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6219,7 +6219,7 @@
           "Buckets"
         ],
         "summary": "List all owners of a bucket",
-        "description": "Retrieves a list of all [owners]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner)\nfor a bucket.\n\nBucket owners have permission to delete buckets and remove user and member\npermissions from the bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
+        "description": "Lists all [owners]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner)\nfor a bucket.\n\nBucket owners have permission to delete buckets and remove user and member\npermissions from the bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6451,7 +6451,7 @@
           "Security and access endpoints"
         ],
         "summary": "List organizations",
-        "description": "Retrieves a list of [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization/).\n\nTo limit which organizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.\n\n#### InfluxDB Cloud\n\n- Only returns the organization that owns the token passed in the request.\n\n#### Related guides\n\n- [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/)\n",
+        "description": "Lists [organizations]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization/).\n\nTo limit which organizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.\n\n#### InfluxDB Cloud\n\n- Only returns the organization that owns the token passed in the request.\n\n#### Related guides\n\n- [View organizations]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6471,7 +6471,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An organization name.\nOnly returns organizations with this name.\n"
+            "description": "An organization name.\nOnly returns the specified organization.\n"
           },
           {
             "in": "query",
@@ -6479,7 +6479,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An organization ID.\nOnly returns the organization with this ID.\n"
+            "description": "An organization ID.\nOnly returns the specified organization.\n"
           },
           {
             "in": "query",
@@ -6487,7 +6487,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A user ID.\nOnly returns organizations where this user is a member or owner.\n"
+            "description": "A user ID.\nOnly returns organizations where the specified user is a member or owner.\n"
           }
         ],
         "responses": {
@@ -6949,7 +6949,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all members of an organization",
-        "description": "Retrieves a list of all users that belong to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of\nmembers from.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
+        "description": "Lists all users that belong to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of\nmembers from.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7207,7 +7207,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all owners of an organization",
-        "description": "Retrieves a list of all owners of an organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners from.\n",
+        "description": "Lists all owners of an organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners from.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7561,7 +7561,7 @@
           "Templates"
         ],
         "summary": "List installed stacks",
-        "description": "Retrieves a list of installed InfluxDB stacks.\n\nTo limit stacks in the response, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all installed stacks\nfor the organization.\n",
+        "description": "Lists installed InfluxDB stacks.\n\nTo limit stacks in the response, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all installed stacks\nfor the organization.\n",
         "parameters": [
           {
             "in": "query",
@@ -7570,7 +7570,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The ID of the organization that owns the stacks.\nOnly returns stacks owned by this organization.\n\n#### InfluxDB Cloud\n\n- Doesn't require this parameter;\n  InfluxDB only returns resources allowed by the API token.\n"
+            "description": "An organization ID.\nOnly returns stacks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n\n#### InfluxDB Cloud\n\n- Doesn't require this parameter;\n  InfluxDB only returns resources allowed by the API token.\n"
           },
           {
             "in": "query",
@@ -7578,7 +7578,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The stack name.\nFinds stack `events` with this name and returns the stacks.\n\nRepeatable.\nTo filter for more than one stack name,\nrepeat this parameter with each name--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`\n",
+            "description": "A stack name.\nFinds stack `events` with this name and returns the stacks.\n\nRepeatable.\nTo filter for more than one stack name,\nrepeat this parameter with each name--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`\n",
             "examples": {
               "findStackByName": {
                 "summary": "Find stacks with the event name",
@@ -7592,7 +7592,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The stack ID.\nOnly returns stacks with this ID.\n\nRepeatable.\nTo filter for more than one stack ID,\nrepeat this parameter with each ID--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`\n",
+            "description": "A stack ID.\nOnly returns the specified stack.\n\nRepeatable.\nTo filter for more than one stack ID,\nrepeat this parameter with each ID--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`\n",
             "examples": {
               "findStackByID": {
                 "summary": "Find a stack with the ID",
@@ -8305,7 +8305,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled after this time.\n"
+            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled after the specified time.\n"
           },
           {
             "in": "query",
@@ -8314,7 +8314,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled before this time.\n"
+            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled before the specified time.\n"
           }
         ],
         "responses": {
@@ -11189,7 +11189,7 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't allow listing all users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | Operator token | InfluxData internal use only |\n| List a specific user | `read-users` or `read-user USER_ID` |\n\nReplace the following:\n\n- `USER_ID`: ID of the user that you want to retrieve.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
+        "description": "Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't allow listing all users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | Operator token | InfluxData internal use only |\n| List a specific user | `read-users` or `read-user USER_ID` |\n\nReplace the following:\n\n- `USER_ID`: ID of the user that you want to retrieve.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11546,7 +11546,7 @@
           "Authorizations"
         ],
         "summary": "List authorizations",
-        "description": "Retrieves a list of authorizations.\n\nTo limit which authorizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all authorizations for the organization.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n  values in `GET /api/v2/authorizations` responses;\n  returns `token: redacted` for all authorizations.\n\n#### Required permissions for InfluxDB Cloud\n\n- `read-authorizations`\n\n#### Related guides\n\n- [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n",
+        "description": "Lists authorizations.\n\nTo limit which authorizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all authorizations for the organization.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n  values in `GET /api/v2/authorizations` responses;\n  returns `token: redacted` for all authorizations.\n\n#### Required permissions\n\n- `read-authorizations`\n\n#### Related guides\n\n- [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11625,7 +11625,7 @@
           "Authorizations"
         ],
         "summary": "Create an authorization",
-        "description": "Creates an authorization and returns the authorization with the\ngenerated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\n\nKeep the following in mind when creating and updating authorizations:\n\n- To apply a permission to a specific resource, specify the resource `id` field.\n- To apply a permission to all resources with the type, omit the resource `id`.\n- To scope an authorization to a specific user, provide the `userID` property.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n",
+        "description": "Creates an authorization and returns the authorization with the\ngenerated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB only allows access to the API token value immediately after the authorization is created.\n- You can't update an authorization's permissions.\n- A token stops working when the user who created the authorization is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11672,12 +11672,17 @@
           {
             "lang": "Shell",
             "label": "cURL: Create auth to read all buckets",
-            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\"action\": \"read\", \"resource\": {\"type\": \"buckets\"}}\n    ]\n  }\nEOF\n"
+            "source": "curl --request POST \\\n\"INFLUX_URL/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\"action\": \"read\", \"resource\": {\"type\": \"buckets\"}}\n    ]\n  }\nEOF\n"
+          },
+          {
+            "lang": "Shell",
+            "label": "cURL: Create auth to read a specific bucket",
+            "source": "curl --request POST \\\n\"INFLUX_URL/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\n        \"action\": \"read\",\n        \"resource\": {\n          \"type\": \"buckets\"\n          \"id\": \"INFLUX_BUCKET_ID\"\n        }\n      }\n    ]\n  }\nEOF\n"
           },
           {
             "lang": "Shell",
             "label": "cURL: Create auth scoped to a user",
-            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"userID\": \"INFLUX_USER_ID\",\n    \"description\": \"iot_user write to bucket\",\n    \"permissions\": [\n      {\"action\": \"write\", \"resource\": {\"type\": \"buckets\", \"id: \"INFLUX_BUCKET_ID\"}}\n    ]\n  }\nEOF\n"
+            "source": "curl --request POST \\\n\"INFLUX_URL/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"userID\": \"INFLUX_USER_ID\",\n    \"description\": \"iot_user write to bucket\",\n    \"permissions\": [\n      {\"action\": \"write\", \"resource\": {\"type\": \"buckets\", \"id: \"INFLUX_BUCKET_ID\"}}\n    ]\n  }\nEOF\n"
           }
         ]
       }
@@ -12062,7 +12067,7 @@
       "summary": "Bucket schemas",
       "get": {
         "summary": "List measurement schemas of a bucket",
-        "description": "Retrieves a list of _explicit_\n[schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\n(`\"schemaType\": \"explicit\"`) for a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\n#### Related guides\n\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)\n",
+        "description": "Lists _explicit_\n[schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\n(`\"schemaType\": \"explicit\"`) for a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\n#### Related guides\n\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)\n",
         "operationId": "getMeasurementSchemas",
         "parameters": [
           {
@@ -12645,7 +12650,7 @@
         "tags": [
           "Dashboards"
         ],
-        "summary": "List all dashboards",
+        "summary": "List dashboards",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12670,7 +12675,7 @@
           {
             "in": "query",
             "name": "owner",
-            "description": "A user identifier. Returns only dashboards where this user has the `owner` role.",
+            "description": "A user ID. Only returns dashboards where the specified user has the `owner` role.",
             "schema": {
               "type": "string"
             }
@@ -12691,7 +12696,7 @@
           {
             "in": "query",
             "name": "id",
-            "description": "A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.",
+            "description": "A list of dashboard IDs.\nReturns only the specified dashboards.\nIf you specify `id` and `owner`, only `id` is used.\n",
             "schema": {
               "type": "array",
               "items": {
@@ -12702,7 +12707,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nOnly dashboards that belong to the specified\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n",
             "schema": {
               "type": "string"
             }
@@ -12710,7 +12715,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nOnly dashboards that belong to the specified\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n",
             "schema": {
               "type": "string"
             }
@@ -12748,7 +12753,7 @@
           "Tasks"
         ],
         "summary": "List tasks",
-        "description": "Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nTo limit which tasks are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.\n\n#### Related guide\n\n- [Process data with InfluxDB tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/)\n",
+        "description": "Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nTo limit which tasks are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.\n\n#### Related guide\n\n- [Process data with InfluxDB tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12756,7 +12761,7 @@
           {
             "in": "query",
             "name": "name",
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) name.\nOnly returns tasks with the specified name.\nDifferent tasks may have the same name.\n",
+            "description": "A task name.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) with the specified name.\nDifferent tasks may have the same name.\n",
             "schema": {
               "type": "string"
             }
@@ -12767,7 +12772,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.\nOnly returns tasks created after the specified task.\n"
+            "description": "A task ID.\nOnly returns [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.\n"
           },
           {
             "in": "query",
@@ -12775,7 +12780,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.\nOnly returns tasks owned by the specified user.\n"
+            "description": "A user ID.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           },
           {
             "in": "query",
@@ -12783,7 +12788,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.\nOnly returns tasks owned by the specified organization.\n"
+            "description": "An organization name.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n"
           },
           {
             "in": "query",
@@ -12791,7 +12796,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.\nOnly returns tasks owned by the specified organization.\n"
+            "description": "An organization ID.\nOnly returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n"
           },
           {
             "in": "query",
@@ -12803,7 +12808,7 @@
                 "inactive"
               ]
             },
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.\nOnly returns tasks that have the specified status.\n"
+            "description": "A task status.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.\n"
           },
           {
             "in": "query",
@@ -12852,7 +12857,7 @@
           {
             "in": "query",
             "name": "type",
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type.\nSpecifies the level of detail for tasks in the response.\nDefault is `system`.\n\nThe default (`system`) response contains all the metadata properties for tasks.\nTo reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).\n",
+            "description": "A task type.\nSpecifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.\nDefault is `system`.\n\nThe default (`system`) response contains all the metadata properties for tasks.\nTo reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).\n",
             "required": false,
             "schema": {
               "default": "",
@@ -12866,7 +12871,7 @@
           {
             "in": "query",
             "name": "scriptID",
-            "description": "A [script](#tag/Invokable-Scripts) ID.\nOnly returns tasks that use the specified invokable script.\n",
+            "description": "A script ID.\nOnly returns tasks that use the specified [invokable script](#tag/Invokable-Scripts).\n",
             "schema": {
               "type": "string"
             }
@@ -14265,16 +14270,16 @@
             "properties": {
               "orgID": {
                 "type": "string",
-                "description": "The ID of the organization that owns the authorization.\n"
+                "description": "An organization ID.\nSpecifies the organization that owns the authorization.\n"
               },
               "userID": {
                 "type": "string",
-                "description": "The ID of the user that the authorization is scoped to.\n"
+                "description": "A user ID.\nSpecifies the user that the authorization is scoped to.\n\nWhen a user authenticates with username and password,\nInfluxDB generates a _user session_ with all the permissions\nspecified by all the user's authorizations.\n"
               },
               "permissions": {
                 "type": "array",
                 "minItems": 1,
-                "description": "A list of permissions for an authorization.\nAn authorization must have at least one permission.\n",
+                "description": "A list of permissions for an authorization.\nIn the list, provide at least one `permission` object.\n\nIn a `permission`, the `resource.type` property grants access to all\nresources of the specified type.\nTo grant access to only a specific resource, specify the\n`resource.id` property.\n",
                 "items": {
                   "$ref": "#/components/schemas/Permission"
                 }
@@ -16433,23 +16438,23 @@
               "replications",
               "instance"
             ],
-            "description": "The type of resource.\nIn a `permission`, applies the permission to all resources of this type.\n"
+            "description": "A resource type.\nIdentifies the API resource's type (or _kind_).\n"
           },
           "id": {
             "type": "string",
-            "description": "The ID of a specific resource.\nIn a `permission`, applies the permission to only the resource with this ID.\n"
+            "description": "A resource ID.\nIdentifies a specific resource.\n"
           },
           "name": {
             "type": "string",
-            "description": "Optional: A name for the resource.\nNot all resource types have a name field.\n"
+            "description": "The name of the resource.\n_Note: not all resource types have a `name` property_.\n"
           },
           "orgID": {
             "type": "string",
-            "description": "The ID of the organization that owns the resource.\nIn a `permission`, applies the permission to all resources of `type` owned by this organization.\n"
+            "description": "An organization ID.\nIdentifies the organization that owns the resource.\n"
           },
           "org": {
             "type": "string",
-            "description": "Optional: The name of the organization with `orgID`.\n"
+            "description": "An organization name.\nThe organization that owns the resource.\n"
           }
         }
       },
@@ -19792,23 +19797,23 @@
             },
             "properties": {
               "self": {
-                "description": "URL for this check",
+                "description": "The URL for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "labels": {
-                "description": "URL to retrieve labels for this check",
+                "description": "The URL to retrieve labels for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members for this check",
+                "description": "The URL to retrieve members for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners for this check",
+                "description": "The URL to retrieve owners for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "query": {
-                "description": "URL to retrieve flux script for this check",
+                "description": "The URL to retrieve the Flux script for this check.",
                 "$ref": "#/components/schemas/Link"
               }
             }
@@ -20296,23 +20301,23 @@
             },
             "properties": {
               "self": {
-                "description": "URL for this endpoint.",
+                "description": "The URL for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "labels": {
-                "description": "URL to retrieve labels for this notification rule.",
+                "description": "The URL to retrieve labels for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members for this notification rule.",
+                "description": "The URL to retrieve members for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners for this notification rule.",
+                "description": "The URL to retrieve owners for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               },
               "query": {
-                "description": "URL to retrieve flux script for this notification rule.",
+                "description": "The URL to retrieve the Flux script for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               }
             }
@@ -20647,19 +20652,19 @@
             },
             "properties": {
               "self": {
-                "description": "URL for this endpoint.",
+                "description": "The URL for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "labels": {
-                "description": "URL to retrieve labels for this endpoint.",
+                "description": "The URL to retrieve labels for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members for this endpoint.",
+                "description": "The URL to retrieve members for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners for this endpoint.",
+                "description": "The URL to retrieve owners for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               }
             }

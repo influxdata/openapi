@@ -18,7 +18,7 @@ paths:
         - Users
       summary: List users
       description: |
-        Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
 
         To limit which users are returned, pass query parameters in your request.
 
@@ -421,7 +421,7 @@ paths:
         - Authorizations
       summary: List authorizations
       description: |
-        Retrieves a list of authorizations.
+        Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations for the organization.
@@ -432,7 +432,7 @@ paths:
           values in `GET /api/v2/authorizations` responses;
           returns `token: redacted` for all authorizations.
 
-        #### Required permissions for InfluxDB Cloud
+        #### Required permissions
 
         - `read-authorizations`
 
@@ -517,20 +517,14 @@ paths:
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
 
-        Keep the following in mind when creating and updating authorizations:
-
-        - To apply a permission to a specific resource, specify the resource `id` field.
-        - To apply a permission to all resources with the type, omit the resource `id`.
-        - To scope an authorization to a specific user, provide the `userID` property.
-
         #### Limitations
 
         To follow best practices for secure API token generation and retrieval,
         InfluxDB Cloud enforces access restrictions on API tokens.
 
-        - InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.
-        - You can’t change access (read/write) permissions for an API token after it’s created.
-        - Tokens stop working when the user who created the token is deleted.
+        - InfluxDB only allows access to the API token value immediately after the authorization is created.
+        - You can't update an authorization's permissions.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend the following for managing your tokens:
 
@@ -558,17 +552,28 @@ paths:
                     orgID:
                       type: string
                       description: |
-                        The ID of the organization that owns the authorization.
+                        An organization ID.
+                        Specifies the organization that owns the authorization.
                     userID:
                       type: string
                       description: |
-                        The ID of the user that the authorization is scoped to.
+                        A user ID.
+                        Specifies the user that the authorization is scoped to.
+
+                        When a user authenticates with username and password,
+                        InfluxDB generates a _user session_ with all the permissions
+                        specified by all the user's authorizations.
                     permissions:
                       type: array
                       minItems: 1
                       description: |
                         A list of permissions for an authorization.
-                        An authorization must have at least one permission.
+                        In the list, provide at least one `permission` object.
+
+                        In a `permission`, the `resource.type` property grants access to all
+                        resources of the specified type.
+                        To grant access to only a specific resource, specify the
+                        `resource.id` property.
                       items:
                         required:
                           - action
@@ -611,27 +616,28 @@ paths:
                                   - replications
                                   - instance
                                 description: |
-                                  The type of resource.
-                                  In a `permission`, applies the permission to all resources of this type.
+                                  A resource type.
+                                  Identifies the API resource's type (or _kind_).
                               id:
                                 type: string
                                 description: |
-                                  The ID of a specific resource.
-                                  In a `permission`, applies the permission to only the resource with this ID.
+                                  A resource ID.
+                                  Identifies a specific resource.
                               name:
                                 type: string
                                 description: |
-                                  Optional: A name for the resource.
-                                  Not all resource types have a name field.
+                                  The name of the resource.
+                                  _Note: not all resource types have a `name` property_.
                               orgID:
                                 type: string
                                 description: |
-                                  The ID of the organization that owns the resource.
-                                  In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                                  An organization ID.
+                                  Identifies the organization that owns the resource.
                               org:
                                 type: string
                                 description: |
-                                  Optional: The name of the organization with `orgID`.
+                                  An organization name.
+                                  The organization that owns the resource.
       responses:
         '201':
           description: |
@@ -655,7 +661,7 @@ paths:
           label: 'cURL: Create auth to read all buckets'
           source: |
             curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
+            "INFLUX_URL/api/v2/authorizations" \
             --header "Authorization: Token INFLUX_API_TOKEN" \
             --header 'Content-Type: application/json' \
             --data @- << EOF
@@ -668,10 +674,32 @@ paths:
               }
             EOF
         - lang: Shell
+          label: 'cURL: Create auth to read a specific bucket'
+          source: |
+            curl --request POST \
+            "INFLUX_URL/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "description": "iot_users read buckets",
+                "permissions": [
+                  {
+                    "action": "read",
+                    "resource": {
+                      "type": "buckets"
+                      "id": "INFLUX_BUCKET_ID"
+                    }
+                  }
+                ]
+              }
+            EOF
+        - lang: Shell
           label: 'cURL: Create auth scoped to a user'
           source: |
             curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
+            "INFLUX_URL/api/v2/authorizations" \
             --header "Authorization: Token INFLUX_API_TOKEN" \
             --header 'Content-Type: application/json' \
             --data @- << EOF
@@ -934,7 +962,7 @@ paths:
     get:
       summary: List measurement schemas of a bucket
       description: |
-        Retrieves a list of _explicit_
+        Lists _explicit_
         [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
         (`"schemaType": "explicit"`) for a bucket.
 
@@ -2286,19 +2314,19 @@ paths:
                                                                 query: /api/v2/checks/1/query
                                                               properties:
                                                                 self:
-                                                                  description: URL for this check
+                                                                  description: The URL for this check.
                                                                   $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
                                                                 labels:
-                                                                  description: URL to retrieve labels for this check
+                                                                  description: The URL to retrieve labels for this check.
                                                                   $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
                                                                 members:
-                                                                  description: URL to retrieve members for this check
+                                                                  description: The URL to retrieve members for this check.
                                                                   $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
                                                                 owners:
-                                                                  description: URL to retrieve owners for this check
+                                                                  description: The URL to retrieve owners for this check.
                                                                   $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
                                                                 query:
-                                                                  description: URL to retrieve flux script for this check
+                                                                  description: The URL to retrieve the Flux script for this check.
                                                                   $ref: '#/paths/~1dashboards/post/responses/201/content/application~1json/schema/oneOf/0/allOf/1/properties/links/properties/org'
                                                           required:
                                                             - name
@@ -3129,7 +3157,7 @@ paths:
       operationId: GetDashboards
       tags:
         - Dashboards
-      summary: List all dashboards
+      summary: List dashboards
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: query
@@ -3159,7 +3187,7 @@ paths:
           description: The non-zero number of dashboards to return
         - in: query
           name: owner
-          description: A user identifier. Returns only dashboards where this user has the `owner` role.
+          description: A user ID. Only returns dashboards where the specified user has the `owner` role.
           schema:
             type: string
         - in: query
@@ -3173,19 +3201,28 @@ paths:
               - UpdatedAt
         - in: query
           name: id
-          description: 'A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.'
+          description: |
+            A list of dashboard IDs.
+            Returns only the specified dashboards.
+            If you specify `id` and `owner`, only `id` is used.
           schema:
             type: array
             items:
               type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            An organization ID.
+            Only dashboards that belong to the specified
+            [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
           schema:
             type: string
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            An organization name.
+            Only dashboards that belong to the specified
+            [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
           schema:
             type: string
       responses:
@@ -3227,7 +3264,7 @@ paths:
         - Tasks
       summary: List tasks
       description: |
-        Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+        Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
@@ -3240,8 +3277,8 @@ paths:
         - in: query
           name: name
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) name.
-            Only returns tasks with the specified name.
+            A task name.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) with the specified name.
             Different tasks may have the same name.
           schema:
             type: string
@@ -3250,29 +3287,29 @@ paths:
           schema:
             type: string
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-            Only returns tasks created after the specified task.
+            A task ID.
+            Only returns [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.
         - in: query
           name: user
           schema:
             type: string
           description: |
-            A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
-            Only returns tasks owned by the specified user.
+            A user ID.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: org
           schema:
             type: string
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
-            Only returns tasks owned by the specified organization.
+            An organization name.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: orgID
           schema:
             type: string
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
-            Only returns tasks owned by the specified organization.
+            An organization ID.
+            Only returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: status
           schema:
@@ -3281,8 +3318,8 @@ paths:
               - active
               - inactive
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.
-            Only returns tasks that have the specified status.
+            A task status.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.
         - in: query
           name: limit
           schema:
@@ -3328,8 +3365,8 @@ paths:
         - in: query
           name: type
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type.
-            Specifies the level of detail for tasks in the response.
+            A task type.
+            Specifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.
             Default is `system`.
 
             The default (`system`) response contains all the metadata properties for tasks.
@@ -3344,8 +3381,8 @@ paths:
         - in: query
           name: scriptID
           description: |
-            A [script](#tag/Invokable-Scripts) ID.
-            Only returns tasks that use the specified invokable script.
+            A script ID.
+            Only returns tasks that use the specified [invokable script](#tag/Invokable-Scripts).
           schema:
             type: string
       responses:

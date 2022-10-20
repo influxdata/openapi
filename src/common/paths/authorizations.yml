@@ -5,21 +5,21 @@ get:
     - Security and access endpoints
   summary: List authorizations
   description: |
-    Retrieves a list of authorizations.
+    Lists authorizations.
 
     To limit which authorizations are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all authorizations.
 
     #### InfluxDB OSS
 
-    - Returns
+    - InfluxDB OSS returns
       [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
     - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
       InfluxDB OSS returns authorizations for all organizations in the instance.
 
     #### Required permissions
 
-    - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+    - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
     #### Related guides
 
@@ -77,25 +77,24 @@ post:
     - Authorizations
   summary: Create an authorization
   description: |
-    Creates an authorization.
+    Creates an authorization and returns the authorization with the
+    generated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
 
     Use this endpoint to create an authorization, which generates an API token
     with permissions to `read` or `write` to a specific resource or `type` of resource.
     The response contains the new authorization with the generated API token.
 
-    Keep the following in mind when creating and updating authorizations:
-
-    - To apply a permission to a specific resource, specify the resource `id` field.
-    - To apply a permission to all resources with the type, omit the resource `id`.
-    - To scope an authorization to a specific user, provide the `userID` property.
-
     #### Limitations
+
+    To follow best practices for secure API token generation and retrieval,
+    InfluxDB enforces access restrictions on API tokens.
 
     - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
       user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
+    - You can't update an authorization's permissions.
     - Even if an API token has `read-authorizations` permission, the
       token can't be used to view its authorization details.
-    - Tokens stop working when the user who created the token is deleted.
+    - A token stops working when the user who created the authorization is deleted.
 
     We recommend creating a generic user to create and manage tokens for writing data.
 
@@ -113,7 +112,8 @@ post:
           $ref: "../../common/schemas/AuthorizationPostRequest.yml"
   responses:
     "201":
-      description: Created. The response body contains the newly created authorization.
+      description: |
+        Success. The authorization is created. The response body contains the authorization.
       content:
         application/json:
           schema:
@@ -133,7 +133,7 @@ post:
       label: "cURL: Create auth to read all buckets"
       source: |
         curl --request POST \
-        "http://localhost:8086/api/v2/authorizations" \
+        "INFLUX_URL/api/v2/authorizations" \
         --header "Authorization: Token INFLUX_TOKEN" \
         --header 'Content-Type: application/json' \
         --data @- << EOF
@@ -141,7 +141,32 @@ post:
             "orgID": "INFLUX_ORG_ID",
             "description": "iot_users read buckets",
             "permissions": [
-              {"action": "read", "resource": {"type": "buckets"}}
+              {
+                "action": "read",
+                "resource": {"type": "buckets"}
+              }
+            ]
+          }
+        EOF
+    - lang: Shell
+      label: "cURL: Create auth to read a specific bucket"
+      source: |
+        curl --request POST \
+        "INFLUX_URL/api/v2/authorizations" \
+        --header "Authorization: Token INFLUX_TOKEN" \
+        --header 'Content-Type: application/json' \
+        --data @- << EOF
+          {
+            "orgID": "INFLUX_ORG_ID",
+            "description": "iot_users read buckets",
+            "permissions": [
+              {
+                "action": "read",
+                "resource": {
+                  "type": "buckets"
+                  "id": "INFLUX_BUCKET_ID"
+                }
+              }
             ]
           }
         EOF
@@ -149,7 +174,7 @@ post:
     - label: "cURL: Create auth scoped to a user"
     - source: |
         curl --request POST \
-        "http://localhost:8086/api/v2/authorizations" \
+        "INFLUX_URL/api/v2/authorizations" \
         --header "Authorization: Token INFLUX_TOKEN" \
         --header 'Content-Type: application/json' \
         --data @- << EOF
@@ -158,7 +183,13 @@ post:
             "userID": "INFLUX_USER_ID",
             "description": "iot_user write to bucket",
             "permissions": [
-              {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+              {
+                "action": "write",
+                "resource": {
+                  "type": "buckets",
+                  "id: "INFLUX_BUCKET_ID"
+                }
+              }
             ]
           }
         EOF

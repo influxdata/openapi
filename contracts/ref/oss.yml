@@ -288,19 +288,30 @@ components:
       - properties:
           orgID:
             description: |
-              The ID of the organization that owns the authorization.
+              An organization ID.
+              Specifies the organization that owns the authorization.
             type: string
           permissions:
             description: |
               A list of permissions for an authorization.
-              An authorization must have at least one permission.
+              In the list, provide at least one `permission` object.
+
+              In a `permission`, the `resource.type` property grants access to all
+              resources of the specified type.
+              To grant access to only a specific resource, specify the
+              `resource.id` property.
             items:
               $ref: '#/components/schemas/Permission'
             minItems: 1
             type: array
           userID:
             description: |
-              The ID of the user that the authorization is scoped to.
+              A user ID.
+              Specifies the user that the authorization is scoped to.
+
+              When a user authenticates with username and password,
+              InfluxDB generates a _user session_ with all the permissions
+              specified by all the user's authorizations.
             type: string
         type: object
       required:
@@ -800,19 +811,19 @@ components:
           properties:
             labels:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve labels for this check
+              description: The URL to retrieve labels for this check.
             members:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve members for this check
+              description: The URL to retrieve members for this check.
             owners:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve owners for this check
+              description: The URL to retrieve owners for this check.
             query:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve flux script for this check
+              description: The URL to retrieve the Flux script for this check.
             self:
               $ref: '#/components/schemas/Link'
-              description: URL for this check
+              description: The URL for this check.
           readOnly: true
           type: object
         name:
@@ -2790,16 +2801,16 @@ components:
           properties:
             labels:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve labels for this endpoint.
+              description: The URL to retrieve labels for this endpoint.
             members:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve members for this endpoint.
+              description: The URL to retrieve members for this endpoint.
             owners:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve owners for this endpoint.
+              description: The URL to retrieve owners for this endpoint.
             self:
               $ref: '#/components/schemas/Link'
-              description: URL for this endpoint.
+              description: The URL for this endpoint.
           readOnly: true
           type: object
         name:
@@ -2921,19 +2932,20 @@ components:
           properties:
             labels:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve labels for this notification rule.
+              description: The URL to retrieve labels for this notification rule.
             members:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve members for this notification rule.
+              description: The URL to retrieve members for this notification rule.
             owners:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve owners for this notification rule.
+              description: The URL to retrieve owners for this notification rule.
             query:
               $ref: '#/components/schemas/Link'
-              description: URL to retrieve flux script for this notification rule.
+              description: The URL to retrieve the Flux script for this notification
+                rule.
             self:
               $ref: '#/components/schemas/Link'
-              description: URL for this endpoint.
+              description: The URL for this endpoint.
           readOnly: true
           type: object
         name:
@@ -3288,27 +3300,28 @@ components:
           properties:
             id:
               description: |
-                The ID of a specific resource.
-                In a `permission`, applies the permission to only the resource with this ID.
+                A resource ID.
+                Identifies a specific resource.
               type: string
             name:
               description: |
-                Optional: A name for the resource.
-                Not all resource types have a name field.
+                The name of the resource.
+                _Note: not all resource types have a `name` property_.
               type: string
             org:
               description: |
-                Optional: The name of the organization with `orgID`.
+                An organization name.
+                The organization that owns the resource.
               type: string
             orgID:
               description: |
-                The ID of the organization that owns the resource.
-                In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                An organization ID.
+                Identifies the organization that owns the resource.
               type: string
             type:
               description: |
-                The type of resource.
-                In a `permission`, applies the permission to all resources of this type.
+                A resource type.
+                Identifies the API resource's type (or _kind_).
               enum:
               - authorizations
               - buckets
@@ -3757,27 +3770,28 @@ components:
       properties:
         id:
           description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
+            A resource ID.
+            Identifies a specific resource.
           type: string
         name:
           description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
+            The name of the resource.
+            _Note: not all resource types have a `name` property_.
           type: string
         org:
           description: |
-            Optional: The name of the organization with `orgID`.
+            An organization name.
+            The organization that owns the resource.
           type: string
         orgID:
           description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
+            An organization ID.
+            Identifies the organization that owns the resource.
           type: string
         type:
           description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
+            A resource type.
+            Identifies the API resource's type (or _kind_).
           enum:
           - authorizations
           - buckets
@@ -6670,21 +6684,21 @@ paths:
   /api/v2/authorizations:
     get:
       description: |
-        Retrieves a list of authorizations.
+        Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations.
 
         #### InfluxDB OSS
 
-        - Returns
+        - InfluxDB OSS returns
           [API token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token) values in authorizations.
         - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
           InfluxDB OSS returns authorizations for all organizations in the instance.
 
         #### Required permissions
 
-        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+        - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
         #### Related guides
 
@@ -6742,25 +6756,24 @@ paths:
       - Security and access endpoints
     post:
       description: |
-        Creates an authorization.
+        Creates an authorization and returns the authorization with the
+        generated API [token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token).
 
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
         The response contains the new authorization with the generated API token.
 
-        Keep the following in mind when creating and updating authorizations:
-
-        - To apply a permission to a specific resource, specify the resource `id` field.
-        - To apply a permission to all resources with the type, omit the resource `id`.
-        - To scope an authorization to a specific user, provide the `userID` property.
-
         #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB enforces access restrictions on API tokens.
 
         - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
           user with an _[operator token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/#operator-token)_.
+        - You can't update an authorization's permissions.
         - Even if an API token has `read-authorizations` permission, the
           token can't be used to view its authorization details.
-        - Tokens stop working when the user who created the token is deleted.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend creating a generic user to create and manage tokens for writing data.
 
@@ -6783,7 +6796,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: Created. The response body contains the newly created authorization.
+          description: |
+            Success. The authorization is created. The response body contains the authorization.
         "400":
           $ref: '#/components/responses/GeneralServerError'
           description: Invalid request
@@ -6802,7 +6816,7 @@ paths:
         lang: Shell
         source: |
           curl --request POST \
-          "http://localhost:8086/api/v2/authorizations" \
+          "INFLUX_URL/api/v2/authorizations" \
           --header "Authorization: Token INFLUX_TOKEN" \
           --header 'Content-Type: application/json' \
           --data @- << EOF
@@ -6810,7 +6824,32 @@ paths:
               "orgID": "INFLUX_ORG_ID",
               "description": "iot_users read buckets",
               "permissions": [
-                {"action": "read", "resource": {"type": "buckets"}}
+                {
+                  "action": "read",
+                  "resource": {"type": "buckets"}
+                }
+              ]
+            }
+          EOF
+      - label: 'cURL: Create auth to read a specific bucket'
+        lang: Shell
+        source: |
+          curl --request POST \
+          "INFLUX_URL/api/v2/authorizations" \
+          --header "Authorization: Token INFLUX_TOKEN" \
+          --header 'Content-Type: application/json' \
+          --data @- << EOF
+            {
+              "orgID": "INFLUX_ORG_ID",
+              "description": "iot_users read buckets",
+              "permissions": [
+                {
+                  "action": "read",
+                  "resource": {
+                    "type": "buckets"
+                    "id": "INFLUX_BUCKET_ID"
+                  }
+                }
               ]
             }
           EOF
@@ -6818,7 +6857,7 @@ paths:
       - label: 'cURL: Create auth scoped to a user'
       - source: |
           curl --request POST \
-          "http://localhost:8086/api/v2/authorizations" \
+          "INFLUX_URL/api/v2/authorizations" \
           --header "Authorization: Token INFLUX_TOKEN" \
           --header 'Content-Type: application/json' \
           --data @- << EOF
@@ -6827,7 +6866,13 @@ paths:
               "userID": "INFLUX_USER_ID",
               "description": "iot_user write to bucket",
               "permissions": [
-                {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+                {
+                  "action": "write",
+                  "resource": {
+                    "type": "buckets",
+                    "id: "INFLUX_BUCKET_ID"
+                  }
+                }
               ]
             }
           EOF
@@ -7042,7 +7087,7 @@ paths:
   /api/v2/buckets:
     get:
       description: |
-        Retrieves a list of [buckets](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket).
+        Lists [buckets](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket).
 
         InfluxDB retrieves buckets owned by the
         [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization)
@@ -7623,7 +7668,7 @@ paths:
   /api/v2/buckets/{bucketID}/labels:
     get:
       description: |
-        Retrieves a list of all labels for a bucket.
+        Lists all labels for a bucket.
 
         Labels are objects that contain `labelID`, `name`, `description`, and `color`
         key-value pairs. They may be used for grouping and filtering InfluxDB
@@ -7823,7 +7868,7 @@ paths:
   /api/v2/buckets/{bucketID}/members:
     get:
       description: |
-        Retrieves a list of all users for a bucket.
+        Lists all users for a bucket.
 
         InfluxDB [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) have
         permission to access InfluxDB.
@@ -8028,7 +8073,7 @@ paths:
   /api/v2/buckets/{bucketID}/owners:
     get:
       description: |
-        Retrieves a list of all [owners](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#owner)
+        Lists all [owners](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#owner)
         for a bucket.
 
         Bucket owners have permission to delete buckets and remove user and member
@@ -11481,7 +11526,7 @@ paths:
   /api/v2/orgs:
     get:
       description: |
-        Retrieves a list of [organizations](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization/).
+        Lists [organizations](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization/).
 
         To limit which organizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.
@@ -11501,21 +11546,21 @@ paths:
       - $ref: '#/components/parameters/Descending'
       - description: |
           An organization name.
-          Only returns organizations with this name.
+          Only returns the specified organization.
         in: query
         name: org
         schema:
           type: string
       - description: |
           An organization ID.
-          Only returns the organization with this ID.
+          Only returns the specified organization.
         in: query
         name: orgID
         schema:
           type: string
       - description: |
           A user ID.
-          Only returns organizations where this user is a member or owner.
+          Only returns organizations where the specified user is a member or owner.
         in: query
         name: userID
         schema:
@@ -11845,7 +11890,7 @@ paths:
   /api/v2/orgs/{orgID}/members:
     get:
       description: |
-        Retrieves a list of all users that belong to an organization.
+        Lists all users that belong to an organization.
 
         InfluxDB [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) have
         permission to access InfluxDB.
@@ -12108,7 +12153,7 @@ paths:
   /api/v2/orgs/{orgID}/owners:
     get:
       description: |
-        Retrieves a list of all owners of an organization.
+        Lists all owners of an organization.
 
         #### InfluxDB Cloud
 
@@ -13289,7 +13334,7 @@ paths:
   /api/v2/query/suggestions:
     get:
       description: |
-        Retrieves a list of Flux query suggestions. Each suggestion contains a
+        Lists Flux query suggestions. Each suggestion contains a
         [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
         name and parameters.
 
@@ -13970,8 +14015,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          A Flux Function name.
-          Only returns functions with this name.
+          A [Flux function](https://docs.influxdata.com/influxdb/v2.3/flux/v0.x/stdlib/all-functions/) name.
         in: path
         name: name
         required: true
@@ -15369,7 +15413,7 @@ paths:
   /api/v2/stacks:
     get:
       description: |
-        Retrieves a list of installed InfluxDB stacks.
+        Lists installed InfluxDB stacks.
 
         To limit stacks in the response, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all installed stacks
@@ -15377,8 +15421,8 @@ paths:
       operationId: ListStacks
       parameters:
       - description: |
-          The ID of the organization that owns the stacks.
-          Only returns stacks owned by this organization.
+          An organization ID.
+          Only returns stacks owned by the specified [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization).
 
           #### InfluxDB Cloud
 
@@ -15390,7 +15434,7 @@ paths:
         schema:
           type: string
       - description: |
-          The stack name.
+          A stack name.
           Finds stack `events` with this name and returns the stacks.
 
           Repeatable.
@@ -15407,8 +15451,8 @@ paths:
         schema:
           type: string
       - description: |
-          The stack ID.
-          Only returns stacks with this ID.
+          A stack ID.
+          Only returns the specified stack.
 
           Repeatable.
           To filter for more than one stack ID,
@@ -15688,7 +15732,7 @@ paths:
   /api/v2/tasks:
     get:
       description: |
-        Retrieves a list of [tasks](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
+        Lists [tasks](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
@@ -16617,7 +16661,7 @@ paths:
           type: integer
       - description: |
           A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
-          Only returns runs scheduled after this time.
+          Only returns runs scheduled after the specified time.
         in: query
         name: afterTime
         schema:
@@ -16625,7 +16669,7 @@ paths:
           type: string
       - description: |
           A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
-          Only returns runs scheduled before this time.
+          Only returns runs scheduled before the specified time.
         in: query
         name: beforeTime
         schema:
@@ -17786,7 +17830,7 @@ paths:
   /api/v2/users:
     get:
       description: |
-        Retrieves a list of [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user).
+        Lists [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user).
         Default limit is `20`.
 
         To limit which users are returned, pass query parameters in your request.
@@ -19320,6 +19364,7 @@ tags:
 
     #### User sessions with authorizations
 
+    Optionally, when creating an authorization, you can scope it to a specific user.
     If a user signs in with username and password, creating a _user session_,
     the session carries the permissions granted by all the user's authorizations.
     To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).

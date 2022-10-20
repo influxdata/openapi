@@ -903,7 +903,7 @@ paths:
         - Users
       summary: List users
       description: |
-        Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         Default limit is `20`.
 
         To limit which users are returned, pass query parameters in your request.
@@ -1284,21 +1284,21 @@ paths:
         - Security and access endpoints
       summary: List authorizations
       description: |
-        Retrieves a list of authorizations.
+        Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations.
 
         #### InfluxDB OSS
 
-        - Returns
+        - InfluxDB OSS returns
           [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
         - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
           InfluxDB OSS returns authorizations for all organizations in the instance.
 
         #### Required permissions
 
-        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+        - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
         #### Related guides
 
@@ -1362,25 +1362,24 @@ paths:
         - Authorizations
       summary: Create an authorization
       description: |
-        Creates an authorization.
+        Creates an authorization and returns the authorization with the
+        generated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
 
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
         The response contains the new authorization with the generated API token.
 
-        Keep the following in mind when creating and updating authorizations:
-
-        - To apply a permission to a specific resource, specify the resource `id` field.
-        - To apply a permission to all resources with the type, omit the resource `id`.
-        - To scope an authorization to a specific user, provide the `userID` property.
-
         #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB enforces access restrictions on API tokens.
 
         - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
           user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
+        - You can't update an authorization's permissions.
         - Even if an API token has `read-authorizations` permission, the
           token can't be used to view its authorization details.
-        - Tokens stop working when the user who created the token is deleted.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend creating a generic user to create and manage tokens for writing data.
 
@@ -1405,17 +1404,28 @@ paths:
                     orgID:
                       type: string
                       description: |
-                        The ID of the organization that owns the authorization.
+                        An organization ID.
+                        Specifies the organization that owns the authorization.
                     userID:
                       type: string
                       description: |
-                        The ID of the user that the authorization is scoped to.
+                        A user ID.
+                        Specifies the user that the authorization is scoped to.
+
+                        When a user authenticates with username and password,
+                        InfluxDB generates a _user session_ with all the permissions
+                        specified by all the user's authorizations.
                     permissions:
                       type: array
                       minItems: 1
                       description: |
                         A list of permissions for an authorization.
-                        An authorization must have at least one permission.
+                        In the list, provide at least one `permission` object.
+
+                        In a `permission`, the `resource.type` property grants access to all
+                        resources of the specified type.
+                        To grant access to only a specific resource, specify the
+                        `resource.id` property.
                       items:
                         required:
                           - action
@@ -1458,30 +1468,32 @@ paths:
                                   - replications
                                   - instance
                                 description: |
-                                  The type of resource.
-                                  In a `permission`, applies the permission to all resources of this type.
+                                  A resource type.
+                                  Identifies the API resource's type (or _kind_).
                               id:
                                 type: string
                                 description: |
-                                  The ID of a specific resource.
-                                  In a `permission`, applies the permission to only the resource with this ID.
+                                  A resource ID.
+                                  Identifies a specific resource.
                               name:
                                 type: string
                                 description: |
-                                  Optional: A name for the resource.
-                                  Not all resource types have a name field.
+                                  The name of the resource.
+                                  _Note: not all resource types have a `name` property_.
                               orgID:
                                 type: string
                                 description: |
-                                  The ID of the organization that owns the resource.
-                                  In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                                  An organization ID.
+                                  Identifies the organization that owns the resource.
                               org:
                                 type: string
                                 description: |
-                                  Optional: The name of the organization with `orgID`.
+                                  An organization name.
+                                  The organization that owns the resource.
       responses:
         '201':
-          description: Created. The response body contains the newly created authorization.
+          description: |
+            Success. The authorization is created. The response body contains the authorization.
           content:
             application/json:
               schema:
@@ -1501,7 +1513,7 @@ paths:
           label: 'cURL: Create auth to read all buckets'
           source: |
             curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
+            "INFLUX_URL/api/v2/authorizations" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --header 'Content-Type: application/json' \
             --data @- << EOF
@@ -1509,7 +1521,32 @@ paths:
                 "orgID": "INFLUX_ORG_ID",
                 "description": "iot_users read buckets",
                 "permissions": [
-                  {"action": "read", "resource": {"type": "buckets"}}
+                  {
+                    "action": "read",
+                    "resource": {"type": "buckets"}
+                  }
+                ]
+              }
+            EOF
+        - lang: Shell
+          label: 'cURL: Create auth to read a specific bucket'
+          source: |
+            curl --request POST \
+            "INFLUX_URL/api/v2/authorizations" \
+            --header "Authorization: Token INFLUX_TOKEN" \
+            --header 'Content-Type: application/json' \
+            --data @- << EOF
+              {
+                "orgID": "INFLUX_ORG_ID",
+                "description": "iot_users read buckets",
+                "permissions": [
+                  {
+                    "action": "read",
+                    "resource": {
+                      "type": "buckets"
+                      "id": "INFLUX_BUCKET_ID"
+                    }
+                  }
                 ]
               }
             EOF
@@ -1517,7 +1554,7 @@ paths:
         - label: 'cURL: Create auth scoped to a user'
         - source: |
             curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
+            "INFLUX_URL/api/v2/authorizations" \
             --header "Authorization: Token INFLUX_TOKEN" \
             --header 'Content-Type: application/json' \
             --data @- << EOF
@@ -1526,7 +1563,13 @@ paths:
                 "userID": "INFLUX_USER_ID",
                 "description": "iot_user write to bucket",
                 "permissions": [
-                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
+                  {
+                    "action": "write",
+                    "resource": {
+                      "type": "buckets",
+                      "id: "INFLUX_BUCKET_ID"
+                    }
+                  }
                 ]
               }
             EOF
@@ -4062,19 +4105,19 @@ paths:
                                                                 query: /api/v2/checks/1/query
                                                               properties:
                                                                 self:
-                                                                  description: URL for this check
+                                                                  description: The URL for this check.
                                                                   $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 labels:
-                                                                  description: URL to retrieve labels for this check
+                                                                  description: The URL to retrieve labels for this check.
                                                                   $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 members:
-                                                                  description: URL to retrieve members for this check
+                                                                  description: The URL to retrieve members for this check.
                                                                   $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 owners:
-                                                                  description: URL to retrieve owners for this check
+                                                                  description: The URL to retrieve owners for this check.
                                                                   $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                                 query:
-                                                                  description: URL to retrieve flux script for this check
+                                                                  description: The URL to retrieve the Flux script for this check.
                                                                   $ref: '#/components/schemas/ScraperTargetResponse/allOf/1/properties/links/properties/self'
                                                           required:
                                                             - name
@@ -4986,7 +5029,7 @@ paths:
         - Tasks
       summary: List tasks
       description: |
-        Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+        Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
