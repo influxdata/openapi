@@ -8028,7 +8028,7 @@ paths:
 
         - `read-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to retrieve a
         list of owners for.
 
         #### Related endpoints
@@ -8108,7 +8108,8 @@ paths:
         #### Required permissions
 
         - `write-orgs INFLUX_ORG_ID`
-        `INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to add
+          an owner for.
 
         #### Related endpoints
 
@@ -8208,7 +8209,8 @@ paths:
         #### Required permissions
 
         - `write-orgs INFLUX_ORG_ID`
-        `INFLUX_ORG_ID` is the ID of the organization that you want to remove an owner
+
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to remove an owner
         from.
 
         #### Related endpoints
@@ -10336,7 +10338,7 @@ paths:
 
         - `write-buckets` or `write-bucket BUCKET_ID`.
 
-          `BUCKET_ID` is the ID of the destination bucket.
+          _`BUCKET_ID`_ is the ID of the destination bucket.
 
         #### Rate limits (with InfluxDB Cloud)
 
@@ -10720,7 +10722,7 @@ paths:
 
         #### InfluxDB Cloud
 
-        - Doesn't allow you to manage passwords through the API.
+        - Doesn't allow you to manage user passwords through the API.
           Use the InfluxDB Cloud user interface (UI) to update your password.
 
         #### Related endpoints
@@ -10766,7 +10768,7 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Doesn't allow you to manage through the API; always responds with this status.
+            - Doesn't allow you to manage user passwords through the API; always responds with this status.
 
             #### InfluxDB OSS
 
@@ -11847,7 +11849,7 @@ paths:
 
         - `read-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you retrieve a list of
         members from.
 
         #### Related guides
@@ -11945,7 +11947,7 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want add a member to.
+        _`INFLUX_ORG_ID`_ is the ID for the organization that you want to add a member to.
 
         #### Related guides
 
@@ -12043,7 +12045,7 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want to remove an
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to remove an
         owner from.
 
         #### Related guides
@@ -12099,7 +12101,7 @@ paths:
 
         - `read-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to retrieve a
         list of owners from.
       operationId: GetOrgsIDOwners
       parameters:
@@ -12161,7 +12163,7 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to add an owner for.
 
         #### Related endpoints
 
@@ -12250,8 +12252,8 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want remove an owner
-        from.
+        _`INFLUX_ORG_ID`_ is the ID of the organization that you want to
+          remove an owner from.
 
         #### Related endpoints
         - [Authorizations](#tag/Authorizations)
@@ -17694,9 +17696,7 @@ paths:
         | List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
         | List a specific user | `read-users` or `read-user USER_ID` | |
 
-        Replace the following:
-
-        - `USER_ID`: the ID of the user that you want to retrieve.
+        _`USER_ID`_ is the ID for the user that you want to retrieve.
       operationId: GetUsers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -17865,10 +17865,26 @@ paths:
             --data '{ "password": "USER_PASSWORD" }'
   /api/v2/users/{userID}:
     delete:
+      description: |
+        Deletes a [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user).
+
+        #### Required permissions
+
+        | Action      | Permission required |
+        |:------------|:-----------------------------------------------|
+        | Delete a user | `write-users` or `write-user USER_ID` |
+
+        _`USER_ID`_ is the ID for the user that you want to delete.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/v2.3/organizations/users/)
       operationId: DeleteUsersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the user to delete.
+      - description: |
+          A user ID.
+          Specifies the [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) to delete.
         in: path
         name: userID
         required: true
@@ -17876,7 +17892,19 @@ paths:
           type: string
       responses:
         "204":
-          description: User deleted
+          description: Success. The user is deleted.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
@@ -17916,10 +17944,26 @@ paths:
       - Security and access endpoints
       - Users
     patch:
+      description: |
+        Updates a [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) and returns the user.
+
+        #### Required permissions
+
+        | Action      | Permission required |
+        |:------------|:-----------------------------------------------|
+        | Update a user | `write-users` or `write-user USER_ID` |
+
+        _`USER_ID`_ is the ID for the user that you want to update.
+
+        #### Related guides
+
+        - [Manage users](https://docs.influxdata.com/influxdb/v2.3/organizations/users/)
       operationId: PatchUsersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: The ID of the user to update.
+      - description: |
+          A user ID.
+          Specifies the [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) to update.
         in: path
         name: userID
         required: true
@@ -17930,7 +17974,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        description: User update to apply
+        description: In the request body, provide the user properties to update.
         required: true
       responses:
         "200":
@@ -17938,10 +17982,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-          description: User updated
+          description: |
+            Success.
+            The response body contains the user.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
-          description: Unexpected error
       summary: Update a user
       tags:
       - Users
@@ -18388,7 +18441,7 @@ paths:
 
         - `write-buckets` or `write-bucket BUCKET_ID`.
 
-          `BUCKET_ID` is the ID of the destination bucket.
+          _`BUCKET_ID`_ is the ID of the destination bucket.
 
         #### Rate limits (with InfluxDB Cloud)
 
@@ -18756,7 +18809,7 @@ paths:
 
         - `write-users USER_ID` if you pass the `userID` property in the request body.
 
-        `USER_ID` is the ID of the user that you want to scope the authorization to.
+        _`USER_ID`_ is the ID of the user that you want to scope the authorization to.
       operationId: PostLegacyAuthorizations
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
