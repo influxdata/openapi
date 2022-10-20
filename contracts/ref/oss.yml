@@ -1,4 +1,50 @@
 components:
+  examples:
+    AuthorizationPostRequest:
+      description: Creates an authorization.
+      summary: An authorization for a resource type
+      value:
+        description: iot_users read buckets
+        orgID: INFLUX_ORG_ID
+        permissions:
+        - action: read
+          resource:
+            type: buckets
+    AuthorizationWithResourcePostRequest:
+      description: Creates an authorization for access to a specific resource.
+      summary: An authorization for a resource
+      value:
+        description: iot_users read buckets
+        orgID: INFLUX_ORG_ID
+        permissions:
+        - action: read
+          resource:
+            id: INFLUX_BUCKET_ID
+            type: buckets
+    AuthorizationWithUserPostRequest:
+      description: Creates an authorization scoped to a specific user.
+      summary: An authorization scoped to a user
+      value:
+        description: iot_user write to bucket
+        orgID: INFLUX_ORG_ID
+        permissions:
+        - action: write
+          resource:
+            id: INFLUX_BUCKET_ID
+            type: buckets
+        userID: INFLUX_USER_ID
+    TaskWithFluxRequest:
+      description: Sets the `flux` property with Flux task options and a query.
+      summary: A task with Flux
+      value:
+        description: This task contains Flux that configures the task schedule and
+          downsamples CPU data every hour.
+        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket:
+          \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement
+          == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |>
+          filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h,
+          fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+        status: active
   parameters:
     After:
       description: |
@@ -6788,38 +6834,11 @@ paths:
           application/json:
             examples:
               AuthorizationPostRequest:
-                description: Creates an authorization.
-                summary: An authorization for a resource type
-                value:
-                  description: iot_users read buckets
-                  orgID: INFLUX_ORG_ID
-                  permissions:
-                  - action: read
-                    resource:
-                      type: buckets
+                $ref: '#/components/examples/AuthorizationPostRequest'
               AuthorizationWithResourcePostRequest:
-                description: Creates an authorization for access to a specific resource.
-                summary: An authorization for a resource
-                value:
-                  description: iot_users read buckets
-                  orgID: INFLUX_ORG_ID
-                  permissions:
-                  - action: read
-                    resource:
-                      id: INFLUX_BUCKET_ID
-                      type: buckets
+                $ref: '#/components/examples/AuthorizationWithResourcePostRequest'
               AuthorizationWithUserPostRequest:
-                description: Creates an authorization scoped to a specific user.
-                summary: An authorization scoped to a user
-                value:
-                  description: iot_user write to bucket
-                  orgID: INFLUX_ORG_ID
-                  permissions:
-                  - action: write
-                    resource:
-                      id: INFLUX_BUCKET_ID
-                      type: buckets
-                  userID: INFLUX_USER_ID
+                $ref: '#/components/examples/AuthorizationWithUserPostRequest'
             schema:
               $ref: '#/components/schemas/AuthorizationPostRequest'
         description: The authorization to create.
@@ -15901,15 +15920,7 @@ paths:
           application/json:
             examples:
               TaskWithFlux:
-                description: Sets the `flux` property with Flux task options and a
-                  query.
-                summary: A task with Flux
-                value:
-                  description: IoT Center 30d environment average.
-                  flux: 'option task = {name: "iot-center-task-1", every: 30m}from(bucket:
-                    "iot_center")|> range(start: -30d)|> filter(fn: (r) => r._measurement
-                    == "environment")|> aggregateWindow(every: 1h, fn: mean)'
-                  orgID: INFLUX_ORG_ID
+                $ref: '#/components/examples/TaskWithFluxRequest'
             schema:
               $ref: '#/components/schemas/TaskCreateRequest'
         description: |
@@ -16067,18 +16078,7 @@ paths:
           application/json:
             examples:
               TaskWithFlux:
-                description: Sets the `flux` property with Flux task options and a
-                  query.
-                summary: A task with Flux
-                value:
-                  description: This task contains Flux that configures the task schedule
-                    and downsamples CPU data every hour.
-                  flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket:
-                    \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement
-                    == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                    |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every:
-                    1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
-                  status: active
+                $ref: '#/components/examples/TaskWithFluxRequest'
             schema:
               $ref: '#/components/schemas/TaskUpdateRequest'
         description: |
