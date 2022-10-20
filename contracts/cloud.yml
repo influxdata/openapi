@@ -9473,6 +9473,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorizationPostRequest'
+            examples:
+              AuthorizationPostRequest:
+                $ref: '#/components/examples/AuthorizationPostRequest'
+              AuthorizationWithResourcePostRequest:
+                $ref: '#/components/examples/AuthorizationWithResourcePostRequest'
+              AuthorizationWithUserPostRequest:
+                $ref: '#/components/examples/AuthorizationWithUserPostRequest'
       responses:
         '201':
           description: |
@@ -9491,62 +9498,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
-      x-codeSample:
-        - lang: Shell
-          label: 'cURL: Create auth to read all buckets'
-          source: |
-            curl --request POST \
-            "INFLUX_URL/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_API_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "iot_users read buckets",
-                "permissions": [
-                  {"action": "read", "resource": {"type": "buckets"}}
-                ]
-              }
-            EOF
-        - lang: Shell
-          label: 'cURL: Create auth to read a specific bucket'
-          source: |
-            curl --request POST \
-            "INFLUX_URL/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "iot_users read buckets",
-                "permissions": [
-                  {
-                    "action": "read",
-                    "resource": {
-                      "type": "buckets"
-                      "id": "INFLUX_BUCKET_ID"
-                    }
-                  }
-                ]
-              }
-            EOF
-        - lang: Shell
-          label: 'cURL: Create auth scoped to a user'
-          source: |
-            curl --request POST \
-            "INFLUX_URL/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_API_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "userID": "INFLUX_USER_ID",
-                "description": "iot_user write to bucket",
-                "permissions": [
-                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
-                ]
-              }
-            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -10819,6 +10770,39 @@ paths:
           $ref: '#/components/responses/GeneralServerError'
 components:
   examples:
+    AuthorizationPostRequest:
+      summary: An authorization for a resource type
+      description: Creates an authorization.
+      value:
+        orgID: INFLUX_ORG_ID
+        description: iot_users read buckets
+        permissions:
+          - action: read
+            resource:
+              type: buckets
+    AuthorizationWithResourcePostRequest:
+      summary: An authorization for a resource
+      description: Creates an authorization for access to a specific resource.
+      value:
+        orgID: INFLUX_ORG_ID
+        description: iot_users read buckets
+        permissions:
+          - action: read
+            resource:
+              type: buckets
+              id: INFLUX_BUCKET_ID
+    AuthorizationWithUserPostRequest:
+      summary: An authorization scoped to a user
+      description: Creates an authorization scoped to a specific user.
+      value:
+        orgID: INFLUX_ORG_ID
+        userID: INFLUX_USER_ID
+        description: iot_user write to bucket
+        permissions:
+          - action: write
+            resource:
+              type: buckets
+              id: INFLUX_BUCKET_ID
     TaskWithFluxRequest:
       summary: A task with Flux
       description: Sets the `flux` property with Flux task options and a query.
@@ -10829,8 +10813,7 @@ components:
     TaskWithScriptRequest:
       summary: A task with an invokable script
       description: |
-        Sets properties for a task that
-        runs an _invokable script_.
+        Sets properties for a task that runs an _invokable script_.
       value:
         name: CPU Total 1 Hour New
         every: 1h

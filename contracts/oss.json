@@ -17,7 +17,7 @@
   "tags": [
     {
       "name": "Authorizations",
-      "description": "Create and manage authorizations (API tokens).\n\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB enforces access restrictions on API tokens.\n\n- InfluxDB allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nAPI tokens are visible to the user who created the authorization and to any\nuser with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.\nIn InfluxDB OSS, even if an API token has `read-authorizations` permission, the\ntoken can't be used to view its authorization details.\n\nWe recommend creating a generic user to create and manage tokens for writing data.\n\n#### User sessions with authorizations\n\nOptionally, when creating an authorization, you can scope it to a specific user.\nIf a user signs in with username and password, creating a _user session_,\nthe session carries the permissions granted by all the user's authorizations.\nTo create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n- [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)\n- [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)\n- [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n"
+      "description": "Create and manage authorizations (API tokens).\n\nAn _authorization_ contains a list of `read` and `write`\npermissions for organization resources and provides an API token for authentication.\nAn authorization belongs to an organization and only contains permissions for that organization.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB enforces access restrictions on API tokens.\n\n- InfluxDB allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nAPI tokens are visible to the user who created the authorization and to any\nuser with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.\nIn InfluxDB OSS, even if an API token has `read-authorizations` permission, the\ntoken can't be used to view its authorization details.\n\nWe recommend creating a generic user to create and manage tokens for writing data.\n\n#### User sessions with authorizations\n\nOptionally, when creating an authorization, you can scope it to a specific user.\nIf a user signs in with username and password, creating a _user session_,\nthe session carries the permissions granted by all the user's authorizations.\nFor more information, see [how to assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).\nTo create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).\n\n### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n\n### Related guides\n\n- [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)\n- [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)\n- [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n"
     },
     {
       "name": "Buckets",
@@ -12505,6 +12505,59 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AuthorizationPostRequest"
+              },
+              "examples": {
+                "AuthorizationPostRequest": {
+                  "summary": "An authorization for a resource type",
+                  "description": "Creates an authorization.",
+                  "value": {
+                    "orgID": "INFLUX_ORG_ID",
+                    "description": "iot_users read buckets",
+                    "permissions": [
+                      {
+                        "action": "read",
+                        "resource": {
+                          "type": "buckets"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "AuthorizationWithResourcePostRequest": {
+                  "summary": "An authorization for a resource",
+                  "description": "Creates an authorization for access to a specific resource.",
+                  "value": {
+                    "orgID": "INFLUX_ORG_ID",
+                    "description": "iot_users read buckets",
+                    "permissions": [
+                      {
+                        "action": "read",
+                        "resource": {
+                          "type": "buckets",
+                          "id": "INFLUX_BUCKET_ID"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "AuthorizationWithUserPostRequest": {
+                  "summary": "An authorization scoped to a user",
+                  "description": "Creates an authorization scoped to a specific user.",
+                  "value": {
+                    "orgID": "INFLUX_ORG_ID",
+                    "userID": "INFLUX_USER_ID",
+                    "description": "iot_user write to bucket",
+                    "permissions": [
+                      {
+                        "action": "write",
+                        "resource": {
+                          "type": "buckets",
+                          "id": "INFLUX_BUCKET_ID"
+                        }
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
@@ -12534,28 +12587,7 @@
             "description": "Unexpected error",
             "$ref": "#/components/responses/GeneralServerError"
           }
-        },
-        "x-codeSample": [
-          {
-            "lang": "Shell",
-            "label": "cURL: Create auth to read all buckets",
-            "source": "curl --request POST \\\n\"INFLUX_URL/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\n        \"action\": \"read\",\n        \"resource\": {\"type\": \"buckets\"}\n      }\n    ]\n  }\nEOF\n"
-          },
-          {
-            "lang": "Shell",
-            "label": "cURL: Create auth to read a specific bucket",
-            "source": "curl --request POST \\\n\"INFLUX_URL/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\n        \"action\": \"read\",\n        \"resource\": {\n          \"type\": \"buckets\"\n          \"id\": \"INFLUX_BUCKET_ID\"\n        }\n      }\n    ]\n  }\nEOF\n"
-          },
-          {
-            "lang": "Shell"
-          },
-          {
-            "label": "cURL: Create auth scoped to a user"
-          },
-          {
-            "source": "curl --request POST \\\n\"INFLUX_URL/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"userID\": \"INFLUX_USER_ID\",\n    \"description\": \"iot_user write to bucket\",\n    \"permissions\": [\n      {\n        \"action\": \"write\",\n        \"resource\": {\n          \"type\": \"buckets\",\n          \"id: \"INFLUX_BUCKET_ID\"\n        }\n      }\n    ]\n  }\nEOF\n"
-          }
-        ]
+        }
       }
     },
     "/authorizations/{authID}": {

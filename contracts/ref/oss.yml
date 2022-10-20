@@ -6786,6 +6786,40 @@ paths:
       requestBody:
         content:
           application/json:
+            examples:
+              AuthorizationPostRequest:
+                description: Creates an authorization.
+                summary: An authorization for a resource type
+                value:
+                  description: iot_users read buckets
+                  orgID: INFLUX_ORG_ID
+                  permissions:
+                  - action: read
+                    resource:
+                      type: buckets
+              AuthorizationWithResourcePostRequest:
+                description: Creates an authorization for access to a specific resource.
+                summary: An authorization for a resource
+                value:
+                  description: iot_users read buckets
+                  orgID: INFLUX_ORG_ID
+                  permissions:
+                  - action: read
+                    resource:
+                      id: INFLUX_BUCKET_ID
+                      type: buckets
+              AuthorizationWithUserPostRequest:
+                description: Creates an authorization scoped to a specific user.
+                summary: An authorization scoped to a user
+                value:
+                  description: iot_user write to bucket
+                  orgID: INFLUX_ORG_ID
+                  permissions:
+                  - action: write
+                    resource:
+                      id: INFLUX_BUCKET_ID
+                      type: buckets
+                  userID: INFLUX_USER_ID
             schema:
               $ref: '#/components/schemas/AuthorizationPostRequest'
         description: The authorization to create.
@@ -6811,71 +6845,6 @@ paths:
       summary: Create an authorization
       tags:
       - Authorizations
-      x-codeSample:
-      - label: 'cURL: Create auth to read all buckets'
-        lang: Shell
-        source: |
-          curl --request POST \
-          "INFLUX_URL/api/v2/authorizations" \
-          --header "Authorization: Token INFLUX_TOKEN" \
-          --header 'Content-Type: application/json' \
-          --data @- << EOF
-            {
-              "orgID": "INFLUX_ORG_ID",
-              "description": "iot_users read buckets",
-              "permissions": [
-                {
-                  "action": "read",
-                  "resource": {"type": "buckets"}
-                }
-              ]
-            }
-          EOF
-      - label: 'cURL: Create auth to read a specific bucket'
-        lang: Shell
-        source: |
-          curl --request POST \
-          "INFLUX_URL/api/v2/authorizations" \
-          --header "Authorization: Token INFLUX_TOKEN" \
-          --header 'Content-Type: application/json' \
-          --data @- << EOF
-            {
-              "orgID": "INFLUX_ORG_ID",
-              "description": "iot_users read buckets",
-              "permissions": [
-                {
-                  "action": "read",
-                  "resource": {
-                    "type": "buckets"
-                    "id": "INFLUX_BUCKET_ID"
-                  }
-                }
-              ]
-            }
-          EOF
-      - lang: Shell
-      - label: 'cURL: Create auth scoped to a user'
-      - source: |
-          curl --request POST \
-          "INFLUX_URL/api/v2/authorizations" \
-          --header "Authorization: Token INFLUX_TOKEN" \
-          --header 'Content-Type: application/json' \
-          --data @- << EOF
-            {
-              "orgID": "INFLUX_ORG_ID",
-              "userID": "INFLUX_USER_ID",
-              "description": "iot_user write to bucket",
-              "permissions": [
-                {
-                  "action": "write",
-                  "resource": {
-                    "type": "buckets",
-                    "id: "INFLUX_BUCKET_ID"
-                  }
-                }
-              ]
-            }
-          EOF
   /api/v2/authorizations/{authID}:
     delete:
       operationId: DeleteAuthorizationsID
@@ -19367,6 +19336,7 @@ tags:
     Optionally, when creating an authorization, you can scope it to a specific user.
     If a user signs in with username and password, creating a _user session_,
     the session carries the permissions granted by all the user's authorizations.
+    For more information, see [how to assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.3/security/tokens/create-token/).
     To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
     ### Related endpoints

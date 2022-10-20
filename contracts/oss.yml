@@ -39,6 +39,7 @@ tags:
       Optionally, when creating an authorization, you can scope it to a specific user.
       If a user signs in with username and password, creating a _user session_,
       the session carries the permissions granted by all the user's authorizations.
+      For more information, see [how to assign a token to a specific user](https://docs.influxdata.com/influxdb/v2.3/security/tokens/create-token/).
       To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
       ### Related endpoints
@@ -10251,6 +10252,40 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorizationPostRequest'
+            examples:
+              AuthorizationPostRequest:
+                summary: An authorization for a resource type
+                description: Creates an authorization.
+                value:
+                  orgID: INFLUX_ORG_ID
+                  description: iot_users read buckets
+                  permissions:
+                    - action: read
+                      resource:
+                        type: buckets
+              AuthorizationWithResourcePostRequest:
+                summary: An authorization for a resource
+                description: Creates an authorization for access to a specific resource.
+                value:
+                  orgID: INFLUX_ORG_ID
+                  description: iot_users read buckets
+                  permissions:
+                    - action: read
+                      resource:
+                        type: buckets
+                        id: INFLUX_BUCKET_ID
+              AuthorizationWithUserPostRequest:
+                summary: An authorization scoped to a user
+                description: Creates an authorization scoped to a specific user.
+                value:
+                  orgID: INFLUX_ORG_ID
+                  userID: INFLUX_USER_ID
+                  description: iot_user write to bucket
+                  permissions:
+                    - action: write
+                      resource:
+                        type: buckets
+                        id: INFLUX_BUCKET_ID
       responses:
         '201':
           description: |
@@ -10269,71 +10304,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
-      x-codeSample:
-        - lang: Shell
-          label: 'cURL: Create auth to read all buckets'
-          source: |
-            curl --request POST \
-            "INFLUX_URL/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "iot_users read buckets",
-                "permissions": [
-                  {
-                    "action": "read",
-                    "resource": {"type": "buckets"}
-                  }
-                ]
-              }
-            EOF
-        - lang: Shell
-          label: 'cURL: Create auth to read a specific bucket'
-          source: |
-            curl --request POST \
-            "INFLUX_URL/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "iot_users read buckets",
-                "permissions": [
-                  {
-                    "action": "read",
-                    "resource": {
-                      "type": "buckets"
-                      "id": "INFLUX_BUCKET_ID"
-                    }
-                  }
-                ]
-              }
-            EOF
-        - lang: Shell
-        - label: 'cURL: Create auth scoped to a user'
-        - source: |
-            curl --request POST \
-            "INFLUX_URL/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "userID": "INFLUX_USER_ID",
-                "description": "iot_user write to bucket",
-                "permissions": [
-                  {
-                    "action": "write",
-                    "resource": {
-                      "type": "buckets",
-                      "id: "INFLUX_BUCKET_ID"
-                    }
-                  }
-                ]
-              }
-            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
