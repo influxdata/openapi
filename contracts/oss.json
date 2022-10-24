@@ -122,7 +122,7 @@
       "post": {
         "operationId": "PostSignin",
         "summary": "Create a user session.",
-        "description": "Authenticates [Basic authentication credentials](#section/Authentication/BasicAuthentication)\nfor a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user),\nand then, if successful, generates a user session.\n\nTo authenticate a user, pass the HTTP `Authorization` header with the\n`Basic` scheme and the base64-encoded username and password--for example:\n\n```sh\nAuthorization: Basic USERNAME:PASSWORD\n```\n\nIn InfluxDB Cloud, the username is the email address the user signed up with.\n\n_Note that many HTTP clients provide a Basic authentication option that\naccepts the `USERNAME:PASSWORD` syntax and encodes the credentials before\nsending the request.\nTo learn more about HTTP authentication, see\n[Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._\n\nIf authentication is successful, InfluxDB creates a new session for the user\nand then returns the session cookie in the `Set-Cookie` response header.\nUser sessions exist only in memory.\nThey expire within ten minutes and during restarts of the InfluxDB instance.\n\n#### User sessions with authorizations\n\n- In InfluxDB Cloud, a user session inherits all the user's permissions for\n  the organization.\n- In InfluxDB OSS, a user session inherits all the user's permissions for all\n  the organizations that the user belongs to.\n\n#### Related endpoints\n\n- [Signout](#tag/Signout)\n",
+        "description": "Authenticates [Basic authentication credentials](#section/Authentication/BasicAuthentication)\nfor a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user),\nand then, if successful, generates a user session.\n\nTo authenticate a user, pass the HTTP `Authorization` header with the\n`Basic` scheme and the base64-encoded username and password.\nFor syntax and more information, see [Basic Authentication](#section/Authentication/BasicAuthentication) for\nsyntax and more information.\n\nIf authentication is successful, InfluxDB creates a new session for the user\nand then returns the session cookie in the `Set-Cookie` response header.\n\nUser sessions exist only in memory.\nThey expire within ten minutes and during restarts of the InfluxDB instance.\n\n#### User sessions with authorizations\n\n- In InfluxDB Cloud, a user session inherits all the user's permissions for\n  the organization.\n- In InfluxDB OSS, a user session inherits all the user's permissions for all\n  the organizations that the user belongs to.\n\n#### Related endpoints\n\n- [Signout](#tag/Signout)\n",
         "tags": [
           "Signin"
         ],
@@ -141,7 +141,7 @@
             "description": "Success.\nThe user is authenticated.\nThe `Set-Cookie` response header contains the session cookie.\n"
           },
           "401": {
-            "description": "Unauthorized.\nThis error may be caused by one of the following problems:\n  - The user doesn't have access.\n  - The user passed incorrect credentials in the request.\n  - The credentials are formatted incorrectly in the request.\n",
+            "description": "Unauthorized.\nThis error may be caused by one of the following problems:\n\n- The user doesn't have access.\n- The user passed incorrect credentials in the request.\n- The credentials are formatted incorrectly in the request.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -9010,9 +9010,10 @@
       "get": {
         "operationId": "GetFlags",
         "tags": [
-          "Users"
+          "Config"
         ],
-        "summary": "Return the feature flags for the currently authenticated user",
+        "summary": "Retrieve feature flags",
+        "description": "Retrieves the feature flag key-value pairs configured for the InfluxDB\ninstance.\n_Feature flags_ are configuration options used to develop and test\nexperimental InfluxDB features and are intended for internal use only.\n\nThis endpoint represents the first step in the following three-step process\nto configure feature flags:\n\n1. Use [token authentication](#section/Authentication/TokenAuthentication) or a [user session](#tag/Signin) with this endpoint to retrieve\n   feature flags and their values.\n2. Follow the instructions to [enable, disable, or override values for feature flags]({{% INFLUXDB_DOCS_URL %}}/influxdb/v2.4/reference/config-options/#feature-flags).\n3. **Optional**: To confirm that your change is applied, do one of the following:\n\n   - Send a request to this endpoint to retrieve the current feature flag values.\n   - Send a request to the [`GET /api/v2/config` endpoint](#operation/GetConfig) to retrieve the\n     current runtime server configuration.\n\n#### Related guides\n\n- [InfluxDB configuration options]({{% INFLUXDB_DOCS_URL %}}/influxdb/v2.4/reference/config-options/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9020,7 +9021,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Feature flags for the currently authenticated user",
+            "description": "Success. The response body contains feature flags.",
             "content": {
               "application/json": {
                 "schema": {
@@ -9028,6 +9029,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -24468,12 +24475,12 @@
         "type": "apiKey",
         "name": "Authorization",
         "in": "header",
-        "description": "Use the [Token authentication](#section/Authentication/TokenAuthentication)\nscheme to authenticate to the InfluxDB API.\n\nIn your API requests, send an `Authorization` header.\nFor the header value, provide the word `Token` followed by a space and an InfluxDB API token.\nThe word `Token` is case-sensitive.\n\n### Syntax\n\n`Authorization: Token INFLUX_API_TOKEN`\n\nFor more information and examples, see the following:\n\n- [`/authorizations`(#tag/Authorizations) endpoints]\n- [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)\n- [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)\n"
+        "description": "Use the [Token authentication](#section/Authentication/TokenAuthentication)\nscheme to authenticate to the InfluxDB API.\n\nIn your API requests, send an `Authorization` header.\nFor the header value, provide the word `Token` followed by a space and an InfluxDB API token.\nThe word `Token` is case-sensitive.\n\n### Syntax\n\n`Authorization: Token INFLUX_API_TOKEN`\n\n### Example\n\n#### Use Token authentication with cURL\n\nThe following example shows how to use cURL to send an API request that uses Token authentication:\n\n```sh\ncurl --request GET \"INFLUX_URL/api/v2/buckets\" \\\n    --header \"Authorization: Token INFLUX_API_TOKEN\"\n```\n\nReplace the following:\n\n  - *`INFLUX_URL`*: your InfluxDB URL\n  - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n\n### Related endpoints\n\n- [`/authorizations` endpoints](#tag/Authorizations)\n\n### Related guides\n\n- [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)\n- [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)\n"
       },
       "BasicAuthentication": {
         "type": "http",
         "scheme": "basic",
-        "description": "Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it.\n\nUsername and password schemes require the following credentials:\n\n- **username**\n- **password**\n"
+        "description": "### Basic authentication scheme\n\nUse the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:\n\n### Syntax\n\n`Authorization: Basic BASE64_ENCODED_CREDENTIALS`\n\nTo construct the `BASE64_ENCODED_CREDENTIALS`, combine the username and\nthe password with a colon (`USERNAME:PASSWORD`), and then encode the\nresulting string in [base64](https://developer.mozilla.org/en-US/docs/Glossary/Base64).\nMany HTTP clients encode the credentials for you before sending the\nrequest.\n\n_**Warning**: Base64-encoding can easily be reversed to obtain the original\nusername and password. It is used to keep the data intact and does not provide\nsecurity. You should always use HTTPS when authenticating or sending a request with\nsensitive information._\n\n### Examples\n\nIn the examples, replace the following:\n\n- **`USERNAME`**: InfluxDB username\n- **`PASSWORD`**: InfluxDB [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n- **`INFLUX_URL`**: your InfluxDB URL\n\n#### Encode credentials with cURL\n\nThe following example shows how to use cURL to send an API request that uses Basic authentication.\nWith the `--user` option, cURL encodes the credentials and passes them\nin the `Authorization: Basic` header.\n\n```sh\ncurl --get \"INFLUX_URL/api/v2/signin\"\n    --user \"USERNAME\":\"PASSWORD\"\n```\n\n#### Encode credentials with Flux\n\nThe Flux [`http.basicAuth()` function](https://docs.influxdata.com/flux/v0.x/stdlib/http/basicauth/) returns a Base64-encoded\nbasic authentication header using a specified username and password combination.\n\n#### Encode credentials with JavaScript\n\nThe following example shows how to use the JavaScript `btoa()` function\nto create a Base64-encoded string:\n\n```js\nbtoa('USERNAME:PASSWORD')\n```\n\nThe output is the following:\n\n```js\n'VVNFUk5BTUU6UEFTU1dPUkQ='\n```\n\nOnce you have the Base64-encoded credentials, you can pass them in the\n`Authorization` header--for example:\n\n```sh\ncurl --get \"INFLUX_URL/api/v2/signin\"\n    --header \"Authorization: Basic VVNFUk5BTUU6UEFTU1dPUkQ=\"\n```\n"
       }
     }
   },

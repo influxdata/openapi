@@ -18,22 +18,13 @@ paths:
         and then, if successful, generates a user session.
 
         To authenticate a user, pass the HTTP `Authorization` header with the
-        `Basic` scheme and the base64-encoded username and password--for example:
-
-        ```sh
-        Authorization: Basic USERNAME:PASSWORD
-        ```
-
-        In InfluxDB Cloud, the username is the email address the user signed up with.
-
-        _Note that many HTTP clients provide a Basic authentication option that
-        accepts the `USERNAME:PASSWORD` syntax and encodes the credentials before
-        sending the request.
-        To learn more about HTTP authentication, see
-        [Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._
+        `Basic` scheme and the base64-encoded username and password.
+        For syntax and more information, see [Basic Authentication](#section/Authentication/BasicAuthentication) for
+        syntax and more information.
 
         If authentication is successful, InfluxDB creates a new session for the user
         and then returns the session cookie in the `Set-Cookie` response header.
+
         User sessions exist only in memory.
         They expire within ten minutes and during restarts of the InfluxDB instance.
 
@@ -63,9 +54,10 @@ paths:
           description: |
             Unauthorized.
             This error may be caused by one of the following problems:
-              - The user doesn't have access.
-              - The user passed incorrect credentials in the request.
-              - The credentials are formatted incorrectly in the request.
+
+            - The user doesn't have access.
+            - The user passed incorrect credentials in the request.
+            - The credentials are formatted incorrectly in the request.
           content:
             application/json:
               schema:
@@ -7190,17 +7182,42 @@ paths:
     get:
       operationId: GetFlags
       tags:
-        - Users
-      summary: Return the feature flags for the currently authenticated user
+        - Config
+      summary: Retrieve feature flags
+      description: |
+        Retrieves the feature flag key-value pairs configured for the InfluxDB
+        instance.
+        _Feature flags_ are configuration options used to develop and test
+        experimental InfluxDB features and are intended for internal use only.
+
+        This endpoint represents the first step in the following three-step process
+        to configure feature flags:
+
+        1. Use [token authentication](#section/Authentication/TokenAuthentication) or a [user session](#tag/Signin) with this endpoint to retrieve
+           feature flags and their values.
+        2. Follow the instructions to [enable, disable, or override values for feature flags](https://docs.influxdata.com/influxdb/v2.3/influxdb/v2.4/reference/config-options/#feature-flags).
+        3. **Optional**: To confirm that your change is applied, do one of the following:
+
+           - Send a request to this endpoint to retrieve the current feature flag values.
+           - Send a request to the [`GET /api/v2/config` endpoint](#operation/GetConfig) to retrieve the
+             current runtime server configuration.
+
+        #### Related guides
+
+        - [InfluxDB configuration options](https://docs.influxdata.com/influxdb/v2.3/influxdb/v2.4/reference/config-options/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
         '200':
-          description: Feature flags for the currently authenticated user
+          description: Success. The response body contains feature flags.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Flags'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
