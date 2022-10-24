@@ -296,7 +296,8 @@ components:
           org:
             description: |
               The organization name.
-              Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the token is scoped to.
+              Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+              that the token is scoped to.
             readOnly: true
             type: string
           orgID:
@@ -315,10 +316,11 @@ components:
           token:
             description: |
               The API token.
-              [Tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
-              used to authenticate InfluxDB API requests and `influx` CLI commands.
-              If authenticated, the token is allowed the permissions of the _authorization_.
               The token value is unique to the authorization.
+              [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+              used to authenticate and authorize InfluxDB API requests and `influx`
+              CLI commands--after receiving the request, InfluxDB checks that the
+              token is valid and that the `permissions` allow the requested action(s).
             readOnly: true
             type: string
           updatedAt:
@@ -4415,6 +4417,7 @@ components:
     ScriptLanguage:
       enum:
       - flux
+      - sql
       type: string
     ScriptUpdateRequest:
       properties:
@@ -7919,7 +7922,7 @@ paths:
 
         - `read-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to retrieve a
         list of owners for.
 
         #### Related endpoints
@@ -7999,7 +8002,8 @@ paths:
         #### Required permissions
 
         - `write-orgs INFLUX_ORG_ID`
-        `INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to add
+          an owner for.
 
         #### Related endpoints
 
@@ -8099,7 +8103,8 @@ paths:
         #### Required permissions
 
         - `write-orgs INFLUX_ORG_ID`
-        `INFLUX_ORG_ID` is the ID of the organization that you want to remove an owner
+
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to remove an owner
         from.
 
         #### Related endpoints
@@ -8891,7 +8896,7 @@ paths:
           type: string
       - description: |
           A list of dashboard IDs.
-          Returns only the specified dashboards.
+          Only returns the specified dashboards.
           If you specify `id` and `owner`, only `id` is used.
         in: query
         name: id
@@ -8901,7 +8906,7 @@ paths:
           type: array
       - description: |
           An organization ID.
-          Only dashboards that belong to the specified
+          Only returns dashboards that belong to the specified
           [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
         in: query
         name: orgID
@@ -8909,7 +8914,7 @@ paths:
           type: string
       - description: |
           An organization name.
-          Only dashboards that belong to the specified
+          Only returns dashboards that belong to the specified
           [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
         in: query
         name: org
@@ -9851,8 +9856,14 @@ paths:
         - Does the following when you send a delete request:
 
           1. Validates the request and queues the delete.
-          2. Returns _success_ if queued; _error_ otherwise.
-          3. Handles the delete asynchronously.
+          2. If queued, responds with _success_ (HTTP `2xx` status code); _error_ otherwise.
+          3. Handles the delete asynchronously and reaches eventual consistency.
+
+        To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,
+        wait for a success response (HTTP `2xx` status code) before you send the next request.
+
+        Because writes and deletes are asynchronous, your change might not yet be readable
+        when you receive the response.
 
         #### InfluxDB OSS
 
@@ -9863,7 +9874,7 @@ paths:
 
         - `write-buckets` or `write-bucket BUCKET_ID`.
 
-          `BUCKET_ID` is the ID of the destination bucket.
+        *`BUCKET_ID`* is the ID of the destination bucket.
 
         #### Rate limits (with InfluxDB Cloud)
 
@@ -10217,7 +10228,7 @@ paths:
 
         #### InfluxDB Cloud
 
-        - Doesn't allow you to manage passwords through the API.
+        - Doesn't let you manage user passwords through the API.
           Use the InfluxDB Cloud user interface (UI) to update your password.
 
         #### Related endpoints
@@ -10263,7 +10274,7 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Doesn't allow you to manage through the API; always responds with this status.
+            - Doesn't let you manage user passwords through the API; always responds with this status.
 
             #### InfluxDB OSS
 
@@ -11319,8 +11330,8 @@ paths:
 
         - `read-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of
-        members from.
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to retrieve
+        members for.
 
         #### Related guides
 
@@ -11417,7 +11428,7 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want add a member to.
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to add a member to.
 
         #### Related guides
 
@@ -11515,7 +11526,7 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want to remove an
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to remove an
         owner from.
 
         #### Related guides
@@ -11571,13 +11582,12 @@ paths:
 
         - `read-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a
-        list of owners from.
+        *`INFLUX_ORG_ID`* is the ID of the organization to retrieve owners from.
       operationId: GetOrgsIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          The ID of the organization to list owners for.
+          The ID of the organization to retrieve owners from.
         in: path
         name: orgID
         required: true
@@ -11633,7 +11643,7 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to add an owner for.
 
         #### Related endpoints
 
@@ -11722,8 +11732,8 @@ paths:
 
         - `write-orgs INFLUX_ORG_ID`
 
-        `INFLUX_ORG_ID` is the ID of the organization that you want remove an owner
-        from.
+        *`INFLUX_ORG_ID`* is the ID of the organization that you want to
+        remove an owner from.
 
         #### Related endpoints
         - [Authorizations](#tag/Authorizations)
@@ -16778,9 +16788,7 @@ paths:
         | List all users | Operator token | InfluxData internal use only |
         | List a specific user | `read-users` or `read-user USER_ID` |
 
-        Replace the following:
-
-        - `USER_ID`: ID of the user that you want to retrieve.
+        *`USER_ID`* is the ID of the user that you want to retrieve.
 
         #### Related guides
 
@@ -16854,7 +16862,7 @@ paths:
 
         #### InfluxDB Cloud
 
-        - InfluxDB Cloud doesn't allow managing users through the API.
+        - InfluxDB Cloud Doesn't let you manage users through the API.
           Use the InfluxDB Cloud user interface (UI) to manage account information.
 
         #### Required permissions for InfluxDB Cloud
@@ -16874,7 +16882,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        description: The user to create.
+        description: In the request body, provide the user.
         required: true
       responses:
         "201":
@@ -16930,7 +16938,7 @@ paths:
 
         #### InfluxDB Cloud
 
-        - Doesn't allow managing users through the API.
+        - Doesn't let you manage users through the API.
           Use the InfluxDB Cloud user interface (UI) to manage account information.
 
         #### Required permissions
@@ -16956,9 +16964,16 @@ paths:
       responses:
         "204":
           description: Success. The user is deleted.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
-          description: Unexpected error
       summary: Delete a user
       tags:
       - Users
@@ -17001,7 +17016,7 @@ paths:
 
         #### InfluxDB Cloud
 
-        - Doesn't allow managing users through the API.
+        - Doesn't let you manage users through the API.
           Use the InfluxDB Cloud user interface (UI) to manage account information.
 
         #### Required permissions for InfluxDB Cloud
@@ -17038,9 +17053,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
           description: Success. The response body contains the updated user.
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/AuthorizationError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
-          description: Unexpected error
       summary: Update a user
       tags:
       - Users
@@ -17463,31 +17485,29 @@ paths:
 
         #### InfluxDB Cloud
 
-        - Takes the following steps when you send a write request:
+        - Does the following when you send a write request:
 
           1. Validates the request and queues the write.
-          2. If the write is queued, responds with an HTTP `204` status code.
-          3. Handles the write asynchronously and reaches eventual consistency.
+          2. If queued, responds with _success_ (HTTP `2xx` status code); _error_ otherwise.
+          3. Handles the delete asynchronously and reaches eventual consistency.
 
-          An HTTP `2xx` status code acknowledges that the write or delete is queued.
           To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,
-          wait for a response before you send the next request.
+          wait for a success response (HTTP `2xx` status code) before you send the next request.
 
-          Because writes are asynchronous, data might not yet be written
+          Because writes and deletes are asynchronous, your change might not yet be readable
           when you receive the response.
 
         #### InfluxDB OSS
 
-        - Validates the request, handles the write synchronously,
-          and then responds with success or failure.
-        - If all points were written successfully, responds with HTTP `204` status code;
+        - Validates the request and handles the write synchronously.
+        - If all points were written successfully, responds with HTTP `2xx` status code;
           otherwise, returns the first line that failed.
 
         #### Required permissions
 
         - `write-buckets` or `write-bucket BUCKET_ID`.
 
-          `BUCKET_ID` is the ID of the destination bucket.
+         *`BUCKET_ID`* is the ID of the destination bucket.
 
         #### Rate limits (with InfluxDB Cloud)
 
@@ -17855,7 +17875,7 @@ paths:
 
         - `write-users USER_ID` if you pass the `userID` property in the request body.
 
-        `USER_ID` is the ID of the user that you want to scope the authorization to.
+        *`USER_ID`* is the ID of the user that you want to scope the authorization to.
       operationId: PostLegacyAuthorizations
       parameters:
       - $ref: '#/components/parameters/TraceSpan'

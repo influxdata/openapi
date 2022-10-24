@@ -1615,7 +1615,7 @@
           "Write"
         ],
         "summary": "Write data",
-        "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\n\n#### InfluxDB Cloud\n\n- Takes the following steps when you send a write request:\n\n  1. Validates the request and queues the write.\n  2. If the write is queued, responds with an HTTP `204` status code.\n  3. Handles the write asynchronously and reaches eventual consistency.\n\n  An HTTP `2xx` status code acknowledges that the write or delete is queued.\n  To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\n  wait for a response before you send the next request.\n\n  Because writes are asynchronous, data might not yet be written\n  when you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the write synchronously,\n  and then responds with success or failure.\n- If all points were written successfully, responds with HTTP `204` status code;\n  otherwise, returns the first line that failed.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api)\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/)\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
+        "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a write request:\n\n  1. Validates the request and queues the write.\n  2. If queued, responds with _success_ (HTTP `2xx` status code); _error_ otherwise.\n  3. Handles the delete asynchronously and reaches eventual consistency.\n\n  To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\n  wait for a success response (HTTP `2xx` status code) before you send the next request.\n\n  Because writes and deletes are asynchronous, your change might not yet be readable\n  when you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request and handles the write synchronously.\n- If all points were written successfully, responds with HTTP `2xx` status code;\n  otherwise, returns the first line that failed.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n *`BUCKET_ID`* is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api)\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/)\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
         "requestBody": {
           "description": "Data in line protocol format.\n\nTo send compressed data, do the following:\n\n  1. Use [GZIP](https://www.gzip.org/) to compress the line protocol data.\n  2. In your request, send the compressed data and the\n     `Content-Encoding: gzip` header.\n\n#### Related guides\n\n- [Best practices for optimizing writes]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/)\n",
           "required": true,
@@ -1828,7 +1828,7 @@
           "Delete"
         ],
         "summary": "Delete data",
-        "description": "Deletes data from a bucket.\n\nUse this endpoint to delete points from a bucket in a specified time range.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n\n  1. Validates the request and queues the delete.\n  2. Returns _success_ if queued; _error_ otherwise.\n  3. Handles the delete asynchronously.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\n  and then responds with success or failure.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n  `BUCKET_ID` is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/)\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n- Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)\n  and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).\n",
+        "description": "Deletes data from a bucket.\n\nUse this endpoint to delete points from a bucket in a specified time range.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a delete request:\n\n  1. Validates the request and queues the delete.\n  2. If queued, responds with _success_ (HTTP `2xx` status code); _error_ otherwise.\n  3. Handles the delete asynchronously and reaches eventual consistency.\n\nTo ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\nwait for a success response (HTTP `2xx` status code) before you send the next request.\n\nBecause writes and deletes are asynchronous, your change might not yet be readable\nwhen you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request, handles the delete synchronously,\n  and then responds with success or failure.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n*`BUCKET_ID`* is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/)\n- Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).\n- Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)\n  and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).\n",
         "x-codeSamples": [
           {
             "lang": "Shell",
@@ -6220,7 +6220,7 @@
           "Buckets"
         ],
         "summary": "List all owners of a bucket",
-        "description": "Lists all [owners]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner)\nfor a bucket.\n\nBucket owners have permission to delete buckets and remove user and member\npermissions from the bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
+        "description": "Lists all [owners]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner)\nfor a bucket.\n\nBucket owners have permission to delete buckets and remove user and member\npermissions from the bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to retrieve a\nlist of owners for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6296,7 +6296,7 @@
           "Buckets"
         ],
         "summary": "Add an owner to a bucket",
-        "description": "Adds an owner to a bucket and returns the [owners]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner)\nwith role and user detail.\n\nUse this endpoint to create a _resource owner_ for the bucket.\nBucket owners have permission to delete buckets and remove user and member\npermissions from the bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
+        "description": "Adds an owner to a bucket and returns the [owners]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner)\nwith role and user detail.\n\nUse this endpoint to create a _resource owner_ for the bucket.\nBucket owners have permission to delete buckets and remove user and member\npermissions from the bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to add\n  an owner for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6394,7 +6394,7 @@
           "Buckets"
         ],
         "summary": "Remove an owner from a bucket",
-        "description": "Removes an owner from a bucket.\n\nUse this endpoint to remove a user's `owner` role for a bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n`INFLUX_ORG_ID` is the ID of the organization that you want to remove an owner\nfrom.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
+        "description": "Removes an owner from a bucket.\n\nUse this endpoint to remove a user's `owner` role for a bucket.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to remove an owner\nfrom.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -6950,7 +6950,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all members of an organization",
-        "description": "Lists all users that belong to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you retrieve a list of\nmembers from.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
+        "description": "Lists all users that belong to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to retrieve\nmembers for.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7051,7 +7051,7 @@
           "Organizations"
         ],
         "summary": "Add a member to an organization",
-        "description": "Add a user to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want add a member to.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
+        "description": "Add a user to an organization.\n\nInfluxDB [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) have\npermission to access InfluxDB.\n\n[Members]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#member) are users\nwithin the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to add a member to.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7150,7 +7150,7 @@
           "Security and access endpoints"
         ],
         "summary": "Remove a member from an organization",
-        "description": "Removes a member from an organization.\n\nUse this endpoint to remove a user's member privileges from a bucket. This\nremoves the user's `read` and `write` permissions from the organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to remove an\nowner from.\n\n#### Related guides\n\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
+        "description": "Removes a member from an organization.\n\nUse this endpoint to remove a user's member privileges from a bucket. This\nremoves the user's `read` and `write` permissions from the organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Member permissions are separate from API token permissions.\n- Member permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to remove an\nowner from.\n\n#### Related guides\n\n- [Manage members]({{% INFLUXDB_DOCS_URL %}}/organizations/members/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7208,7 +7208,7 @@
           "Security and access endpoints"
         ],
         "summary": "List all owners of an organization",
-        "description": "Lists all owners of an organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want to retrieve a\nlist of owners from.\n",
+        "description": "Lists all owners of an organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `read-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization to retrieve owners from.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7220,7 +7220,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the organization to list owners for.\n"
+            "description": "The ID of the organization to retrieve owners from.\n"
           }
         ],
         "responses": {
@@ -7282,7 +7282,7 @@
           "Organizations"
         ],
         "summary": "Add an owner to an organization",
-        "description": "Adds an owner to an organization.\n\nUse this endpoint to assign the organization `owner` role to a user.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want add an owner for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n",
+        "description": "Adds an owner to an organization.\n\nUse this endpoint to assign the organization `owner` role to a user.\n\n#### InfluxDB Cloud\n\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to add an owner for.\n\n#### Related endpoints\n\n- [Authorizations](#tag/Authorizations)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7372,7 +7372,7 @@
           "Security and access endpoints"
         ],
         "summary": "Remove an owner from an organization",
-        "description": "Removes an [owner]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner) from\nthe organization.\n\nOrganization owners have permission to delete organizations and remove user and member\npermissions from the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n`INFLUX_ORG_ID` is the ID of the organization that you want remove an owner\nfrom.\n\n#### Related endpoints\n- [Authorizations](#tag/Authorizations)\n",
+        "description": "Removes an [owner]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#owner) from\nthe organization.\n\nOrganization owners have permission to delete organizations and remove user and member\npermissions from the organization.\n\n#### InfluxDB Cloud\n- Doesn't use `owner` and `member` roles.\n  Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\n#### Limitations\n\n- Owner permissions are separate from API token permissions.\n- Owner permissions are used in the context of the InfluxDB UI.\n\n#### Required permissions\n\n- `write-orgs INFLUX_ORG_ID`\n\n*`INFLUX_ORG_ID`* is the ID of the organization that you want to\nremove an owner from.\n\n#### Related endpoints\n- [Authorizations](#tag/Authorizations)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9085,7 +9085,7 @@
           "Users"
         ],
         "summary": "Update a password",
-        "description": "Updates the password for the signed-in [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nThis endpoint represents the third step in the following three-step process to let a\nuser with a user session update their password:\n  1. Pass the user's [Basic authentication credentials](#section/Authentication/BasicAuthentication) to the `POST /api/v2/signin`\n     endpoint to create a user session and generate a session cookie.\n  2. From the response in the first step, extract the session cookie (`Set-Cookie`) header.\n  3. Pass the following in a request to the `PUT /api/v2/me/password` endpoint:\n     - The `Set-Cookie` header from the second step\n     - The `Authorization Basic` header with the user's _Basic authentication_ credentials\n     - `{\"password\": \"NEW_PASSWORD\"}` in the request body\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update your password.\n\n#### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n- [Users](#tag/Users)\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)\n",
+        "description": "Updates the password for the signed-in [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nThis endpoint represents the third step in the following three-step process to let a\nuser with a user session update their password:\n  1. Pass the user's [Basic authentication credentials](#section/Authentication/BasicAuthentication) to the `POST /api/v2/signin`\n     endpoint to create a user session and generate a session cookie.\n  2. From the response in the first step, extract the session cookie (`Set-Cookie`) header.\n  3. Pass the following in a request to the `PUT /api/v2/me/password` endpoint:\n     - The `Set-Cookie` header from the second step\n     - The `Authorization Basic` header with the user's _Basic authentication_ credentials\n     - `{\"password\": \"NEW_PASSWORD\"}` in the request body\n\n#### InfluxDB Cloud\n\n- Doesn't let you manage user passwords through the API.\n  Use the InfluxDB Cloud user interface (UI) to update your password.\n\n#### Related endpoints\n\n- [Signin](#tag/Signin)\n- [Signout](#tag/Signout)\n- [Users](#tag/Users)\n\n#### Related guides\n\n- [InfluxDB Cloud - Change your password](https://docs.influxdata.com/influxdb/cloud/account-management/change-password/)\n- [InfluxDB OSS - Change your password](https://docs.influxdata.com/influxdb/latest/users/change-password/)\n",
         "security": [
           {
             "BasicAuthentication": []
@@ -9122,7 +9122,7 @@
             "description": "Success. The password is updated."
           },
           "400": {
-            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't allow you to manage through the API; always responds with this status.\n\n#### InfluxDB OSS\n\n- Doesn't understand a value passed in the request.\n"
+            "description": "Bad request.\n\n#### InfluxDB Cloud\n\n- Doesn't let you manage user passwords through the API; always responds with this status.\n\n#### InfluxDB OSS\n\n- Doesn't understand a value passed in the request.\n"
           },
           "401": {
             "$ref": "#/components/responses/AuthorizationError"
@@ -12067,7 +12067,7 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\nDefault limit is `20`.\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### Required permissions for InfluxDB OSS\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |\n| List a specific user | `read-users` or `read-user USER_ID` | |\n\nReplace the following:\n\n- `USER_ID`: the ID of the user that you want to retrieve.\n",
+        "description": "Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\nDefault limit is `20`.\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### Required permissions for InfluxDB OSS\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |\n| List a specific user | `read-users` or `read-user USER_ID` | |\n\n*`USER_ID`* is the ID of the user that you want to retrieve.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12273,8 +12273,9 @@
           "Users"
         ],
         "summary": "Update a user",
+        "description": "Updates a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) and returns the user.\n\n#### Required permissions\n\n| Action      | Permission required |\n|:------------|:-----------------------------------------------|\n| Update a user | `write-users` or `write-user USER_ID` |\n\n*`USER_ID`* is the ID of the user that you want to update.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "requestBody": {
-          "description": "User update to apply",
+          "description": "In the request body, provide the user properties to update.",
           "required": true,
           "content": {
             "application/json": {
@@ -12295,12 +12296,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the user to update."
+            "description": "A user ID.\nSpecifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) to update.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "User updated",
+            "description": "Success.\nThe response body contains the user.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -12309,8 +12310,19 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
           "default": {
-            "description": "Unexpected error",
             "$ref": "#/components/responses/GeneralServerError"
           }
         }
@@ -12321,6 +12333,7 @@
           "Users"
         ],
         "summary": "Delete a user",
+        "description": "Deletes a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\n#### Required permissions\n\n| Action      | Permission required |\n|:------------|:-----------------------------------------------|\n| Delete a user | `write-users` or `write-user USER_ID` |\n\n*`USER_ID`* is the ID of the user that you want to delete.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12332,12 +12345,28 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the user to delete."
+            "description": "A user ID.\nSpecifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) to delete.\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "User deleted"
+            "description": "Success. The user is deleted."
+          },
+          "400": {
+            "description": "Bad request.\nThe response body contains detail about the error.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
           },
           "default": {
             "description": "Unexpected error",
@@ -16532,7 +16561,7 @@
               "token": {
                 "readOnly": true,
                 "type": "string",
-                "description": "The API token.\n[Tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are\nused to authenticate InfluxDB API requests and `influx` CLI commands.\nIf authenticated, the token is allowed the permissions of the _authorization_.\nThe token value is unique to the authorization.\n"
+                "description": "The API token.\nThe token value is unique to the authorization.\n[API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are\nused to authenticate and authorize InfluxDB API requests and `influx`\nCLI commands--after receiving the request, InfluxDB checks that the\ntoken is valid and that the `permissions` allow the requested action(s).\n"
               },
               "userID": {
                 "readOnly": true,
@@ -16547,7 +16576,7 @@
               "org": {
                 "readOnly": true,
                 "type": "string",
-                "description": "The organization name.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the token is scoped to.\n"
+                "description": "The organization name.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nthat the token is scoped to.\n"
               },
               "links": {
                 "type": "object",
