@@ -298,22 +298,13 @@ paths:
         and then, if successful, generates a user session.
 
         To authenticate a user, pass the HTTP `Authorization` header with the
-        `Basic` scheme and the base64-encoded username and password--for example:
-
-        ```sh
-        Authorization: Basic USERNAME:PASSWORD
-        ```
-
-        In InfluxDB Cloud, the username is the email address the user signed up with.
-
-        _Note that many HTTP clients provide a Basic authentication option that
-        accepts the `USERNAME:PASSWORD` syntax and encodes the credentials before
-        sending the request.
-        To learn more about HTTP authentication, see
-        [Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._
+        `Basic` scheme and the base64-encoded username and password.
+        For syntax and more information, see [Basic Authentication](#section/Authentication/BasicAuthentication) for
+        syntax and more information.
 
         If authentication is successful, InfluxDB creates a new session for the user
         and then returns the session cookie in the `Set-Cookie` response header.
+
         User sessions exist only in memory.
         They expire within ten minutes and during restarts of the InfluxDB instance.
 
@@ -343,9 +334,10 @@ paths:
           description: |
             Unauthorized.
             This error may be caused by one of the following problems:
-              - The user doesn't have access.
-              - The user passed incorrect credentials in the request.
-              - The credentials are formatted incorrectly in the request.
+
+            - The user doesn't have access.
+            - The user passed incorrect credentials in the request.
+            - The credentials are formatted incorrectly in the request.
           content:
             application/json:
               schema:
@@ -7476,17 +7468,42 @@ paths:
     get:
       operationId: GetFlags
       tags:
-        - Users
-      summary: Return the feature flags for the currently authenticated user
+        - Config
+      summary: Retrieve feature flags
+      description: |
+        Retrieves the feature flag key-value pairs configured for the InfluxDB
+        instance.
+        _Feature flags_ are configuration options used to develop and test
+        experimental InfluxDB features and are intended for internal use only.
+
+        This endpoint represents the first step in the following three-step process
+        to configure feature flags:
+
+        1. Use [token authentication](#section/Authentication/TokenAuthentication) or a [user session](#tag/Signin) with this endpoint to retrieve
+           feature flags and their values.
+        2. Follow the instructions to [enable, disable, or override values for feature flags](https://docs.influxdata.com/influxdb/cloud/influxdb/v2.4/reference/config-options/#feature-flags).
+        3. **Optional**: To confirm that your change is applied, do one of the following:
+
+           - Send a request to this endpoint to retrieve the current feature flag values.
+           - Send a request to the [`GET /api/v2/config` endpoint](#operation/GetConfig) to retrieve the
+             current runtime server configuration.
+
+        #### Related guides
+
+        - [InfluxDB configuration options](https://docs.influxdata.com/influxdb/cloud/influxdb/v2.4/reference/config-options/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
         '200':
-          description: Feature flags for the currently authenticated user
+          description: Success. The response body contains feature flags.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Flags'
+        '401':
+          $ref: '#/components/responses/AuthorizationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Unexpected error
           content:
@@ -17053,9 +17070,28 @@ components:
 
         `Authorization: Token INFLUX_API_TOKEN`
 
-        For more information and examples, see the following:
+        ### Example
 
-        - [`/authorizations`(#tag/Authorizations) endpoints]
+        #### Use Token authentication with cURL
+
+        The following example shows how to use cURL to send an API request that uses Token authentication:
+
+        ```sh
+        curl --request GET "INFLUX_URL/api/v2/buckets" \
+             --header "Authorization: Token INFLUX_API_TOKEN"
+        ```
+
+        Replace the following:
+
+          - *`INFLUX_URL`*: your InfluxDB Cloud URL
+          - *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
+
+        ### Related endpoints
+
+        - [`/authorizations` endpoints](#tag/Authorizations)
+
+        ### Related guides
+
         - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication)
         - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)
     BasicAuthentication:
@@ -17066,19 +17102,66 @@ components:
 
         Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
 
-        - **username**: InfluxDB Cloud username
-        - **password**: InfluxDB Cloud API token
+        ### Syntax
 
-        #### Example
+        `Authorization: Basic BASE64_ENCODED_CREDENTIALS`
+
+        To construct the `BASE64_ENCODED_CREDENTIALS`, combine the username and
+        the password with a colon (`USERNAME:PASSWORD`), and then encode the
+        resulting string in [base64](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+        Many HTTP clients encode the credentials for you before sending the
+        request.
+
+        _**Warning**: Base64-encoding can easily be reversed to obtain the original
+        username and password. It is used to keep the data intact and does not provide
+        security. You should always use HTTPS when authenticating or sending a request with
+        sensitive information._
+
+        ### Examples
+
+        In the examples, replace the following:
+
+        - **`EMAIL_ADDRESS`**: InfluxDB Cloud username (the email address the user signed up with)
+        - **`PASSWORD`**: InfluxDB Cloud [API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
+        - **`INFLUX_URL`**: your InfluxDB Cloud URL
+
+        #### Encode credentials with cURL
+
+        The following example shows how to use cURL to send an API request that uses Basic authentication.
+        With the `--user` option, cURL encodes the credentials and passes them
+        in the `Authorization: Basic` header.
 
         ```sh
-        curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
-              --user "exampleuser@influxdata.com":"INFLUX_API_TOKEN"
+        curl --get "INFLUX_URL/api/v2/signin"
+            --user "EMAIL_ADDRESS":"PASSWORD"
         ```
 
-        Replace the following:
+        #### Encode credentials with Flux
 
-        - *`exampleuser@influxdata.com`*: the email address that you signed up with
-        - *`INFLUX_API_TOKEN`*: your [InfluxDB API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token)
+        The Flux [`http.basicAuth()` function](https://docs.influxdata.com/flux/v0.x/stdlib/http/basicauth/) returns a Base64-encoded
+        basic authentication header using a specified username and password combination.
+
+        #### Encode credentials with JavaScript
+
+        The following example shows how to use the JavaScript `btoa()` function
+        to create a Base64-encoded string:
+
+        ```js
+        btoa('EMAIL_ADDRESS:PASSWORD')
+        ```
+
+        The output is the following:
+
+        ```js
+        'VVNFUk5BTUU6UEFTU1dPUkQ='
+        ```
+
+        Once you have the Base64-encoded credentials, you can pass them in the
+        `Authorization` header--for example:
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --header "Authorization: Basic VVNFUk5BTUU6UEFTU1dPUkQ="
+        ```
 security:
   - TokenAuthentication: []
