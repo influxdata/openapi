@@ -576,81 +576,79 @@ components:
       example: |
         name,tags,time,test_field,test_tag test_measurement,,1603740794286107366,1,tag_value test_measurement,,1603740870053205649,2,tag_value test_measurement,,1603741221085428881,3,tag_value
     Authorization:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
-        - type: object
+      type: object
+      properties:
+        status:
+          description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+          default: active
+          type: string
+          enum:
+            - active
+            - inactive
+        description:
+          type: string
+          description: A description of the token.
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        orgID:
+          type: string
+          description: |
+            The organization ID.
+            Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
+        id:
+          readOnly: true
+          type: string
+          description: The authorization ID.
+        token:
+          readOnly: true
+          type: string
+          description: |
+            The API token.
+            The token value is unique to the authorization.
+            [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+            used to authenticate and authorize InfluxDB API requests and `influx`
+            CLI commands--after receiving the request, InfluxDB checks that the
+            token is valid and that the `permissions` allow the requested action(s).
+        userID:
+          readOnly: true
+          type: string
+          description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
+        user:
+          readOnly: true
+          type: string
+          description: |
+            The user name.
+            Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
+            If the authorization is _scoped_ to a user, the user;
+            otherwise, the creator of the authorization.
+        org:
+          readOnly: true
+          type: string
+          description: |
+            The organization name.
+            Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+            that the token is scoped to.
+        links:
+          type: object
+          readOnly: true
+          example:
+            self: /api/v2/authorizations/1
+            user: /api/v2/users/12
           properties:
-            createdAt:
-              type: string
-              format: date-time
+            self:
               readOnly: true
-            updatedAt:
-              type: string
-              format: date-time
-              readOnly: true
-            orgID:
-              type: string
-              description: |
-                The organization ID.
-                Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: |
-                The list of permissions.
-                An authorization must have at least one permission.
-              items:
-                $ref: '#/components/schemas/Permission'
-            id:
-              readOnly: true
-              type: string
-              description: The authorization ID.
-            token:
-              readOnly: true
-              type: string
-              description: |
-                The API token.
-                The token value is unique to the authorization.
-                [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
-                used to authenticate and authorize InfluxDB API requests and `influx`
-                CLI commands--after receiving the request, InfluxDB checks that the
-                token is valid and that the `permissions` allow the requested action(s).
-            userID:
-              readOnly: true
-              type: string
-              description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
+              $ref: '#/components/schemas/Link'
             user:
               readOnly: true
-              type: string
-              description: |
-                The user name.
-                Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
-                If the authorization is _scoped_ to a user, the user;
-                otherwise, the creator of the authorization.
-            org:
-              readOnly: true
-              type: string
-              description: |
-                The organization name.
-                Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
-                that the token is scoped to.
-            links:
-              type: object
-              readOnly: true
-              example:
-                self: /api/v2/authorizations/1
-                user: /api/v2/users/12
-              properties:
-                self:
-                  readOnly: true
-                  $ref: '#/components/schemas/Link'
-                user:
-                  readOnly: true
-                  $ref: '#/components/schemas/Link'
+              $ref: '#/components/schemas/Link'
     AuthorizationUpdateRequest:
+      type: object
       properties:
         status:
           description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
@@ -672,62 +670,6 @@ components:
           enum:
             - read
             - write
-        resource:
-          type: object
-          required:
-            - type
-          properties:
-            type:
-              type: string
-              enum:
-                - authorizations
-                - buckets
-                - dashboards
-                - orgs
-                - tasks
-                - telegrafs
-                - users
-                - variables
-                - secrets
-                - labels
-                - views
-                - documents
-                - notificationRules
-                - notificationEndpoints
-                - checks
-                - dbrp
-                - annotations
-                - sources
-                - scrapers
-                - notebooks
-                - remotes
-                - replications
-                - instance
-                - flows
-                - functions
-                - subscriptions
-              description: |
-                The type of resource.
-                In a `permission`, applies the permission to all resources of this type.
-            id:
-              type: string
-              description: |
-                The ID of a specific resource.
-                In a `permission`, applies the permission to only the resource with this ID.
-            name:
-              type: string
-              description: |
-                Optional: A name for the resource.
-                Not all resource types have a name field.
-            orgID:
-              type: string
-              description: |
-                The ID of the organization that owns the resource.
-                In a `permission`, applies the permission to all resources of `type` owned by this organization.
-            org:
-              type: string
-              description: |
-                Optional: The name of the organization with `orgID`.
     Links:
       type: object
       description: |

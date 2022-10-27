@@ -9100,7 +9100,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The user session cookie for the\n[user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user)\nsigned in with [Basic authentication credentials](#section/Authentication/BasicAuthentication).\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL%}}/users/)\n",
+            "description": "The user session cookie for the\n[user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user)\nsigned in with [Basic authentication credentials](#section/Authentication/BasicAuthentication).\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/users/)\n",
             "example": "influxdb-oss-session=19aaaZZZGOvP2GGryXVT2qYftlFKu3bIopurM6AGFow1yF1abhtOlbHfsc-d8gozZFC_6WxmlQIAwLMW5xs523w=="
           }
         ],
@@ -14135,119 +14135,6 @@
               "RFC3339",
               "RFC3339Nano"
             ]
-          }
-        }
-      },
-      "Authorization": {
-        "required": [
-          "orgID",
-          "permissions"
-        ],
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AuthorizationUpdateRequest"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "createdAt": {
-                "type": "string",
-                "format": "date-time",
-                "readOnly": true
-              },
-              "updatedAt": {
-                "type": "string",
-                "format": "date-time",
-                "readOnly": true
-              },
-              "orgID": {
-                "type": "string",
-                "description": "The organization ID.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.\n"
-              },
-              "permissions": {
-                "type": "array",
-                "minItems": 1,
-                "description": "The list of permissions.\nAn authorization must have at least one permission.\n",
-                "items": {
-                  "$ref": "#/components/schemas/Permission"
-                }
-              },
-              "id": {
-                "readOnly": true,
-                "type": "string",
-                "description": "The authorization ID."
-              },
-              "token": {
-                "readOnly": true,
-                "type": "string",
-                "description": "The API token.\nThe token value is unique to the authorization.\n[API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are\nused to authenticate and authorize InfluxDB API requests and `influx`\nCLI commands--after receiving the request, InfluxDB checks that the\ntoken is valid and that the `permissions` allow the requested action(s).\n"
-              },
-              "userID": {
-                "readOnly": true,
-                "type": "string",
-                "description": "The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization."
-              },
-              "user": {
-                "readOnly": true,
-                "type": "string",
-                "description": "The user name.\nSpecifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.\nIf the authorization is _scoped_ to a user, the user;\notherwise, the creator of the authorization.\n"
-              },
-              "org": {
-                "readOnly": true,
-                "type": "string",
-                "description": "The organization name.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nthat the token is scoped to.\n"
-              },
-              "links": {
-                "type": "object",
-                "readOnly": true,
-                "example": {
-                  "self": "/api/v2/authorizations/1",
-                  "user": "/api/v2/users/12"
-                },
-                "properties": {
-                  "self": {
-                    "readOnly": true,
-                    "$ref": "#/components/schemas/Link"
-                  },
-                  "user": {
-                    "readOnly": true,
-                    "$ref": "#/components/schemas/Link"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "Authorizations": {
-        "type": "object",
-        "properties": {
-          "links": {
-            "readOnly": true,
-            "$ref": "#/components/schemas/Links"
-          },
-          "authorizations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Authorization"
-            }
-          }
-        }
-      },
-      "AuthorizationUpdateRequest": {
-        "properties": {
-          "status": {
-            "description": "Status of the token. If `inactive`, requests using the token will be rejected.",
-            "default": "active",
-            "type": "string",
-            "enum": [
-              "active",
-              "inactive"
-            ]
-          },
-          "description": {
-            "type": "string",
-            "description": "A description of the token."
           }
         }
       },
@@ -20763,26 +20650,14 @@
           "configcat_deployments-autopromotionblocker": "#663cd0"
         }
       },
-      "AuthorizationPostRequest": {
-        "required": [
-          "orgID",
-          "permissions"
-        ],
+      "Authorization": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/AuthorizationUpdateRequest"
+            "$ref": "#/components/schemas/AuthorizationBase"
           },
           {
             "type": "object",
             "properties": {
-              "orgID": {
-                "type": "string",
-                "description": "The ID of the organization that owns the authorization.\n"
-              },
-              "userID": {
-                "type": "string",
-                "description": "The ID of the user that the authorization is scoped to.\n"
-              },
               "permissions": {
                 "type": "array",
                 "minItems": 1,
@@ -20795,7 +20670,169 @@
           }
         ]
       },
+      "AuthorizationBase": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Status of the token. If `inactive`, requests using the token will be rejected.",
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the token."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "orgID": {
+            "type": "string",
+            "description": "The organization ID.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.\n"
+          },
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The authorization ID."
+          },
+          "token": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The API token.\nThe token value is unique to the authorization.\n[API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are\nused to authenticate and authorize InfluxDB API requests and `influx`\nCLI commands--after receiving the request, InfluxDB checks that the\ntoken is valid and that the `permissions` allow the requested action(s).\n"
+          },
+          "userID": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization."
+          },
+          "user": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The user name.\nSpecifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.\nIf the authorization is _scoped_ to a user, the user;\notherwise, the creator of the authorization.\n"
+          },
+          "org": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The organization name.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nthat the token is scoped to.\n"
+          },
+          "links": {
+            "type": "object",
+            "readOnly": true,
+            "example": {
+              "self": "/api/v2/authorizations/1",
+              "user": "/api/v2/users/12"
+            },
+            "properties": {
+              "self": {
+                "readOnly": true,
+                "$ref": "#/components/schemas/Link"
+              },
+              "user": {
+                "readOnly": true,
+                "$ref": "#/components/schemas/Link"
+              }
+            }
+          }
+        }
+      },
+      "Authorizations": {
+        "type": "object",
+        "properties": {
+          "links": {
+            "readOnly": true,
+            "$ref": "#/components/schemas/Links"
+          },
+          "authorizations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Authorization"
+            }
+          }
+        }
+      },
+      "AuthorizationUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Status of the token. If `inactive`, requests using the token will be rejected.",
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the token."
+          }
+        }
+      },
+      "AuthorizationPostRequest": {
+        "required": [
+          "orgID",
+          "permissions"
+        ],
+        "type": "object",
+        "properties": {
+          "orgID": {
+            "type": "string",
+            "description": "The organization ID.\nSpecifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.\n"
+          },
+          "userID": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization."
+          },
+          "permissions": {
+            "type": "array",
+            "minItems": 1,
+            "description": "A list of permissions for an authorization.\nAn authorization must have at least one permission.\n",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            }
+          },
+          "status": {
+            "description": "Status of the token. If `inactive`, requests using the token will be rejected.",
+            "default": "active",
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the token."
+          }
+        }
+      },
       "Permission": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PermissionBase"
+          },
+          {
+            "properties": {
+              "resource": {
+                "$ref": "#/components/schemas/Resource"
+              }
+            },
+            "title": "Permission"
+          }
+        ]
+      },
+      "PermissionBase": {
         "required": [
           "action",
           "resource"
@@ -20807,9 +20844,6 @@
               "read",
               "write"
             ]
-          },
-          "resource": {
-            "$ref": "#/components/schemas/Resource"
           }
         }
       },
@@ -20839,12 +20873,6 @@
               "checks",
               "dbrp",
               "annotations",
-              "sources",
-              "scrapers",
-              "notebooks",
-              "remotes",
-              "replications",
-              "instance",
               "flows",
               "functions",
               "subscriptions"

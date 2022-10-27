@@ -1388,15 +1388,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  links:
-                    readOnly: true
-                    $ref: '#/paths/~1dashboards/get/responses/200/content/application~1json/schema/properties/links'
-                  authorizations:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+                $ref: '#/components/schemas/Authorizations'
         '400':
           description: Invalid request
           $ref: '#/paths/~1config/get/responses/401'
@@ -1453,7 +1445,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+                $ref: '#/components/schemas/Authorization'
         '400':
           description: Invalid request
           $ref: '#/paths/~1config/get/responses/401'
@@ -1519,7 +1511,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+                $ref: '#/components/schemas/Authorization'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -1534,7 +1526,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+              $ref: '#/components/schemas/AuthorizationUpdateRequest'
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -1549,7 +1541,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+                $ref: '#/components/schemas/Authorization'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -5381,22 +5373,106 @@ paths:
 components:
   parameters: null
   schemas:
+    Authorization:
+      type: object
+      properties:
+        status:
+          description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+          default: active
+          type: string
+          enum:
+            - active
+            - inactive
+        description:
+          type: string
+          description: A description of the token.
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        orgID:
+          type: string
+          description: |
+            The organization ID.
+            Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
+        id:
+          readOnly: true
+          type: string
+          description: The authorization ID.
+        token:
+          readOnly: true
+          type: string
+          description: |
+            The API token.
+            The token value is unique to the authorization.
+            [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+            used to authenticate and authorize InfluxDB API requests and `influx`
+            CLI commands--after receiving the request, InfluxDB checks that the
+            token is valid and that the `permissions` allow the requested action(s).
+        userID:
+          readOnly: true
+          type: string
+          description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
+        user:
+          readOnly: true
+          type: string
+          description: |
+            The user name.
+            Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
+            If the authorization is _scoped_ to a user, the user;
+            otherwise, the creator of the authorization.
+        org:
+          readOnly: true
+          type: string
+          description: |
+            The organization name.
+            Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+            that the token is scoped to.
+        links:
+          type: object
+          readOnly: true
+          example:
+            self: /api/v2/authorizations/1
+            user: /api/v2/users/12
+          properties:
+            self:
+              readOnly: true
+              $ref: '#/components/schemas/Task/properties/links/properties/self'
+            user:
+              readOnly: true
+              $ref: '#/components/schemas/Task/properties/links/properties/self'
+    Authorizations:
+      type: object
+      properties:
+        links:
+          readOnly: true
+          $ref: '#/paths/~1dashboards/get/responses/200/content/application~1json/schema/properties/links'
+        authorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Authorization'
+    AuthorizationUpdateRequest:
+      properties:
+        status:
+          description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+          default: active
+          type: string
+          enum:
+            - active
+            - inactive
+        description:
+          type: string
+          description: A description of the token.
     AuthorizationPostRequest:
       required:
         - orgID
         - permissions
       allOf:
-        - properties:
-            status:
-              description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
-              default: active
-              type: string
-              enum:
-                - active
-                - inactive
-            description:
-              type: string
-              description: A description of the token.
+        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
         - type: object
           properties:
             orgID:
@@ -5425,8 +5501,6 @@ components:
           enum:
             - read
             - write
-        resource:
-          $ref: '#/components/schemas/Resource'
     Resource:
       type: object
       required:
@@ -5452,12 +5526,6 @@ components:
             - checks
             - dbrp
             - annotations
-            - sources
-            - scrapers
-            - notebooks
-            - remotes
-            - replications
-            - instance
             - flows
             - functions
             - subscriptions
@@ -5752,80 +5820,7 @@ components:
             - name
             - retentionRules
         auth:
-          required:
-            - orgID
-            - permissions
-          allOf:
-            - $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
-            - type: object
-              properties:
-                createdAt:
-                  type: string
-                  format: date-time
-                  readOnly: true
-                updatedAt:
-                  type: string
-                  format: date-time
-                  readOnly: true
-                orgID:
-                  type: string
-                  description: |
-                    The organization ID.
-                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
-                permissions:
-                  type: array
-                  minItems: 1
-                  description: |
-                    The list of permissions.
-                    An authorization must have at least one permission.
-                  items:
-                    $ref: '#/components/schemas/Permission'
-                id:
-                  readOnly: true
-                  type: string
-                  description: The authorization ID.
-                token:
-                  readOnly: true
-                  type: string
-                  description: |
-                    The API token.
-                    The token value is unique to the authorization.
-                    [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
-                    used to authenticate and authorize InfluxDB API requests and `influx`
-                    CLI commands--after receiving the request, InfluxDB checks that the
-                    token is valid and that the `permissions` allow the requested action(s).
-                userID:
-                  readOnly: true
-                  type: string
-                  description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
-                user:
-                  readOnly: true
-                  type: string
-                  description: |
-                    The user name.
-                    Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
-                    If the authorization is _scoped_ to a user, the user;
-                    otherwise, the creator of the authorization.
-                org:
-                  readOnly: true
-                  type: string
-                  description: |
-                    The organization name.
-                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
-                    that the token is scoped to.
-                links:
-                  type: object
-                  readOnly: true
-                  example:
-                    self: /api/v2/authorizations/1
-                    user: /api/v2/users/12
-                  properties:
-                    self:
-                      readOnly: true
-                      $ref: '#/components/schemas/Task/properties/links/properties/self'
-                    user:
-                      readOnly: true
-                      $ref: '#/components/schemas/Task/properties/links/properties/self'
+          $ref: '#/components/schemas/Authorization'
     Variable:
       type: object
       required:
