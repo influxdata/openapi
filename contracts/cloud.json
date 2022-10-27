@@ -11574,7 +11574,7 @@
           "Authorizations"
         ],
         "summary": "List authorizations",
-        "description": "Retrieves a list of authorizations.\n\nTo limit which authorizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all authorizations for the organization.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n  values in `GET /api/v2/authorizations` responses;\n  returns `token: redacted` for all authorizations.\n\n#### Required permissions for InfluxDB Cloud\n\n- `read-authorizations`\n\n#### Related guides\n\n- [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n",
+        "description": "Lists authorizations.\n\nTo limit which authorizations are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all authorizations for the organization.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)\n  values in `GET /api/v2/authorizations` responses;\n  returns `token: redacted` for all authorizations.\n\n#### Required permissions\n\n- `read-authorizations`\n\n#### Related guides\n\n- [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11653,7 +11653,7 @@
           "Authorizations"
         ],
         "summary": "Create an authorization",
-        "description": "Creates an authorization and returns the authorization with the\ngenerated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\n\nKeep the following in mind when creating and updating authorizations:\n\n- To apply a permission to a specific resource, specify the resource `id` field.\n- To apply a permission to all resources with the type, omit the resource `id`.\n- To scope an authorization to a specific user, provide the `userID` property.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.\n- You can’t change access (read/write) permissions for an API token after it’s created.\n- Tokens stop working when the user who created the token is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n",
+        "description": "Creates an authorization and returns the authorization with the\ngenerated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).\n\nUse this endpoint to create an authorization, which generates an API token\nwith permissions to `read` or `write` to a specific resource or `type` of resource.\n\n#### Limitations\n\nTo follow best practices for secure API token generation and retrieval,\nInfluxDB Cloud enforces access restrictions on API tokens.\n\n- InfluxDB only allows access to the API token value immediately after the authorization is created.\n- You can't update an authorization's permissions.\n- A token stops working when the user who created the authorization is deleted.\n\nWe recommend the following for managing your tokens:\n\n- Create a generic user to create and manage tokens for writing data.\n- Store your tokens in a secure password vault for future access.\n\n#### Related guides\n\n- [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -11666,6 +11666,17 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AuthorizationPostRequest"
+              },
+              "examples": {
+                "AuthorizationPostRequest": {
+                  "$ref": "#/components/examples/AuthorizationPostRequest"
+                },
+                "AuthorizationWithResourcePostRequest": {
+                  "$ref": "#/components/examples/AuthorizationWithResourcePostRequest"
+                },
+                "AuthorizationWithUserPostRequest": {
+                  "$ref": "#/components/examples/AuthorizationWithUserPostRequest"
+                }
               }
             }
           }
@@ -11695,19 +11706,7 @@
             "description": "Unexpected error",
             "$ref": "#/components/responses/GeneralServerError"
           }
-        },
-        "x-codeSample": [
-          {
-            "lang": "Shell",
-            "label": "cURL: Create auth to read all buckets",
-            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"iot_users read buckets\",\n    \"permissions\": [\n      {\"action\": \"read\", \"resource\": {\"type\": \"buckets\"}}\n    ]\n  }\nEOF\n"
-          },
-          {
-            "lang": "Shell",
-            "label": "cURL: Create auth scoped to a user",
-            "source": "curl --request POST \\\n\"http://localhost:8086/api/v2/authorizations\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--header 'Content-Type: application/json' \\\n--data @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"userID\": \"INFLUX_USER_ID\",\n    \"description\": \"iot_user write to bucket\",\n    \"permissions\": [\n      {\"action\": \"write\", \"resource\": {\"type\": \"buckets\", \"id: \"INFLUX_BUCKET_ID\"}}\n    ]\n  }\nEOF\n"
-          }
-        ]
+        }
       }
     },
     "/authorizations/{authID}": {
@@ -14241,6 +14240,38 @@
           }
         }
       },
+      "AuthorizationPostRequest": {
+        "required": [
+          "orgID",
+          "permissions"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuthorizationUpdateRequest"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "orgID": {
+                "type": "string",
+                "description": "An organization ID.\nSpecifies the organization that owns the authorization.\n"
+              },
+              "userID": {
+                "type": "string",
+                "description": "A user ID.\nSpecifies the user that the authorization is scoped to.\n\nWhen a user authenticates with username and password,\nInfluxDB generates a _user session_ with all the permissions\nspecified by all the user's authorizations.\n"
+              },
+              "permissions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "A list of permissions for an authorization.\nIn the list, provide at least one `permission` object.\n\nIn a `permission`, the `resource.type` property grants access to all\nresources of the specified type.\nTo grant access to only a specific resource, specify the\n`resource.id` property.\n",
+                "items": {
+                  "$ref": "#/components/schemas/Permission"
+                }
+              }
+            }
+          }
+        ]
+      },
       "AuthorizationUpdateRequest": {
         "properties": {
           "status": {
@@ -16295,6 +16326,62 @@
       "Flags": {
         "type": "object",
         "additionalProperties": true
+      },
+      "Resource": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "authorizations",
+              "buckets",
+              "dashboards",
+              "orgs",
+              "tasks",
+              "telegrafs",
+              "users",
+              "variables",
+              "secrets",
+              "labels",
+              "views",
+              "documents",
+              "notificationRules",
+              "notificationEndpoints",
+              "checks",
+              "dbrp",
+              "annotations",
+              "sources",
+              "scrapers",
+              "notebooks",
+              "remotes",
+              "replications",
+              "instance",
+              "flows",
+              "functions",
+              "subscriptions"
+            ],
+            "description": "A resource type.\nIdentifies the API resource's type (or _kind_).\n"
+          },
+          "id": {
+            "type": "string",
+            "description": "A resource ID.\nIdentifies a specific resource.\n"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the resource.\n_Note: not all resource types have a `name` property_.\n"
+          },
+          "orgID": {
+            "type": "string",
+            "description": "An organization ID.\nIdentifies the organization that owns the resource.\n"
+          },
+          "org": {
+            "type": "string",
+            "description": "An organization name.\nThe organization that owns the resource.\n"
+          }
+        }
       },
       "ResourceMember": {
         "allOf": [
@@ -20770,38 +20857,6 @@
           "configcat_deployments-autopromotionblocker": "#663cd0"
         }
       },
-      "AuthorizationPostRequest": {
-        "required": [
-          "orgID",
-          "permissions"
-        ],
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AuthorizationUpdateRequest"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "orgID": {
-                "type": "string",
-                "description": "The ID of the organization that owns the authorization.\n"
-              },
-              "userID": {
-                "type": "string",
-                "description": "The ID of the user that the authorization is scoped to.\n"
-              },
-              "permissions": {
-                "type": "array",
-                "minItems": 1,
-                "description": "A list of permissions for an authorization.\nAn authorization must have at least one permission.\n",
-                "items": {
-                  "$ref": "#/components/schemas/Permission"
-                }
-              }
-            }
-          }
-        ]
-      },
       "Permission": {
         "required": [
           "action",
@@ -20817,62 +20872,6 @@
           },
           "resource": {
             "$ref": "#/components/schemas/Resource"
-          }
-        }
-      },
-      "Resource": {
-        "type": "object",
-        "required": [
-          "type"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "authorizations",
-              "buckets",
-              "dashboards",
-              "orgs",
-              "tasks",
-              "telegrafs",
-              "users",
-              "variables",
-              "secrets",
-              "labels",
-              "views",
-              "documents",
-              "notificationRules",
-              "notificationEndpoints",
-              "checks",
-              "dbrp",
-              "annotations",
-              "sources",
-              "scrapers",
-              "notebooks",
-              "remotes",
-              "replications",
-              "instance",
-              "flows",
-              "functions",
-              "subscriptions"
-            ],
-            "description": "The type of resource.\nIn a `permission`, applies the permission to all resources of this type.\n"
-          },
-          "id": {
-            "type": "string",
-            "description": "The ID of a specific resource.\nIn a `permission`, applies the permission to only the resource with this ID.\n"
-          },
-          "name": {
-            "type": "string",
-            "description": "Optional: A name for the resource.\nNot all resource types have a name field.\n"
-          },
-          "orgID": {
-            "type": "string",
-            "description": "The ID of the organization that owns the resource.\nIn a `permission`, applies the permission to all resources of `type` owned by this organization.\n"
-          },
-          "org": {
-            "type": "string",
-            "description": "Optional: The name of the organization with `orgID`.\n"
           }
         }
       },
@@ -21853,6 +21852,84 @@
               }
             }
           }
+        }
+      }
+    },
+    "examples": {
+      "AuthorizationPostRequest": {
+        "summary": "An authorization for a resource type",
+        "description": "Creates an authorization.",
+        "value": {
+          "orgID": "INFLUX_ORG_ID",
+          "description": "iot_users read buckets",
+          "permissions": [
+            {
+              "action": "read",
+              "resource": {
+                "type": "buckets"
+              }
+            }
+          ]
+        }
+      },
+      "AuthorizationWithResourcePostRequest": {
+        "summary": "An authorization for a resource",
+        "description": "Creates an authorization for access to a specific resource.",
+        "value": {
+          "orgID": "INFLUX_ORG_ID",
+          "description": "iot_users read buckets",
+          "permissions": [
+            {
+              "action": "read",
+              "resource": {
+                "type": "buckets",
+                "id": "INFLUX_BUCKET_ID"
+              }
+            }
+          ]
+        }
+      },
+      "AuthorizationWithUserPostRequest": {
+        "summary": "An authorization scoped to a user",
+        "description": "Creates an authorization scoped to a specific user.",
+        "value": {
+          "orgID": "INFLUX_ORG_ID",
+          "userID": "INFLUX_USER_ID",
+          "description": "iot_user write to bucket",
+          "permissions": [
+            {
+              "action": "write",
+              "resource": {
+                "type": "buckets",
+                "id": "INFLUX_BUCKET_ID"
+              }
+            }
+          ]
+        }
+      },
+      "TaskWithFluxRequest": {
+        "summary": "A task with Flux",
+        "description": "Sets the `flux` property with Flux task options and a query.",
+        "value": {
+          "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+          "status": "active",
+          "description": "This task contains Flux that configures the task schedule and downsamples CPU data every hour."
+        }
+      },
+      "TaskWithScriptRequest": {
+        "summary": "A task with an invokable script",
+        "description": "Sets properties for a task that runs an _invokable script_.\n",
+        "value": {
+          "name": "CPU Total 1 Hour New",
+          "every": "1h",
+          "scriptID": "SCRIPT_ID",
+          "scriptParameters": {
+            "rangeStart": "-1h",
+            "bucket": "telegraf",
+            "filterField": "cpu-total"
+          },
+          "status": "active",
+          "description": "This task runs an invokable script every hour with the defined parameters."
         }
       }
     },

@@ -4,7 +4,7 @@ get:
     - Authorizations
   summary: List authorizations
   description: |
-    Retrieves a list of authorizations.
+    Lists authorizations.
 
     To limit which authorizations are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all authorizations for the organization.
@@ -15,7 +15,7 @@ get:
       values in `GET /api/v2/authorizations` responses;
       returns `token: redacted` for all authorizations.
 
-    #### Required permissions for InfluxDB Cloud
+    #### Required permissions
 
     - `read-authorizations`
 
@@ -92,20 +92,14 @@ post:
     Use this endpoint to create an authorization, which generates an API token
     with permissions to `read` or `write` to a specific resource or `type` of resource.
 
-    Keep the following in mind when creating and updating authorizations:
-
-    - To apply a permission to a specific resource, specify the resource `id` field.
-    - To apply a permission to all resources with the type, omit the resource `id`.
-    - To scope an authorization to a specific user, provide the `userID` property.
-
     #### Limitations
 
     To follow best practices for secure API token generation and retrieval,
     InfluxDB Cloud enforces access restrictions on API tokens.
 
-    - InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.
-    - You can’t change access (read/write) permissions for an API token after it’s created.
-    - Tokens stop working when the user who created the token is deleted.
+    - InfluxDB only allows access to the API token value immediately after the authorization is created.
+    - You can't update an authorization's permissions.
+    - A token stops working when the user who created the authorization is deleted.
 
     We recommend the following for managing your tokens:
 
@@ -124,6 +118,13 @@ post:
       application/json:
         schema:
           $ref: "../../common/schemas/AuthorizationPostRequest.yml"
+        examples:
+          AuthorizationPostRequest:
+            $ref: "../../common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationPostRequest"
+          AuthorizationWithResourcePostRequest:
+            $ref: "../../common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithResourcePostRequest"
+          AuthorizationWithUserPostRequest:
+            $ref: "../../common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithUserPostRequest"
   responses:
     "201":
       description: |
@@ -142,37 +143,3 @@ post:
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
-  x-codeSample:
-    - lang: Shell
-      label: "cURL: Create auth to read all buckets"
-      source: |
-        curl --request POST \
-        "http://localhost:8086/api/v2/authorizations" \
-        --header "Authorization: Token INFLUX_API_TOKEN" \
-        --header 'Content-Type: application/json' \
-        --data @- << EOF
-          {
-            "orgID": "INFLUX_ORG_ID",
-            "description": "iot_users read buckets",
-            "permissions": [
-              {"action": "read", "resource": {"type": "buckets"}}
-            ]
-          }
-        EOF
-    - lang: Shell
-      label: "cURL: Create auth scoped to a user"
-      source: |
-        curl --request POST \
-        "http://localhost:8086/api/v2/authorizations" \
-        --header "Authorization: Token INFLUX_API_TOKEN" \
-        --header 'Content-Type: application/json' \
-        --data @- << EOF
-          {
-            "orgID": "INFLUX_ORG_ID",
-            "userID": "INFLUX_USER_ID",
-            "description": "iot_user write to bucket",
-            "permissions": [
-              {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
-            ]
-          }
-        EOF
