@@ -3237,19 +3237,23 @@ paths:
       tags:
         - Data I/O endpoints
         - Tasks
-      summary: List all tasks
+      summary: List tasks
       description: |
-        Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+        Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
+
+        #### Related guide
+
+        - [Process data with InfluxDB tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/)
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: query
           name: name
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) name.
-            Only returns tasks with the specified name.
+            A task name.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) with the specified name.
             Different tasks may have the same name.
           schema:
             type: string
@@ -3258,29 +3262,29 @@ paths:
           schema:
             type: string
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-            Only returns tasks created after the specified task.
+            A task ID.
+            Only returns [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.
         - in: query
           name: user
           schema:
             type: string
           description: |
-            A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
-            Only returns tasks owned by the specified user.
+            A user ID.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: org
           schema:
             type: string
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
-            Only returns tasks owned by the specified organization.
+            An organization name.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: orgID
           schema:
             type: string
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
-            Only returns tasks owned by the specified organization.
+            An organization ID.
+            Only returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: status
           schema:
@@ -3289,8 +3293,8 @@ paths:
               - active
               - inactive
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.
-            Only returns tasks that have the specified status (`active` or `inactive`).
+            A task status.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.
         - in: query
           name: limit
           schema:
@@ -3323,8 +3327,11 @@ paths:
         - in: query
           name: sortBy
           description: |
-            The sort field. Only `name` is supported.
-            Specifies the field used to sort records in the list.
+            The sort field.
+            Specifies the task property used to sort records in the list.
+            Default is `name`.
+
+            The parameter has one supported value: `name`.
           required: false
           schema:
             type: string
@@ -3333,11 +3340,13 @@ paths:
         - in: query
           name: type
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type (`basic` or `system`).
+            A task type.
+            Specifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.
             Default is `system`.
-            Specifies the level of detail for tasks in the response.
+
             The default (`system`) response contains all the metadata properties for tasks.
-            To reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).
+            To reduce the response size, set the `type` parameter to `basic` (`type=basic`)
+            to omit some task properties (`flux`, `createdAt`, `updatedAt`).
           required: false
           schema:
             default: ''
@@ -3348,8 +3357,8 @@ paths:
         - in: query
           name: scriptID
           description: |
-            A [script](#tag/Invokable-Scripts) ID.
-            Only returns tasks that use the specified invokable script.
+            A script ID.
+            Only returns tasks that use the specified [invokable script](#tag/Invokable-Scripts).
           schema:
             type: string
       responses:
@@ -3478,52 +3487,7 @@ paths:
       description: |
         Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.
 
-        Use this endpoint to create a scheduled task that runs a Flux script.
-
-        #### InfluxDB Cloud
-
-        - You can use either `flux` or `scriptID` to provide the task script.
-
-          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
-
-            ```json
-            {
-              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-              from(bucket: \"telegraf\")
-                |> range(start: -1h)
-                |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                |> aggregateWindow(every: 1h, fn: max)
-                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-              "status": "active",
-              "description": "This task downsamples CPU data every hour"
-            }
-            ```
-
-          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
-            for the task to run.
-            To pass task options when using `scriptID`, pass the options as
-            properties in the request body--for example:
-
-            ```json
-            {
-              "name": "CPU Total 1 Hour New",
-              "description": "This task downsamples CPU data every hour",
-              "every": "1h",
-              "scriptID": "SCRIPT_ID",
-              "scriptParameters":
-                {
-                  "rangeStart": "-1h",
-                  "bucket": "telegraf",
-                  "filterField": "cpu-total"
-                }
-              }
-            ```
-
-        #### Limitations:
-
-        - You can't use `flux` and `scriptID` for the same task.
+        Use this endpoint to create a scheduled task that runs a script.
 
         #### Related guides
 
@@ -3534,15 +3498,41 @@ paths:
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
       requestBody:
-        description: Provide a task object in the request body.
+        description: |
+          In the request body, provide the task.
+
+          Set one of the following properties to provide the script that the task runs:
+            - `flux`
+            - `scriptID`
+
+          If you set the `scriptID` property, you can set the following properties to configure the task:
+            - `cron`
+            - `every`
+            - `offset`
+            - `scriptParameters`
+
+          If you set the `flux` property, you must provide the `task` configuration option
+          in the Flux script.
+
+          See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+          for detail and examples.
+
+          #### Limitations:
+
+          - You can't use `flux` and `scriptID` in the same task.
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskCreateRequest'
+            examples:
+              TaskWithFlux:
+                $ref: '#/components/examples/TaskWithFluxRequest'
+              TaskWithScriptID:
+                $ref: '#/components/examples/TaskWithScriptRequest'
       responses:
         '201':
-          description: Success. The response body contains a `tasks` list with the new task.
+          description: Success. The response body contains a `tasks` list with the task.
           content:
             application/json:
               schema:
@@ -3554,8 +3544,10 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
-            - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
+            - Returns this error if the task doesn't contain the `flux` property
+              or the `scriptID` property.
+            - Returns this error if the task contains `flux` _and_ `scriptID`
+              properties.
           content:
             application/json:
               schema:
@@ -3581,44 +3573,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
-      x-codeSamples:
-        - lang: Shell
-          label: 'cURL: create a Flux script task'
-          source: |
-            curl INFLUX_URL/api/v2/tasks \
-            --header "Content-type: application/json" \
-            --header "Authorization: Token INFLUX_API_TOKEN" \
-            --data-binary @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "IoT Center 30d environment average.",
-                "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                        from(bucket: \"iot_center\")\
-                          |> range(start: -30d)\
-                          |> filter(fn: (r) => r._measurement == \"environment\")\
-                          |> aggregateWindow(every: 1h, fn: mean)"
-              }
-            EOF
-        - lang: Shell
-          label: 'cURL: create a Flux script reference task'
-          source: |
-            curl INFLUX_URL/api/v2/tasks \
-            --header "Content-type: application/json" \
-            --header "Authorization: Token INFLUX_API_TOKEN" \
-            --data-binary @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "IoT Center 30d environment average.",
-                "scriptID": "085138a111448000",
-                "scriptParameters":
-                  {
-                    "rangeStart": "-30d",
-                    "bucket": "air_sensor",
-                    "filterField": "temperature",
-                    "groupColumn": "_time"
-                  }
-              }
-            EOF
   '/tasks/{taskID}':
     get:
       operationId: GetTasksID
@@ -3627,7 +3581,7 @@ paths:
         - Tasks
       summary: Retrieve a task
       description: |
-        Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+        Retrieves the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -3636,8 +3590,8 @@ paths:
             type: string
           required: true
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-            Specifies the task to retrieve.
+            A task ID.
+            Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task.
@@ -3705,67 +3659,52 @@ paths:
         - Tasks
       summary: Update a task
       description: |
-        Updates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
+        Updates the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
         and then cancels all scheduled runs of the task.
 
         Use this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
-        To update a task, pass an object that contains the updated key-value pairs.
         To activate or inactivate a task, set the `status` property.
-        _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+        The `status` property set to `inactive` cancels scheduled runs and prevents manual runs of the task.
 
-        #### InfluxDB Cloud
+        #### Related guides
 
-        - Use either `flux` or `scriptID` to provide the task script.
-
-          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
-
-            ```json
-            {
-              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-              from(bucket: \"telegraf\")
-                |> range(start: -1h)
-                |> filter(fn: (r) => (r._measurement == \"cpu\"))
-                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-                |> aggregateWindow(every: 1h, fn: max)
-                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-              "status": "active",
-              "description": "This task downsamples CPU data every hour"
-            }
-            ```
-
-          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
-            for the task to run.
-            To pass task options when using `scriptID`, pass the options as
-            properties in the request body--for example:
-
-            ```json
-            {
-              "name": "CPU Total 1 Hour New",
-              "description": "This task downsamples CPU data every hour",
-              "every": "1h",
-              "scriptID": "SCRIPT_ID",
-              "scriptParameters":
-                {
-                  "rangeStart": "-1h",
-                  "bucket": "telegraf",
-                  "filterField": "cpu-total"
-                }
-              }
-            ```
-
-        #### Limitations:
-
-        - You can't use `flux` and `scriptID` for the same task.
+        - [Update a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/update-task/)
+        - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
       requestBody:
-        description: An task update to apply.
+        description: |
+          In the request body, provide the task properties to update.
+          To provide the script that the task runs,
+          set either the `flux` property or the `scriptID` property.
+
+          If you set `scriptID`, you can set the following properties to configure the task:
+            - `cron`
+            - `every`
+            - `offset`
+            - `scriptParameters`
+
+          If you set the `flux` property, provide the `task` configuration option
+          in the Flux script.
+
+          See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+          for detail and examples.
+
+          #### Limitations:
+
+          - You can't set `flux` and `scriptID` properties for the same task--for
+            example, if you set the `scriptID` property, then InfluxDB sets the `flux` property
+            to an empty string (`""`).
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskUpdateRequest'
+            examples:
+              TaskWithFlux:
+                $ref: '#/components/examples/TaskWithFluxRequest'
+              TaskWithScriptID:
+                $ref: '#/components/examples/TaskWithScriptRequest'
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -3774,8 +3713,8 @@ paths:
             type: string
           required: true
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-            Specifies the task to update.
+            A task ID.
+            Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to update.
       responses:
         '200':
           description: Success. The response body contains the updated task.
@@ -3799,12 +3738,13 @@ paths:
         - Tasks
       summary: Delete a task
       description: |
-        Deletes a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and associated records.
-
-        Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+        Deletes the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+        and all associated records (task runs, logs, and labels).
         Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
 
-        If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
+        To disable a task instead of delete it, use
+        [`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task's `status`
+        property to `inactive`.
       parameters:
         - $ref: '#/paths/~1users/get/parameters/0'
         - in: path
@@ -3812,7 +3752,9 @@ paths:
           schema:
             type: string
           required: true
-          description: 'A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID. Specifies the task to delete.'
+          description: |
+            A task ID.
+            Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to delete.
       responses:
         '204':
           description: Success. The task and task runs are deleted. Scheduled runs are canceled.
@@ -4835,7 +4777,7 @@ components:
       summary: A task with Flux
       description: Sets the `flux` property with Flux task options and a query.
       value:
-        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\")|> range(start: -1h)|> filter(fn: (r) => (r._measurement == \"cpu\"))|> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))|> filter(fn: (r) => (r.cpu == \"cpu-total\"))|> aggregateWindow(every: 1h, fn: max)|> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
         status: active
         description: This task contains Flux that configures the task schedule and downsamples CPU data every hour.
     TaskWithScriptRequest:
