@@ -9345,7 +9345,7 @@ paths:
         - Authorizations
       summary: List authorizations
       description: |
-        Retrieves a list of authorizations.
+        Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations for the organization.
@@ -9356,7 +9356,7 @@ paths:
           values in `GET /api/v2/authorizations` responses;
           returns `token: redacted` for all authorizations.
 
-        #### Required permissions for InfluxDB Cloud
+        #### Required permissions
 
         - `read-authorizations`
 
@@ -9433,20 +9433,14 @@ paths:
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
 
-        Keep the following in mind when creating and updating authorizations:
-
-        - To apply a permission to a specific resource, specify the resource `id` field.
-        - To apply a permission to all resources with the type, omit the resource `id`.
-        - To scope an authorization to a specific user, provide the `userID` property.
-
         #### Limitations
 
         To follow best practices for secure API token generation and retrieval,
         InfluxDB Cloud enforces access restrictions on API tokens.
 
-        - InfluxDB Cloud only allows access to the API token value immediately after the authorization is created.
-        - You can’t change access (read/write) permissions for an API token after it’s created.
-        - Tokens stop working when the user who created the token is deleted.
+        - InfluxDB only allows access to the API token value immediately after the authorization is created.
+        - You can't update an authorization's permissions.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend the following for managing your tokens:
 
@@ -9465,6 +9459,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorizationPostRequest'
+            examples:
+              AuthorizationPostRequest:
+                $ref: '#/components/examples/AuthorizationPostRequest'
+              AuthorizationWithResourcePostRequest:
+                $ref: '#/components/examples/AuthorizationWithResourcePostRequest'
+              AuthorizationWithUserPostRequest:
+                $ref: '#/components/examples/AuthorizationWithUserPostRequest'
       responses:
         '201':
           description: |
@@ -9483,40 +9484,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/GeneralServerError'
-      x-codeSample:
-        - lang: Shell
-          label: 'cURL: Create auth to read all buckets'
-          source: |
-            curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_API_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "iot_users read buckets",
-                "permissions": [
-                  {"action": "read", "resource": {"type": "buckets"}}
-                ]
-              }
-            EOF
-        - lang: Shell
-          label: 'cURL: Create auth scoped to a user'
-          source: |
-            curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_API_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "userID": "INFLUX_USER_ID",
-                "description": "iot_user write to bucket",
-                "permissions": [
-                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
-                ]
-              }
-            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -11572,6 +11539,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Authorization'
+    AuthorizationPostRequest:
+      required:
+        - orgID
+        - permissions
+      allOf:
+        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
+        - type: object
+          properties:
+            orgID:
+              type: string
+              description: |
+                An organization ID.
+                Specifies the organization that owns the authorization.
+            userID:
+              type: string
+              description: |
+                A user ID.
+                Specifies the user that the authorization is scoped to.
+
+                When a user authenticates with username and password,
+                InfluxDB generates a _user session_ with all the permissions
+                specified by all the user's authorizations.
+            permissions:
+              type: array
+              minItems: 1
+              description: |
+                A list of permissions for an authorization.
+                In the list, provide at least one `permission` object.
+
+                In a `permission`, the `resource.type` property grants access to all
+                resources of the specified type.
+                To grant access to only a specific resource, specify the
+                `resource.id` property.
+              items:
+                $ref: '#/components/schemas/Permission'
     AuthorizationUpdateRequest:
       properties:
         status:
@@ -13167,6 +13169,63 @@ components:
     Flags:
       type: object
       additionalProperties: true
+    Resource:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - authorizations
+            - buckets
+            - dashboards
+            - orgs
+            - tasks
+            - telegrafs
+            - users
+            - variables
+            - secrets
+            - labels
+            - views
+            - documents
+            - notificationRules
+            - notificationEndpoints
+            - checks
+            - dbrp
+            - annotations
+            - sources
+            - scrapers
+            - notebooks
+            - remotes
+            - replications
+            - instance
+            - flows
+            - functions
+            - subscriptions
+          description: |
+            A resource type.
+            Identifies the API resource's type (or _kind_).
+        id:
+          type: string
+          description: |
+            A resource ID.
+            Identifies a specific resource.
+        name:
+          type: string
+          description: |
+            The name of the resource.
+            _Note: not all resource types have a `name` property_.
+        orgID:
+          type: string
+          description: |
+            An organization ID.
+            Identifies the organization that owns the resource.
+        org:
+          type: string
+          description: |
+            An organization name.
+            The organization that owns the resource.
     ResourceMember:
       allOf:
         - $ref: '#/components/schemas/UserResponse'
@@ -16216,30 +16275,6 @@ components:
         series_id_2: '#edf529'
         measurement_birdmigration_europe: '#663cd0'
         configcat_deployments-autopromotionblocker: '#663cd0'
-    AuthorizationPostRequest:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - $ref: '#/components/schemas/AuthorizationUpdateRequest'
-        - type: object
-          properties:
-            orgID:
-              type: string
-              description: |
-                The ID of the organization that owns the authorization.
-            userID:
-              type: string
-              description: |
-                The ID of the user that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: |
-                A list of permissions for an authorization.
-                An authorization must have at least one permission.
-              items:
-                $ref: '#/components/schemas/Permission'
     Permission:
       required:
         - action
@@ -16252,62 +16287,6 @@ components:
             - write
         resource:
           $ref: '#/components/schemas/Resource'
-    Resource:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - authorizations
-            - buckets
-            - dashboards
-            - orgs
-            - tasks
-            - telegrafs
-            - users
-            - variables
-            - secrets
-            - labels
-            - views
-            - documents
-            - notificationRules
-            - notificationEndpoints
-            - checks
-            - dbrp
-            - annotations
-            - sources
-            - scrapers
-            - notebooks
-            - remotes
-            - replications
-            - instance
-            - flows
-            - functions
-            - subscriptions
-          description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
-        id:
-          type: string
-          description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
-        name:
-          type: string
-          description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
-        orgID:
-          type: string
-          description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
-        org:
-          type: string
-          description: |
-            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
@@ -17069,6 +17048,61 @@ components:
               value:
                 code: not found
                 message: organization not found
+  examples:
+    AuthorizationPostRequest:
+      summary: An authorization for a resource type
+      description: Creates an authorization.
+      value:
+        orgID: INFLUX_ORG_ID
+        description: iot_users read buckets
+        permissions:
+          - action: read
+            resource:
+              type: buckets
+    AuthorizationWithResourcePostRequest:
+      summary: An authorization for a resource
+      description: Creates an authorization for access to a specific resource.
+      value:
+        orgID: INFLUX_ORG_ID
+        description: iot_users read buckets
+        permissions:
+          - action: read
+            resource:
+              type: buckets
+              id: INFLUX_BUCKET_ID
+    AuthorizationWithUserPostRequest:
+      summary: An authorization scoped to a user
+      description: Creates an authorization scoped to a specific user.
+      value:
+        orgID: INFLUX_ORG_ID
+        userID: INFLUX_USER_ID
+        description: iot_user write to bucket
+        permissions:
+          - action: write
+            resource:
+              type: buckets
+              id: INFLUX_BUCKET_ID
+    TaskWithFluxRequest:
+      summary: A task with Flux
+      description: Sets the `flux` property with Flux task options and a query.
+      value:
+        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+        status: active
+        description: This task contains Flux that configures the task schedule and downsamples CPU data every hour.
+    TaskWithScriptRequest:
+      summary: A task with an invokable script
+      description: |
+        Sets properties for a task that runs an _invokable script_.
+      value:
+        name: CPU Total 1 Hour New
+        every: 1h
+        scriptID: SCRIPT_ID
+        scriptParameters:
+          rangeStart: '-1h'
+          bucket: telegraf
+          filterField: cpu-total
+        status: active
+        description: This task runs an invokable script every hour with the defined parameters.
   securitySchemes:
     TokenAuthentication:
       type: apiKey

@@ -1,4 +1,50 @@
 components:
+  examples:
+    AuthorizationPostRequest:
+      description: Creates an authorization.
+      summary: An authorization for a resource type
+      value:
+        description: iot_users read buckets
+        orgID: INFLUX_ORG_ID
+        permissions:
+        - action: read
+          resource:
+            type: buckets
+    AuthorizationWithResourcePostRequest:
+      description: Creates an authorization for access to a specific resource.
+      summary: An authorization for a resource
+      value:
+        description: iot_users read buckets
+        orgID: INFLUX_ORG_ID
+        permissions:
+        - action: read
+          resource:
+            id: INFLUX_BUCKET_ID
+            type: buckets
+    AuthorizationWithUserPostRequest:
+      description: Creates an authorization scoped to a specific user.
+      summary: An authorization scoped to a user
+      value:
+        description: iot_user write to bucket
+        orgID: INFLUX_ORG_ID
+        permissions:
+        - action: write
+          resource:
+            id: INFLUX_BUCKET_ID
+            type: buckets
+        userID: INFLUX_USER_ID
+    TaskWithFluxRequest:
+      description: Sets the `flux` property with Flux task options and a query.
+      summary: A task with Flux
+      value:
+        description: This task contains Flux that configures the task schedule and
+          downsamples CPU data every hour.
+        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket:
+          \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement
+          == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |>
+          filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h,
+          fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+        status: active
   parameters:
     After:
       description: |
@@ -290,19 +336,30 @@ components:
       - properties:
           orgID:
             description: |
-              The ID of the organization that owns the authorization.
+              An organization ID.
+              Specifies the organization that owns the authorization.
             type: string
           permissions:
             description: |
               A list of permissions for an authorization.
-              An authorization must have at least one permission.
+              In the list, provide at least one `permission` object.
+
+              In a `permission`, the `resource.type` property grants access to all
+              resources of the specified type.
+              To grant access to only a specific resource, specify the
+              `resource.id` property.
             items:
               $ref: '#/components/schemas/Permission'
             minItems: 1
             type: array
           userID:
             description: |
-              The ID of the user that the authorization is scoped to.
+              A user ID.
+              Specifies the user that the authorization is scoped to.
+
+              When a user authenticates with username and password,
+              InfluxDB generates a _user session_ with all the permissions
+              specified by all the user's authorizations.
             type: string
         type: object
       required:
@@ -3287,27 +3344,28 @@ components:
           properties:
             id:
               description: |
-                The ID of a specific resource.
-                In a `permission`, applies the permission to only the resource with this ID.
+                A resource ID.
+                Identifies a specific resource.
               type: string
             name:
               description: |
-                Optional: A name for the resource.
-                Not all resource types have a name field.
+                The name of the resource.
+                _Note: not all resource types have a `name` property_.
               type: string
             org:
               description: |
-                Optional: The name of the organization with `orgID`.
+                An organization name.
+                The organization that owns the resource.
               type: string
             orgID:
               description: |
-                The ID of the organization that owns the resource.
-                In a `permission`, applies the permission to all resources of `type` owned by this organization.
+                An organization ID.
+                Identifies the organization that owns the resource.
               type: string
             type:
               description: |
-                The type of resource.
-                In a `permission`, applies the permission to all resources of this type.
+                A resource type.
+                Identifies the API resource's type (or _kind_).
               enum:
               - authorizations
               - buckets
@@ -3757,27 +3815,28 @@ components:
       properties:
         id:
           description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
+            A resource ID.
+            Identifies a specific resource.
           type: string
         name:
           description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
+            The name of the resource.
+            _Note: not all resource types have a `name` property_.
           type: string
         org:
           description: |
-            Optional: The name of the organization with `orgID`.
+            An organization name.
+            The organization that owns the resource.
           type: string
         orgID:
           description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
+            An organization ID.
+            Identifies the organization that owns the resource.
           type: string
         type:
           description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
+            A resource type.
+            Identifies the API resource's type (or _kind_).
           enum:
           - authorizations
           - buckets
@@ -6734,21 +6793,21 @@ paths:
   /api/v2/authorizations:
     get:
       description: |
-        Retrieves a list of authorizations.
+        Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations.
 
         #### InfluxDB OSS
 
-        - Returns
+        - InfluxDB OSS returns
           [API token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token) values in authorizations.
         - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
           InfluxDB OSS returns authorizations for all organizations in the instance.
 
         #### Required permissions
 
-        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+        - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
         #### Related guides
 
@@ -6806,25 +6865,24 @@ paths:
       - Security and access endpoints
     post:
       description: |
-        Creates an authorization.
+        Creates an authorization and returns the authorization with the
+        generated API [token](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#token).
 
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
         The response contains the new authorization with the generated API token.
 
-        Keep the following in mind when creating and updating authorizations:
-
-        - To apply a permission to a specific resource, specify the resource `id` field.
-        - To apply a permission to all resources with the type, omit the resource `id`.
-        - To scope an authorization to a specific user, provide the `userID` property.
-
         #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB enforces access restrictions on API tokens.
 
         - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
           user with an _[operator token](https://docs.influxdata.com/influxdb/v2.3/security/tokens/#operator-token)_.
+        - You can't update an authorization's permissions.
         - Even if an API token has `read-authorizations` permission, the
           token can't be used to view its authorization details.
-        - Tokens stop working when the user who created the token is deleted.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend creating a generic user to create and manage tokens for writing data.
 
@@ -6837,6 +6895,13 @@ paths:
       requestBody:
         content:
           application/json:
+            examples:
+              AuthorizationPostRequest:
+                $ref: '#/components/examples/AuthorizationPostRequest'
+              AuthorizationWithResourcePostRequest:
+                $ref: '#/components/examples/AuthorizationWithResourcePostRequest'
+              AuthorizationWithUserPostRequest:
+                $ref: '#/components/examples/AuthorizationWithUserPostRequest'
             schema:
               $ref: '#/components/schemas/AuthorizationPostRequest'
         description: The authorization to create.
@@ -6847,7 +6912,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: Created. The response body contains the newly created authorization.
+          description: |
+            Success. The authorization is created. The response body contains the authorization.
         "400":
           $ref: '#/components/responses/GeneralServerError'
           description: Invalid request
@@ -6861,40 +6927,6 @@ paths:
       summary: Create an authorization
       tags:
       - Authorizations
-      x-codeSample:
-      - label: 'cURL: Create auth to read all buckets'
-        lang: Shell
-        source: |
-          curl --request POST \
-          "http://localhost:8086/api/v2/authorizations" \
-          --header "Authorization: Token INFLUX_TOKEN" \
-          --header 'Content-Type: application/json' \
-          --data @- << EOF
-            {
-              "orgID": "INFLUX_ORG_ID",
-              "description": "iot_users read buckets",
-              "permissions": [
-                {"action": "read", "resource": {"type": "buckets"}}
-              ]
-            }
-          EOF
-      - lang: Shell
-      - label: 'cURL: Create auth scoped to a user'
-      - source: |
-          curl --request POST \
-          "http://localhost:8086/api/v2/authorizations" \
-          --header "Authorization: Token INFLUX_TOKEN" \
-          --header 'Content-Type: application/json' \
-          --data @- << EOF
-            {
-              "orgID": "INFLUX_ORG_ID",
-              "userID": "INFLUX_USER_ID",
-              "description": "iot_user write to bucket",
-              "permissions": [
-                {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
-              ]
-            }
-          EOF
   /api/v2/authorizations/{authID}:
     delete:
       operationId: DeleteAuthorizationsID
