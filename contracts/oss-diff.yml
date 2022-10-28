@@ -5022,7 +5022,7 @@ paths:
         - Tasks
       summary: List tasks
       description: |
-        Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+        Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
@@ -5035,8 +5035,9 @@ paths:
         - in: query
           name: name
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) name.
-            Only returns tasks with the specified name.
+            A task name.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+            that have the specified name.
             Different tasks may have the same name.
           schema:
             type: string
@@ -5045,29 +5046,31 @@ paths:
           schema:
             type: string
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-            Only returns tasks created after the specified task.
+            A task ID.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.
         - in: query
           name: user
           schema:
             type: string
           description: |
-            A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
-            Only returns tasks owned by the specified user.
+            A user ID.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+            owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: org
           schema:
             type: string
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
-            Only returns tasks owned by the specified organization.
+            An organization name.
+            Only returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: orgID
           schema:
             type: string
           description: |
-            An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
-            Only returns tasks owned by the specified organization.
+            An organization ID.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+          required: true
         - in: query
           name: status
           schema:
@@ -5076,8 +5079,8 @@ paths:
               - active
               - inactive
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.
-            Only returns tasks that have the specified status (`active` or `inactive`).
+            A task status.
+            Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.
         - in: query
           name: limit
           schema:
@@ -5095,9 +5098,9 @@ paths:
         - in: query
           name: type
           description: |
-            A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type (`basic` or `system`).
+            A task type.
+            Specifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.
             Default is `system`.
-            Specifies the level of detail for tasks in the response.
             The default (`system`) response contains all the metadata properties for tasks.
             To reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).
           required: false
@@ -5227,7 +5230,9 @@ paths:
         - Tasks
       summary: Create a task
       description: |
-        Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)  and returns the task.
+        Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.
+
+        Use this endpoint to create a scheduled task that runs a script.
 
         #### Related guides
 
@@ -5238,12 +5243,20 @@ paths:
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
       requestBody:
-        description: The task to create.
+        description: |
+          In the request body, provide the task.
+
+          #### InfluxDB OSS
+
+          - Requires either the `org` parameter or the `orgID` parameter.
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskCreateRequest'
+            examples:
+              TaskWithFlux:
+                $ref: '#/components/examples/TaskWithFluxRequest'
       responses:
         '201':
           description: Success. The response body contains a `tasks` list with the task.
@@ -5265,12 +5278,12 @@ paths:
                 $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
               examples:
                 orgProvidedNotFound:
-                  summary: The org or orgID passed doesn't own the token passed in the header
+                  summary: The organization specified by org or orgID doesn't own the token passed in the header
                   value:
                     code: invalid
                     message: 'failed to decode request body: organization not found'
                 missingFluxError:
-                  summary: Task in request body is missing Flux query
+                  summary: The request body doesn't contain a Flux query
                   value:
                     code: invalid
                     message: 'failed to decode request: missing flux'
@@ -5284,24 +5297,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
-      x-codeSamples:
-        - lang: Shell
-          label: 'cURL: create a task'
-          source: |
-            curl http://localhost:8086/api/v2/tasks \
-              --header "Content-type: application/json" \
-              --header "Authorization: Token INFLUX_API_TOKEN" \
-              --data-binary @- << EOF
-                {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "IoT Center 30d environment average.",
-                "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                        from(bucket: \"iot_center\")\
-                          |> range(start: -30d)\
-                          |> filter(fn: (r) => r._measurement == \"environment\")\
-                          |> aggregateWindow(every: 1h, fn: mean)"
-                }
-            EOF
   '/tasks/{taskID}':
     get:
       operationId: GetTasksID
@@ -5310,7 +5305,7 @@ paths:
         - Tasks
       summary: Retrieve a task
       description: |
-        Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+        Retrieves the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -5318,7 +5313,9 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to retrieve.
+          description: |
+            A task ID.
+            Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task.
@@ -5386,21 +5383,27 @@ paths:
         - Tasks
       summary: Update a task
       description: |
-        Updates a task and then cancels all scheduled runs of the task.
+        Updates the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
+        and then cancels all scheduled runs of the task.
 
-        Use this endpoint to set, modify, and clear task properties (for example: `cron`, `name`, `flux`, `status`).
+        Use this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
-        To update a task, pass an object that contains the updated key-value pairs.
-        To activate or inactivate a task, set the `status` property.
-        _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+        #### Related guides
+
+        - [Update a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/update-task/)
+        - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
       requestBody:
-        description: An object that contains updated task properties to apply.
+        description: |
+          In the request body, provide the task properties to update.
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TaskUpdateRequest'
+            examples:
+              TaskWithFlux:
+                $ref: '#/components/examples/TaskWithFluxRequest'
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -5408,7 +5411,9 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to update.
+          description: |
+            A task ID.
+            Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)to update.
       responses:
         '200':
           description: Success. The response body contains the updated task.
@@ -5432,12 +5437,13 @@ paths:
         - Tasks
       summary: Delete a task
       description: |
-        Deletes a task and associated records.
-
-        Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+        Deletes the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+        and all associated records (task runs, logs, and labels).
         Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
 
-        If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
+        To disable a task instead of delete it, use
+        [`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task status
+         to `inactive`.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -5445,7 +5451,9 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to delete.
+          description: |
+            A task ID.
+            Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to delete.
       responses:
         '204':
           description: Success. The task and runs are deleted. Scheduled runs are canceled.
@@ -6624,7 +6632,7 @@ components:
       summary: A task with Flux
       description: Sets the `flux` property with Flux task options and a query.
       value:
-        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\")|> range(start: -1h)|> filter(fn: (r) => (r._measurement == \"cpu\"))|> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))|> filter(fn: (r) => (r.cpu == \"cpu-total\"))|> aggregateWindow(every: 1h, fn: max)|> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
         status: active
         description: This task contains Flux that configures the task schedule and downsamples CPU data every hour.
   securitySchemes:

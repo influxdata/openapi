@@ -8265,7 +8265,7 @@
           "Tasks"
         ],
         "summary": "List runs for a task",
-        "description": "Retrieves a list of runs for a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/).\n\nTo limit which task runs are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all task runs up to the default `limit`.\n",
+        "description": "Lists runs for the specified [task]({{% INFLUXDB_DOCS_URL %}}/process-data/).\n\nTo limit which task runs are returned, pass query parameters in your request.\nIf you don't pass query parameters, InfluxDB returns all runs for the task\nup to the default `limit`.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8277,7 +8277,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to get runs for.\nOnly returns runs for this task.\n"
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to\nto list runs for.\n"
           },
           {
             "in": "query",
@@ -8285,7 +8285,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A task run ID. Only returns runs created after this run."
+            "description": "A task run ID. Only returns runs created after the specified run."
           },
           {
             "in": "query",
@@ -8305,7 +8305,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled after this time.\n"
+            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled after the specified time.\n"
           },
           {
             "in": "query",
@@ -8314,7 +8314,7 @@
               "type": "string",
               "format": "date-time"
             },
-            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled before this time.\n"
+            "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).\nOnly returns runs scheduled before the specified time.\n"
           }
         ],
         "responses": {
@@ -8346,7 +8346,7 @@
           "Tasks"
         ],
         "summary": "Start a task run, overriding the schedule",
-        "description": "Schedules a task run to start immediately, ignoring scheduled runs.\n\nUse this endpoint to manually start a task run.\nScheduled runs will continue to run as scheduled.\nThis may result in concurrently running tasks.\n\nTo _retry_ a previous run (and avoid creating a new run),\nuse the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry` endpoint](#operation/PostTasksIDRunsIDRetry).\n",
+        "description": "Schedules a task run to start immediately, ignoring scheduled runs.\n\nUse this endpoint to manually start a task run.\nScheduled runs will continue to run as scheduled.\nThis may result in concurrently running tasks.\n\nTo _retry_ a previous run (and avoid creating a new run),\nuse the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry` endpoint](#operation/PostTasksIDRunsIDRetry).\n\n#### Limitations\n\n- Queuing a task run requires that the task's `status` property be set to `active`.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8357,7 +8357,8 @@
             "schema": {
               "type": "string"
             },
-            "required": true
+            "required": true,
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to\nto run.\n"
           }
         ],
         "requestBody": {
@@ -8376,6 +8377,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "inactiveTask": {
+                    "summary": "Can't run an inactive task",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to force run: inactive task"
+                    }
+                  }
                 }
               }
             }
@@ -8399,7 +8419,7 @@
           "Tasks"
         ],
         "summary": "Retrieve a run for a task.",
-        "description": "Retrieves a specific run for a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint to retrieve detail and logs for a specific task run.\n",
+        "description": "Retrieves the specified run for the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint to retrieve detail and logs for a specific task run.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8411,7 +8431,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to retrieve runs for."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)\nthat the task run belongs to.\n"
           },
           {
             "in": "path",
@@ -8420,7 +8440,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the run to retrieve."
+            "description": "A task run ID. Specifies the run to retrieve."
           }
         ],
         "responses": {
@@ -8489,7 +8509,7 @@
           "Tasks"
         ],
         "summary": "Cancel a running task",
-        "description": "Cancels a running [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint with InfluxDB OSS to cancel a running task.\n\n#### InfluxDB Cloud\n\n- Doesn't support this operation.\n",
+        "description": "Cancels a running [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint to cancel a running task.\n\n#### InfluxDB Cloud\n\n- Doesn't support this operation.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8501,7 +8521,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to cancel."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to\nto cancel.\n"
           },
           {
             "in": "path",
@@ -8510,7 +8530,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task run to cancel."
+            "description": "A task run ID.\nSpecifies the task run to cancel.\n"
           }
         ],
         "responses": {
@@ -8552,7 +8572,7 @@
           "Tasks"
         ],
         "summary": "Retry a task run",
-        "description": "Queues a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)  run to\nretry and returns the scheduled run.\n\nTo manually start a _new_ task run, use the\n[`POST /api/v2/tasks/{taskID}/runs` endpoint](#operation/PostTasksIDRuns).\n\n#### Limitations\n\n- The task must be _active_ (`status: \"active\"`).\n",
+        "description": "Queues a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) run to\nretry and then returns the scheduled run.\n\nTo manually start a _new_ task run, use the\n[`POST /api/v2/tasks/{taskID}/runs` endpoint](#operation/PostTasksIDRuns).\n\n#### Limitations\n\n- Queuing a task run requires that the task's `status` property be set to `active`.\n",
         "requestBody": {
           "content": {
             "application/json; charset=utf-8": {
@@ -8573,7 +8593,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)  ID.\nSpecifies the task to retry.\n"
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that the task run belongs to.\n"
           },
           {
             "in": "path",
@@ -8582,7 +8602,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) run ID.\nSpecifies the task run to retry.\n\nTo find a task run ID, use the\n[`GET /api/v2/tasks/{taskID}/runs` endpoint](#operation/GetTasksIDRuns)\nto list task runs.\n"
+            "description": "A task run ID.\nSpecifies the task run to retry.\n\nTo find a task run ID, use the\n[`GET /api/v2/tasks/{taskID}/runs` endpoint](#operation/GetTasksIDRuns)\nto list task runs.\n"
           }
         ],
         "responses": {
@@ -8654,8 +8674,8 @@
         "tags": [
           "Tasks"
         ],
-        "summary": "Retrieve all logs for a task",
-        "description": "Retrieves a list of all logs for a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nWhen an InfluxDB task runs, a “run” record is created in the task’s history.\nLogs associated with each run provide relevant log messages, timestamps, and the exit status of the run attempt.\n\nUse this endpoint to retrieve only the log events for a task,\nwithout additional task metadata.\n",
+        "summary": "List logs for a task",
+        "description": "Lists all log events for a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nWhen a task runs, InfluxDB creates a `run` record in the task’s history.\nLogs associated with each run provide relevant log messages, timestamps, and the exit status of the `run` attempt.\n\nUse this endpoint to retrieve only the log events for a task,\nwithout additional task metadata.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8667,12 +8687,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "A task ID. Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve logs for."
           }
         ],
         "responses": {
           "200": {
-            "description": "Success. The response body contains an `events` list with logs for the task.\nEach log event `message` contains detail about the event.\nIf a task run fails, InfluxDB logs an event with the reason for the failure.\n",
+            "description": "Success.\nThe response body contains an `events` list with logs for the task.\nEach log event `message` contains detail about the event.\nIf a task run fails, InfluxDB logs an event with the reason for the failure.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -8680,7 +8700,7 @@
                 },
                 "examples": {
                   "taskSuccess": {
-                    "summary": "Events for a successful task run.",
+                    "summary": "Events for a successful task run",
                     "value": {
                       "events": [
                         {
@@ -8697,7 +8717,7 @@
                     }
                   },
                   "taskFailure": {
-                    "summary": "Events for a failed task run.",
+                    "summary": "Events for a failed task run",
                     "value": {
                       "events": [
                         {
@@ -8746,8 +8766,8 @@
         "tags": [
           "Tasks"
         ],
-        "summary": "Retrieve all logs for a run",
-        "description": "Retrieves all logs for a task run.\nA log is a list of run events with `runID`, `time`, and `message` properties.\n\nUse this endpoint to help analyze task performance and troubleshoot failed task runs.\n",
+        "summary": "List logs for a run",
+        "description": "Lists all logs for a task run.\nA log is a list of run events with `runID`, `time`, and `message` properties.\n\nUse this endpoint to help analyze [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) performance and troubleshoot failed task runs.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8759,7 +8779,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to get logs for."
+            "description": "A task ID. Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that the run belongs to."
           },
           {
             "in": "path",
@@ -8768,7 +8788,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the run to get logs for."
+            "description": "A run ID. Specifies the task run to list logs for."
           }
         ],
         "responses": {
@@ -8848,7 +8868,7 @@
           "Tasks"
         ],
         "summary": "List labels for a task",
-        "description": "Retrieves a list of all labels for a task.\n\nLabels may be used for grouping and filtering tasks.\n",
+        "description": "Lists all labels for a task.\n\nUse this endpoint to list labels applied to a task.\nLabels are a way to add metadata to InfluxDB resources.\nYou can use labels for grouping and filtering resources in the\nInfluxDB UI, `influx` CLI, and InfluxDB API.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8860,7 +8880,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to retrieve labels for."
+            "description": "A task ID.\nSpecifies the task to retrieve labels for.\n"
           }
         ],
         "responses": {
@@ -8897,7 +8917,7 @@
           "Tasks"
         ],
         "summary": "Add a label to a task",
-        "description": "Adds a label to a task.\n\nUse this endpoint to add a label that you can use to filter tasks in the InfluxDB UI.\n",
+        "description": "Adds a label to a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nUse this endpoint to add a label to a task.\nLabels are a way to add metadata to InfluxDB resources.\nYou can use labels for grouping and filtering resources in the\nInfluxDB UI, `influx` CLI, and InfluxDB API.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8909,11 +8929,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to label."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to label.\n"
           }
         ],
         "requestBody": {
-          "description": "An object that contains a _`labelID`_ to add to the task.",
+          "description": "In the request body, provide an object that specifies the label.\n",
           "required": true,
           "content": {
             "application/json": {
@@ -8925,7 +8945,7 @@
         },
         "responses": {
           "201": {
-            "description": "Success. The response body contains a list of all labels for the task.",
+            "description": "Success. The response body contains the label.",
             "content": {
               "application/json": {
                 "schema": {
@@ -8959,7 +8979,7 @@
           "Tasks"
         ],
         "summary": "Delete a label from a task",
-        "description": "Deletes a label from a task.\n",
+        "description": "Deletes a label from a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -8971,7 +8991,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to delete the label from."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to delete the label from.\n"
           },
           {
             "in": "path",
@@ -8980,7 +9000,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the label to delete."
+            "description": "A label ID.\nSpecifies the label to delete.\n"
           }
         ],
         "responses": {
@@ -9153,7 +9173,7 @@
           "Tasks"
         ],
         "summary": "List all task members",
-        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nLists all users that have the `member` role for the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9165,12 +9185,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve members for.\n"
           }
         ],
         "responses": {
           "200": {
-            "description": "Success. The response body contains a list of `users` that have\nthe `member` role for a task.\n",
+            "description": "Success. The response body contains a list of `users` that have\nthe `member` role for a task.\n\nIf the task has no members, the response contains an empty `users` array.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -9198,7 +9218,7 @@
           "Tasks"
         ],
         "summary": "Add a member to a task",
-        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nAdds a user to members of a task and returns the member.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nAdds a specified user to members of the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and then returns\nthe member.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9210,11 +9230,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.\nSpecifies the task for the member.\n"
           }
         ],
         "requestBody": {
-          "description": "A user to add as a member of the task.",
+          "description": "In the request body, provide an object that specifies the user.\n",
           "required": true,
           "content": {
             "application/json": {
@@ -9226,7 +9246,7 @@
         },
         "responses": {
           "201": {
-            "description": "Created. The user is added to task members.",
+            "description": "Created. The task `member` role is assigned to the user.\nThe response body contains the resource member with\nrole and user detail.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -9256,7 +9276,7 @@
           "Tasks"
         ],
         "summary": "Remove a member from a task",
-        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nRemoves a member from a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9268,7 +9288,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the member to remove."
+            "description": "A user ID. Specifies the member to remove."
           },
           {
             "in": "path",
@@ -9277,12 +9297,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "A task ID. Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to remove the member from."
           }
         ],
         "responses": {
           "204": {
-            "description": "Member removed"
+            "description": "Success. The member is removed."
           },
           "default": {
             "description": "Unexpected error",
@@ -9305,7 +9325,7 @@
           "Tasks"
         ],
         "summary": "List all owners of a task",
-        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nRetrieves all users that have owner permission for a task.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nLists all users that have the `owner` role for the specified task.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9317,7 +9337,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the task to retrieve owners for."
+            "description": "A task ID. Specifies the task to retrieve owners for."
           }
         ],
         "responses": {
@@ -9366,7 +9386,7 @@
           "Tasks"
         ],
         "summary": "Add an owner for a task",
-        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nAssigns a task `owner` role to a user.\n\nUse this endpoint to create a _resource owner_ for the task.\nA _resource owner_ is a user with `role: owner` for a specific resource.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nAdds a specified user to owners of the specified task and then returns the\nowner.\n\nUse this endpoint to create a _resource owner_ for the task.\nA _resource owner_ is a user with `role: owner` for a specific resource.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9378,11 +9398,11 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) for the owner.\n"
           }
         ],
         "requestBody": {
-          "description": "A user to add as an owner of the task.",
+          "description": "In the request body, provide an object that specifies the user.\n",
           "required": true,
           "content": {
             "application/json": {
@@ -9455,7 +9475,7 @@
           "Tasks"
         ],
         "summary": "Remove an owner from a task",
-        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n",
+        "description": "**Deprecated**: Tasks don't use `owner` and `member` roles.\nUse [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.\n\nRemoves an owner from a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -9467,7 +9487,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "The ID of the owner to remove."
+            "description": "A user ID. Specifies the owner to remove from the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)."
           },
           {
             "in": "path",
@@ -9476,12 +9496,12 @@
               "type": "string"
             },
             "required": true,
-            "description": "The task ID."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to remove the owner from.\n"
           }
         ],
         "responses": {
           "204": {
-            "description": "Owner removed"
+            "description": "Success. The owner is removed."
           },
           "default": {
             "description": "Unexpected error",
@@ -12774,8 +12794,8 @@
           "Data I/O endpoints",
           "Tasks"
         ],
-        "summary": "List all tasks",
-        "description": "Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nTo limit which tasks are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.\n",
+        "summary": "List tasks",
+        "description": "Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n\nTo limit which tasks are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.\n\n#### Related guide\n\n- [Process data with InfluxDB tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12783,7 +12803,7 @@
           {
             "in": "query",
             "name": "name",
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) name.\nOnly returns tasks with the specified name.\nDifferent tasks may have the same name.\n",
+            "description": "A task name.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) with the specified name.\nDifferent tasks may have the same name.\n",
             "schema": {
               "type": "string"
             }
@@ -12794,7 +12814,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.\nOnly returns tasks created after the specified task.\n"
+            "description": "A task ID.\nOnly returns [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.\n"
           },
           {
             "in": "query",
@@ -12802,7 +12822,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.\nOnly returns tasks owned by the specified user.\n"
+            "description": "A user ID.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n"
           },
           {
             "in": "query",
@@ -12810,7 +12830,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.\nOnly returns tasks owned by the specified organization.\n"
+            "description": "An organization name.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n"
           },
           {
             "in": "query",
@@ -12818,7 +12838,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.\nOnly returns tasks owned by the specified organization.\n"
+            "description": "An organization ID.\nOnly returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n"
           },
           {
             "in": "query",
@@ -12830,7 +12850,7 @@
                 "inactive"
               ]
             },
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.\nOnly returns tasks that have the specified status (`active` or `inactive`).\n"
+            "description": "A task status.\nOnly returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.\n"
           },
           {
             "in": "query",
@@ -12867,7 +12887,7 @@
           {
             "in": "query",
             "name": "sortBy",
-            "description": "The sort field. Only `name` is supported.\nSpecifies the field used to sort records in the list.\n",
+            "description": "The sort field.\nSpecifies the task property used to sort records in the list.\nDefault is `name`.\n\nThe parameter has one supported value: `name`.\n",
             "required": false,
             "schema": {
               "type": "string",
@@ -12879,7 +12899,7 @@
           {
             "in": "query",
             "name": "type",
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type (`basic` or `system`).\nDefault is `system`.\nSpecifies the level of detail for tasks in the response.\nThe default (`system`) response contains all the metadata properties for tasks.\nTo reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).\n",
+            "description": "A task type.\nSpecifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.\nDefault is `system`.\n\nThe default (`system`) response contains all the metadata properties for tasks.\nTo reduce the response size, set the `type` parameter to `basic` (`type=basic`)\nto omit some task properties (`flux`, `createdAt`, `updatedAt`).\n",
             "required": false,
             "schema": {
               "default": "",
@@ -12893,7 +12913,7 @@
           {
             "in": "query",
             "name": "scriptID",
-            "description": "A [script](#tag/Invokable-Scripts) ID.\nOnly returns tasks that use the specified invokable script.\n",
+            "description": "A script ID.\nOnly returns tasks that use the specified [invokable script](#tag/Invokable-Scripts).\n",
             "schema": {
               "type": "string"
             }
@@ -13004,26 +13024,34 @@
           "Tasks"
         ],
         "summary": "Create a task",
-        "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.\n\nUse this endpoint to create a scheduled task that runs a Flux script.\n\n#### InfluxDB Cloud\n\n- You can use either `flux` or `scriptID` to provide the task script.\n\n  - `flux`: a string of \"raw\" Flux that contains task options and the script--for example:\n\n    ```json\n    {\n      \"flux\": \"option task = {name: \\\"CPU Total 1 Hour New\\\", every: 1h}\\\n      from(bucket: \\\"telegraf\\\")\n        |> range(start: -1h)\n        |> filter(fn: (r) => (r._measurement == \\\"cpu\\\"))\n        |> filter(fn: (r) =>\\n\\t\\t(r._field == \\\"usage_system\\\"))\n        |> filter(fn: (r) => (r.cpu == \\\"cpu-total\\\"))\n        |> aggregateWindow(every: 1h, fn: max)\n        |> to(bucket: \\\"cpu_usage_user_total_1h\\\", org: \\\"INFLUX_ORG\\\")\",\n      \"status\": \"active\",\n      \"description\": \"This task downsamples CPU data every hour\"\n    }\n    ```\n\n  - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)\n    for the task to run.\n    To pass task options when using `scriptID`, pass the options as\n    properties in the request body--for example:\n\n    ```json\n    {\n      \"name\": \"CPU Total 1 Hour New\",\n      \"description\": \"This task downsamples CPU data every hour\",\n      \"every\": \"1h\",\n      \"scriptID\": \"SCRIPT_ID\",\n      \"scriptParameters\":\n        {\n          \"rangeStart\": \"-1h\",\n          \"bucket\": \"telegraf\",\n          \"filterField\": \"cpu-total\"\n        }\n      }\n    ```\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` for the same task.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
+        "description": "Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.\n\nUse this endpoint to create a scheduled task that runs a script.\n\n#### Related guides\n\n- [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)\n- [Create a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/)\n- [Common tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "The task to create",
+          "description": "In the request body, provide the task.\n\nSet one of the following properties to provide the script that the task runs:\n  - `flux`\n  - `scriptID`\n\nIf you set the `scriptID` property, you can set the following properties to configure the task:\n  - `cron`\n  - `every`\n  - `offset`\n  - `scriptParameters`\n\nIf you set the `flux` property, you must provide the `task` configuration option\nin the Flux script.\n\nSee [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nfor detail and examples.\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` in the same task.\n",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TaskCreateRequest"
+              },
+              "examples": {
+                "TaskWithFlux": {
+                  "$ref": "#/components/examples/TaskWithFluxRequest"
+                },
+                "TaskWithScriptID": {
+                  "$ref": "#/components/examples/TaskWithScriptRequest"
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Success. The response body contains a `tasks` list with the new task.",
+            "description": "Success. The response body contains a `tasks` list with the task.",
             "content": {
               "application/json": {
                 "schema": {
@@ -13033,7 +13061,7 @@
             }
           },
           "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB Cloud\n\n- Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.\n- Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.\n",
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB Cloud\n\n- Returns this error if the task doesn't contain the `flux` property\n  or the `scriptID` property.\n- Returns this error if the task contains `flux` _and_ `scriptID`\n  properties.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -13074,19 +13102,7 @@
               }
             }
           }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "Shell",
-            "label": "cURL: create a Flux script task",
-            "source": "curl https://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"flux\": \"option task = {name: \\\"iot-center-task-1\\\", every: 30m}\\\n            from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -30d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\\\n              |> aggregateWindow(every: 1h, fn: mean)\"\n  }\nEOF\n"
-          },
-          {
-            "lang": "Shell",
-            "label": "cURL: create a Flux script reference task",
-            "source": "curl https://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"scriptID\": \"085138a111448000\",\n    \"scriptParameters\":\n      {\n        \"rangeStart\": \"-30d\",\n        \"bucket\": \"air_sensor\",\n        \"filterField\": \"temperature\",\n        \"groupColumn\": \"_time\"\n      }\n  }\nEOF\n"
-          }
-        ]
+        }
       }
     },
     "/tasks/{taskID}": {
@@ -13097,7 +13113,7 @@
           "Tasks"
         ],
         "summary": "Retrieve a task",
-        "description": "Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n",
+        "description": "Retrieves the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -13109,7 +13125,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.\nSpecifies the task to retrieve.\n"
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve.\n"
           }
         ],
         "responses": {
@@ -13146,14 +13162,22 @@
           "Tasks"
         ],
         "summary": "Update a task",
-        "description": "Updates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),\nand then cancels all scheduled runs of the task.\n\nUse this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.\nOnce InfluxDB applies the update, it cancels all previously scheduled runs of the task.\n\nTo update a task, pass an object that contains the updated key-value pairs.\nTo activate or inactivate a task, set the `status` property.\n_`\"status\": \"inactive\"`_ cancels scheduled runs and prevents manual runs of the task.\n\n#### InfluxDB Cloud\n\n- Use either `flux` or `scriptID` to provide the task script.\n\n  - `flux`: a string of \"raw\" Flux that contains task options and the script--for example:\n\n    ```json\n    {\n      \"flux\": \"option task = {name: \\\"CPU Total 1 Hour New\\\", every: 1h}\\\n      from(bucket: \\\"telegraf\\\")\n        |> range(start: -1h)\n        |> filter(fn: (r) => (r._measurement == \\\"cpu\\\"))\n        |> filter(fn: (r) =>\\n\\t\\t(r._field == \\\"usage_system\\\"))\n        |> filter(fn: (r) => (r.cpu == \\\"cpu-total\\\"))\n        |> aggregateWindow(every: 1h, fn: max)\n        |> to(bucket: \\\"cpu_usage_user_total_1h\\\", org: \\\"INFLUX_ORG\\\")\",\n      \"status\": \"active\",\n      \"description\": \"This task downsamples CPU data every hour\"\n    }\n    ```\n\n  - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)\n    for the task to run.\n    To pass task options when using `scriptID`, pass the options as\n    properties in the request body--for example:\n\n    ```json\n    {\n      \"name\": \"CPU Total 1 Hour New\",\n      \"description\": \"This task downsamples CPU data every hour\",\n      \"every\": \"1h\",\n      \"scriptID\": \"SCRIPT_ID\",\n      \"scriptParameters\":\n        {\n          \"rangeStart\": \"-1h\",\n          \"bucket\": \"telegraf\",\n          \"filterField\": \"cpu-total\"\n        }\n      }\n    ```\n\n#### Limitations:\n\n- You can't use `flux` and `scriptID` for the same task.\n",
+        "description": "Updates the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),\nand then cancels all scheduled runs of the task.\n\nUse this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.\nOnce InfluxDB applies the update, it cancels all previously scheduled runs of the task.\n\nTo activate or inactivate a task, set the `status` property.\nThe `status` property set to `inactive` cancels scheduled runs and prevents manual runs of the task.\n\n#### Related guides\n\n- [Update a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/update-task/)\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
         "requestBody": {
-          "description": "An task update to apply.",
+          "description": "In the request body, provide the task properties to update.\nTo provide the script that the task runs,\nset either the `flux` property or the `scriptID` property.\n\nIf you set `scriptID`, you can set the following properties to configure the task:\n  - `cron`\n  - `every`\n  - `offset`\n  - `scriptParameters`\n\nIf you set the `flux` property, provide the `task` configuration option\nin the Flux script.\n\nSee [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nfor detail and examples.\n\n#### Limitations:\n\n- You can't set `flux` and `scriptID` properties for the same task--for\n  example, if you set the `scriptID` property, then InfluxDB sets the `flux` property\n  to an empty string (`\"\"`).\n",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TaskUpdateRequest"
+              },
+              "examples": {
+                "TaskWithFlux": {
+                  "$ref": "#/components/examples/TaskWithFluxRequest"
+                },
+                "TaskWithScriptID": {
+                  "$ref": "#/components/examples/TaskWithScriptRequest"
+                }
               }
             }
           }
@@ -13169,7 +13193,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.\nSpecifies the task to update.\n"
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to update.\n"
           }
         ],
         "responses": {
@@ -13206,7 +13230,7 @@
           "Tasks"
         ],
         "summary": "Delete a task",
-        "description": "Deletes a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and associated records.\n\nUse this endpoint to delete a task and all associated records (task runs, logs, and labels).\nOnce the task is deleted, InfluxDB cancels all scheduled runs of the task.\n\nIf you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).\n",
+        "description": "Deletes the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)\nand all associated records (task runs, logs, and labels).\nOnce the task is deleted, InfluxDB cancels all scheduled runs of the task.\n\nTo disable a task instead of delete it, use\n[`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task's `status`\nproperty to `inactive`.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -13218,7 +13242,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID. Specifies the task to delete."
+            "description": "A task ID.\nSpecifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to delete.\n"
           }
         ],
         "responses": {
@@ -21908,7 +21932,7 @@
         "summary": "A task with Flux",
         "description": "Sets the `flux` property with Flux task options and a query.",
         "value": {
-          "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+          "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\")|> range(start: -1h)|> filter(fn: (r) => (r._measurement == \"cpu\"))|> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))|> filter(fn: (r) => (r.cpu == \"cpu-total\"))|> aggregateWindow(every: 1h, fn: max)|> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
           "status": "active",
           "description": "This task contains Flux that configures the task schedule and downsamples CPU data every hour."
         }
