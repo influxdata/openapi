@@ -1617,7 +1617,7 @@
         "summary": "Write data",
         "description": "Writes data to a bucket.\n\nUse this endpoint to send data in [line protocol]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/) format to InfluxDB.\n\n#### InfluxDB Cloud\n\n- Does the following when you send a write request:\n\n  1. Validates the request and queues the write.\n  2. If queued, responds with _success_ (HTTP `2xx` status code); _error_ otherwise.\n  3. Handles the delete asynchronously and reaches eventual consistency.\n\n  To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\n  wait for a success response (HTTP `2xx` status code) before you send the next request.\n\n  Because writes and deletes are asynchronous, your change might not yet be readable\n  when you receive the response.\n\n#### InfluxDB OSS\n\n- Validates the request and handles the write synchronously.\n- If all points were written successfully, responds with HTTP `2xx` status code;\n  otherwise, returns the first line that failed.\n\n#### Required permissions\n\n- `write-buckets` or `write-bucket BUCKET_ID`.\n\n *`BUCKET_ID`* is the ID of the destination bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`write` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Write data with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/write-data/developer-tools/api)\n- [Optimize writes to InfluxDB]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/)\n- [Troubleshoot issues writing data]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n",
         "requestBody": {
-          "description": "Data in line protocol format.\n\nTo send compressed data, do the following:\n\n  1. Use [GZIP](https://www.gzip.org/) to compress the line protocol data.\n  2. In your request, send the compressed data and the\n     `Content-Encoding: gzip` header.\n\n#### Related guides\n\n- [Best practices for optimizing writes]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/)\n",
+          "description": "In the request body, provide data in [line protocol format]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/line-protocol/).\n\nTo send compressed data, do the following:\n\n  1. Use [GZIP](https://www.gzip.org/) to compress the line protocol data.\n  2. In your request, send the compressed data and the\n     `Content-Encoding: gzip` header.\n\n#### Related guides\n\n- [Best practices for optimizing writes]({{% INFLUXDB_DOCS_URL %}}/write-data/best-practices/optimize-writes/)\n",
           "required": true,
           "content": {
             "text/plain": {
@@ -1690,7 +1690,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "The destination organization for writes.\nInfluxDB writes all points in the batch to this organization.\nIf you pass both `orgID` and `org`, they must both be valid.\n\n#### InfluxDB Cloud\n\n- Doesn't require `org` or `orgID`.\n- Writes to the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either `org` or `orgID`.\n- InfluxDB writes all points in the batch to this organization.\n",
+            "description": "An organization name or ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Writes data to the bucket in the organization\n  associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n- If you pass both `orgID` and `org`, they must both be valid.\n- Writes data to the bucket in the specified organization.\n",
             "required": true,
             "schema": {
               "type": "string",
@@ -1700,7 +1700,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The ID of the destination organization for writes.\nIf you pass both `orgID` and `org`, they must both be valid.\n\n#### InfluxDB Cloud\n\n- Doesn't require `org` or `orgID`.\n- Writes to the bucket in the organization associated with the authorization (API token).\n\n\n#### InfluxDB OSS\n\n- Requires either `org` or `orgID`.\n- InfluxDB writes all points in the batch to this organization.\n",
+            "description": "An organization ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Writes data to the bucket in the organization\n  associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n- If you pass both `orgID` and `org`, they must both be valid.\n- Writes data to the bucket in the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -1708,7 +1708,7 @@
           {
             "in": "query",
             "name": "bucket",
-            "description": "The destination bucket for writes.\nInfluxDB writes all points in the batch to this bucket.\n",
+            "description": "A bucket name or ID.\nInfluxDB writes all points in the batch to the specified bucket.\n",
             "required": true,
             "schema": {
               "type": "string",
@@ -1729,7 +1729,7 @@
             "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the write asynchronously - the write might not have completed yet.\n\n#### InfluxDB OSS\n\n- Successfully wrote all points in the batch.\n\n#### Related guides\n\n- [How to check for write errors]({{% INFLUXDB_DOCS_URL %}}/write-data/troubleshoot/)\n"
           },
           "400": {
-            "description": "Bad request. The response body contains detail about the error.\n\nInfluxDB returns this error if the line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data, and indicates what was expected.\nFor partial writes, the number of points written and the number of points rejected are also included.\nFor more information, check the `rejected_points` measurement in your `_monitoring` bucket.\n\n#### InfluxDB Cloud\n\n- Returns this error for bucket schema conflicts.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` doesn't match an organization.\n",
+            "description": "Bad request. The response body contains detail about the error.\n\nInfluxDB returns this error if the line protocol data in the request is malformed.\nThe response body contains the first malformed line in the data, and indicates what was expected.\nFor partial writes, the number of points written and the number of points rejected are also included.\nFor more information, check the `rejected_points` measurement in your `_monitoring` bucket.\n\n#### InfluxDB Cloud\n\n- Returns this error for bucket schema conflicts.\n\n#### InfluxDB OSS\n\n- Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1854,7 +1854,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "The organization to delete data from.\nIf you pass both `orgID` and `org`, they must both be valid.\n\n#### InfluxDB Cloud\n\n- Doesn't require `org` or `orgID`.\n- Deletes data from the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either `org` or `orgID`.\n",
+            "description": "An organization name or ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Deletes data from the bucket in the organization\n  associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n- Deletes data from the bucket in the specified organization.\n- If you pass both `orgID` and `org`, they must both be valid.\n",
             "schema": {
               "type": "string",
               "description": "The organization name or ID."
@@ -1863,7 +1863,7 @@
           {
             "in": "query",
             "name": "bucket",
-            "description": "The name or ID of the bucket to delete data from.\nIf you pass both `bucket` and `bucketID`, `bucketID` takes precedence.\n",
+            "description": "A bucket name or ID.\nSpecifies the bucket to delete data from.\nIf you pass both `bucket` and `bucketID`, `bucketID` takes precedence.\n",
             "schema": {
               "type": "string",
               "description": "The bucket name or ID."
@@ -1872,7 +1872,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The ID of the organization to delete data from.\nIf you pass both `orgID` and `org`, they must both be valid.\n\n#### InfluxDB Cloud\n\n- Doesn't require `org` or `orgID`.\n- Deletes data from the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either `org` or `orgID`.\n",
+            "description": "An organization ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Deletes data from the bucket in the organization\n  associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or the `orgID` parameter.\n- Deletes data from the bucket in the specified organization.\n- If you pass both `orgID` and `org`, they must both be valid.\n",
             "schema": {
               "type": "string",
               "description": "The organization ID."
@@ -1881,7 +1881,7 @@
           {
             "in": "query",
             "name": "bucketID",
-            "description": "The ID of the bucket to delete data from.\nIf you pass both `bucket` and `bucketID`, `bucketID` takes precedence.\n",
+            "description": "A bucket ID.\nSpecifies the bucket to delete data from.\nIf you pass both `bucket` and `bucketID`, `bucketID` takes precedence.\n",
             "schema": {
               "type": "string",
               "description": "The bucket ID."
@@ -1893,7 +1893,7 @@
             "description": "Success.\n\n#### InfluxDB Cloud\n\n- Validated and queued the request.\n- Handles the delete asynchronously - the deletion might not have completed yet.\n\nAn HTTP `2xx` status code acknowledges that the write or delete is queued.\nTo ensure that InfluxDB Cloud handles writes and deletes in the order you request them,\nwait for a response before you send the next request.\n\nBecause writes are asynchronous, data might not yet be written\nwhen you receive the response.\n\n#### InfluxDB OSS\n\n- Deleted the data.\n"
           },
           "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` doesn't match an organization.\n",
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -4999,7 +4999,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "The name or ID of the organization executing the query.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID`.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either `org` or `orgID`.\n",
+            "description": "An organization name or ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Queries the bucket in the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -5007,7 +5007,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The ID of the organization executing the query.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID`.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either `org` or `orgID`.\n",
+            "description": "An organization ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Queries the bucket in the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -5070,7 +5070,7 @@
             }
           },
           "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if `org` or `orgID` doesn't match an organization.\n",
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -5122,7 +5122,7 @@
           "Buckets"
         ],
         "summary": "List buckets",
-        "description": "Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
+        "description": "Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -5139,7 +5139,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "An organization name.\nOnly returns resources owned by the specified organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n",
+            "description": "An organization name.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Lists buckets for the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Lists buckets for the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -5147,7 +5147,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "An organization ID.\nOnly returns resources owned by the specified organization.\n\n#### InfluxDB Cloud\n\n- Doesn't use `org` or `orgID` parameters.\n",
+            "description": "An organization ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Lists buckets for the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Lists buckets for the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -7622,7 +7622,7 @@
             }
           },
           "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if an incorrect value is passed for `org` or `orgID`.\n",
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if an incorrect value is passed in the `org` parameter or `orgID` parameter.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -24428,7 +24428,7 @@
         }
       },
       "BadRequestError": {
-        "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if an incorrect value is passed for `org` or `orgID`.\n",
+        "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if an incorrect value is passed in the `org` parameter or `orgID` parameter.\n",
         "content": {
           "application/json": {
             "schema": {
