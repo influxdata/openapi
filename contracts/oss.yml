@@ -12165,7 +12165,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: The task to create.
+        description: Provide a task object in the request body.
         required: true
         content:
           application/json:
@@ -14665,6 +14665,44 @@ components:
             Default is the server _now_ time.
           type: string
           format: date-time
+    TaskCron:
+      description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
+      type: string
+      format: cron
+    TaskDescription:
+      description: A description of the task.
+      type: string
+    TaskEvery:
+      description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
+      type: string
+      format: duration
+    TaskFlux:
+      description: |
+        Flux with [task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
+        and the script for the task to run.
+
+        #### Related guides
+
+        - [Task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
+      type: string
+      format: Flux
+    TaskName:
+      description: The name of the task.
+      type: string
+    TaskOffset:
+      description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
+      type: string
+      format: duration
+    TaskOrg:
+      description: |
+        An organization name.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) that owns the task.
+      type: string
+    TaskOrgID:
+      description: |
+        An organization ID.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) that owns the task.
+      type: string
     TaskStatusType:
       type: string
       enum:
@@ -18494,30 +18532,24 @@ components:
         id:
           readOnly: true
           type: string
+          description: |
+            The resource ID that InfluxDB uses to uniquely identify the task.
         orgID:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) ID.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrgID'
         org:
-          description: |
-            An [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) name.
-            Specifies the organization that owns the task.
-          type: string
+          $ref: '#/components/schemas/TaskOrg'
         name:
-          description: The name of the task.
-          type: string
+          $ref: '#/components/schemas/TaskName'
+        description:
+          $ref: '#/components/schemas/TaskDescription'
         ownerID:
           description: |
-            A [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) ID.
-            Specifies the owner of the task.
+            A user ID.
+            Identifies the [user](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) that owns the task.
 
-            To find a user ID, you can use the
+            To find a user ID, use the
             [`GET /api/v2/users` endpoint](#operation/GetUsers) to
             list users.
-          type: string
-        description:
-          description: A description of the task.
           type: string
         status:
           $ref: '#/components/schemas/TaskStatusType'
@@ -18526,27 +18558,20 @@ components:
         authorizationID:
           description: |
             An authorization ID.
-            Specifies the authorization used when the task communicates with the query engine.
+            Identifies the authorization used when the task communicates with the query engine.
 
             To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
             list authorizations.
           type: string
         flux:
-          description: The Flux script that the task executes.
-          type: string
-          format: flux
+          $ref: '#/components/schemas/TaskFlux'
         every:
-          description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
-          type: string
-          format: duration
+          $ref: '#/components/schemas/TaskEvery'
         cron:
-          description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
-          type: string
+          $ref: '#/components/schemas/TaskCron'
         offset:
-          description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
-          type: string
-          format: duration
+          $ref: '#/components/schemas/TaskOffset'
         latestCompleted:
           description: 'A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.'
           type: string
@@ -18602,19 +18627,17 @@ components:
       type: object
       properties:
         orgID:
-          description: The ID of the organization that owns this Task.
-          type: string
+          $ref: '#/components/schemas/TaskOrgID'
         org:
-          description: The name of the organization that owns this Task.
-          type: string
+          $ref: '#/components/schemas/TaskOrg'
+        name:
+          $ref: '#/components/schemas/TaskName'
+        description:
+          $ref: '#/components/schemas/TaskDescription'
+        flux:
+          $ref: '#/components/schemas/TaskFlux'
         status:
           $ref: '#/components/schemas/TaskStatusType'
-        flux:
-          description: The Flux script to run for this task.
-          type: string
-        description:
-          description: An optional description of the task.
-          type: string
       required:
         - flux
     TaskUpdateRequest:
@@ -18623,23 +18646,17 @@ components:
         status:
           $ref: '#/components/schemas/TaskStatusType'
         flux:
-          description: The Flux script that the task runs.
-          type: string
+          $ref: '#/components/schemas/TaskFlux'
         name:
-          description: Update the 'name' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/TaskName'
         every:
-          description: Update the 'every' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/TaskEvery'
         cron:
-          description: Update the 'cron' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/TaskCron'
         offset:
-          description: Update the 'offset' option in the flux script.
-          type: string
+          $ref: '#/components/schemas/TaskOffset'
         description:
-          description: Update the description of the task.
-          type: string
+          $ref: '#/components/schemas/TaskDescription'
   responses:
     AuthorizationError:
       description: |
