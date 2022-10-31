@@ -18654,6 +18654,68 @@
           }
         }
       },
+      "TaskCreateRequest": {
+        "type": "object",
+        "properties": {
+          "orgID": {
+            "$ref": "#/components/schemas/TaskOrgID"
+          },
+          "org": {
+            "$ref": "#/components/schemas/TaskOrg"
+          },
+          "name": {
+            "$ref": "#/components/schemas/TaskName"
+          },
+          "description": {
+            "$ref": "#/components/schemas/TaskDescription"
+          },
+          "flux": {
+            "$ref": "#/components/schemas/TaskFlux"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatusType"
+          }
+        },
+        "required": [
+          "flux"
+        ]
+      },
+      "TaskCron": {
+        "description": "A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.",
+        "type": "string",
+        "format": "cron"
+      },
+      "TaskDescription": {
+        "description": "A description of the task.",
+        "type": "string"
+      },
+      "TaskEvery": {
+        "description": "The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.",
+        "type": "string",
+        "format": "duration"
+      },
+      "TaskFlux": {
+        "description": "Flux with [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\nand the script for the task to run.\n\n#### Related guides\n\n- [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)\n",
+        "type": "string",
+        "format": "Flux"
+      },
+      "TaskName": {
+        "description": "The name of the task.",
+        "type": "string"
+      },
+      "TaskOffset": {
+        "description": "A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.",
+        "type": "string",
+        "format": "duration"
+      },
+      "TaskOrg": {
+        "description": "An organization name.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.\n",
+        "type": "string"
+      },
+      "TaskOrgID": {
+        "description": "An organization ID.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the task.\n",
+        "type": "string"
+      },
       "TaskStatusType": {
         "type": "string",
         "enum": [
@@ -24204,26 +24266,23 @@
         "properties": {
           "id": {
             "readOnly": true,
-            "type": "string"
+            "type": "string",
+            "description": "The resource ID that InfluxDB uses to uniquely identify the task.\n"
           },
           "orgID": {
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.\nSpecifies the organization that owns the task.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskOrgID"
           },
           "org": {
-            "description": "An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.\nSpecifies the organization that owns the task.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskOrg"
           },
           "name": {
-            "description": "The name of the task.",
-            "type": "string"
-          },
-          "ownerID": {
-            "description": "A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.\nSpecifies the owner of the task.\n\nTo find a user ID, you can use the\n[`GET /api/v2/users` endpoint](#operation/GetUsers) to\nlist users.\n",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskName"
           },
           "description": {
-            "description": "A description of the task.",
+            "$ref": "#/components/schemas/TaskDescription"
+          },
+          "ownerID": {
+            "description": "A user ID.\nIdentifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the task.\n\nTo find a user ID, use the\n[`GET /api/v2/users` endpoint](#operation/GetUsers) to\nlist users.\n",
             "type": "string"
           },
           "status": {
@@ -24233,27 +24292,20 @@
             "$ref": "#/components/schemas/Labels"
           },
           "authorizationID": {
-            "description": "An authorization ID.\nSpecifies the authorization used when the task communicates with the query engine.\n\nTo find an authorization ID, use the\n[`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to\nlist authorizations.\n",
+            "description": "An authorization ID.\nIdentifies the authorization used when the task communicates with the query engine.\n\nTo find an authorization ID, use the\n[`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to\nlist authorizations.\n",
             "type": "string"
           },
           "flux": {
-            "description": "The Flux script that the task executes.",
-            "type": "string",
-            "format": "flux"
+            "$ref": "#/components/schemas/TaskFlux"
           },
           "every": {
-            "description": "The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.",
-            "type": "string",
-            "format": "duration"
+            "$ref": "#/components/schemas/TaskEvery"
           },
           "cron": {
-            "description": "A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskCron"
           },
           "offset": {
-            "description": "A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.",
-            "type": "string",
-            "format": "duration"
+            "$ref": "#/components/schemas/TaskOffset"
           },
           "latestCompleted": {
             "description": "A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.",
@@ -24324,33 +24376,6 @@
           "flux"
         ]
       },
-      "TaskCreateRequest": {
-        "type": "object",
-        "properties": {
-          "orgID": {
-            "description": "The ID of the organization that owns this Task.",
-            "type": "string"
-          },
-          "org": {
-            "description": "The name of the organization that owns this Task.",
-            "type": "string"
-          },
-          "status": {
-            "$ref": "#/components/schemas/TaskStatusType"
-          },
-          "flux": {
-            "description": "The Flux script to run for this task.",
-            "type": "string"
-          },
-          "description": {
-            "description": "An optional description of the task.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "flux"
-        ]
-      },
       "TaskUpdateRequest": {
         "type": "object",
         "properties": {
@@ -24358,28 +24383,22 @@
             "$ref": "#/components/schemas/TaskStatusType"
           },
           "flux": {
-            "description": "The Flux script that the task runs.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskFlux"
           },
           "name": {
-            "description": "Update the 'name' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskName"
           },
           "every": {
-            "description": "Update the 'every' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskEvery"
           },
           "cron": {
-            "description": "Update the 'cron' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskCron"
           },
           "offset": {
-            "description": "Update the 'offset' option in the flux script.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskOffset"
           },
           "description": {
-            "description": "Update the description of the task.",
-            "type": "string"
+            "$ref": "#/components/schemas/TaskDescription"
           }
         }
       }
