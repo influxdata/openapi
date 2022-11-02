@@ -1,26 +1,49 @@
 summary: Bucket schemas
 get:
-  summary: List all measurement schemas of a bucket
+  summary: List measurement schemas of a bucket
+  description: |
+    Retrieves a list of _explicit_
+    [schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+    (`"schemaType": "explicit"`) for a bucket.
+
+    _Explicit_ schemas are used to enforce column names, tags, fields, and data
+    types for your data.
+
+    By default, buckets have an _implicit_ schema-type (`"schemaType": "implicit"`)
+    that conforms to your data.
+
+    #### Related guides
+
+    - [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)
+
   operationId: getMeasurementSchemas
   parameters:
     - in: query
       name: org
-      description: The name of the organization.
+      description: |
+        An organization name.
+        Specifies the organization that owns the schema.
       schema:
         type: string
     - in: query
       name: orgID
-      description: The identifier of the organization.
+      description: |
+        An organization ID.
+        Specifies the organization that owns the schema.
       schema:
         type: string
     - in: query
       name: name
-      description: The name of the measurement to return schemas for.
+      description: |
+        A measurement name.
+        Only returns measurement schemas with the specified name.
       schema:
         type: string
     - in: path
       name: bucketID
-      description: The identifier of the bucket.
+      description: |
+        A bucket ID.
+        Lists measurement schemas for the specified bucket.
       schema:
         type: string
       required: true
@@ -38,26 +61,70 @@ get:
         application/json:
           schema:
             $ref: "../schemas/MeasurementSchemaList.yml"
+    '400':
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Error.yml"
+          examples:
+            invalidSchemaType:
+              summary: Invalid schema type.
+              value: {
+                "code": "invalid",
+                "message": "bucket schemaType must be explicit"
+              }
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
     '404':
-      description: Bucket not found
-      $ref: '../../common/responses/ServerError.yml'
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
 post:
   summary: Create a measurement schema for a bucket
+  description: |
+    Creates an _explict_ measurement [schema]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)
+    for a bucket.
+
+    _Explicit_ schemas are used to enforce column names, tags, fields, and data
+    types for your data.
+
+    By default, buckets have an _implicit_ schema-type (`"schemaType": "implicit"`)
+    that conforms to your data.
+
+    Use this endpoint to create schemas that prevent non-conforming write requests.
+
+    #### Limitations
+
+    - Buckets must be created with the "explict" `schemaType` in order to use
+    schemas.
+
+    #### Related guides
+
+    - [Manage bucket schemas]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/bucket-schema/).
+    - [Create a bucket with an explicit schema]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/#create-a-bucket-with-an-explicit-schema)
   operationId: createMeasurementSchema
   parameters:
     - in: query
       name: org
-      description: The name of the organization.
+      description: |
+        An organization name.
+        Specifies the organization that owns the schema.
       schema:
         type: string
     - in: query
       name: orgID
-      description: The identifier of the organization.
+      description: |
+        An organization ID.
+        Specifies the organization that owns the schema.
       schema:
         type: string
     - in: path
       name: bucketID
-      description: The identifier of the bucket.
+      description: |
+        A bucket ID.
+        Adds a schema for the specified bucket.
       schema:
         type: string
       required: true
@@ -70,7 +137,7 @@ post:
           $ref: "../schemas/MeasurementSchemaCreateRequest.yml"
   responses:
     '201':
-      description: The created measurement schema.
+      description: The current version of the measurement schema.
       headers:
         ETag:
           description: The current version of the measurement schema
@@ -81,7 +148,8 @@ post:
           schema:
             $ref: "../schemas/MeasurementSchema.yml"
     '400':
-      description: Client error with create request
+      description: |
+        Bad request.
       content:
         application/json:
           examples:
@@ -129,3 +197,35 @@ post:
                 message: At least one field column is required
           schema:
             $ref: "../../common/schemas/Error.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    '404':
+      $ref: "../../common/responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "name": "temperature",
+              "column": [
+                {
+                  "type": "tag",
+                  "name": "location"
+                },
+                {
+                  "type": "field",
+                  "name": "value",
+                  "dataType": "float"
+                },
+                {
+                  "type": "timestamp",
+                  "name": "time"
+                }
+              ]
+            }'

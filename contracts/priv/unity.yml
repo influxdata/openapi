@@ -23,7 +23,7 @@ paths:
         '401':
           description: Unauthorized/Account doesn't exist
           $ref: '#/components/responses/ServerError'
-        '405':
+        '403':
           description: Account is not deletable
           $ref: '#/components/responses/ServerError'
         default:
@@ -200,6 +200,35 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /allowances/orgs/create:
+    get:
+      operationId: GetAllowancesOrgsCreate
+      tags:
+        - Allowances
+        - Organizations
+      summary: Return whether a new Organization can be created.
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      responses:
+        '200':
+          description: The Allowance
+          content:
+            application/json:
+              schema:
+                properties:
+                  allowed:
+                    type: boolean
+                    description: is the operation allowed?
+                  availableUpgrade:
+                    description: what upgrade option is available for this allowance?
+                    type: string
+                    enum:
+                      - contract
+                      - none
+                      - pay_as_you_go
+                required:
+                  - allowed
+                  - availableUpgrade
   /clusters:
     get:
       operationId: GetClusters
@@ -610,7 +639,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationWithToken'
+                $ref: '#/components/schemas/Organization'
         '401':
           description: Unauthorized. The token passed doesn't have permissions necessary to complete the request.
           $ref: '#/components/responses/ServerError'
@@ -916,6 +945,9 @@ paths:
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
+        '403':
+          description: Cannot remove last user
+          $ref: '#/components/responses/ServerError'
         '404':
           description: Session user not owner or User/Org not found
           $ref: '#/components/responses/ServerError'
@@ -1118,6 +1150,9 @@ paths:
           $ref: '#/components/responses/ServerError'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '403':
+          description: Account is not deletable
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -1485,22 +1520,22 @@ components:
           description: determines if the cluster is in beta
           nullable: false
           readOnly: true
-          type: string
+          type: boolean
         priority:
           description: priority for sorting the cluster
           nullable: false
           readOnly: true
-          type: string
+          type: number
         isProviderAvailable:
           description: determines if the provider is available
           nullable: false
           readOnly: true
-          type: string
+          type: boolean
         isRegionAvailable:
           description: determines if the region is available
           nullable: false
           readOnly: true
-          type: string
+          type: boolean
         providerId:
           description: the id of the cloud provider
           nullable: false
@@ -2358,6 +2393,15 @@ components:
           isDefault:
             type: boolean
             description: is this the user's default organization in this account?
+          provider:
+            type: string
+            description: provider of the org
+          regionCode:
+            type: string
+            description: the canonical code for the region where the organization is hosted
+          regionName:
+            type: string
+            description: the friendly name of the region where the organization is hosted
         required:
           - id
           - name

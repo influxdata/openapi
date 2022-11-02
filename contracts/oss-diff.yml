@@ -915,9 +915,7 @@ paths:
         | List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
         | List a specific user | `read-users` or `read-user USER_ID` | |
 
-        Replace the following:
-
-        - `USER_ID`: the ID of the user that you want to retrieve.
+        *`USER_ID`* is the ID of the user that you want to retrieve.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
@@ -1185,8 +1183,22 @@ paths:
       tags:
         - Users
       summary: Update a user
+      description: |
+        Updates a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) and returns the user.
+
+        #### Required permissions
+
+        | Action      | Permission required |
+        |:------------|:-----------------------------------------------|
+        | Update a user | `write-users` or `write-user USER_ID` |
+
+        *`USER_ID`* is the ID of the user that you want to update.
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       requestBody:
-        description: User update to apply
+        description: 'In the request body, provide the user properties to update.'
         required: true
         content:
           application/json:
@@ -1199,22 +1211,47 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the user to update.
+          description: |
+            A user ID.
+            Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) to update.
       responses:
         '200':
-          description: User updated
+          description: |
+            Success.
+            The response body contains the user.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse/properties/user'
+        '400':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/400'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
-          description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
     delete:
       operationId: DeleteUsersID
       tags:
         - Users
       summary: Delete a user
+      description: |
+        Deletes a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+
+        #### Required permissions
+
+        | Action      | Permission required |
+        |:------------|:-----------------------------------------------|
+        | Delete a user | `write-users` or `write-user USER_ID` |
+
+        *`USER_ID`* is the ID of the user that you want to delete.
+
+        #### Related guides
+
+        - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -1222,10 +1259,24 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the user to delete.
+          description: |
+            A user ID.
+            Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) to delete.
       responses:
         '204':
-          description: User deleted
+          description: Success. The user is deleted.
+        '400':
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
@@ -1284,21 +1335,21 @@ paths:
         - Security and access endpoints
       summary: List authorizations
       description: |
-        Retrieves a list of authorizations.
+        Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all authorizations.
 
         #### InfluxDB OSS
 
-        - Returns
+        - InfluxDB OSS returns
           [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
         - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
           InfluxDB OSS returns authorizations for all organizations in the instance.
 
         #### Required permissions
 
-        - InfluxDB OSS requires an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+        - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
 
         #### Related guides
 
@@ -1362,25 +1413,24 @@ paths:
         - Authorizations
       summary: Create an authorization
       description: |
-        Creates an authorization.
+        Creates an authorization and returns the authorization with the
+        generated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
 
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
         The response contains the new authorization with the generated API token.
 
-        Keep the following in mind when creating and updating authorizations:
-
-        - To apply a permission to a specific resource, specify the resource `id` field.
-        - To apply a permission to all resources with the type, omit the resource `id`.
-        - To scope an authorization to a specific user, provide the `userID` property.
-
         #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB enforces access restrictions on API tokens.
 
         - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
           user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
+        - You can't update an authorization's permissions.
         - Even if an API token has `read-authorizations` permission, the
           token can't be used to view its authorization details.
-        - Tokens stop working when the user who created the token is deleted.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend creating a generic user to create and manage tokens for writing data.
 
@@ -1395,10 +1445,116 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest'
+              required:
+                - orgID
+                - permissions
+              allOf:
+                - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
+                - type: object
+                  properties:
+                    orgID:
+                      type: string
+                      description: |
+                        An organization ID.
+                        Specifies the organization that owns the authorization.
+                    userID:
+                      type: string
+                      description: |
+                        A user ID.
+                        Specifies the user that the authorization is scoped to.
+
+                        When a user authenticates with username and password,
+                        InfluxDB generates a _user session_ with all the permissions
+                        specified by all the user's authorizations.
+                    permissions:
+                      type: array
+                      minItems: 1
+                      description: |
+                        A list of permissions for an authorization.
+                        In the list, provide at least one `permission` object.
+
+                        In a `permission`, the `resource.type` property grants access to all
+                        resources of the specified type.
+                        To grant access to only a specific resource, specify the
+                        `resource.id` property.
+                      items:
+                        required:
+                          - action
+                          - resource
+                        properties:
+                          action:
+                            type: string
+                            enum:
+                              - read
+                              - write
+                          resource:
+                            type: object
+                            required:
+                              - type
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                  - authorizations
+                                  - buckets
+                                  - dashboards
+                                  - orgs
+                                  - tasks
+                                  - telegrafs
+                                  - users
+                                  - variables
+                                  - secrets
+                                  - labels
+                                  - views
+                                  - documents
+                                  - notificationRules
+                                  - notificationEndpoints
+                                  - checks
+                                  - dbrp
+                                  - annotations
+                                  - sources
+                                  - scrapers
+                                  - notebooks
+                                  - remotes
+                                  - replications
+                                  - instance
+                                  - flows
+                                  - functions
+                                  - subscriptions
+                                description: |
+                                  A resource type.
+                                  Identifies the API resource's type (or _kind_).
+                              id:
+                                type: string
+                                description: |
+                                  A resource ID.
+                                  Identifies a specific resource.
+                              name:
+                                type: string
+                                description: |
+                                  The name of the resource.
+                                  _Note: not all resource types have a `name` property_.
+                              orgID:
+                                type: string
+                                description: |
+                                  An organization ID.
+                                  Identifies the organization that owns the resource.
+                              org:
+                                type: string
+                                description: |
+                                  An organization name.
+                                  The organization that owns the resource.
+            examples:
+              AuthorizationPostRequest:
+                $ref: '#/components/examples/AuthorizationPostRequest'
+              AuthorizationWithResourcePostRequest:
+                $ref: '#/components/examples/AuthorizationWithResourcePostRequest'
+              AuthorizationWithUserPostRequest:
+                $ref: '#/components/examples/AuthorizationWithUserPostRequest'
       responses:
         '201':
-          description: Created. The response body contains the newly created authorization.
+          description: |
+            Success. The authorization is created. The response body contains the authorization.
           content:
             application/json:
               schema:
@@ -1413,40 +1569,6 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
-      x-codeSample:
-        - lang: Shell
-          label: 'cURL: Create auth to read all buckets'
-          source: |
-            curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "description": "iot_users read buckets",
-                "permissions": [
-                  {"action": "read", "resource": {"type": "buckets"}}
-                ]
-              }
-            EOF
-        - lang: Shell
-        - label: 'cURL: Create auth scoped to a user'
-        - source: |
-            curl --request POST \
-            "http://localhost:8086/api/v2/authorizations" \
-            --header "Authorization: Token INFLUX_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data @- << EOF
-              {
-                "orgID": "INFLUX_ORG_ID",
-                "userID": "INFLUX_USER_ID",
-                "description": "iot_user write to bucket",
-                "permissions": [
-                  {"action": "write", "resource": {"type": "buckets", "id: "INFLUX_BUCKET_ID"}}
-                ]
-              }
-            EOF
   '/authorizations/{authID}':
     get:
       operationId: GetAuthorizationsID
@@ -1483,7 +1605,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+              properties:
+                status:
+                  description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+                  default: active
+                  type: string
+                  enum:
+                    - active
+                    - inactive
+                description:
+                  type: string
+                  description: A description of the token.
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: path
@@ -5201,7 +5333,7 @@ paths:
 
             #### InfluxDB OSS
 
-            - Returns this error if an incorrect value is passed for `org` or `orgID`.
+            - Returns this error if an incorrect value is passed in the `org` parameter or `orgID` parameter.
           content:
             application/json:
               schema:
@@ -5330,114 +5462,12 @@ paths:
 components:
   parameters: null
   schemas:
-    AuthorizationPostRequest:
-      required:
-        - orgID
-        - permissions
-      allOf:
-        - properties:
-            status:
-              description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
-              default: active
-              type: string
-              enum:
-                - active
-                - inactive
-            description:
-              type: string
-              description: A description of the token.
-        - type: object
-          properties:
-            orgID:
-              type: string
-              description: |
-                The ID of the organization that owns the authorization.
-            userID:
-              type: string
-              description: |
-                The ID of the user that the authorization is scoped to.
-            permissions:
-              type: array
-              minItems: 1
-              description: |
-                A list of permissions for an authorization.
-                An authorization must have at least one permission.
-              items:
-                $ref: '#/components/schemas/Permission'
-    Permission:
-      required:
-        - action
-        - resource
-      properties:
-        action:
-          type: string
-          enum:
-            - read
-            - write
-        resource:
-          $ref: '#/components/schemas/Resource'
-    Resource:
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-          enum:
-            - authorizations
-            - buckets
-            - dashboards
-            - orgs
-            - sources
-            - tasks
-            - telegrafs
-            - users
-            - variables
-            - scrapers
-            - secrets
-            - labels
-            - views
-            - documents
-            - notificationRules
-            - notificationEndpoints
-            - checks
-            - dbrp
-            - notebooks
-            - annotations
-            - remotes
-            - replications
-            - instance
-          description: |
-            The type of resource.
-            In a `permission`, applies the permission to all resources of this type.
-        id:
-          type: string
-          description: |
-            The ID of a specific resource.
-            In a `permission`, applies the permission to only the resource with this ID.
-        name:
-          type: string
-          description: |
-            Optional: A name for the resource.
-            Not all resource types have a name field.
-        orgID:
-          type: string
-          description: |
-            The ID of the organization that owns the resource.
-            In a `permission`, applies the permission to all resources of `type` owned by this organization.
-        org:
-          type: string
-          description: |
-            Optional: The name of the organization with `orgID`.
     User:
       properties:
         id:
           readOnly: true
           type: string
           description: The user ID.
-        oauthID:
-          type: string
-          description: The OAuth ID.
         name:
           type: string
           description: The user name.
@@ -5702,7 +5732,7 @@ components:
             - orgID
             - permissions
           allOf:
-            - $ref: '#/components/schemas/AuthorizationPostRequest/allOf/0'
+            - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
             - type: object
               properties:
                 createdAt:
@@ -5725,7 +5755,7 @@ components:
                     The list of permissions.
                     An authorization must have at least one permission.
                   items:
-                    $ref: '#/components/schemas/Permission'
+                    $ref: '#/paths/~1authorizations/post/requestBody/content/application~1json/schema/allOf/1/properties/permissions/items'
                 id:
                   readOnly: true
                   type: string
@@ -5735,10 +5765,11 @@ components:
                   type: string
                   description: |
                     The API token.
-                    [Tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
-                    used to authenticate InfluxDB API requests and `influx` CLI commands.
-                    If authenticated, the token is allowed the permissions of the _authorization_.
                     The token value is unique to the authorization.
+                    [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+                    used to authenticate and authorize InfluxDB API requests and `influx`
+                    CLI commands--after receiving the request, InfluxDB checks that the
+                    token is valid and that the `permissions` allow the requested action(s).
                 userID:
                   readOnly: true
                   type: string
@@ -5756,7 +5787,8 @@ components:
                   type: string
                   description: |
                     The organization name.
-                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the token is scoped to.
+                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+                    that the token is scoped to.
                 links:
                   type: object
                   readOnly: true
@@ -6225,7 +6257,6 @@ components:
         - name
         - orgID
         - remoteURL
-        - remoteOrgID
         - allowInsecureTLS
     RemoteConnections:
       type: object
@@ -6258,7 +6289,6 @@ components:
         - orgID
         - remoteURL
         - remoteAPIToken
-        - remoteOrgID
         - allowInsecureTLS
     RemoteConnectionUpdateRequest:
       type: object
@@ -6556,6 +6586,47 @@ components:
           description: Update the description of the task.
           type: string
   responses: null
+  examples:
+    AuthorizationPostRequest:
+      summary: An authorization for a resource type
+      description: Creates an authorization.
+      value:
+        orgID: INFLUX_ORG_ID
+        description: iot_users read buckets
+        permissions:
+          - action: read
+            resource:
+              type: buckets
+    AuthorizationWithResourcePostRequest:
+      summary: An authorization for a resource
+      description: Creates an authorization for access to a specific resource.
+      value:
+        orgID: INFLUX_ORG_ID
+        description: iot_users read buckets
+        permissions:
+          - action: read
+            resource:
+              type: buckets
+              id: INFLUX_BUCKET_ID
+    AuthorizationWithUserPostRequest:
+      summary: An authorization scoped to a user
+      description: Creates an authorization scoped to a specific user.
+      value:
+        orgID: INFLUX_ORG_ID
+        userID: INFLUX_USER_ID
+        description: iot_user write to bucket
+        permissions:
+          - action: write
+            resource:
+              type: buckets
+              id: INFLUX_BUCKET_ID
+    TaskWithFluxRequest:
+      summary: A task with Flux
+      description: Sets the `flux` property with Flux task options and a query.
+      value:
+        flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket: \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |> filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h, fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+        status: active
+        description: This task contains Flux that configures the task schedule and downsamples CPU data every hour.
   securitySchemes:
     TokenAuthentication:
       type: apiKey
@@ -6573,20 +6644,98 @@ components:
 
         `Authorization: Token INFLUX_API_TOKEN`
 
-        For more information and examples, see the following:
+        ### Example
 
-        - [`/authorizations`(#tag/Authorizations) endpoints]
+        #### Use Token authentication with cURL
+
+        The following example shows how to use cURL to send an API request that uses Token authentication:
+
+        ```sh
+        curl --request GET "INFLUX_URL/api/v2/buckets" \
+            --header "Authorization: Token INFLUX_API_TOKEN"
+        ```
+
+        Replace the following:
+
+          - *`INFLUX_URL`*: your InfluxDB URL
+          - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+
+        ### Related endpoints
+
+        - [`/authorizations` endpoints](#tag/Authorizations)
+
+        ### Related guides
+
         - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)
         - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)
     BasicAuthentication:
       type: http
       scheme: basic
       description: |
-        Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it.
+        ### Basic authentication scheme
 
-        Username and password schemes require the following credentials:
+        Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
 
-        - **username**
-        - **password**
+        ### Syntax
+
+        `Authorization: Basic BASE64_ENCODED_CREDENTIALS`
+
+        To construct the `BASE64_ENCODED_CREDENTIALS`, combine the username and
+        the password with a colon (`USERNAME:PASSWORD`), and then encode the
+        resulting string in [base64](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+        Many HTTP clients encode the credentials for you before sending the
+        request.
+
+        _**Warning**: Base64-encoding can easily be reversed to obtain the original
+        username and password. It is used to keep the data intact and does not provide
+        security. You should always use HTTPS when authenticating or sending a request with
+        sensitive information._
+
+        ### Examples
+
+        In the examples, replace the following:
+
+        - **`USERNAME`**: InfluxDB username
+        - **`PASSWORD`**: InfluxDB [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+        - **`INFLUX_URL`**: your InfluxDB URL
+
+        #### Encode credentials with cURL
+
+        The following example shows how to use cURL to send an API request that uses Basic authentication.
+        With the `--user` option, cURL encodes the credentials and passes them
+        in the `Authorization: Basic` header.
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --user "USERNAME":"PASSWORD"
+        ```
+
+        #### Encode credentials with Flux
+
+        The Flux [`http.basicAuth()` function](https://docs.influxdata.com/flux/v0.x/stdlib/http/basicauth/) returns a Base64-encoded
+        basic authentication header using a specified username and password combination.
+
+        #### Encode credentials with JavaScript
+
+        The following example shows how to use the JavaScript `btoa()` function
+        to create a Base64-encoded string:
+
+        ```js
+        btoa('USERNAME:PASSWORD')
+        ```
+
+        The output is the following:
+
+        ```js
+        'VVNFUk5BTUU6UEFTU1dPUkQ='
+        ```
+
+        Once you have the Base64-encoded credentials, you can pass them in the
+        `Authorization` header--for example:
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --header "Authorization: Basic VVNFUk5BTUU6UEFTU1dPUkQ="
+        ```
 security:
   - TokenAuthentication: []

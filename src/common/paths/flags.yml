@@ -1,17 +1,42 @@
 get:
   operationId: GetFlags
   tags:
-    - Users
-  summary: Return the feature flags for the currently authenticated user
+    - Config
+  summary: Retrieve feature flags
+  description: |
+    Retrieves the feature flag key-value pairs configured for the InfluxDB
+    instance.
+    _Feature flags_ are configuration options used to develop and test
+    experimental InfluxDB features and are intended for internal use only.
+
+    This endpoint represents the first step in the following three-step process
+    to configure feature flags:
+
+    1. Use [token authentication](#section/Authentication/TokenAuthentication) or a [user session](#tag/Signin) with this endpoint to retrieve
+       feature flags and their values.
+    2. Follow the instructions to [enable, disable, or override values for feature flags]({{% INFLUXDB_DOCS_URL %}}/influxdb/v2.4/reference/config-options/#feature-flags).
+    3. **Optional**: To confirm that your change is applied, do one of the following:
+
+       - Send a request to this endpoint to retrieve the current feature flag values.
+       - Send a request to the [`GET /api/v2/config` endpoint](#operation/GetConfig) to retrieve the
+         current runtime server configuration.
+
+    #### Related guides
+
+    - [InfluxDB configuration options]({{% INFLUXDB_DOCS_URL %}}/influxdb/v2.4/reference/config-options/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   responses:
     "200":
-      description: Feature flags for the currently authenticated user
+      description: Success. The response body contains feature flags.
       content:
         application/json:
           schema:
             $ref: "../schemas/Flags.yml"
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
