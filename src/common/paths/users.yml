@@ -5,7 +5,7 @@ get:
     - Users
   summary: List users
   description: |
-    Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+    Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
     Default limit is `20`.
 
     To limit which users are returned, pass query parameters in your request.
@@ -18,6 +18,10 @@ get:
     | List a specific user | `read-users` or `read-user USER_ID` | |
 
     *`USER_ID`* is the ID of the user that you want to retrieve.
+
+    #### Related guides
+
+    - [View users](https://docs.influxdata.com/influxdb/latest/users/view-users/).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - $ref: "../../common/parameters/Offset.yml"
@@ -96,8 +100,8 @@ post:
     This endpoint represents the first two steps in a four-step process to allow a user
     to authenticate with a username and password, and then access data in an organization:
 
-      1. Create a user: send a `POST` request to `POST /api/v2/users`. `name` is required.
-      2. Extract the user ID (`id`) value from the API response for _step 1_.
+      1. Create a user: send a `POST` request to `POST /api/v2/users`. The `name` property is required.
+      2. Extract the user ID (`id` property) value from the API response for _step 1_.
       3. Create an authorization (and API token) for the user: send a `POST` request to [`POST /api/v2/authorizations`](#operation/PostAuthorizations), passing the user ID (`id`) from _step 2_.
       4. Create a password for the user: send a `POST` request to [`POST /api/v2/users/USER_ID/password`](#operation/PostUsersIDPassword), passing the user ID from _step 2_.
 
@@ -165,22 +169,31 @@ post:
     - label: "cURL: create a user and set a password"
       lang: Shell
       source: |
-        # Create the user and assign the user ID to a variable.
-        USER_ID=$(curl --request POST \
-                "http://localhost:8086/api/v2/users/" \
-                --header "Authorization: Token INFLUX_OP_TOKEN" \
+        # The following steps show how to create a user and then set
+        # the user's password:
+        #
+        # 1. Send a request to this endpoint to create a user--for example:
+
+              USER=$(curl --request POST \
+                      "INFLUX_URL/api/v2/users/" \
+                      --header "Authorization: Token INFLUX_API_TOKEN" \
+                      --header 'Content-type: application/json' \
+                      --data-binary @- << EOF
+                      {
+                        "name": "USER_NAME",
+                        "status": "active"
+                      }
+              EOF
+              )
+
+        # 2. Extract the id property from the response in step 1--for example:
+
+              USER_ID=`echo $USER | jq -r '.id'`
+
+        # 3. To set the user's password, set the password property in a request
+        #    to the /api/v2/users/USER_ID/password endpoint--for example:
+
+              curl request POST "INFLUX_URL/api/v2/users/$USER_ID/password/" \
+                --header "Authorization: Token INFLUX_API_TOKEN" \
                 --header 'Content-type: application/json' \
-                --data-binary @- << EOF | jq -r '.id'
-                {
-                  "name": "USER_NAME",
-                  "status": "active"
-                }
-        EOF
-        )
-
-        # Pass the user ID and a password to set the password for the user.
-        curl request POST "http://localhost:8086/api/v2/users/$USER_ID/password/" \
-          --header "Authorization: Token INFLUX_OP_TOKEN" \
-          --header 'Content-type: application/json' \
-          --data '{ "password": "USER_PASSWORD" }'
-
+                --data '{ "password": "USER_PASSWORD" }'

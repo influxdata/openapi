@@ -903,7 +903,7 @@ paths:
         - Users
       summary: List users
       description: |
-        Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         Default limit is `20`.
 
         To limit which users are returned, pass query parameters in your request.
@@ -916,6 +916,10 @@ paths:
         | List a specific user | `read-users` or `read-user USER_ID` | |
 
         *`USER_ID`* is the ID of the user that you want to retrieve.
+
+        #### Related guides
+
+        - [View users](https://docs.influxdata.com/influxdb/latest/users/view-users/).
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - in: query
@@ -1060,8 +1064,8 @@ paths:
         This endpoint represents the first two steps in a four-step process to allow a user
         to authenticate with a username and password, and then access data in an organization:
 
-          1. Create a user: send a `POST` request to `POST /api/v2/users`. `name` is required.
-          2. Extract the user ID (`id`) value from the API response for _step 1_.
+          1. Create a user: send a `POST` request to `POST /api/v2/users`. The `name` property is required.
+          2. Extract the user ID (`id` property) value from the API response for _step 1_.
           3. Create an authorization (and API token) for the user: send a `POST` request to [`POST /api/v2/authorizations`](#operation/PostAuthorizations), passing the user ID (`id`) from _step 2_.
           4. Create a password for the user: send a `POST` request to [`POST /api/v2/users/USER_ID/password`](#operation/PostUsersIDPassword), passing the user ID from _step 2_.
 
@@ -1127,24 +1131,34 @@ paths:
         - label: 'cURL: create a user and set a password'
           lang: Shell
           source: |
-            # Create the user and assign the user ID to a variable.
-            USER_ID=$(curl --request POST \
-                    "http://localhost:8086/api/v2/users/" \
-                    --header "Authorization: Token INFLUX_OP_TOKEN" \
-                    --header 'Content-type: application/json' \
-                    --data-binary @- << EOF | jq -r '.id'
-                    {
-                      "name": "USER_NAME",
-                      "status": "active"
-                    }
-            EOF
-            )
+            # The following steps show how to create a user and then set
+            # the user's password:
+            #
+            # 1. Send a request to this endpoint to create a user--for example:
 
-            # Pass the user ID and a password to set the password for the user.
-            curl request POST "http://localhost:8086/api/v2/users/$USER_ID/password/" \
-              --header "Authorization: Token INFLUX_OP_TOKEN" \
-              --header 'Content-type: application/json' \
-              --data '{ "password": "USER_PASSWORD" }'
+                  USER=$(curl --request POST \
+                          "INFLUX_URL/api/v2/users/" \
+                          --header "Authorization: Token INFLUX_API_TOKEN" \
+                          --header 'Content-type: application/json' \
+                          --data-binary @- << EOF
+                          {
+                            "name": "USER_NAME",
+                            "status": "active"
+                          }
+                  EOF
+                  )
+
+            # 2. Extract the id property from the response in step 1--for example:
+
+                  USER_ID=`echo $USER | jq -r '.id'`
+
+            # 3. To set the user's password, set the password property in a request
+            #    to the /api/v2/users/USER_ID/password endpoint--for example:
+
+                  curl request POST "INFLUX_URL/api/v2/users/$USER_ID/password/" \
+                    --header "Authorization: Token INFLUX_API_TOKEN" \
+                    --header 'Content-type: application/json' \
+                    --data '{ "password": "USER_PASSWORD" }'
   '/users/{userID}':
     get:
       operationId: GetUsersID
@@ -2245,12 +2259,15 @@ paths:
           application/json:
             schema:
               type: object
+              description: A _label mapping_ contains a `label` ID to attach to a resource.
               properties:
                 labelID:
                   description: |
-                    Label ID.
-                    The ID of the label to attach.
+                    A label ID.
+                    Specifies the label to attach.
                   type: string
+              required:
+                - labelID
       responses:
         '201':
           description: The newly added label
@@ -3247,7 +3264,7 @@ paths:
                 - name
       responses:
         '201':
-          description: Added dashboard
+          description: Success. The dashboard is created.
           content:
             application/json:
               schema:
@@ -4098,19 +4115,19 @@ paths:
                                                                 query: /api/v2/checks/1/query
                                                               properties:
                                                                 self:
-                                                                  description: URL for this check
+                                                                  description: The URL for this check.
                                                                   $ref: '#/components/schemas/Task/properties/links/properties/self'
                                                                 labels:
-                                                                  description: URL to retrieve labels for this check
+                                                                  description: The URL to retrieve labels for this check.
                                                                   $ref: '#/components/schemas/Task/properties/links/properties/self'
                                                                 members:
-                                                                  description: URL to retrieve members for this check
+                                                                  description: The URL to retrieve members for this check.
                                                                   $ref: '#/components/schemas/Task/properties/links/properties/self'
                                                                 owners:
-                                                                  description: URL to retrieve owners for this check
+                                                                  description: The URL to retrieve owners for this check.
                                                                   $ref: '#/components/schemas/Task/properties/links/properties/self'
                                                                 query:
-                                                                  description: URL to retrieve flux script for this check
+                                                                  description: The URL to retrieve the Flux script for this check.
                                                                   $ref: '#/components/schemas/Task/properties/links/properties/self'
                                                           required:
                                                             - name
@@ -4941,7 +4958,13 @@ paths:
       operationId: GetDashboards
       tags:
         - Dashboards
-      summary: List all dashboards
+      summary: List dashboards
+      description: |
+        Lists [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard).
+
+        #### Related guides
+
+        - [Manage dashboards]({{% INFLUXDB_DOCS_URL %}}/visualize-data/dashboards/).
       parameters:
         - $ref: '#/paths/~1ready/get/parameters/0'
         - $ref: '#/paths/~1users/get/parameters/1'
@@ -4954,7 +4977,7 @@ paths:
             default: false
         - in: query
           name: owner
-          description: A user identifier. Returns only dashboards where this user has the `owner` role.
+          description: 'A user ID. Only returns [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) where the specified user has the `owner` role.'
           schema:
             type: string
         - in: query
@@ -4968,24 +4991,33 @@ paths:
               - UpdatedAt
         - in: query
           name: id
-          description: 'A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.'
+          description: |
+            A list of dashboard IDs.
+            Returns only the specified [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard).
+            If you specify `id` and `owner`, only `id` is used.
           schema:
             type: array
             items:
               type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            An organization ID.
+            Only returns [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) that belong to the specified
+            [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
           schema:
             type: string
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            An organization name.
+            Only returns [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) that belong to the specified
+            [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
           schema:
             type: string
       responses:
         '200':
-          description: All dashboards
+          description: Success. The response body contains dashboards.
           content:
             application/json:
               schema:
