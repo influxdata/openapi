@@ -3015,32 +3015,28 @@ paths:
       operationId: GetQuerySuggestions
       tags:
         - Query
-      summary: Retrieve Flux query suggestions
+      summary: List Flux query suggestions
       description: |
-        Retrieves a list of Flux query suggestions. Each suggestion contains a
+        Lists Flux query suggestions. Each suggestion contains a
         [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
         name and parameters.
 
         Use this endpoint to retrieve a list of Flux query suggestions used in the
-        InfluxDB Flux Query Builder. Helper function names have an underscore (`_`)
-        prefix and aren't meant to be used directly in queries--for example:
-
-        - **Recommended**:  Use `top(n, columns=["_value"], tables=<-)` to sort
-          on a column and keep the top n records instead of `_sortLimit_`.
-          `top` uses the `_sortLimit` helper function.
+        InfluxDB Flux Query Builder.
 
         #### Limitations
 
-        - Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL
-        will result in a HTTP `301 Moved Permanently` status code. Please use
-        `/api/v2/query/suggestions` without a trailing slash.
-
         - When writing a query, avoid using `_functionName()` helper functions
-        exposed by this endpoint.
+        exposed by this endpoint.  Helper function names have an underscore (`_`)
+        prefix and aren't meant to be used directly in queries--for example:
+
+          - To sort on a column and keep the top n records, use the
+            `top(n, columns=["_value"], tables=<-)` function instead of the `_sortLimit`
+            helper function. `top` uses `_sortLimit`.
 
         #### Related Guides
 
-        - [List of all Flux functions](https://docs.influxdata.com/influxdb/cloud/flux/v0.x/stdlib/all-functions/)
+        - [List of all Flux functions](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
@@ -3641,7 +3637,7 @@ paths:
           description: |
             Moved Permanently.
             InfluxData has moved the URL of the endpoint.
-            Use `/api/v2/query/suggestions`.
+            Use `/api/v2/query/suggestions` (without a trailing slash).
           content:
             text/html:
               schema:
@@ -3667,7 +3663,7 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions" \
+            curl --request GET "INFLUX_URL/api/v2/query/suggestions" \
               --header "Accept: application/json" \
               --header "Authorization: Token INFLUX_API_TOKEN"
   '/query/suggestions/{name}':
@@ -3693,7 +3689,7 @@ paths:
 
         #### Related Guides
 
-        - [List of all Flux functions](https://docs.influxdata.com/influxdb/cloud/flux/v0.x/stdlib/all-functions/)
+        - [List of all Flux functions](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -3702,8 +3698,7 @@ paths:
             type: string
           required: true
           description: |
-            A Flux Function name.
-            Only returns functions with this name.
+            A [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/) name.
       responses:
         '200':
           description: |
@@ -3740,7 +3735,7 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions/sum/" \
+            curl --request GET "INFLUX_URL/api/v2/query/suggestions/sum/" \
               --header "Accept: application/json" \
               --header "Authorization: Token INFLUX_API_TOKEN"
   /query/analyze:
@@ -4067,7 +4062,7 @@ paths:
         - Buckets
       summary: List buckets
       description: |
-        Retrieves a list of [buckets](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#bucket).
+        Lists [buckets](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#bucket).
 
         InfluxDB retrieves buckets owned by the
         [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization)
@@ -6283,11 +6278,15 @@ paths:
         - Templates
       summary: List installed stacks
       description: |
-        Retrieves a list of installed InfluxDB stacks.
+        Lists installed InfluxDB stacks.
 
         To limit stacks in the response, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all installed stacks
         for the organization.
+
+        #### Related guides
+
+        - [View InfluxDB stacks](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/stacks/).
       parameters:
         - in: query
           name: orgID
@@ -6295,8 +6294,8 @@ paths:
           schema:
             type: string
           description: |
-            The ID of the organization that owns the stacks.
-            Only returns stacks owned by this organization.
+            An organization ID.
+            Only returns stacks owned by the specified [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
 
             #### InfluxDB Cloud
 
@@ -6307,14 +6306,14 @@ paths:
           schema:
             type: string
           description: |
-            The stack name.
+            A stack name.
             Finds stack `events` with this name and returns the stacks.
 
             Repeatable.
             To filter for more than one stack name,
             repeat this parameter with each name--for example:
 
-            - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`
+            - `INFLUX_URL/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`
           examples:
             findStackByName:
               summary: Find stacks with the event name
@@ -6324,14 +6323,14 @@ paths:
           schema:
             type: string
           description: |
-            The stack ID.
-            Only returns stacks with this ID.
+            A stack ID.
+            Only returns the specified stack.
 
             Repeatable.
             To filter for more than one stack ID,
             repeat this parameter with each ID--for example:
 
-            - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`
+            - `INFLUX_URL/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`
           examples:
             findStackByID:
               summary: Find a stack with the ID
@@ -6405,8 +6404,8 @@ paths:
 
         #### Related guides
 
-        - [InfluxDB stacks](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/stacks/)
-        - [Use InfluxDB templates](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/use/#apply-templates-to-an-influxdb-instance)
+        - [Initialize an InfluxDB stack](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/stacks/init/).
+        - [Use InfluxDB templates](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/use/#apply-templates-to-an-influxdb-instance).
       requestBody:
         description: The stack to create.
         required: true
@@ -8994,7 +8993,7 @@ paths:
         - Users
       summary: List users
       description: |
-        Retrieves a list of [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+        Lists [users](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
 
         To limit which users are returned, pass query parameters in your request.
 
@@ -9734,7 +9733,7 @@ paths:
     get:
       summary: List measurement schemas of a bucket
       description: |
-        Retrieves a list of _explicit_
+        Lists _explicit_
         [schemas](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#schema)
         (`"schemaType": "explicit"`) for a bucket.
 
@@ -9925,7 +9924,7 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request POST "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+            curl --request POST "INFLUX_URL/api/v2/buckets/BUCKET_ID/schema/measurements \
               --header "Authorization: Token INFLUX_API_TOKEN" \
               --header "Accept: application/json" \
               --header "Content-Type: application/json" \
@@ -10093,7 +10092,7 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request PATCH "https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \
+            curl --request PATCH "INFLUX_URL/api/v2/buckets/BUCKET_ID/schema/measurements \
               --header "Authorization: Token INFLUX_API_TOKEN" \
               --header "Accept: application/json" \
               --header "Content-Type: application/json" \
@@ -10220,7 +10219,7 @@ paths:
               $ref: '#/components/schemas/CreateDashboardRequest'
       responses:
         '201':
-          description: Added dashboard
+          description: Success. The dashboard is created.
           content:
             application/json:
               schema:
@@ -10237,7 +10236,13 @@ paths:
       operationId: GetDashboards
       tags:
         - Dashboards
-      summary: List all dashboards
+      summary: List dashboards
+      description: |
+        Lists [dashboards](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#dashboard).
+
+        #### Related guides
+
+        - [Manage dashboards](https://docs.influxdata.com/influxdb/cloud/visualize-data/dashboards/).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - $ref: '#/components/parameters/Offset'
@@ -10249,10 +10254,13 @@ paths:
             minimum: -1
             maximum: 100
             default: 20
-          description: The non-zero number of dashboards to return
+          description: |
+            The maximum number of [dashboards](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#dashboard) to return.
+            Default is `20`.
+            The minimum is `-1` and the maximum is `100`.
         - in: query
           name: owner
-          description: A user identifier. Returns only dashboards where this user has the `owner` role.
+          description: 'A user ID. Only returns [dashboards](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#dashboard) where the specified user has the `owner` role.'
           schema:
             type: string
         - in: query
@@ -10266,24 +10274,33 @@ paths:
               - UpdatedAt
         - in: query
           name: id
-          description: 'A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.'
+          description: |
+            A list of dashboard IDs.
+            Returns only the specified [dashboards](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#dashboard).
+            If you specify `id` and `owner`, only `id` is used.
           schema:
             type: array
             items:
               type: string
         - in: query
           name: orgID
-          description: The identifier of the organization.
+          description: |
+            An organization ID.
+            Only returns [dashboards](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#dashboard) that belong to the specified
+            [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
           schema:
             type: string
         - in: query
           name: org
-          description: The name of the organization.
+          description: |
+            An organization name.
+            Only returns [dashboards](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#dashboard) that belong to the specified
+            [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
           schema:
             type: string
       responses:
         '200':
-          description: All dashboards
+          description: Success. The response body contains dashboards.
           content:
             application/json:
               schema:
@@ -10499,7 +10516,7 @@ paths:
         - lang: Shell
           label: 'cURL: all tasks, basic output'
           source: |
-            curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
+            curl INFLUX_URL/api/v2/tasks/?limit=-1&type=basic \
               --header 'Content-Type: application/json' \
               --header 'Authorization: Token INFLUX_API_TOKEN'
     post:
@@ -10618,7 +10635,7 @@ paths:
         - lang: Shell
           label: 'cURL: create a Flux script task'
           source: |
-            curl https://cloud2.influxdata.com/api/v2/tasks \
+            curl INFLUX_URL/api/v2/tasks \
             --header "Content-type: application/json" \
             --header "Authorization: Token INFLUX_API_TOKEN" \
             --data-binary @- << EOF
@@ -10635,7 +10652,7 @@ paths:
         - lang: Shell
           label: 'cURL: create a Flux script reference task'
           source: |
-            curl https://cloud2.influxdata.com/api/v2/tasks \
+            curl INFLUX_URL/api/v2/tasks \
             --header "Content-type: application/json" \
             --header "Authorization: Token INFLUX_API_TOKEN" \
             --data-binary @- << EOF
@@ -15411,12 +15428,15 @@ components:
             description: this is a description
     LabelMapping:
       type: object
+      description: A _label mapping_ contains a `label` ID to attach to a resource.
       properties:
         labelID:
           description: |
-            Label ID.
-            The ID of the label to attach.
+            A label ID.
+            Specifies the label to attach.
           type: string
+      required:
+        - labelID
     LabelsResponse:
       type: object
       properties:
@@ -15546,19 +15566,19 @@ components:
             query: /api/v2/checks/1/query
           properties:
             self:
-              description: URL for this check
+              description: The URL for this check.
               $ref: '#/components/schemas/Link'
             labels:
-              description: URL to retrieve labels for this check
+              description: The URL to retrieve labels for this check.
               $ref: '#/components/schemas/Link'
             members:
-              description: URL to retrieve members for this check
+              description: The URL to retrieve members for this check.
               $ref: '#/components/schemas/Link'
             owners:
-              description: URL to retrieve owners for this check
+              description: The URL to retrieve owners for this check.
               $ref: '#/components/schemas/Link'
             query:
-              description: URL to retrieve flux script for this check
+              description: The URL to retrieve the Flux script for this check.
               $ref: '#/components/schemas/Link'
       required:
         - name
@@ -15875,19 +15895,19 @@ components:
             query: /api/v2/notificationRules/1/query
           properties:
             self:
-              description: URL for this endpoint.
+              description: The URL for this endpoint.
               $ref: '#/components/schemas/Link'
             labels:
-              description: URL to retrieve labels for this notification rule.
+              description: The URL to retrieve labels for this notification rule.
               $ref: '#/components/schemas/Link'
             members:
-              description: URL to retrieve members for this notification rule.
+              description: The URL to retrieve members for this notification rule.
               $ref: '#/components/schemas/Link'
             owners:
-              description: URL to retrieve owners for this notification rule.
+              description: The URL to retrieve owners for this notification rule.
               $ref: '#/components/schemas/Link'
             query:
-              description: URL to retrieve flux script for this notification rule.
+              description: The URL to retrieve the Flux script for this notification rule.
               $ref: '#/components/schemas/Link'
     TagRule:
       type: object
@@ -16096,16 +16116,16 @@ components:
             owners: /api/v2/notificationEndpoints/1/owners
           properties:
             self:
-              description: URL for this endpoint.
+              description: The URL for this endpoint.
               $ref: '#/components/schemas/Link'
             labels:
-              description: URL to retrieve labels for this endpoint.
+              description: The URL to retrieve labels for this endpoint.
               $ref: '#/components/schemas/Link'
             members:
-              description: URL to retrieve members for this endpoint.
+              description: The URL to retrieve members for this endpoint.
               $ref: '#/components/schemas/Link'
             owners:
-              description: URL to retrieve owners for this endpoint.
+              description: The URL to retrieve owners for this endpoint.
               $ref: '#/components/schemas/Link'
         type:
           $ref: '#/components/schemas/NotificationEndpointType'

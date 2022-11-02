@@ -3757,8 +3757,8 @@
         "tags": [
           "Query"
         ],
-        "summary": "Retrieve Flux query suggestions",
-        "description": "Retrieves a list of Flux query suggestions. Each suggestion contains a\n[Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\nname and parameters.\n\nUse this endpoint to retrieve a list of Flux query suggestions used in the\nInfluxDB Flux Query Builder. Helper function names have an underscore (`_`)\nprefix and aren't meant to be used directly in queries--for example:\n\n- **Recommended**:  Use `top(n, columns=[\"_value\"], tables=<-)` to sort\n  on a column and keep the top n records instead of `_sortLimit_`.\n  `top` uses the `_sortLimit` helper function.\n\n#### Limitations\n\n- Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL\nwill result in a HTTP `301 Moved Permanently` status code. Please use\n`/api/v2/query/suggestions` without a trailing slash.\n\n- When writing a query, avoid using `_functionName()` helper functions\nexposed by this endpoint.\n\n#### Related Guides\n\n- [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/)\n",
+        "summary": "List Flux query suggestions",
+        "description": "Lists Flux query suggestions. Each suggestion contains a\n[Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\nname and parameters.\n\nUse this endpoint to retrieve a list of Flux query suggestions used in the\nInfluxDB Flux Query Builder.\n\n#### Limitations\n\n- When writing a query, avoid using `_functionName()` helper functions\nexposed by this endpoint.  Helper function names have an underscore (`_`)\nprefix and aren't meant to be used directly in queries--for example:\n\n  - To sort on a column and keep the top n records, use the\n    `top(n, columns=[\"_value\"], tables=<-)` function instead of the `_sortLimit`\n    helper function. `top` uses `_sortLimit`.\n\n#### Related Guides\n\n- [List of all Flux functions](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -4701,7 +4701,7 @@
             }
           },
           "301": {
-            "description": "Moved Permanently.\nInfluxData has moved the URL of the endpoint.\nUse `/api/v2/query/suggestions`.\n",
+            "description": "Moved Permanently.\nInfluxData has moved the URL of the endpoint.\nUse `/api/v2/query/suggestions` (without a trailing slash).\n",
             "content": {
               "text/html": {
                 "schema": {
@@ -4738,7 +4738,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request GET \"https://cloud2.influxdata.com/api/v2/query/suggestions\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\"\n"
+            "source": "curl --request GET \"INFLUX_URL/api/v2/query/suggestions\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\"\n"
           }
         ]
       }
@@ -4750,7 +4750,7 @@
           "Query"
         ],
         "summary": "Retrieve a query suggestion for a branching suggestion",
-        "description": "Retrieves a query suggestion that contains the name and parameters of the\nrequested function.\n\nUse this endpoint to pass a branching suggestion (a Flux function name) and\nretrieve the parameters of the requested function.\n\n#### Limitations\n\n- Use `/api/v2/query/suggestions/{name}` (without a trailing slash).\n`/api/v2/query/suggestions/{name}/` (note the trailing slash) results in a\nHTTP `301 Moved Permanently` status.\n\n- The function `name` must exist and must be spelled correctly.\n\n#### Related Guides\n\n- [List of all Flux functions]({{% INFLUXDB_DOCS_URL %}}/flux/v0.x/stdlib/all-functions/)\n",
+        "description": "Retrieves a query suggestion that contains the name and parameters of the\nrequested function.\n\nUse this endpoint to pass a branching suggestion (a Flux function name) and\nretrieve the parameters of the requested function.\n\n#### Limitations\n\n- Use `/api/v2/query/suggestions/{name}` (without a trailing slash).\n`/api/v2/query/suggestions/{name}/` (note the trailing slash) results in a\nHTTP `301 Moved Permanently` status.\n\n- The function `name` must exist and must be spelled correctly.\n\n#### Related Guides\n\n- [List of all Flux functions](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -4762,7 +4762,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A Flux Function name.\nOnly returns functions with this name.\n"
+            "description": "A [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/) name.\n"
           }
         ],
         "responses": {
@@ -4812,7 +4812,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request GET \"https://cloud2.influxdata.com/api/v2/query/suggestions/sum/\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\"\n"
+            "source": "curl --request GET \"INFLUX_URL/api/v2/query/suggestions/sum/\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\"\n"
           }
         ]
       }
@@ -5121,7 +5121,7 @@
           "Buckets"
         ],
         "summary": "List buckets",
-        "description": "Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
+        "description": "Lists [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\n\nInfluxDB retrieves buckets owned by the\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)\nassociated with the authorization\n([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).\nTo limit which buckets are returned, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all buckets up to the\ndefault `limit`.\n\n#### InfluxDB OSS\n\n- If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_\n  to authenticate your request, InfluxDB retrieves resources for _all\n  organizations_ in the instance.\n  To retrieve resources for only a specific organization, use the\n  `org` parameter or the `orgID` parameter to specify the organization.\n\n#### Required permissions\n\n| Action                    | Permission required |\n|:--------------------------|:--------------------|\n| Retrieve _user buckets_   | `read-buckets`      |\n| Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |\n\n#### Related Guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -7561,7 +7561,7 @@
           "Templates"
         ],
         "summary": "List installed stacks",
-        "description": "Retrieves a list of installed InfluxDB stacks.\n\nTo limit stacks in the response, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all installed stacks\nfor the organization.\n",
+        "description": "Lists installed InfluxDB stacks.\n\nTo limit stacks in the response, pass query parameters in your request.\nIf no query parameters are passed, InfluxDB returns all installed stacks\nfor the organization.\n\n#### Related guides\n\n- [View InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/).\n",
         "parameters": [
           {
             "in": "query",
@@ -7570,7 +7570,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The ID of the organization that owns the stacks.\nOnly returns stacks owned by this organization.\n\n#### InfluxDB Cloud\n\n- Doesn't require this parameter;\n  InfluxDB only returns resources allowed by the API token.\n"
+            "description": "An organization ID.\nOnly returns stacks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n\n#### InfluxDB Cloud\n\n- Doesn't require this parameter;\n  InfluxDB only returns resources allowed by the API token.\n"
           },
           {
             "in": "query",
@@ -7578,7 +7578,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The stack name.\nFinds stack `events` with this name and returns the stacks.\n\nRepeatable.\nTo filter for more than one stack name,\nrepeat this parameter with each name--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`\n",
+            "description": "A stack name.\nFinds stack `events` with this name and returns the stacks.\n\nRepeatable.\nTo filter for more than one stack name,\nrepeat this parameter with each name--for example:\n\n- `INFLUX_URL/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`\n",
             "examples": {
               "findStackByName": {
                 "summary": "Find stacks with the event name",
@@ -7592,7 +7592,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "The stack ID.\nOnly returns stacks with this ID.\n\nRepeatable.\nTo filter for more than one stack ID,\nrepeat this parameter with each ID--for example:\n\n- `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`\n",
+            "description": "A stack ID.\nOnly returns the specified stack.\n\nRepeatable.\nTo filter for more than one stack ID,\nrepeat this parameter with each ID--for example:\n\n- `INFLUX_URL/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`\n",
             "examples": {
               "findStackByID": {
                 "summary": "Find a stack with the ID",
@@ -7670,7 +7670,7 @@
           "Templates"
         ],
         "summary": "Create a stack",
-        "description": "Creates or initializes a stack.\n\nUse this endpoint to _manually_ initialize a new stack with the following\noptional information:\n\n  - Stack name\n  - Stack description\n  - URLs for template manifest files\n\nTo automatically create a stack when applying templates,\nuse the [/api/v2/templates/apply endpoint](#operation/ApplyTemplate).\n\n#### Required permissions\n\n- `write` permission for the organization\n\n#### Related guides\n\n- [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)\n- [Use InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/#apply-templates-to-an-influxdb-instance)\n",
+        "description": "Creates or initializes a stack.\n\nUse this endpoint to _manually_ initialize a new stack with the following\noptional information:\n\n  - Stack name\n  - Stack description\n  - URLs for template manifest files\n\nTo automatically create a stack when applying templates,\nuse the [/api/v2/templates/apply endpoint](#operation/ApplyTemplate).\n\n#### Required permissions\n\n- `write` permission for the organization\n\n#### Related guides\n\n- [Initialize an InfluxDB stack]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/init/).\n- [Use InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/use/#apply-templates-to-an-influxdb-instance).\n",
         "requestBody": {
           "description": "The stack to create.",
           "required": true,
@@ -11195,7 +11195,7 @@
           "Users"
         ],
         "summary": "List users",
-        "description": "Retrieves a list of [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't allow listing all users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | Operator token | InfluxData internal use only |\n| List a specific user | `read-users` or `read-user USER_ID` |\n\n*`USER_ID`* is the ID of the user that you want to retrieve.\n\n#### Related guides\n\n- [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)\n",
+        "description": "Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).\n\nTo limit which users are returned, pass query parameters in your request.\n\n#### InfluxDB Cloud\n\n- InfluxDB Cloud doesn't allow listing all users through the API.\n  Use the InfluxDB Cloud user interface (UI) to manage account information.\n\n#### Required permissions for InfluxDB Cloud\n\n| Action | Permission required | Restriction |\n|:-------|:--------------------|:------------|\n| List all users | Operator token | InfluxData internal use only |\n| List a specific user | `read-users` or `read-user USER_ID` |\n\n*`USER_ID`* is the ID of the user that you want to retrieve.\n\n#### Related guides\n\n- [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12089,7 +12089,7 @@
       "summary": "Bucket schemas",
       "get": {
         "summary": "List measurement schemas of a bucket",
-        "description": "Retrieves a list of _explicit_\n[schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\n(`\"schemaType\": \"explicit\"`) for a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\n#### Related guides\n\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)\n",
+        "description": "Lists _explicit_\n[schemas]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#schema)\n(`\"schemaType\": \"explicit\"`) for a bucket.\n\n_Explicit_ schemas are used to enforce column names, tags, fields, and data\ntypes for your data.\n\nBy default, buckets have an _implicit_ schema-type (`\"schemaType\": \"implicit\"`)\nthat conforms to your data.\n\n#### Related guides\n\n- [Using bucket schemas](https://www.influxdata.com/blog/new-bucket-schema-option-protect-from-unwanted-schema-changes/)\n",
         "operationId": "getMeasurementSchemas",
         "parameters": [
           {
@@ -12306,7 +12306,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request POST \"https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"temperature\",\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
+            "source": "curl --request POST \"INFLUX_URL/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"name\": \"temperature\",\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
           }
         ]
       }
@@ -12483,7 +12483,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request PATCH \"https://cloud2.influxdata.com/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
+            "source": "curl --request PATCH \"INFLUX_URL/api/v2/buckets/BUCKET_ID/schema/measurements \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header \"Accept: application/json\" \\\n  --header \"Content-Type: application/json\" \\\n  --data '{\n      \"column\": [\n        {\n          \"type\": \"tag\",\n          \"name\": \"location\"\n        },\n        {\n          \"type\": \"field\",\n          \"name\": \"value\",\n          \"dataType\": \"float\"\n        },\n        {\n          \"type\": \"timestamp\",\n          \"name\": \"time\"\n        }\n      ]\n    }'\n"
           }
         ]
       }
@@ -12639,7 +12639,7 @@
         },
         "responses": {
           "201": {
-            "description": "Added dashboard",
+            "description": "Success. The dashboard is created.",
             "content": {
               "application/json": {
                 "schema": {
@@ -12672,7 +12672,8 @@
         "tags": [
           "Dashboards"
         ],
-        "summary": "List all dashboards",
+        "summary": "List dashboards",
+        "description": "Lists [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard).\n\n#### Related guides\n\n- [Manage dashboards]({{% INFLUXDB_DOCS_URL %}}/visualize-data/dashboards/).\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -12692,12 +12693,12 @@
               "maximum": 100,
               "default": 20
             },
-            "description": "The non-zero number of dashboards to return"
+            "description": "The maximum number of [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) to return.\nDefault is `20`.\nThe minimum is `-1` and the maximum is `100`.\n"
           },
           {
             "in": "query",
             "name": "owner",
-            "description": "A user identifier. Returns only dashboards where this user has the `owner` role.",
+            "description": "A user ID. Only returns [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) where the specified user has the `owner` role.",
             "schema": {
               "type": "string"
             }
@@ -12718,7 +12719,7 @@
           {
             "in": "query",
             "name": "id",
-            "description": "A list of dashboard identifiers. Returns only the listed dashboards. If both `id` and `owner` are specified, only `id` is used.",
+            "description": "A list of dashboard IDs.\nReturns only the specified [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard).\nIf you specify `id` and `owner`, only `id` is used.\n",
             "schema": {
               "type": "array",
               "items": {
@@ -12729,7 +12730,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "The identifier of the organization.",
+            "description": "An organization ID.\nOnly returns [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) that belong to the specified\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n",
             "schema": {
               "type": "string"
             }
@@ -12737,7 +12738,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "The name of the organization.",
+            "description": "An organization name.\nOnly returns [dashboards]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#dashboard) that belong to the specified\n[organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).\n",
             "schema": {
               "type": "string"
             }
@@ -12745,7 +12746,7 @@
         ],
         "responses": {
           "200": {
-            "description": "All dashboards",
+            "description": "Success. The response body contains dashboards.",
             "content": {
               "application/json": {
                 "schema": {
@@ -12993,7 +12994,7 @@
           {
             "lang": "Shell",
             "label": "cURL: all tasks, basic output",
-            "source": "curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Token INFLUX_API_TOKEN'\n"
+            "source": "curl INFLUX_URL/api/v2/tasks/?limit=-1&type=basic \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Token INFLUX_API_TOKEN'\n"
           }
         ]
       },
@@ -13079,12 +13080,12 @@
           {
             "lang": "Shell",
             "label": "cURL: create a Flux script task",
-            "source": "curl https://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"flux\": \"option task = {name: \\\"iot-center-task-1\\\", every: 30m}\\\n            from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -30d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\\\n              |> aggregateWindow(every: 1h, fn: mean)\"\n  }\nEOF\n"
+            "source": "curl INFLUX_URL/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"flux\": \"option task = {name: \\\"iot-center-task-1\\\", every: 30m}\\\n            from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -30d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\\\n              |> aggregateWindow(every: 1h, fn: mean)\"\n  }\nEOF\n"
           },
           {
             "lang": "Shell",
             "label": "cURL: create a Flux script reference task",
-            "source": "curl https://cloud2.influxdata.com/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"scriptID\": \"085138a111448000\",\n    \"scriptParameters\":\n      {\n        \"rangeStart\": \"-30d\",\n        \"bucket\": \"air_sensor\",\n        \"filterField\": \"temperature\",\n        \"groupColumn\": \"_time\"\n      }\n  }\nEOF\n"
+            "source": "curl INFLUX_URL/api/v2/tasks \\\n--header \"Content-type: application/json\" \\\n--header \"Authorization: Token INFLUX_API_TOKEN\" \\\n--data-binary @- << EOF\n  {\n    \"orgID\": \"INFLUX_ORG_ID\",\n    \"description\": \"IoT Center 30d environment average.\",\n    \"scriptID\": \"085138a111448000\",\n    \"scriptParameters\":\n      {\n        \"rangeStart\": \"-30d\",\n        \"bucket\": \"air_sensor\",\n        \"filterField\": \"temperature\",\n        \"groupColumn\": \"_time\"\n      }\n  }\nEOF\n"
           }
         ]
       }
@@ -19521,12 +19522,16 @@
       },
       "LabelMapping": {
         "type": "object",
+        "description": "A _label mapping_ contains a `label` ID to attach to a resource.",
         "properties": {
           "labelID": {
-            "description": "Label ID.\nThe ID of the label to attach.\n",
+            "description": "A label ID.\nSpecifies the label to attach.\n",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "labelID"
+        ]
       },
       "LabelsResponse": {
         "type": "object",
@@ -19718,23 +19723,23 @@
             },
             "properties": {
               "self": {
-                "description": "URL for this check",
+                "description": "The URL for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "labels": {
-                "description": "URL to retrieve labels for this check",
+                "description": "The URL to retrieve labels for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members for this check",
+                "description": "The URL to retrieve members for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners for this check",
+                "description": "The URL to retrieve owners for this check.",
                 "$ref": "#/components/schemas/Link"
               },
               "query": {
-                "description": "URL to retrieve flux script for this check",
+                "description": "The URL to retrieve the Flux script for this check.",
                 "$ref": "#/components/schemas/Link"
               }
             }
@@ -20222,23 +20227,23 @@
             },
             "properties": {
               "self": {
-                "description": "URL for this endpoint.",
+                "description": "The URL for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "labels": {
-                "description": "URL to retrieve labels for this notification rule.",
+                "description": "The URL to retrieve labels for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members for this notification rule.",
+                "description": "The URL to retrieve members for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners for this notification rule.",
+                "description": "The URL to retrieve owners for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               },
               "query": {
-                "description": "URL to retrieve flux script for this notification rule.",
+                "description": "The URL to retrieve the Flux script for this notification rule.",
                 "$ref": "#/components/schemas/Link"
               }
             }
@@ -20573,19 +20578,19 @@
             },
             "properties": {
               "self": {
-                "description": "URL for this endpoint.",
+                "description": "The URL for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "labels": {
-                "description": "URL to retrieve labels for this endpoint.",
+                "description": "The URL to retrieve labels for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "members": {
-                "description": "URL to retrieve members for this endpoint.",
+                "description": "The URL to retrieve members for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               },
               "owners": {
-                "description": "URL to retrieve owners for this endpoint.",
+                "description": "The URL to retrieve owners for this endpoint.",
                 "$ref": "#/components/schemas/Link"
               }
             }
