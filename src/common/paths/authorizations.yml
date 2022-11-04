@@ -2,6 +2,7 @@ get:
   operationId: GetAuthorizations
   tags:
     - Authorizations
+    - API tokens
     - Security and access endpoints
   summary: List authorizations
   description: |
@@ -10,16 +11,19 @@ get:
     To limit which authorizations are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all authorizations.
 
-    #### InfluxDB OSS
+    #### InfluxDB Cloud
 
-    - InfluxDB OSS returns
-      [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
-    - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
-      InfluxDB OSS returns authorizations for all organizations in the instance.
+    - InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+      values in `GET /api/v2/authorizations` responses;
+      returns `token: redacted` for all authorizations.
 
     #### Required permissions
 
-    - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+    To retrieve an authorization, the request must use an API token that has the
+    following permissions:
+
+    - `read-authorizations`
+    - `read-user` for the user that the authorization is scoped to
 
     #### Related guides
 
@@ -54,9 +58,40 @@ get:
       description: |
         An organization name.
         Only returns authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+    - in: query
+      name: token
+      schema:
+        type: string
+      description: |
+        An API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) value.
+        Specifies an authorization by its `token` property value
+        and returns the authorization.
+
+        #### InfluxDB OSS
+
+        - Doesn't support this parameter. InfluxDB OSS ignores the `token=` parameter,
+          applies other parameters, and then returns the result.
+
+        #### Limitations
+
+        - The parameter is non-repeatable. If you specify more than one,
+          only the first one is used. If a resource with the specified
+          property value doesn't exist, then the response body contains an empty list.
   responses:
     "200":
-      description: Success. The response body contains a list of authorizations.
+      description: |
+        Success. The response body contains a list of authorizations.
+
+        If the response body is missing authorizations that you expect, check that the API
+        token used in the request has `read-user` permission for the users (`userID` property value)
+        in those authorizations.
+
+        #### InfluxDB OSS
+
+        - **Warning**: The response body contains authorizations with their
+          [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in clear text.
+        - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+          InfluxDB OSS returns authorizations for all organizations in the instance.
       content:
         application/json:
           schema:
@@ -75,6 +110,8 @@ post:
   operationId: PostAuthorizations
   tags:
     - Authorizations
+    - API tokens
+    - Security and access endpoints
   summary: Create an authorization
   description: |
     Creates an authorization and returns the authorization with the
@@ -82,21 +119,24 @@ post:
 
     Use this endpoint to create an authorization, which generates an API token
     with permissions to `read` or `write` to a specific resource or `type` of resource.
-    The response contains the new authorization with the generated API token.
-
-    #### Limitations
+    The API token is the authorization's `token` property value.
 
     To follow best practices for secure API token generation and retrieval,
     InfluxDB enforces access restrictions on API tokens.
 
-    - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
-      user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
-    - You can't update an authorization's permissions.
-    - Even if an API token has `read-authorizations` permission, the
-      token can't be used to view its authorization details.
-    - A token stops working when the user who created the authorization is deleted.
+      - InfluxDB allows access to the API token value immediately after the authorization is created.
+      - You can’t change access (read/write) permissions for an API token after it’s created.
+      - Tokens stop working when the user who created the token is deleted.
 
-    We recommend creating a generic user to create and manage tokens for writing data.
+    We recommend the following for managing your tokens:
+
+      - Create a generic user to create and manage tokens for writing data.
+      - Store your tokens in a secure password vault for future access.
+
+    #### Required permissions
+
+    - `write-authorizations`
+    - `write-user` for the user that the authorization is scoped to
 
     #### Related guides
 
@@ -120,7 +160,8 @@ post:
   responses:
     "201":
       description: |
-        Success. The authorization is created. The response body contains the authorization.
+        Success. The authorization is created. The response body contains the
+        authorization.
       content:
         application/json:
           schema:
