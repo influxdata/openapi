@@ -14,8 +14,14 @@ post:
     - Does the following when you send a delete request:
 
       1. Validates the request and queues the delete.
-      2. Returns _success_ if queued; _error_ otherwise.
-      3. Handles the delete asynchronously.
+      2. If queued, responds with _success_ (HTTP `2xx` status code); _error_ otherwise.
+      3. Handles the delete asynchronously and reaches eventual consistency.
+
+    To ensure that InfluxDB Cloud handles writes and deletes in the order you request them,
+    wait for a success response (HTTP `2xx` status code) before you send the next request.
+
+    Because writes and deletes are asynchronous, your change might not yet be readable
+    when you receive the response.
 
     #### InfluxDB OSS
 
@@ -26,7 +32,7 @@ post:
 
     - `write-buckets` or `write-bucket BUCKET_ID`.
 
-      `BUCKET_ID` is the ID of the destination bucket.
+    *`BUCKET_ID`* is the ID of the destination bucket.
 
     #### Rate limits (with InfluxDB Cloud)
 
@@ -35,7 +41,7 @@ post:
 
     #### Related guides
 
-    - [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).
+    - [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/)
     - Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).
     - Learn how InfluxDB handles [deleted tags](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementtagkeys/)
       and [deleted fields](https://docs.influxdata.com/flux/v0.x/stdlib/influxdata/influxdb/schema/measurementfieldkeys/).
@@ -62,7 +68,7 @@ post:
 
       #### Related guides
 
-      - [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/).
+      - [Delete data]({{% INFLUXDB_DOCS_URL %}}/write-data/delete-data/)
       - Learn how to use [delete predicate syntax]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/delete-predicate/).
     required: true
     content:
@@ -74,24 +80,27 @@ post:
     - in: query
       name: org
       description: |
-        The organization to delete data from.
-        If you pass both `orgID` and `org`, they must both be valid.
+        An organization name or ID.
 
         #### InfluxDB Cloud
 
-        - Doesn't require `org` or `orgID`.
-        - Deletes data from the bucket in the organization associated with the authorization (API token).
+        - Doesn't use the `org` parameter or `orgID` parameter.
+        - Deletes data from the bucket in the organization
+          associated with the authorization (API token).
 
         #### InfluxDB OSS
 
-        - Requires either `org` or `orgID`.
+        - Requires either the `org` parameter or the `orgID` parameter.
+        - Deletes data from the bucket in the specified organization.
+        - If you pass both `orgID` and `org`, they must both be valid.
       schema:
         type: string
         description: The organization name or ID.
     - in: query
       name: bucket
       description: |
-        The name or ID of the bucket to delete data from.
+        A bucket name or ID.
+        Specifies the bucket to delete data from.
         If you pass both `bucket` and `bucketID`, `bucketID` takes precedence.
       schema:
         type: string
@@ -99,24 +108,27 @@ post:
     - in: query
       name: orgID
       description: |
-        The ID of the organization to delete data from.
-        If you pass both `orgID` and `org`, they must both be valid.
+        An organization ID.
 
         #### InfluxDB Cloud
 
-        - Doesn't require `org` or `orgID`.
-        - Deletes data from the bucket in the organization associated with the authorization (API token).
+        - Doesn't use the `org` parameter or `orgID` parameter.
+        - Deletes data from the bucket in the organization
+          associated with the authorization (API token).
 
         #### InfluxDB OSS
 
-        - Requires either `org` or `orgID`.
+        - Requires either the `org` parameter or the `orgID` parameter.
+        - Deletes data from the bucket in the specified organization.
+        - If you pass both `orgID` and `org`, they must both be valid.
       schema:
         type: string
         description: The organization ID.
     - in: query
       name: bucketID
       description: |
-        The ID of the bucket to delete data from.
+        A bucket ID.
+        Specifies the bucket to delete data from.
         If you pass both `bucket` and `bucketID`, `bucketID` takes precedence.
       schema:
         type: string
@@ -148,7 +160,7 @@ post:
 
         #### InfluxDB OSS
 
-        - Returns this error if `org` or `orgID` does not match an organization.
+        - Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.
       content:
         application/json:
           schema:

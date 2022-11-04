@@ -4,31 +4,30 @@ get:
     - Buckets
   summary: List buckets
   description: |
-    Retrieves a list of [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
+    Lists [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
 
+    InfluxDB retrieves buckets owned by the
+    [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+    associated with the authorization
+    ([API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)).
     To limit which buckets are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all buckets up to the
     default `limit`.
 
-    #### Limitations
+    #### InfluxDB OSS
 
-    - Paging with an `offset` greater than the number of records will result in
-    an empty list of buckets--for example:
+    - If you use an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_
+      to authenticate your request, InfluxDB retrieves resources for _all
+      organizations_ in the instance.
+      To retrieve resources for only a specific organization, use the
+      `org` parameter or the `orgID` parameter to specify the organization.
 
-      The following request is paging to the 50th record, but the user only has
-      10 buckets.
+    #### Required permissions
 
-      ```sh
-      $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
-
-      $ {
-          "links": {
-              "prev": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=49\u0026orgID=ORG_ID",
-              "self": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=50\u0026orgID=ORG_ID"
-          },
-          "buckets": []
-        }
-      ```
+    | Action                    | Permission required |
+    |:--------------------------|:--------------------|
+    | Retrieve _user buckets_   | `read-buckets`      |
+    | Retrieve [_system buckets_]({{% INFLUXDB_DOCS_URL %}}/reference/internals/system-buckets/) | `read-orgs`         |
 
     #### Related Guides
 
@@ -41,56 +40,54 @@ get:
     - in: query
       name: org
       description: |
-        Organization name.
-        The name of the organization.
+        An organization name.
 
         #### InfluxDB Cloud
 
-         - Doesn't use `org` or `orgID`.
-         - Creates a bucket in the organization associated with the authorization (API token).
+        - Doesn't use the `org` parameter or `orgID` parameter.
+        - Lists buckets for the organization associated with the authorization (API token).
 
-         #### InfluxDB OSS
+        #### InfluxDB OSS
 
-         - Accepts either `org` or `orgID`.
-         - InfluxDB creates the bucket within this organization.
+        - Lists buckets for the specified organization.
+
       schema:
         type: string
     - in: query
       name: orgID
       description: |
-        Organization ID.
-        The organization ID.
+        An organization ID.
 
         #### InfluxDB Cloud
 
-         - Doesn't use `org` or `orgID`.
-         - Creates a bucket in the organization associated with the authorization (API token).
+        - Doesn't use the `org` parameter or `orgID` parameter.
+        - Lists buckets for the organization associated with the authorization (API token).
 
-         #### InfluxDB OSS
+        #### InfluxDB OSS
 
-         - Accepts either `org` or `orgID`.
-         - InfluxDB creates the bucket within this organization.
+        - Requires either the `org` parameter or `orgID` parameter.
+        - Lists buckets for the specified organization.
       schema:
         type: string
     - in: query
       name: name
       description: |
-        Bucket name.
-        Only returns buckets with this specific name.
+        A bucket name.
+        Only returns buckets with the specified name.
       schema:
         type: string
     - in: query
       name: id
       description: |
-        Bucket ID.
-        Only returns the bucket with this ID.
+        A bucket ID.
+        Only returns the bucket with the specified ID.
       schema:
         type: string
   responses:
     "200":
       description: |
         Success.
-        The response body contains a list of buckets.
+        The response body contains a list of `buckets`.
       content:
         application/json:
           schema:
@@ -109,7 +106,7 @@ get:
             $ref: "../schemas/Error.yml"
   x-codeSamples:
     - lang: Shell
-      label: cURL
+      label: 'cURL: filter buckets by name'
       source: |
         curl --request GET "http://localhost:8086/api/v2/buckets?name=_monitoring" \
           --header "Authorization: Token INFLUX_TOKEN" \
@@ -122,15 +119,16 @@ post:
   summary: Create a bucket
   description: |
     Creates a [bucket]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket)
-    and returns the created bucket along with metadata. The default data
+    and returns the bucket resource.
+    The default data
     [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period)
     is 30 days.
 
     #### InfluxDB OSS
 
     - A single InfluxDB OSS instance supports active writes or queries for
-    approximately 20 buckets across all organizations at a given time. Reading
-    or writing to more than 20 buckets at a time can adversely affect
+    approximately 20 buckets across all organizations at a given time.
+    Reading or writing to more than 20 buckets at a time can adversely affect
     performance.
 
     #### Limitations
@@ -142,12 +140,12 @@ post:
 
     #### Related Guides
 
-    - [Create bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/)
+    - [Create a bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/create-bucket/)
     - [Create bucket CLI reference]({{% INFLUXDB_DOCS_URL %}}/reference/cli/influx/bucket/create)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
-    description: Bucket to create
+    description: The bucket to create.
     required: true
     content:
       application/json:
@@ -157,7 +155,7 @@ post:
     "201":
       description: |
         Success.
-        The bucket was created.
+        The bucket is created.
       content:
         application/json:
           schema:
@@ -213,7 +211,7 @@ post:
             $ref: "../schemas/Error.yml"
   x-codeSamples:
     - lang: Shell
-      label: cURL
+      label: 'cURL: create a bucket with retention period'
       source: |
         curl --request POST "http://localhost:8086/api/v2/buckets \
           --header "Authorization: Token INFLUX_TOKEN" \
@@ -221,7 +219,7 @@ post:
           --header "Content-Type: application/json" \
           --data '{
               "name": "air_sensor",
-              "description": "bucket holding air sensor data",
+              "description": "A bucket holding air sensor data",
               "orgID": "INFLUX_ORG_ID",
               "retentionRules": [
                   {
@@ -230,3 +228,6 @@ post:
                   }
               ]
             }'
+    - lang: Shell
+      label: cURL
+      source: |

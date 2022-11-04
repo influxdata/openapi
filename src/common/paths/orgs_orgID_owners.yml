@@ -4,6 +4,20 @@ get:
     - Organizations
     - Security and access endpoints
   summary: List all owners of an organization
+  description: |
+    Lists all owners of an organization.
+
+    #### InfluxDB Cloud
+
+    - Doesn't use `owner` and `member` roles.
+      Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    #### Required permissions
+
+    - `read-orgs INFLUX_ORG_ID`
+
+    *`INFLUX_ORG_ID`* is the ID of the organization that you want to retrieve a
+    list of owners from.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -11,7 +25,8 @@ get:
       schema:
         type: string
       required: true
-      description: The organization ID.
+      description: |
+        The ID of the organization to list owners for.
   responses:
     "200":
       description: A list of organization owners
@@ -19,6 +34,8 @@ get:
         application/json:
           schema:
             $ref: "../schemas/ResourceOwners.yml"
+          examples:
+            $ref: "../responses/example-responses/GetOrgsIDOwnersSuccessResponse.yml"
     "404":
       description: Organization not found
       content:
@@ -36,6 +53,25 @@ post:
   tags:
     - Organizations
   summary: Add an owner to an organization
+  description: |
+    Adds an owner to an organization.
+
+    Use this endpoint to assign the organization `owner` role to a user.
+
+    #### InfluxDB Cloud
+
+    - Doesn't use `owner` and `member` roles.
+      Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    #### Required permissions
+
+    - `write-orgs INFLUX_ORG_ID`
+
+    *`INFLUX_ORG_ID`* is the ID of the organization that you want to add an owner for.
+
+    #### Related endpoints
+
+    - [Authorizations](#tag/Authorizations)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -43,24 +79,47 @@ post:
       schema:
         type: string
       required: true
-      description: The organization ID.
+      description: The ID of the organization that you want to add an owner for.
   requestBody:
-    description: User to add as owner
+    description: The user to add as an owner of the organization.
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/AddResourceMemberRequestBody.yml"
+        examples:
+          $ref: "../responses/example-responses/PostOrgsIDOwnersSuccessResponse.yml"
   responses:
     "201":
-      description: Organization owner added
+      description: |
+        Success. The user is an owner of the organization.
+        The response body contains the owner with role and user detail.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceOwner.yml"
+    "400":
+      $ref: "../responses/BadRequestError.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST "http://localhost:8086/api/v2/orgs/INFLUX_ORG_ID/owners \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --header "Accept: application/json" \
+          --header "Content-Type: application/json" \
+          --data '{
+              "id": "09cfb87051cbe000"
+            }'

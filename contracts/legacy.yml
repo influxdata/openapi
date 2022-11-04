@@ -2,6 +2,9 @@ openapi: 3.0.0
 info:
   title: Influx Legacy API
   version: 2.0.1
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: ''
 paths:
@@ -212,7 +215,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LineProtocolError'
         '401':
-          description: Token does not have sufficient permissions to write to this organization and bucket or the organization and bucket do not exist.
+          description: Token doesn't have sufficient permissions to write to this organization and bucket or the organization and bucket do not exist.
           content:
             application/json:
               schema:
@@ -265,35 +268,47 @@ paths:
           name: userID
           schema:
             type: string
-          description: Only show legacy authorizations that belong to a user ID.
+          description: |
+            A user ID.
+            Only returns legacy authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: user
           schema:
             type: string
-          description: Only show legacy authorizations that belong to a user name.
+          description: |
+            A user name.
+            Only returns legacy authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
         - in: query
           name: orgID
           schema:
             type: string
-          description: Only show legacy authorizations that belong to an organization ID.
+          description: |
+            An organization ID.
+            Only returns legacy authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: org
           schema:
             type: string
-          description: Only show legacy authorizations that belong to a organization name.
+          description: |
+            An organization name.
+            Only returns legacy authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
         - in: query
           name: token
           schema:
             type: string
-          description: Only show legacy authorizations with a specified token (auth name).
+          description: |
+            An authorization name token.
+            Only returns legacy authorizations with the specified name.
         - in: query
           name: authID
           schema:
             type: string
-          description: Only show legacy authorizations with a specified auth ID.
+          description: |
+            An authorization ID.
+            Returns the specified legacy authorization.
       responses:
         '200':
-          description: A list of legacy authorizations
+          description: Success. The response body contains a list of legacy `authorizations`.
           content:
             application/json:
               schema:
@@ -314,10 +329,18 @@ paths:
       tags:
         - Legacy Authorizations
       summary: Create a legacy authorization
+      description: |
+        Creates a legacy authorization and returns the legacy authorization.
+
+        #### Required permissions
+
+        - `write-users USER_ID` if you pass the `userID` property in the request body.
+
+        *`USER_ID`* is the ID of the user that you want to scope the authorization to.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: Legacy authorization to create
+        description: The legacy authorization to create.
         required: true
         content:
           application/json:
@@ -325,7 +348,9 @@ paths:
               $ref: '#/components/schemas/LegacyAuthorizationPostRequest'
       responses:
         '201':
-          description: Legacy authorization created
+          description: |
+            Created. The legacy authorization is created.
+            The response body contains the newly created legacy authorization.
           content:
             application/json:
               schema:
@@ -333,6 +358,32 @@ paths:
         '400':
           description: Invalid request
           $ref: '#/components/responses/ServerError'
+        '401':
+          description: |
+            Unauthorized.
+            The API token passed doesn't have the permissions necessary for the
+            request.
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    description: |
+                      The HTTP status code description. Default is `unauthorized`.
+                    readOnly: true
+                    type: string
+                    enum:
+                      - unauthorized
+                  message:
+                    readOnly: true
+                    description: A human-readable message that may contain detail about the error.
+                    type: string
+              examples:
+                unauthorizedWriteUsers:
+                  summary: 'The token doesn''t have the write:user permission'
+                  value:
+                    code: unauthorized
+                    message: 'write:users/08028e90933bf000 is unauthorized'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -469,17 +520,19 @@ components:
           properties:
             orgID:
               type: string
-              description: ID of org that authorization is scoped to.
+              description: The ID of the organization that the authorization is scoped to.
             userID:
               type: string
-              description: ID of user that authorization is scoped to.
+              description: The ID of the user that the authorization is scoped to.
             token:
               type: string
-              description: Token (name) of the authorization
+              description: A name that you provide for the authorization.
             permissions:
               type: array
               minItems: 1
-              description: List of permissions for an auth.  An auth must have at least one Permission.
+              description: |
+                A list of permissions that provide `read` and `write` access to organization resources.
+                An authorization must contain at least one permission.
               items:
                 $ref: '#/components/schemas/Permission'
     InfluxqlJsonResponse:
@@ -540,32 +593,50 @@ components:
               readOnly: true
             orgID:
               type: string
-              description: ID of the organization that the authorization is scoped to.
+              description: |
+                The organization ID.
+                Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
             permissions:
               type: array
               minItems: 1
-              description: List of permissions for an authorization.  An authorization must have at least one permission.
+              description: |
+                The list of permissions.
+                An authorization must have at least one permission.
               items:
                 $ref: '#/components/schemas/Permission'
             id:
               readOnly: true
               type: string
+              description: The authorization ID.
             token:
               readOnly: true
               type: string
-              description: Token used to authenticate API requests.
+              description: |
+                The API token.
+                The token value is unique to the authorization.
+                [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+                used to authenticate and authorize InfluxDB API requests and `influx`
+                CLI commands--after receiving the request, InfluxDB checks that the
+                token is valid and that the `permissions` allow the requested action(s).
             userID:
               readOnly: true
               type: string
-              description: ID of the user that created and owns the token.
+              description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
             user:
               readOnly: true
               type: string
-              description: Name of the user that created and owns the token.
+              description: |
+                The user name.
+                Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
+                If the authorization is _scoped_ to a user, the user;
+                otherwise, the creator of the authorization.
             org:
               readOnly: true
               type: string
-              description: Name of the organization that the token is scoped to.
+              description: |
+                The organization name.
+                Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+                that the token is scoped to.
             links:
               type: object
               readOnly: true
@@ -613,12 +684,10 @@ components:
                 - buckets
                 - dashboards
                 - orgs
-                - sources
                 - tasks
                 - telegrafs
                 - users
                 - variables
-                - scrapers
                 - secrets
                 - labels
                 - views
@@ -627,23 +696,39 @@ components:
                 - notificationEndpoints
                 - checks
                 - dbrp
-                - notebooks
                 - annotations
+                - sources
+                - scrapers
+                - notebooks
                 - remotes
                 - replications
                 - instance
+                - flows
+                - functions
+                - subscriptions
+              description: |
+                A resource type.
+                Identifies the API resource's type (or _kind_).
             id:
               type: string
-              description: If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type.
+              description: |
+                A resource ID.
+                Identifies a specific resource.
             name:
               type: string
-              description: Optional name of the resource if the resource has a name field.
+              description: |
+                The name of the resource.
+                _Note: not all resource types have a `name` property_.
             orgID:
               type: string
-              description: If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type.
+              description: |
+                An organization ID.
+                Identifies the organization that owns the resource.
             org:
               type: string
-              description: Optional name of the organization of the organization with orgID.
+              description: |
+                An organization name.
+                The organization that owns the resource.
     Links:
       type: object
       description: |

@@ -2,6 +2,9 @@ openapi: 3.0.0
 info:
   title: IDPE-exclusive API endpoints
   version: 2.3.3
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - description: |-
       V2 Private is not necessarily private in the sense that the world cannot view it,
@@ -55,6 +58,17 @@ paths:
       summary: List all limit events
       parameters:
         - in: query
+          name: offset
+          required: false
+          description: |
+            The offset for pagination.
+            The number of records to skip.
+
+            For more information about pagination parameters, see [Pagination]({{% INFLUXDB_DOCS_URL %}}/api/#tag/Pagination).
+          schema:
+            type: integer
+            minimum: 0
+        - in: query
           name: orgID
           required: true
           description: only show events belonging to specified organization
@@ -79,11 +93,6 @@ paths:
             minimum: 1
             default: 100
             maximum: 100
-        - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
       responses:
         '200':
           description: A list of limit events
@@ -487,7 +496,7 @@ paths:
                 $ref: '#/components/responses/ServerError'
           description: |
             Unprocessable Entity
-                      - Org with ID does not exist.
+                      - Org with ID doesn't exist.
             Conflict
                       - user with ID exists with different name
                       - user name already in use with different id
@@ -650,14 +659,15 @@ components:
               readOnly: true
               type: string
               description: |
-                The ID of the user.
+                The user ID.
             name:
               type: string
               description: |
-                The name of the user.
+                The user name.
             status:
               description: |
-                The status of a user. An inactive user won't have access to resources.
+                The status of a user.
+                An inactive user can't read or write resources.
               default: active
               type: string
               enum:
@@ -743,22 +753,22 @@ components:
                 write: /api/v2/write?org=2&bucket=1
               properties:
                 labels:
-                  description: URL to retrieve labels for this bucket.
+                  description: The URL to retrieve labels for this bucket.
                   $ref: '#/components/schemas/Link'
                 members:
-                  description: URL to retrieve members that can read this bucket.
+                  description: The URL to retrieve members that can read this bucket.
                   $ref: '#/components/schemas/Link'
                 org:
-                  description: URL to retrieve parent organization for this bucket.
+                  description: The URL to retrieve parent organization for this bucket.
                   $ref: '#/components/schemas/Link'
                 owners:
-                  description: URL to retrieve owners that can read and write to this bucket.
+                  description: The URL to retrieve owners that can read and write to this bucket.
                   $ref: '#/components/schemas/Link'
                 self:
-                  description: URL for this bucket.
+                  description: The URL for this bucket.
                   $ref: '#/components/schemas/Link'
                 write:
-                  description: URL to write line protocol to this bucket.
+                  description: The URL to write line protocol to this bucket.
                   $ref: '#/components/schemas/Link'
             id:
               readOnly: true
@@ -794,7 +804,17 @@ components:
               readOnly: true
             retentionRules:
               type: array
-              description: Rules to expire or retain data.  No rules means data never expires.
+              description: |
+                Retention rules to expire or retain data.
+                The InfluxDB `/api/v2` API uses `RetentionRules` to configure the [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period).
+
+                #### InfluxDB Cloud
+
+                - `retentionRules` is required.
+
+                #### InfluxDB OSS
+
+                - `retentionRules` isn't required.
               items:
                 type: object
                 properties:
@@ -884,11 +904,15 @@ components:
                   readOnly: true
                 orgID:
                   type: string
-                  description: ID of org that authorization is scoped to.
+                  description: |
+                    The organization ID.
+                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that the authorization is scoped to.
                 permissions:
                   type: array
                   minItems: 1
-                  description: List of permissions for an auth.  An auth must have at least one Permission.
+                  description: |
+                    The list of permissions.
+                    An authorization must have at least one permission.
                   items:
                     required:
                       - action
@@ -923,44 +947,72 @@ components:
                               - notificationEndpoints
                               - checks
                               - dbrp
-                              - flows
                               - annotations
+                              - sources
+                              - scrapers
+                              - notebooks
+                              - remotes
+                              - replications
+                              - instance
+                              - flows
                               - functions
+                              - subscriptions
+                            description: |
+                              A resource type.
+                              Identifies the API resource's type (or _kind_).
                           id:
                             type: string
-                            nullable: true
-                            description: If ID is set that is a permission for a specific resource. if it is not set it is a permission for all resources of that resource type.
+                            description: |
+                              A resource ID.
+                              Identifies a specific resource.
                           name:
                             type: string
-                            nullable: true
-                            description: Optional name of the resource if the resource has a name field.
+                            description: |
+                              The name of the resource.
+                              _Note: not all resource types have a `name` property_.
                           orgID:
                             type: string
-                            nullable: true
-                            description: If orgID is set that is a permission for all resources owned my that org. if it is not set it is a permission for all resources of that resource type.
+                            description: |
+                              An organization ID.
+                              Identifies the organization that owns the resource.
                           org:
                             type: string
-                            nullable: true
-                            description: Optional name of the organization of the organization with orgID.
+                            description: |
+                              An organization name.
+                              The organization that owns the resource.
                 id:
                   readOnly: true
                   type: string
+                  description: The authorization ID.
                 token:
                   readOnly: true
                   type: string
-                  description: Passed via the Authorization Header and Token Authentication type.
+                  description: |
+                    The API token.
+                    The token value is unique to the authorization.
+                    [API tokens]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) are
+                    used to authenticate and authorize InfluxDB API requests and `influx`
+                    CLI commands--after receiving the request, InfluxDB checks that the
+                    token is valid and that the `permissions` allow the requested action(s).
                 userID:
                   readOnly: true
                   type: string
-                  description: ID of user that created and owns the token.
+                  description: 'The user ID. Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization. If _scoped_, the user that the authorization is scoped to; otherwise, the creator of the authorization.'
                 user:
                   readOnly: true
                   type: string
-                  description: Name of user that created and owns the token.
+                  description: |
+                    The user name.
+                    Specifies the [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that owns the authorization.
+                    If the authorization is _scoped_ to a user, the user;
+                    otherwise, the creator of the authorization.
                 org:
                   readOnly: true
                   type: string
-                  description: Name of the org token is scoped to.
+                  description: |
+                    The organization name.
+                    Specifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization)
+                    that the token is scoped to.
                 links:
                   type: object
                   readOnly: true
@@ -1104,14 +1156,15 @@ components:
     UnauthorizedRequestError:
       properties:
         code:
-          description: returns error code 401
+          description: |
+            The HTTP status code description. Default is `unauthorized`.
           readOnly: true
           type: string
           enum:
             - unauthorized
         message:
           readOnly: true
-          description: message is a human-readable message.
+          description: A human-readable message that may contain detail about the error.
           type: string
     ForbiddenRequestError:
       properties:
@@ -1353,7 +1406,7 @@ components:
       properties:
         orgID:
           type: string
-          description: the influxDB ID of the created organization
+          description: The ID of the organization.
         settings:
           type: array
           items:

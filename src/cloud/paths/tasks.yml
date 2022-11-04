@@ -3,19 +3,23 @@ get:
   tags:
     - Data I/O endpoints
     - Tasks
-  summary: List all tasks
+  summary: List tasks
   description: |
-    Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/).
+    Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
     To limit which tasks are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
+
+    #### Related guide
+
+    - [Process data with InfluxDB tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: query
       name: name
       description: |
-        Task name.
-        Only returns tasks with this name.
+        A task name.
+        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) with the specified name.
         Different tasks may have the same name.
       schema:
         type: string
@@ -24,29 +28,29 @@ get:
       schema:
         type: string
       description: |
-        Task ID.
-        Only returns tasks created after this task.
+        A task ID.
+        Only returns [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.
     - in: query
       name: user
       schema:
         type: string
       description: |
-        User ID.
-        Only returns tasks owned by this user.
+        A user ID.
+        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
     - in: query
       name: org
       schema:
         type: string
       description: |
-        Organization name.
-        Only returns tasks owned by this organization.
+        An organization name.
+        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
     - in: query
       name: orgID
       schema:
         type: string
       description: |
-        Organization ID.
-        Only returns tasks owned by this organization.
+        An organization ID.
+        Only returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
     - in: query
       name: status
       schema:
@@ -54,9 +58,9 @@ get:
         enum:
           - active
           - inactive
-        description: |
-          Task status (`active` or `inactive`).
-          Only returns tasks with this status.
+      description: |
+        A task status.
+        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.
     - in: query
       name: limit
       schema:
@@ -65,9 +69,11 @@ get:
         maximum: 500
         default: 100
       description: |
-        Limits the number of tasks returned. Default is `100`.
+        The maximum number of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to return.
+        Default is `100`.
+        The minimum is `1` and the maximum is `500`.
 
-        To reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_)
+        To reduce the payload size, combine _`type=basic`_ and _`limit`_ (see _Request samples_).
         For more information about the `basic` response, see the _`type`_ parameter.
       examples:
         minPaginated:
@@ -87,8 +93,11 @@ get:
     - in: query
       name: sortBy
       description: |
-        The field used for sorting records in the list.
-        Only `name` is supported.
+        The sort field.
+        Specifies the task property used to sort records in the list.
+        Default is `name`.
+
+        The parameter has one supported value: `name`.
       required: false
       schema:
         type: string
@@ -97,10 +106,13 @@ get:
     - in: query
       name: type
       description: |
-        Task type (`basic` or `system`).
+        A task type.
+        Specifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.
+        Default is `system`.
 
         The default (`system`) response contains all the metadata properties for tasks.
-        To reduce the payload size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`) from the response.
+        To reduce the response size, set the `type` parameter to `basic` (`type=basic`)
+        to omit some task properties (`flux`, `createdAt`, `updatedAt`).
       required: false
       schema:
         default: ""
@@ -111,8 +123,8 @@ get:
     - in: query
       name: scriptID
       description: |
-        Script ID.
-        Only returns tasks that use this script.
+        A script ID.
+        Only returns tasks that use the specified [invokable script](#tag/Invokable-Scripts).
       schema:
         type: string
   responses:
@@ -124,6 +136,8 @@ get:
         application/json:
           schema:
             $ref: "../schemas/Tasks.yml"
+          examples:
+            $ref: "../../common/responses/example-responses/GetTasksSuccessResponse.yml"
     "401":
       $ref: "../../common/responses/AuthorizationError.yml"
     "500":
@@ -134,7 +148,7 @@ get:
     - lang: Shell
       label: "cURL: all tasks, basic output"
       source: |
-        curl https://cloud2.influxdata.com/api/v2/tasks/?limit=-1&type=basic \
+        curl INFLUX_URL/api/v2/tasks/?limit=-1&type=basic \
           --header 'Content-Type: application/json' \
           --header 'Authorization: Token INFLUX_API_TOKEN'
 post:
@@ -144,17 +158,9 @@ post:
     - Tasks
   summary: Create a task
   description: |
-    Creates a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/) and returns the created task.
+    Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.
 
-    Use this endpoint to create a scheduled task that runs a Flux script.
-    In your task, provide one of the following:
-
-      - _`flux`_ property with an inline Flux script
-      - _`scriptID`_ property with an [invokable script](#tag/Invokable-Scripts) ID
-
-    #### InfluxDB Cloud
-
-      - Requires either _`flux`_ (Flux query) or _`scriptID`_ (invokable script ID) in the task.
+    Use this endpoint to create a scheduled task that runs a script.
 
     #### Related guides
 
@@ -165,15 +171,41 @@ post:
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: The task to create
+    description: |
+      In the request body, provide the task.
+
+      Set one of the following properties to provide the script that the task runs:
+        - `flux`
+        - `scriptID`
+
+      If you set the `scriptID` property, you can set the following properties to configure the task:
+        - `cron`
+        - `every`
+        - `offset`
+        - `scriptParameters`
+
+      If you set the `flux` property, you must provide the `task` configuration option
+      in the Flux script.
+
+      See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+      for detail and examples.
+
+      #### Limitations:
+
+      - You can't use `flux` and `scriptID` in the same task.
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/TaskCreateRequest.yml"
+        examples:
+          TaskWithFlux:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
+          TaskWithScriptID:
+            $ref: "../requestBody/examples/TaskRequestExamples.yml#/TaskWithScriptRequest"
   responses:
     "201":
-      description: Success. The response body contains a `tasks` list with the new task.
+      description: Success. The response body contains a `tasks` list with the task.
       content:
         application/json:
           schema:
@@ -185,8 +217,10 @@ post:
 
         #### InfluxDB Cloud
 
-          - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
-          - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
+        - Returns this error if the task doesn't contain the `flux` property
+          or the `scriptID` property.
+        - Returns this error if the task contains `flux` _and_ `scriptID`
+          properties.
       content:
         application/json:
           schema:
@@ -216,41 +250,3 @@ post:
         application/json:
           schema:
             $ref: "../../common/schemas/Error.yml"
-  x-codeSamples:
-    - lang: Shell
-      label: "cURL: create a Flux script task"
-      source: |
-        curl https://cloud2.influxdata.com/api/v2/tasks \
-        --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_API_TOKEN" \
-        --data-binary @- << EOF
-          {
-            "orgID": "INFLUX_ORG_ID",
-            "description": "IoT Center 30d environment average.",
-            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
-                    from(bucket: \"iot_center\")\
-                      |> range(start: -30d)\
-                      |> filter(fn: (r) => r._measurement == \"environment\")\
-                      |> aggregateWindow(every: 1h, fn: mean)"
-          }
-        EOF
-    - lang: Shell
-      label: "cURL: create a Flux script reference task"
-      source: |
-        curl https://cloud2.influxdata.com/api/v2/tasks \
-        --header "Content-type: application/json" \
-        --header "Authorization: Token INFLUX_API_TOKEN" \
-        --data-binary @- << EOF
-          {
-            "orgID": "INFLUX_ORG_ID",
-            "description": "IoT Center 30d environment average.",
-            "scriptID": "085138a111448000",
-            "scriptParameters":
-              {
-                "rangeStart": "-30d",
-                "bucket": "air_sensor",
-                "filterField": "temperature",
-                "groupColumn": "_time"
-              }
-          }
-        EOF

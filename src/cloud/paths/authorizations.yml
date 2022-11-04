@@ -2,41 +2,81 @@ get:
   operationId: GetAuthorizations
   tags:
     - Authorizations
-  summary: List all authorizations
+  summary: List authorizations
+  description: |
+    Lists authorizations.
+
+    To limit which authorizations are returned, pass query parameters in your request.
+    If no query parameters are passed, InfluxDB returns all authorizations for the organization.
+
+    #### InfluxDB Cloud
+
+    - InfluxDB Cloud doesn't expose [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+      values in `GET /api/v2/authorizations` responses;
+      returns `token: redacted` for all authorizations.
+
+    #### Required permissions
+
+    - `read-authorizations`
+
+    #### Related guides
+
+    - [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: query
       name: userID
       schema:
         type: string
-      description: Only show authorizations that belong to a user ID.
+      description: |
+        A user ID.
+        Only returns authorizations scoped to the specified
+        [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
     - in: query
       name: user
       schema:
         type: string
-      description: Only show authorizations that belong to a user name.
+      description: |
+        A user name.
+        Only returns authorizations scoped to the specified
+        [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
     - in: query
       name: orgID
       schema:
         type: string
-      description: Only show authorizations that belong to an organization ID.
+      description: |
+        An organization ID.
+        Only returns authorizations that belong to the specified
+        [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
     - in: query
       name: org
       schema:
         type: string
-      description: Only show authorizations that belong to a organization name.
+      description: |
+        An organization name.
+        Only returns authorizations that belong to the specified
+        [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
     - in: query
       name: token
       schema:
         type: string
-      description: Find a token by value.
+      description: |
+        An API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) value.
+        Returns the authorization for the specified token.
   responses:
     "200":
-      description: A list of authorizations
+      description: Success. The response body contains a list of authorizations.
       content:
         application/json:
           schema:
-            $ref: "../schemas/Authorizations.yml"
+            $ref: "../../common/schemas/Authorizations.yml"
+    "400":
+      description: Invalid request
+      $ref: '../../common/responses/ServerError.yml'
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
@@ -45,25 +85,61 @@ post:
   tags:
     - Authorizations
   summary: Create an authorization
+  description: |
+    Creates an authorization and returns the authorization with the
+    generated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
+
+    Use this endpoint to create an authorization, which generates an API token
+    with permissions to `read` or `write` to a specific resource or `type` of resource.
+
+    #### Limitations
+
+    To follow best practices for secure API token generation and retrieval,
+    InfluxDB Cloud enforces access restrictions on API tokens.
+
+    - InfluxDB only allows access to the API token value immediately after the authorization is created.
+    - You can't update an authorization's permissions.
+    - A token stops working when the user who created the authorization is deleted.
+
+    We recommend the following for managing your tokens:
+
+    - Create a generic user to create and manage tokens for writing data.
+    - Store your tokens in a secure password vault for future access.
+
+    #### Related guides
+
+    - [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: Authorization to create
+    description: The authorization to create.
     required: true
     content:
       application/json:
         schema:
-          $ref: "../schemas/Authorization.yml"
+          $ref: "../../common/schemas/AuthorizationPostRequest.yml"
+        examples:
+          AuthorizationPostRequest:
+            $ref: "../../common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationPostRequest"
+          AuthorizationWithResourcePostRequest:
+            $ref: "../../common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithResourcePostRequest"
+          AuthorizationWithUserPostRequest:
+            $ref: "../../common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithUserPostRequest"
   responses:
     "201":
-      description: Authorization created
+      description: |
+        Success. The authorization is created. The response body contains the authorization.
       content:
         application/json:
           schema:
-            $ref: "../schemas/Authorization.yml"
+            $ref: "../../common/schemas/Authorization.yml"
     "400":
       description: Invalid request
       $ref: '../../common/responses/ServerError.yml'
+    "401":
+      $ref: "../../common/responses/AuthorizationError.yml"
+    "500":
+      $ref: "../../common/responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'

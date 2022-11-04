@@ -3,6 +3,16 @@ post:
   tags:
     - Tasks
   summary: Retry a task run
+  description: |
+    Queues a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) run to
+    retry and then returns the scheduled run.
+
+    To manually start a _new_ task run, use the
+    [`POST /api/v2/tasks/{taskID}/runs` endpoint](#operation/PostTasksIDRuns).
+
+    #### Limitations
+
+    - Queuing a task run requires that the task's `status` property be set to `active`.
   requestBody:
     content:
       application/json; charset=utf-8:
@@ -15,23 +25,70 @@ post:
       schema:
         type: string
       required: true
-      description: The task ID.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that the task run belongs to.
     - in: path
       name: runID
       schema:
         type: string
       required: true
-      description: The run ID.
+      description: |
+        A task run ID.
+        Specifies the task run to retry.
+
+        To find a task run ID, use the
+        [`GET /api/v2/tasks/{taskID}/runs` endpoint](#operation/GetTasksIDRuns)
+        to list task runs.
   responses:
     "200":
-      description: Run that has been queued
+      description: Success. The response body contains the queued run.
       content:
         application/json:
           schema:
             $ref: "../schemas/Run.yml"
-    default:
-      description: Unexpected error
+          examples:
+            retryTaskRun:
+              summary: A task run scheduled to retry
+              value:
+                {
+                  "links": {
+                    "logs": "/api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/logs",
+                    "retry": "/api/v2/tasks/09a776832f381000/runs/09d60ffe08738000/retry",
+                    "self": "/api/v2/tasks/09a776832f381000/runs/09d60ffe08738000",
+                    "task": "/api/v2/tasks/09a776832f381000"
+                  },
+                  "id": "09d60ffe08738000",
+                  "taskID": "09a776832f381000",
+                  "status": "scheduled",
+                  "scheduledFor": "2022-08-15T00:00:00Z",
+                  "requestedAt": "2022-08-16T20:05:11.84145Z"
+                }
+    "400":
+      description: |
+        Bad request.
+        The response body contains detail about the error.
+
+        InfluxDB may return this error for the following reasons:
+
+        - The task has `status: inactive`.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            inactiveTask:
+              summary: Can't retry an inactive task
+              value:
+                {
+                  "code": "invalid",
+                  "message": "failed to retry run: inactive task"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
+    default:
+      $ref: "../responses/ServerError.yml"

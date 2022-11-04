@@ -3,7 +3,25 @@ get:
   tags:
     - Security and access endpoints
     - Users
-  summary: List all users
+  summary: List users
+  description: |
+    Lists [users]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+    Default limit is `20`.
+
+    To limit which users are returned, pass query parameters in your request.
+
+    #### Required permissions for InfluxDB OSS
+
+    | Action | Permission required | Restriction |
+    |:-------|:--------------------|:------------|
+    | List all users | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+    | List a specific user | `read-users` or `read-user USER_ID` | |
+
+    *`USER_ID`* is the ID of the user that you want to retrieve.
+
+    #### Related guides
+
+    - [View users](https://docs.influxdata.com/influxdb/latest/users/view-users/).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - $ref: "../../common/parameters/Offset.yml"
@@ -13,17 +31,53 @@ get:
       name: name
       schema:
         type: string
+      description: |
+        A user name.
+        Only lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
     - in: query
       name: id
       schema:
         type: string
+      description: |
+        A user ID.
+        Only lists the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
   responses:
     "200":
-      description: A list of users
+      description: Success. The response contains a list of `users`.
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/Users.yml"
+    "401":
+      description: |
+        Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            tokenNotAuthorized:
+              summary: API token doesn't have `write:users` permission
+              value:
+                {
+                  "code": "unauthorized",
+                  "message": "write:users/09d8462ce0764000 is unauthorized"
+              }
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed,
+          but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
@@ -32,10 +86,39 @@ post:
   tags:
     - Users
   summary: Create a user
+  description: |
+    Creates a [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) that can access InfluxDB.
+    Returns the user.
+
+    Use this endpoint to create a user that can sign in to start a user session
+    through one of the following interfaces:
+
+      - InfluxDB UI
+      - `/api/v2/signin` InfluxDB API endpoint
+      - InfluxDB CLI
+
+    This endpoint represents the first two steps in a four-step process to allow a user
+    to authenticate with a username and password, and then access data in an organization:
+
+      1. Create a user: send a `POST` request to `POST /api/v2/users`. The `name` property is required.
+      2. Extract the user ID (`id` property) value from the API response for _step 1_.
+      3. Create an authorization (and API token) for the user: send a `POST` request to [`POST /api/v2/authorizations`](#operation/PostAuthorizations), passing the user ID (`id`) from _step 2_.
+      4. Create a password for the user: send a `POST` request to [`POST /api/v2/users/USER_ID/password`](#operation/PostUsersIDPassword), passing the user ID from _step 2_.
+
+    #### Required permissions
+
+    | Action | Permission required | Restriction |
+    |:-------|:--------------------|:------------|
+    | Create a user | _[Operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_  | |
+
+    #### Related guides
+
+    - [Create a user](https://docs.influxdata.com/influxdb/latest/users/create-user/)
+    - [Create an API token scoped to a user](https://docs.influxdata.com/influxdb/latest/security/tokens/create-token/#create-a-token-scoped-to-a-user)
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
   requestBody:
-    description: User to create
+    description: The user to create.
     required: true
     content:
       application/json:
@@ -43,11 +126,74 @@ post:
           $ref: "../../common/schemas/User.yml"
   responses:
     "201":
-      description: User created
+      description: |
+        Success.
+        The response body contains the user.
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/UserResponse.yml"
+    "401":
+      description: |
+        Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            tokenNotAuthorized:
+              summary: API token doesn't have `write:users` permission
+              value:
+                {
+                  "code": "unauthorized",
+                  "message": "write:users/09d8462ce0764000 is unauthorized"
+              }
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
+  x-codeSamples:
+    - label: "cURL: create a user and set a password"
+      lang: Shell
+      source: |
+        # The following steps show how to create a user and then set
+        # the user's password:
+        #
+        # 1. Send a request to this endpoint to create a user--for example:
+
+              USER=$(curl --request POST \
+                      "INFLUX_URL/api/v2/users/" \
+                      --header "Authorization: Token INFLUX_API_TOKEN" \
+                      --header 'Content-type: application/json' \
+                      --data-binary @- << EOF
+                      {
+                        "name": "USER_NAME",
+                        "status": "active"
+                      }
+              EOF
+              )
+
+        # 2. Extract the id property from the response in step 1--for example:
+
+              USER_ID=`echo $USER | jq -r '.id'`
+
+        # 3. To set the user's password, set the password property in a request
+        #    to the /api/v2/users/USER_ID/password endpoint--for example:
+
+              curl request POST "INFLUX_URL/api/v2/users/$USER_ID/password/" \
+                --header "Authorization: Token INFLUX_API_TOKEN" \
+                --header 'Content-type: application/json' \
+                --data '{ "password": "USER_PASSWORD" }'

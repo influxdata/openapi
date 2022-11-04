@@ -1,8 +1,14 @@
 get:
   operationId: GetTasksIDMembers
+  deprecated: true
   tags:
     - Tasks
   summary: List all task members
+  description: |
+    **Deprecated**: Tasks don't use `owner` and `member` roles.
+    Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    Lists all users that have the `member` role for the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,10 +16,16 @@ get:
       schema:
         type: string
       required: true
-      description: The task ID.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve members for.
   responses:
     "200":
-      description: A list of users who have member privileges for a task
+      description: |
+        Success. The response body contains a list of `users` that have
+        the `member` role for a task.
+
+        If the task has no members, the response contains an empty `users` array.
       content:
         application/json:
           schema:
@@ -26,9 +38,16 @@ get:
             $ref: "../schemas/Error.yml"
 post:
   operationId: PostTasksIDMembers
+  deprecated: true
   tags:
     - Tasks
   summary: Add a member to a task
+  description: |
+    **Deprecated**: Tasks don't use `owner` and `member` roles.
+    Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    Adds a specified user to members of the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and then returns
+    the member.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -36,9 +55,12 @@ post:
       schema:
         type: string
       required: true
-      description: The task ID.
+      description: |
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
+        Specifies the task for the member.
   requestBody:
-    description: User to add as member
+    description: |
+      In the request body, provide an object that specifies the user.
     required: true
     content:
       application/json:
@@ -46,7 +68,10 @@ post:
           $ref: "../schemas/AddResourceMemberRequestBody.yml"
   responses:
     "201":
-      description: Added to task members
+      description: |
+        Created. The task `member` role is assigned to the user.
+        The response body contains the resource member with
+        role and user detail.
       content:
         application/json:
           schema:

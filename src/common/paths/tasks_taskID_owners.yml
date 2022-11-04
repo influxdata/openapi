@@ -1,8 +1,14 @@
 get:
   operationId: GetTasksIDOwners
+  deprecated: true
   tags:
     - Tasks
   summary: List all owners of a task
+  description: |
+    **Deprecated**: Tasks don't use `owner` and `member` roles.
+    Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    Lists all users that have the `owner` role for the specified task.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -10,14 +16,34 @@ get:
       schema:
         type: string
       required: true
-      description: The task ID.
+      description: A task ID. Specifies the task to retrieve owners for.
   responses:
     "200":
-      description: A list of users who have owner privileges for a task
+      description: |
+        Success.
+        The response contains a list of `users` that have the `owner` role for the task.
+
+        If the task has no owners, the response contains an empty `users` array.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceOwners.yml"
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -26,9 +52,19 @@ get:
             $ref: "../schemas/Error.yml"
 post:
   operationId: PostTasksIDOwners
+  deprecated: true
   tags:
     - Tasks
-  summary: Add an owner to a task
+  summary: Add an owner for a task
+  description: |
+    **Deprecated**: Tasks don't use `owner` and `member` roles.
+    Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+    Adds a specified user to owners of the specified task and then returns the
+    owner.
+
+    Use this endpoint to create a _resource owner_ for the task.
+    A _resource owner_ is a user with `role: owner` for a specific resource.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -36,9 +72,12 @@ post:
       schema:
         type: string
       required: true
-      description: The task ID.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) for the owner.
   requestBody:
-    description: User to add as owner
+    description: |
+      In the request body, provide an object that specifies the user.
     required: true
     content:
       application/json:
@@ -46,11 +85,43 @@ post:
           $ref: "../schemas/AddResourceMemberRequestBody.yml"
   responses:
     "201":
-      description: Added to task owners
+      description: |
+        Created. The task `owner` role is assigned to the user.
+        The response body contains the resource owner with
+        role and user detail.
       content:
         application/json:
           schema:
             $ref: "../schemas/ResourceOwner.yml"
+          examples:
+            createdOwner:
+              summary: User has the owner role for the resource
+              value:
+                { "role":"owner",
+                  "links":
+                    { "logs":"/api/v2/users/0772396d1f411000/logs",
+                      "self":"/api/v2/users/0772396d1f411000"
+                    },
+                  "id":"0772396d1f411000",
+                  "name":"USER_NAME",
+                  "status":"active"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "422":
+      description: |
+        Unprocessable entity.
+
+        The error may indicate one of the following problems:
+
+        - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+        - You passed a parameter combination that InfluxDB doesn't support.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:

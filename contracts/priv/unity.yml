@@ -2,33 +2,12 @@ openapi: 3.0.0
 info:
   title: Unity API Service
   version: 0.1.0
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /api/v2/quartz
 paths:
-  /me:
-    get:
-      operationId: GetMe
-      tags:
-        - Accounts
-        - Operators
-        - Regions
-        - Organizations
-      responses:
-        '200':
-          description: congregated meta data for an individual account and org
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Me'
-        '401':
-          description: Unauthorized
-          $ref: '#/components/responses/ServerError'
-        '404':
-          description: Cannot get account or organization for user
-          $ref: '#/components/responses/ServerError'
-        default:
-          description: Unexpected error
-          $ref: '#/components/responses/ServerError'
   /account:
     delete:
       operationId: DeleteAccount
@@ -44,7 +23,7 @@ paths:
         '401':
           description: Unauthorized/Account doesn't exist
           $ref: '#/components/responses/ServerError'
-        '405':
+        '403':
           description: Account is not deletable
           $ref: '#/components/responses/ServerError'
         default:
@@ -218,6 +197,54 @@ paths:
       responses:
         '204':
           description: default account set
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  /allowances/orgs/create:
+    get:
+      operationId: GetAllowancesOrgsCreate
+      tags:
+        - Allowances
+        - Organizations
+      summary: Return whether a new Organization can be created.
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+      responses:
+        '200':
+          description: The Allowance
+          content:
+            application/json:
+              schema:
+                properties:
+                  allowed:
+                    type: boolean
+                    description: is the operation allowed?
+                  availableUpgrade:
+                    description: what upgrade option is available for this allowance?
+                    type: string
+                    enum:
+                      - contract
+                      - none
+                      - pay_as_you_go
+                required:
+                  - allowed
+                  - availableUpgrade
+  /clusters:
+    get:
+      operationId: GetClusters
+      tags:
+        - Clusters
+      summary: Get the list of clusters
+      responses:
+        '200':
+          description: Clusters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clusters'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
@@ -592,6 +619,43 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  /orgs:
+    post:
+      operationId: PostOrgs
+      tags:
+        - Organizations
+      summary: Creates an organization
+      requestBody:
+        description: Information for provisioning an organization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreateRequest'
+      responses:
+        '201':
+          description: |
+            Created. The response body contains the newly created organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized. The token passed doesn't have permissions necessary to complete the request.
+          $ref: '#/components/responses/ServerError'
+        '409':
+          description: Conflict. The organization name is already in use.
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: |
+            Unprocessable entity.
+            The error may indicate one of the following problems:
+            - The request body isn't valid--the request is well-formed, but InfluxDB can't process it due to semantic errors.
+            - You passed a parameter combination that InfluxDB doesn't support
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}':
     get:
       operationId: GetOrgsId
@@ -632,10 +696,10 @@ paths:
               properties:
                 name:
                   type: string
-                  description: Name of the organization
+                  description: The name of the organization.
                 description:
                   type: string
-                  description: Description of the organization
+                  description: The description of the organization.
       parameters:
         - in: path
           name: orgId
@@ -652,6 +716,9 @@ paths:
                 $ref: '#/components/schemas/Organization'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '409':
+          description: Conflict. The organization name is already in use.
           $ref: '#/components/responses/ServerError'
         '422':
           description: Missing or invalid information
@@ -878,6 +945,9 @@ paths:
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
+        '403':
+          description: Cannot remove last user
+          $ref: '#/components/responses/ServerError'
         '404':
           description: Session user not owner or User/Org not found
           $ref: '#/components/responses/ServerError'
@@ -1080,6 +1150,9 @@ paths:
           $ref: '#/components/responses/ServerError'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '403':
+          description: Account is not deletable
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -1441,6 +1514,47 @@ components:
       required:
         - id
         - name
+    Cluster:
+      properties:
+        priority:
+          description: priority for sorting the cluster
+          nullable: false
+          readOnly: true
+          type: number
+        isProviderAvailable:
+          description: determines if the provider is available
+          nullable: false
+          readOnly: true
+          type: boolean
+        isRegionAvailable:
+          description: determines if the region is available
+          nullable: false
+          readOnly: true
+          type: boolean
+        providerId:
+          description: the id of the cloud provider
+          nullable: false
+          readOnly: true
+          type: string
+        providerName:
+          description: the descriptive name of the cloud provider
+          nullable: false
+          readOnly: true
+          type: string
+        regionId:
+          description: the id of the region
+          nullable: false
+          readOnly: true
+          type: string
+        regionName:
+          description: the descriptive name of the region
+          nullable: false
+          readOnly: true
+          type: string
+    Clusters:
+      type: array
+      items:
+        $ref: '#/components/schemas/Cluster'
     UserAccount:
       properties:
         id:
@@ -1561,7 +1675,7 @@ components:
         orgID:
           type: string
           readOnly: true
-          description: ID of the org for which these rates apply
+          description: The ID of the organization that these rates apply to.
         rate:
           $ref: '#/components/schemas/OperatorRateLimits'
         bucket:
@@ -1635,9 +1749,6 @@ components:
         isAvailable:
           type: boolean
           description: the availability of the provider
-        isBeta:
-          type: boolean
-          description: determines if the region is in beta
         isPrivate:
           type: boolean
           description: determines if the region is a private region
@@ -1647,7 +1758,6 @@ components:
         - provider
         - priority
         - isAvailable
-        - isBeta
         - isPrivate
     OperatorRegions:
       type: array
@@ -1719,7 +1829,7 @@ components:
       default: 24h
     VectorName:
       type: string
-      description: Name of the usage vector
+      description: The name of the usage vector.
       enum:
         - storage_gb
         - writes_mb
@@ -2116,64 +2226,6 @@ components:
         - lastName
         - email
         - role
-    Me:
-      properties:
-        id:
-          type: string
-          description: the idpe id of the user
-        email:
-          type: string
-          description: the email associated with the user
-        accountType:
-          $ref: '#/components/schemas/AccountType'
-        billingProvider:
-          type: string
-          description: 'the billing provider for the account, nil if none'
-          enum:
-            - zuora
-            - aws
-            - gcm
-            - azure
-        clusterHost:
-          type: string
-          description: the url of the current cluster
-        isRegionBeta:
-          type: boolean
-          description: whether the region associated with the account is a beta region
-        regionCode:
-          type: string
-          description: the code associated with the region
-        regionName:
-          type: string
-          description: the name of the region
-        isOperator:
-          type: boolean
-          description: whether the user is an operator
-        operatorRole:
-          type: string
-          nullable: true
-          enum:
-            - read-only
-            - read-write
-          description: role permission whether this operator is "read-only" | "read-write"
-        accountCreatedAt:
-          type: string
-          description: an ISO8601 timestamp that indicates when the account was created
-        paygCreditStartDate:
-          type: string
-          nullable: true
-          description: 'an ISO8601 timestamp indicates if an account is part of the payg credit experiment, nil if not'
-      required:
-        - id
-        - accountCreatedAt
-        - accountType
-        - billingProvider
-        - clusterHost
-        - email
-        - isOperator
-        - isRegionBeta
-        - regionCode
-        - regionName
     OrgUsers:
       type: array
       items:
@@ -2292,18 +2344,29 @@ components:
         provider:
           type: string
           description: provider of the org
-        isRegionBeta:
-          type: boolean
-          description: is the region of the organization in beta
         clusterHost:
           type: string
           description: the url of the current cluster
       required:
         - id
         - clusterHost
-        - isRegionBeta
         - regionCode
         - regionName
+    OrganizationWithToken:
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+        - type: object
+          properties:
+            token:
+              description: Authentication token to manage the organization and its resources in IDPE
+              readOnly: true
+              type: string
+            links:
+              description: Links to the IDPE resources for this organization
+              readOnly: true
+              type: object
+              example:
+                resource: path/to/resource
     OrganizationSummaries:
       type: array
       items:
@@ -2321,11 +2384,40 @@ components:
           isDefault:
             type: boolean
             description: is this the user's default organization in this account?
+          provider:
+            type: string
+            description: provider of the org
+          regionCode:
+            type: string
+            description: the canonical code for the region where the organization is hosted
+          regionName:
+            type: string
+            description: the friendly name of the region where the organization is hosted
         required:
           - id
           - name
           - isActive
           - isDefault
+    OrganizationCreateRequest:
+      type: object
+      properties:
+        orgName:
+          description: name of the organization
+          type: string
+        provider:
+          description: name of the cloud provider
+          type: string
+          enum:
+            - AWS
+            - GCP
+            - Azure
+        region:
+          description: name of the region within the cloud provider
+          type: string
+      required:
+        - orgName
+        - provider
+        - region
     OrganizationDefaultRequest:
       properties:
         id:
@@ -2339,7 +2431,7 @@ components:
         orgID:
           type: string
           readOnly: true
-          description: ID of the org for which these rates apply
+          description: The ID of the organization that the rates apply to.
         rate:
           $ref: '#/components/schemas/RateLimits'
         bucket:

@@ -5,31 +5,18 @@ get:
     - Invokable Scripts
   summary: List scripts
   description: |
-    Retrieves a list of [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
+    Lists [scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
 
-    #### Limitations
-
-    - Paging with an `offset` greater than the number of records will result in
-    an empty response--for example:
-
-      The following request is paging to the 50th record, but the user has only
-      created two scripts.
-
-        ```sh
-        $ curl --request GET "INFLUX_URL/api/v2/scripts?limit=1&offset=50"
-
-        $ {"scripts":[]}
-        ```
-
-    #### Related Guides
+    #### Related guides
 
     - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
 
   parameters:
+    - $ref: "../../../common/parameters/Offset.yml"
     - in: query
       name: limit
       description: |
-        Limits the number of scripts returned. Default is `100`.
+        The maximum number of scripts to return. Default is `100`.
       required: false
       schema:
         type: integer
@@ -37,15 +24,31 @@ get:
         maximum: 500
         default: 100
     - in: query
-      name: offset
+      name: name
+      required: false
+      description: The script name. Lists scripts with the specified name.
+      schema:
+        type: string
+    - in: query
+      name: labelNames
       required: false
       description: |
-        The offset for pagination.
-        The number of records to skip.
+        A list of label names.
+        Only returns scripts that have all the specified labels.
+        To retrieve a script, each name you pass in `labelNames` must exactly
+        match the label for a script.
       schema:
-        type: integer
-        minimum: 0
-        default: 0
+        type: array
+        items:
+          type: string
+    - in: query
+      name: labelContains
+      required: false
+      description: |
+        A part of the label name.
+        Returns scripts that have a label that contains the specified phrase.
+      schema:
+        type: string
   responses:
     '200':
       description: |
@@ -60,6 +63,8 @@ get:
     '400':
       description: |
         Bad request.
+        InfluxDB is unable to parse the request.
+        The response body contains detail about the error.
       content:
         application/json:
           schema:
@@ -84,13 +89,12 @@ get:
             $ref: "../../../common/schemas/Error.yml"
   x-codeSamples:
     - lang: Shell
-      label: cURL
+      label: 'cURL: retrieves the first 100 scripts.'
       source: |
-        curl --request GET "https://cloud2.influxdata.com/api/v2/scripts?limit=100&offset=0" \
+        curl --request GET "INFLUX_URL/api/v2/scripts?limit=100&offset=0" \
           --header "Authorization: Token INFLUX_API_TOKEN" \
           --header "Accept: application/json" \
           --header "Content-Type: application/json"
-
 post:
   operationId: PostScripts
   tags:
@@ -98,12 +102,12 @@ post:
   summary: Create a script
   description: |
     Creates an [invokable script](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
-    and returns the created script.
+    and returns the script.
 
-    #### Related Guides
+    #### Related guides
 
-    - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/).
-    - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/).
+    - [Invokable scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/)
+    - [Creating custom InfluxDB endpoints](https://docs.influxdata.com/resources/videos/api-invokable-scripts/)
   requestBody:
     description: The script to create.
     required: true
@@ -123,32 +127,7 @@ post:
           examples:
             $ref: "../schemas/ScriptCreateResponse.yml"
     '400':
-      description: |
-        Bad request.
-      content:
-        application/json:
-          schema:
-            $ref: "../../../common/schemas/Error.yml"
-          examples:
-            invalidJSONStringValue:
-              summary: Invalid JSON
-              description: |
-                If the request body contains invalid JSON, returns `invalid`
-                with detail about the problem.
-              value: {
-                "code": "invalid",
-                "message": "invalid json: invalid character '\\'' looking for beginning of value"
-              }
-            invalidCharacterValue:
-              summary: Invalid character
-              description: |
-                If the request body contains an invalid character, returns
-                `invalid` with detail about the problem.
-              value: {
-                "code": "invalid",
-                "message": "invalid character ',' looking for beginning of value",
-                "details": []
-              }
+      $ref: '../../../common/responses/BadRequestError.yml'
     "401":
       $ref: "../../../common/responses/AuthorizationError.yml"
     '422':
@@ -178,7 +157,7 @@ post:
     - lang: Shell
       label: cURL
       source: |
-        curl --request POST "https://cloud2.influxdata.com/api/v2/scripts" \
+        curl --request POST "INFLUX_URL/api/v2/scripts" \
           --header "Authorization: Token INFLUX_API_TOKEN" \
           --header "Accept: application/json" \
           --header "Content-Type: application/json" \

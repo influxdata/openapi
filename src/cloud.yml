@@ -4,6 +4,9 @@ info:
   version: 2.0.1
   description: |
     The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: /api/v2
 #REF_CLOUD_TAGS
@@ -38,21 +41,13 @@ paths:
     $ref: './cloud/paths/dashboards.yml'
   /tasks:
     $ref: './cloud/paths/tasks.yml'
-  "/tasks/{taskID}":
+  /tasks/{taskID}:
     $ref: "./cloud/paths/tasks_taskID.yml"
 components:
   parameters:
   #REF_COMMON_PARAMETERS
   schemas:
     #REF_COMMON_SCHEMAS
-    Resource:
-      $ref: './cloud/schemas/Resource.yml'
-    Permission:
-      $ref: './cloud/schemas/Permission.yml'
-    Authorization:
-      $ref: './cloud/schemas/Authorization.yml'
-    Authorizations:
-      $ref: './cloud/schemas/Authorizations.yml'
     User:
       $ref: './cloud/schemas/User.yml'
     Users:
@@ -87,10 +82,25 @@ components:
       $ref: "./cloud/schemas/Task.yml"
     TaskCreateRequest:
       $ref: "./cloud/schemas/TaskCreateRequest.yml"
+    TaskScriptID:
+      $ref: "./cloud/schemas/TaskProperties.yml#/scriptID"
+    TaskScriptParameters:
+      $ref: "./cloud/schemas/TaskProperties.yml#/scriptParameters"
     TaskUpdateRequest:
       $ref: "./cloud/schemas/TaskUpdateRequest.yml"
   responses:
     #REF_COMMON_RESPONSES
+  examples:
+    AuthorizationPostRequest:
+      $ref: "./common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationPostRequest"
+    AuthorizationWithResourcePostRequest:
+      $ref: "./common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithResourcePostRequest"
+    AuthorizationWithUserPostRequest:
+      $ref: "./common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithUserPostRequest"
+    TaskWithFluxRequest:
+      $ref: "./common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
+    TaskWithScriptRequest:
+      $ref: "./cloud/requestBody/examples/TaskRequestExamples.yml#/TaskWithScriptRequest"
   securitySchemes:
     TokenAuthentication:
       type: apiKey
@@ -100,38 +110,106 @@ components:
         Use the [Token authentication](#section/Authentication/TokenAuthentication)
         scheme to authenticate to the InfluxDB API.
 
-
         In your API requests, send an `Authorization` header.
         For the header value, provide the word `Token` followed by a space and an InfluxDB API token.
         The word `Token` is case-sensitive.
 
-
         ### Syntax
 
-        `Authorization: Token YOUR_INFLUX_API_TOKEN`
+        `Authorization: Token INFLUX_API_TOKEN`
 
+        ### Example
 
-        For more information and examples, see the following:
-          - [`/authorizations`](#tag/Authorizations) endpoint.
-          - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication).
-          - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/).
+        #### Use Token authentication with cURL
+
+        The following example shows how to use cURL to send an API request that uses Token authentication:
+
+        ```sh
+        curl --request GET "INFLUX_URL/api/v2/buckets" \
+             --header "Authorization: Token INFLUX_API_TOKEN"
+        ```
+
+        Replace the following:
+
+          - *`INFLUX_URL`*: your InfluxDB Cloud URL
+          - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+
+        ### Related endpoints
+
+        - [`/authorizations` endpoints](#tag/Authorizations)
+
+        ### Related guides
+
+        - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)
+        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)
     BasicAuthentication:
       type: http
       scheme: basic
       description: |
-       ### Basic authentication scheme
+        ### Basic authentication scheme
 
-       Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
-         - **username**: InfluxDB Cloud username
-         - **password**: InfluxDB Cloud API token
+        Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
 
-       #### Example
+        ### Syntax
 
-       `curl --get "https://europe-west1-1.gcp.cloud2.influxdata.com/query"
-             --user "exampleuser@influxdata.com":"INFLUX_API_TOKEN"`
+        `Authorization: Basic BASE64_ENCODED_CREDENTIALS`
 
-       Replace the following:
-       - *`exampleuser@influxdata.com`*: the email address that you signed up with
-       - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+        To construct the `BASE64_ENCODED_CREDENTIALS`, combine the username and
+        the password with a colon (`USERNAME:PASSWORD`), and then encode the
+        resulting string in [base64](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+        Many HTTP clients encode the credentials for you before sending the
+        request.
+
+        _**Warning**: Base64-encoding can easily be reversed to obtain the original
+        username and password. It is used to keep the data intact and does not provide
+        security. You should always use HTTPS when authenticating or sending a request with
+        sensitive information._
+
+        ### Examples
+
+        In the examples, replace the following:
+
+        - **`EMAIL_ADDRESS`**: InfluxDB Cloud username (the email address the user signed up with)
+        - **`PASSWORD`**: InfluxDB Cloud [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+        - **`INFLUX_URL`**: your InfluxDB Cloud URL
+
+        #### Encode credentials with cURL
+
+        The following example shows how to use cURL to send an API request that uses Basic authentication.
+        With the `--user` option, cURL encodes the credentials and passes them
+        in the `Authorization: Basic` header.
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --user "EMAIL_ADDRESS":"PASSWORD"
+        ```
+
+        #### Encode credentials with Flux
+
+        The Flux [`http.basicAuth()` function](https://docs.influxdata.com/flux/v0.x/stdlib/http/basicauth/) returns a Base64-encoded
+        basic authentication header using a specified username and password combination.
+
+        #### Encode credentials with JavaScript
+
+        The following example shows how to use the JavaScript `btoa()` function
+        to create a Base64-encoded string:
+
+        ```js
+        btoa('EMAIL_ADDRESS:PASSWORD')
+        ```
+
+        The output is the following:
+
+        ```js
+        'VVNFUk5BTUU6UEFTU1dPUkQ='
+        ```
+
+        Once you have the Base64-encoded credentials, you can pass them in the
+        `Authorization` header--for example:
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --header "Authorization: Basic VVNFUk5BTUU6UEFTU1dPUkQ="
+        ```
 security:
   - TokenAuthentication: []
