@@ -4,10 +4,11 @@ get:
     - Tasks
   summary: List runs for a task
   description: |
-    Retrieves a list of runs for a [task]({{% INFLUXDB_DOCS_URL %}}/process-data/).
+    Lists runs for the specified [task]({{% INFLUXDB_DOCS_URL %}}/process-data/).
 
     To limit which task runs are returned, pass query parameters in your request.
-    If no query parameters are passed, InfluxDB returns all task runs up to the default `limit`.
+    If you don't pass query parameters, InfluxDB returns all runs for the task
+    up to the default `limit`.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -16,15 +17,16 @@ get:
         type: string
       required: true
       description: |
-        The ID of the task to get runs for.
-        Only returns runs for this task.
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to
+        to list runs for.
     - in: query
       name: after
       schema:
         type: string
       description:
         A task run ID.
-        Only returns runs created after this run.
+        Only returns runs created after the specified run.
     - in: query
       name: limit
       schema:
@@ -41,7 +43,7 @@ get:
         format: date-time
       description: |
         A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).
-        Only returns runs scheduled after this time.
+        Only returns runs scheduled after the specified time.
     - in: query
       name: beforeTime
       schema:
@@ -49,7 +51,7 @@ get:
         format: date-time
       description: |
         A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)).
-        Only returns runs scheduled before this time.
+        Only returns runs scheduled before the specified time.
   responses:
     "200":
       description: Success. The response body contains the list of task runs.
@@ -78,6 +80,10 @@ post:
 
     To _retry_ a previous run (and avoid creating a new run),
     use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry` endpoint](#operation/PostTasksIDRunsIDRetry).
+
+    #### Limitations
+
+    - Queuing a task run requires that the task's `status` property be set to `active`.
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: path
@@ -85,6 +91,10 @@ post:
       schema:
         type: string
       required: true
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to
+        to run.
   requestBody:
     content:
       application/json:
@@ -97,6 +107,19 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Run.yml"
+    "400":
+      description: Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            inactiveTask:
+              summary: Can't run an inactive task
+              value: {
+                "code": "invalid",
+                "message": "failed to force run: inactive task"
+              }
     "401":
       $ref: "../responses/AuthorizationError.yml"
     "500":

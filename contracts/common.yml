@@ -2775,32 +2775,28 @@ paths:
       operationId: GetQuerySuggestions
       tags:
         - Query
-      summary: Retrieve Flux query suggestions
+      summary: List Flux query suggestions
       description: |
-        Retrieves a list of Flux query suggestions. Each suggestion contains a
+        Lists Flux query suggestions. Each suggestion contains a
         [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
         name and parameters.
 
         Use this endpoint to retrieve a list of Flux query suggestions used in the
-        InfluxDB Flux Query Builder. Helper function names have an underscore (`_`)
-        prefix and aren't meant to be used directly in queries--for example:
-
-        - **Recommended**:  Use `top(n, columns=["_value"], tables=<-)` to sort
-          on a column and keep the top n records instead of `_sortLimit_`.
-          `top` uses the `_sortLimit` helper function.
+        InfluxDB Flux Query Builder.
 
         #### Limitations
 
-        - Using `/api/v2/query/suggestions/` (note the trailing slash) with cURL
-        will result in a HTTP `301 Moved Permanently` status code. Please use
-        `/api/v2/query/suggestions` without a trailing slash.
-
         - When writing a query, avoid using `_functionName()` helper functions
-        exposed by this endpoint.
+        exposed by this endpoint.  Helper function names have an underscore (`_`)
+        prefix and aren't meant to be used directly in queries--for example:
+
+          - To sort on a column and keep the top n records, use the
+            `top(n, columns=["_value"], tables=<-)` function instead of the `_sortLimit`
+            helper function. `top` uses `_sortLimit`.
 
         #### Related Guides
 
-        - [List of all Flux functions](https://docs.influxdata.com/influxdb/v2.3/flux/v0.x/stdlib/all-functions/)
+        - [List of all Flux functions](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
@@ -3401,7 +3397,7 @@ paths:
           description: |
             Moved Permanently.
             InfluxData has moved the URL of the endpoint.
-            Use `/api/v2/query/suggestions`.
+            Use `/api/v2/query/suggestions` (without a trailing slash).
           content:
             text/html:
               schema:
@@ -3427,7 +3423,7 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions" \
+            curl --request GET "INFLUX_URL/api/v2/query/suggestions" \
               --header "Accept: application/json" \
               --header "Authorization: Token INFLUX_API_TOKEN"
   '/query/suggestions/{name}':
@@ -3453,7 +3449,7 @@ paths:
 
         #### Related Guides
 
-        - [List of all Flux functions](https://docs.influxdata.com/influxdb/v2.3/flux/v0.x/stdlib/all-functions/)
+        - [List of all Flux functions](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -3462,8 +3458,7 @@ paths:
             type: string
           required: true
           description: |
-            A Flux Function name.
-            Only returns functions with this name.
+            A [Flux function](https://docs.influxdata.com/flux/v0.x/stdlib/all-functions/) name.
       responses:
         '200':
           description: |
@@ -3500,7 +3495,7 @@ paths:
         - lang: Shell
           label: cURL
           source: |
-            curl --request GET "https://cloud2.influxdata.com/api/v2/query/suggestions/sum/" \
+            curl --request GET "INFLUX_URL/api/v2/query/suggestions/sum/" \
               --header "Accept: application/json" \
               --header "Authorization: Token INFLUX_API_TOKEN"
   /query/analyze:
@@ -3827,7 +3822,7 @@ paths:
         - Buckets
       summary: List buckets
       description: |
-        Retrieves a list of [buckets](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket).
+        Lists [buckets](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#bucket).
 
         InfluxDB retrieves buckets owned by the
         [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization)
@@ -4412,7 +4407,7 @@ paths:
         - Buckets
       summary: List all labels for a bucket
       description: |
-        Retrieves a list of all labels for a bucket.
+        Lists all labels for a bucket.
 
         Labels are objects that contain `labelID`, `name`, `description`, and `color`
         key-value pairs. They may be used for grouping and filtering InfluxDB
@@ -4612,7 +4607,7 @@ paths:
         - Buckets
       summary: List all users with member privileges for a bucket
       description: |
-        Retrieves a list of all users for a bucket.
+        Lists all users for a bucket.
 
         InfluxDB [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) have
         permission to access InfluxDB.
@@ -4817,8 +4812,8 @@ paths:
         - Buckets
       summary: List all owners of a bucket
       description: |
-        Retrieves a list of all [owners](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#owner)
-        for a bucket.
+        Lists all [owners](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#owner)
+        of a bucket.
 
         Bucket owners have permission to delete buckets and remove user and member
         permissions from the bucket.
@@ -5070,7 +5065,7 @@ paths:
         - Security and access endpoints
       summary: List organizations
       description: |
-        Retrieves a list of [organizations](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization/).
+        Lists [organizations](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization/).
 
         To limit which organizations are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all organizations up to the default `limit`.
@@ -5093,21 +5088,21 @@ paths:
             type: string
           description: |
             An organization name.
-            Only returns organizations with this name.
+            Only returns the specified organization.
         - in: query
           name: orgID
           schema:
             type: string
           description: |
             An organization ID.
-            Only returns the organization with this ID.
+            Only returns the specified organization.
         - in: query
           name: userID
           schema:
             type: string
           description: |
             A user ID.
-            Only returns organizations where this user is a member or owner.
+            Only returns organizations where the specified user is a member or owner.
       responses:
         '200':
           description: Success. The response body contains a list of organizations.
@@ -5491,7 +5486,7 @@ paths:
         - Security and access endpoints
       summary: List all members of an organization
       description: |
-        Retrieves a list of all users that belong to an organization.
+        Lists all users that belong to an organization.
 
         InfluxDB [users](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#user) have
         permission to access InfluxDB.
@@ -5692,8 +5687,9 @@ paths:
       description: |
         Removes a member from an organization.
 
-        Use this endpoint to remove a user's member privileges from a bucket. This
-        removes the user's `read` and `write` permissions from the organization.
+        Use this endpoint to remove a user's member privileges for an organization.
+        Removing member privileges removes the user's `read` and `write` permissions
+        from the organization.
 
         #### InfluxDB Cloud
 
@@ -5754,7 +5750,7 @@ paths:
         - Security and access endpoints
       summary: List all owners of an organization
       description: |
-        Retrieves a list of all owners of an organization.
+        Lists all owners of an organization.
 
         #### InfluxDB Cloud
 
@@ -6043,11 +6039,15 @@ paths:
         - Templates
       summary: List installed stacks
       description: |
-        Retrieves a list of installed InfluxDB stacks.
+        Lists installed InfluxDB stacks.
 
         To limit stacks in the response, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all installed stacks
         for the organization.
+
+        #### Related guides
+
+        - [View InfluxDB stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/).
       parameters:
         - in: query
           name: orgID
@@ -6055,8 +6055,8 @@ paths:
           schema:
             type: string
           description: |
-            The ID of the organization that owns the stacks.
-            Only returns stacks owned by this organization.
+            An organization ID.
+            Only returns stacks owned by the specified [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization).
 
             #### InfluxDB Cloud
 
@@ -6067,14 +6067,14 @@ paths:
           schema:
             type: string
           description: |
-            The stack name.
+            A stack name.
             Finds stack `events` with this name and returns the stacks.
 
             Repeatable.
             To filter for more than one stack name,
             repeat this parameter with each name--for example:
 
-            - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`
+            - `INFLUX_URL/api/v2/stacks?&orgID=INFLUX_ORG_ID&name=project-stack-0&name=project-stack-1`
           examples:
             findStackByName:
               summary: Find stacks with the event name
@@ -6084,14 +6084,14 @@ paths:
           schema:
             type: string
           description: |
-            The stack ID.
-            Only returns stacks with this ID.
+            A stack ID.
+            Only returns the specified stack.
 
             Repeatable.
             To filter for more than one stack ID,
             repeat this parameter with each ID--for example:
 
-            - `http://localhost:8086/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`
+            - `INFLUX_URL/api/v2/stacks?&orgID=INFLUX_ORG_ID&stackID=09bd87cd33be3000&stackID=09bef35081fe3000`
           examples:
             findStackByID:
               summary: Find a stack with the ID
@@ -6165,8 +6165,8 @@ paths:
 
         #### Related guides
 
-        - [InfluxDB stacks](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/)
-        - [Use InfluxDB templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#apply-templates-to-an-influxdb-instance)
+        - [Initialize an InfluxDB stack](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/stacks/init/).
+        - [Use InfluxDB templates](https://docs.influxdata.com/influxdb/v2.3/influxdb-templates/use/#apply-templates-to-an-influxdb-instance).
       requestBody:
         description: The stack to create.
         required: true
@@ -6689,10 +6689,11 @@ paths:
         - Tasks
       summary: List runs for a task
       description: |
-        Retrieves a list of runs for a [task](https://docs.influxdata.com/influxdb/v2.3/process-data/).
+        Lists runs for the specified [task](https://docs.influxdata.com/influxdb/v2.3/process-data/).
 
         To limit which task runs are returned, pass query parameters in your request.
-        If no query parameters are passed, InfluxDB returns all task runs up to the default `limit`.
+        If you don't pass query parameters, InfluxDB returns all runs for the task
+        up to the default `limit`.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6701,13 +6702,14 @@ paths:
             type: string
           required: true
           description: |
-            The ID of the task to get runs for.
-            Only returns runs for this task.
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to
+            to list runs for.
         - in: query
           name: after
           schema:
             type: string
-          description: A task run ID. Only returns runs created after this run.
+          description: A task run ID. Only returns runs created after the specified run.
         - in: query
           name: limit
           schema:
@@ -6724,7 +6726,7 @@ paths:
             format: date-time
           description: |
             A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
-            Only returns runs scheduled after this time.
+            Only returns runs scheduled after the specified time.
         - in: query
           name: beforeTime
           schema:
@@ -6732,7 +6734,7 @@ paths:
             format: date-time
           description: |
             A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)).
-            Only returns runs scheduled before this time.
+            Only returns runs scheduled before the specified time.
       responses:
         '200':
           description: Success. The response body contains the list of task runs.
@@ -6761,6 +6763,10 @@ paths:
 
         To _retry_ a previous run (and avoid creating a new run),
         use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry` endpoint](#operation/PostTasksIDRunsIDRetry).
+
+        #### Limitations
+
+        - Queuing a task run requires that the task's `status` property be set to `active`.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -6768,6 +6774,10 @@ paths:
           schema:
             type: string
           required: true
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to
+            to run.
       requestBody:
         content:
           application/json:
@@ -6780,6 +6790,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Run'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                inactiveTask:
+                  summary: Can't run an inactive task
+                  value:
+                    code: invalid
+                    message: 'failed to force run: inactive task'
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500':
@@ -6793,7 +6815,7 @@ paths:
         - Tasks
       summary: Retrieve a run for a task.
       description: |
-        Retrieves a specific run for a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
+        Retrieves the specified run for the specified [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
 
         Use this endpoint to retrieve detail and logs for a specific task run.
       parameters:
@@ -6803,13 +6825,16 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to retrieve runs for.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)
+            that the task run belongs to.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The ID of the run to retrieve.
+          description: A task run ID. Specifies the run to retrieve.
       responses:
         '200':
           description: Success. The response body contains the task run.
@@ -6858,7 +6883,7 @@ paths:
       description: |
         Cancels a running [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
 
-        Use this endpoint with InfluxDB OSS to cancel a running task.
+        Use this endpoint to cancel a running task.
 
         #### InfluxDB Cloud
 
@@ -6870,13 +6895,18 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to cancel.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to
+            to cancel.
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The ID of the task run to cancel.
+          description: |
+            A task run ID.
+            Specifies the task run to cancel.
       responses:
         '204':
           description: |
@@ -6918,15 +6948,15 @@ paths:
         - Tasks
       summary: Retry a task run
       description: |
-        Queues a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)  run to
-        retry and returns the scheduled run.
+        Queues a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) run to
+        retry and then returns the scheduled run.
 
         To manually start a _new_ task run, use the
         [`POST /api/v2/tasks/{taskID}/runs` endpoint](#operation/PostTasksIDRuns).
 
         #### Limitations
 
-        - The task must be _active_ (`status: "active"`).
+        - Queuing a task run requires that the task's `status` property be set to `active`.
       requestBody:
         content:
           application/json; charset=utf-8:
@@ -6940,15 +6970,15 @@ paths:
             type: string
           required: true
           description: |
-            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task)  ID.
-            Specifies the task to retry.
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) that the task run belongs to.
         - in: path
           name: runID
           schema:
             type: string
           required: true
           description: |
-            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) run ID.
+            A task run ID.
             Specifies the task run to retry.
 
             To find a task run ID, use the
@@ -7006,12 +7036,12 @@ paths:
       operationId: GetTasksIDLogs
       tags:
         - Tasks
-      summary: Retrieve all logs for a task
+      summary: List logs for a task
       description: |
-        Retrieves a list of all logs for a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
+        Lists all log events for a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
 
-        When an InfluxDB task runs, a “run” record is created in the task’s history.
-        Logs associated with each run provide relevant log messages, timestamps, and the exit status of the run attempt.
+        When a task runs, InfluxDB creates a `run` record in the task’s history.
+        Logs associated with each run provide relevant log messages, timestamps, and the exit status of the `run` attempt.
 
         Use this endpoint to retrieve only the log events for a task,
         without additional task metadata.
@@ -7022,11 +7052,12 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: 'A task ID. Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to retrieve logs for.'
       responses:
         '200':
           description: |
-            Success. The response body contains an `events` list with logs for the task.
+            Success.
+            The response body contains an `events` list with logs for the task.
             Each log event `message` contains detail about the event.
             If a task run fails, InfluxDB logs an event with the reason for the failure.
           content:
@@ -7035,7 +7066,7 @@ paths:
                 $ref: '#/components/schemas/Logs'
               examples:
                 taskSuccess:
-                  summary: Events for a successful task run.
+                  summary: Events for a successful task run
                   value:
                     events:
                       - runID: 09b070dadaa7d000
@@ -7045,7 +7076,7 @@ paths:
                         time: '2022-07-18T14:46:07.242859Z'
                         message: Completed(success)
                 taskFailure:
-                  summary: Events for a failed task run.
+                  summary: Events for a failed task run
                   value:
                     events:
                       - runID: 09a946fc3167d000
@@ -7072,12 +7103,12 @@ paths:
       operationId: GetTasksIDRunsIDLogs
       tags:
         - Tasks
-      summary: Retrieve all logs for a run
+      summary: List logs for a run
       description: |
-        Retrieves all logs for a task run.
+        Lists all logs for a task run.
         A log is a list of run events with `runID`, `time`, and `message` properties.
 
-        Use this endpoint to help analyze task performance and troubleshoot failed task runs.
+        Use this endpoint to help analyze [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) performance and troubleshoot failed task runs.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7085,13 +7116,13 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to get logs for.
+          description: 'A task ID. Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) that the run belongs to.'
         - in: path
           name: runID
           schema:
             type: string
           required: true
-          description: The ID of the run to get logs for.
+          description: A run ID. Specifies the task run to list logs for.
       responses:
         '200':
           description: |
@@ -7143,9 +7174,12 @@ paths:
         - Tasks
       summary: List labels for a task
       description: |
-        Retrieves a list of all labels for a task.
+        Lists all labels for a task.
 
-        Labels may be used for grouping and filtering tasks.
+        Use this endpoint to list labels applied to a task.
+        Labels are a way to add metadata to InfluxDB resources.
+        You can use labels for grouping and filtering resources in the
+        InfluxDB UI, `influx` CLI, and InfluxDB API.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7153,7 +7187,9 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to retrieve labels for.
+          description: |
+            A task ID.
+            Specifies the task to retrieve labels for.
       responses:
         '200':
           description: Success. The response body contains a list of all labels for the task.
@@ -7177,9 +7213,12 @@ paths:
         - Tasks
       summary: Add a label to a task
       description: |
-        Adds a label to a task.
+        Adds a label to a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
 
-        Use this endpoint to add a label that you can use to filter tasks in the InfluxDB UI.
+        Use this endpoint to add a label to a task.
+        Labels are a way to add metadata to InfluxDB resources.
+        You can use labels for grouping and filtering resources in the
+        InfluxDB UI, `influx` CLI, and InfluxDB API.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7187,9 +7226,12 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to label.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to label.
       requestBody:
-        description: An object that contains a _`labelID`_ to add to the task.
+        description: |
+          In the request body, provide an object that specifies the label.
         required: true
         content:
           application/json:
@@ -7197,7 +7239,7 @@ paths:
               $ref: '#/components/schemas/LabelMapping'
       responses:
         '201':
-          description: Success. The response body contains a list of all labels for the task.
+          description: Success. The response body contains the label.
           content:
             application/json:
               schema:
@@ -7219,7 +7261,7 @@ paths:
         - Tasks
       summary: Delete a label from a task
       description: |
-        Deletes a label from a task.
+        Deletes a label from a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7227,13 +7269,17 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to delete the label from.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to delete the label from.
         - in: path
           name: labelID
           schema:
             type: string
           required: true
-          description: The ID of the label to delete.
+          description: |
+            A label ID.
+            Specifies the label to delete.
       responses:
         '204':
           description: Success. The label is deleted.
@@ -7405,6 +7451,8 @@ paths:
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        Lists all users that have the `member` role for the specified [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7412,12 +7460,16 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to retrieve members for.
       responses:
         '200':
           description: |
             Success. The response body contains a list of `users` that have
             the `member` role for a task.
+
+            If the task has no members, the response contains an empty `users` array.
           content:
             application/json:
               schema:
@@ -7438,7 +7490,8 @@ paths:
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Adds a user to members of a task and returns the member.
+        Adds a specified user to members of the specified [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) and then returns
+        the member.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7446,9 +7499,12 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: |
+            A [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) ID.
+            Specifies the task for the member.
       requestBody:
-        description: A user to add as a member of the task.
+        description: |
+          In the request body, provide an object that specifies the user.
         required: true
         content:
           application/json:
@@ -7456,7 +7512,10 @@ paths:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
       responses:
         '201':
-          description: Created. The user is added to task members.
+          description: |
+            Created. The task `member` role is assigned to the user.
+            The response body contains the resource member with
+            role and user detail.
           content:
             application/json:
               schema:
@@ -7477,6 +7536,8 @@ paths:
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        Removes a member from a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7484,16 +7545,16 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the member to remove.
+          description: A user ID. Specifies the member to remove.
         - in: path
           name: taskID
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: 'A task ID. Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to remove the member from.'
       responses:
         '204':
-          description: Member removed
+          description: Success. The member is removed.
         default:
           description: Unexpected error
           content:
@@ -7511,7 +7572,7 @@ paths:
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Retrieves all users that have owner permission for a task.
+        Lists all users that have the `owner` role for the specified task.
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7519,7 +7580,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the task to retrieve owners for.
+          description: A task ID. Specifies the task to retrieve owners for.
       responses:
         '200':
           description: |
@@ -7563,7 +7624,8 @@ paths:
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Assigns a task `owner` role to a user.
+        Adds a specified user to owners of the specified task and then returns the
+        owner.
 
         Use this endpoint to create a _resource owner_ for the task.
         A _resource owner_ is a user with `role: owner` for a specific resource.
@@ -7574,9 +7636,12 @@ paths:
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) for the owner.
       requestBody:
-        description: A user to add as an owner of the task.
+        description: |
+          In the request body, provide an object that specifies the user.
         required: true
         content:
           application/json:
@@ -7635,6 +7700,8 @@ paths:
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
         Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
+
+        Removes an owner from a [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
         - in: path
@@ -7642,16 +7709,18 @@ paths:
           schema:
             type: string
           required: true
-          description: The ID of the owner to remove.
+          description: 'A user ID. Specifies the owner to remove from the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task).'
         - in: path
           name: taskID
           schema:
             type: string
           required: true
-          description: The task ID.
+          description: |
+            A task ID.
+            Specifies the [task](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#task) to remove the owner from.
       responses:
         '204':
-          description: Owner removed
+          description: Success. The owner is removed.
         default:
           description: Unexpected error
           content:
@@ -11069,6 +11138,44 @@ components:
             Default is the server _now_ time.
           type: string
           format: date-time
+    TaskCron:
+      description: 'A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs. InfluxDB uses the system time when evaluating Cron expressions.'
+      type: string
+      format: cron
+    TaskDescription:
+      description: A description of the task.
+      type: string
+    TaskEvery:
+      description: 'The interval ([duration literal](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#rfc3339-timestamp)) at which the task runs. `every` also determines when the task first runs, depending on the specified time.'
+      type: string
+      format: duration
+    TaskFlux:
+      description: |
+        Flux with [task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
+        and the script for the task to run.
+
+        #### Related guides
+
+        - [Task configuration options](https://docs.influxdata.com/influxdb/v2.3/process-data/task-options/)
+      type: string
+      format: Flux
+    TaskName:
+      description: The name of the task.
+      type: string
+    TaskOffset:
+      description: 'A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed. `0` removes the offset.'
+      type: string
+      format: duration
+    TaskOrg:
+      description: |
+        An organization name.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) that owns the task.
+      type: string
+    TaskOrgID:
+      description: |
+        An organization ID.
+        Identifies the [organization](https://docs.influxdata.com/influxdb/v2.3/reference/glossary/#organization) that owns the task.
+      type: string
     TaskStatusType:
       type: string
       enum:
@@ -13342,12 +13449,15 @@ components:
             description: this is a description
     LabelMapping:
       type: object
+      description: A _label mapping_ contains a `label` ID to attach to a resource.
       properties:
         labelID:
           description: |
-            Label ID.
-            The ID of the label to attach.
+            A label ID.
+            Specifies the label to attach.
           type: string
+      required:
+        - labelID
     LabelsResponse:
       type: object
       properties:
@@ -13477,19 +13587,19 @@ components:
             query: /api/v2/checks/1/query
           properties:
             self:
-              description: URL for this check
+              description: The URL for this check.
               $ref: '#/components/schemas/Link'
             labels:
-              description: URL to retrieve labels for this check
+              description: The URL to retrieve labels for this check.
               $ref: '#/components/schemas/Link'
             members:
-              description: URL to retrieve members for this check
+              description: The URL to retrieve members for this check.
               $ref: '#/components/schemas/Link'
             owners:
-              description: URL to retrieve owners for this check
+              description: The URL to retrieve owners for this check.
               $ref: '#/components/schemas/Link'
             query:
-              description: URL to retrieve flux script for this check
+              description: The URL to retrieve the Flux script for this check.
               $ref: '#/components/schemas/Link'
       required:
         - name
@@ -13806,19 +13916,19 @@ components:
             query: /api/v2/notificationRules/1/query
           properties:
             self:
-              description: URL for this endpoint.
+              description: The URL for this endpoint.
               $ref: '#/components/schemas/Link'
             labels:
-              description: URL to retrieve labels for this notification rule.
+              description: The URL to retrieve labels for this notification rule.
               $ref: '#/components/schemas/Link'
             members:
-              description: URL to retrieve members for this notification rule.
+              description: The URL to retrieve members for this notification rule.
               $ref: '#/components/schemas/Link'
             owners:
-              description: URL to retrieve owners for this notification rule.
+              description: The URL to retrieve owners for this notification rule.
               $ref: '#/components/schemas/Link'
             query:
-              description: URL to retrieve flux script for this notification rule.
+              description: The URL to retrieve the Flux script for this notification rule.
               $ref: '#/components/schemas/Link'
     TagRule:
       type: object
@@ -14027,16 +14137,16 @@ components:
             owners: /api/v2/notificationEndpoints/1/owners
           properties:
             self:
-              description: URL for this endpoint.
+              description: The URL for this endpoint.
               $ref: '#/components/schemas/Link'
             labels:
-              description: URL to retrieve labels for this endpoint.
+              description: The URL to retrieve labels for this endpoint.
               $ref: '#/components/schemas/Link'
             members:
-              description: URL to retrieve members for this endpoint.
+              description: The URL to retrieve members for this endpoint.
               $ref: '#/components/schemas/Link'
             owners:
-              description: URL to retrieve owners for this endpoint.
+              description: The URL to retrieve owners for this endpoint.
               $ref: '#/components/schemas/Link'
         type:
           $ref: '#/components/schemas/NotificationEndpointType'

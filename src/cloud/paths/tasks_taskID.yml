@@ -5,7 +5,7 @@ get:
     - Tasks
   summary: Retrieve a task
   description: |
-    Retrieves a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+    Retrieves the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -14,8 +14,8 @@ get:
         type: string
       required: true
       description: |
-        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-        Specifies the task to retrieve.
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to retrieve.
   responses:
     "200":
       description: Success. The response body contains the task.
@@ -39,67 +39,52 @@ patch:
     - Tasks
   summary: Update a task
   description: |
-    Updates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
+    Updates the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task),
     and then cancels all scheduled runs of the task.
 
     Use this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.
     Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
-    To update a task, pass an object that contains the updated key-value pairs.
     To activate or inactivate a task, set the `status` property.
-    _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
+    The `status` property set to `inactive` cancels scheduled runs and prevents manual runs of the task.
 
-    #### InfluxDB Cloud
+    #### Related guides
 
-    - Use either `flux` or `scriptID` to provide the task script.
-
-      - `flux`: a string of "raw" Flux that contains task options and the script--for example:
-
-        ```json
-        {
-          "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
-          from(bucket: \"telegraf\")
-            |> range(start: -1h)
-            |> filter(fn: (r) => (r._measurement == \"cpu\"))
-            |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
-            |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
-            |> aggregateWindow(every: 1h, fn: max)
-            |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
-          "status": "active",
-          "description": "This task downsamples CPU data every hour"
-        }
-        ```
-
-      - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
-        for the task to run.
-        To pass task options when using `scriptID`, pass the options as
-        properties in the request body--for example:
-
-        ```json
-        {
-          "name": "CPU Total 1 Hour New",
-          "description": "This task downsamples CPU data every hour",
-          "every": "1h",
-          "scriptID": "SCRIPT_ID",
-          "scriptParameters":
-            {
-              "rangeStart": "-1h",
-              "bucket": "telegraf",
-              "filterField": "cpu-total"
-            }
-          }
-        ```
-
-    #### Limitations:
-
-    - You can't use `flux` and `scriptID` for the same task.
+    - [Update a task]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/update-task/)
+    - [Task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
   requestBody:
-    description: An task update to apply.
+    description: |
+      In the request body, provide the task properties to update.
+      To provide the script that the task runs,
+      set either the `flux` property or the `scriptID` property.
+
+      If you set `scriptID`, you can set the following properties to configure the task:
+        - `cron`
+        - `every`
+        - `offset`
+        - `scriptParameters`
+
+      If you set the `flux` property, provide the `task` configuration option
+      in the Flux script.
+
+      See [task configuration options]({{% INFLUXDB_DOCS_URL %}}/process-data/task-options/)
+      for detail and examples.
+
+      #### Limitations:
+
+      - You can't set `flux` and `scriptID` properties for the same task--for
+        example, if you set the `scriptID` property, then InfluxDB sets the `flux` property
+        to an empty string (`""`).
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/TaskUpdateRequest.yml"
+        examples:
+          TaskWithFlux:
+            $ref: "../../common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
+          TaskWithScriptID:
+            $ref: "../requestBody/examples/TaskRequestExamples.yml#/TaskWithScriptRequest"
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -108,8 +93,8 @@ patch:
         type: string
       required: true
       description: |
-        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
-        Specifies the task to update.
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to update.
   responses:
     "200":
       description: Success. The response body contains the updated task.
@@ -133,12 +118,13 @@ delete:
     - Tasks
   summary: Delete a task
   description: |
-    Deletes a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and associated records.
-
-    Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
+    Deletes the specified [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+    and all associated records (task runs, logs, and labels).
     Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
 
-    If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
+    To disable a task instead of delete it, use
+    [`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task's `status`
+    property to `inactive`.
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -146,7 +132,9 @@ delete:
       schema:
         type: string
       required: true
-      description: A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID. Specifies the task to delete.
+      description: |
+        A task ID.
+        Specifies the [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) to delete.
   responses:
     "204":
       description: Success. The task and task runs are deleted. Scheduled runs are canceled.
