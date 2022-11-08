@@ -336,6 +336,7 @@
           "DBRPs"
         ],
         "summary": "List database retention policy mappings",
+        "description": "Lists all database retention policy (DBRP) mappings.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -343,7 +344,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "An organization ID.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization ID.\nOnly returns the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -351,7 +352,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "An organization name.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization name.\nOnly returns the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -359,7 +360,7 @@
           {
             "in": "query",
             "name": "id",
-            "description": "Specifies the mapping ID to filter on",
+            "description": "A DBPR mapping ID.\nOnly returns the specified DBRP mapping.\n",
             "schema": {
               "type": "string"
             }
@@ -367,7 +368,7 @@
           {
             "in": "query",
             "name": "bucketID",
-            "description": "A bucket ID.\nList DBRP mappings for the specified bucket.\n",
+            "description": "A bucket ID.\nOnly returns DBRP mappings that belong to the bucket.\n",
             "schema": {
               "type": "string"
             }
@@ -383,7 +384,7 @@
           {
             "in": "query",
             "name": "db",
-            "description": "A database.\nSpecifies the database to filter on.\n",
+            "description": "A database.\nOnly returns DBRP mappings that belong to the database.\n",
             "schema": {
               "type": "string"
             }
@@ -391,7 +392,7 @@
           {
             "in": "query",
             "name": "rp",
-            "description": "A retention policy.\nSpecifies the retention policy to filter on.\n",
+            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).\nSpecifies the retention policy to filter on.\n",
             "schema": {
               "type": "string"
             }
@@ -404,6 +405,30 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DBRPs"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "content": [
+                        {
+                          "id": "0a3cbb5dd526a000",
+                          "database": "example_database_1",
+                          "retention_policy": "autogen",
+                          "default": true,
+                          "orgID": "bea7ea952287f70d",
+                          "bucketID": "4d4d9d5b61dee751"
+                        },
+                        {
+                          "id": "0a3cbcde20e38000",
+                          "database": "example_database_2",
+                          "retention_policy": "example_retention_policy",
+                          "default": false,
+                          "orgID": "bea7ea952287f70d",
+                          "bucketID": "4d4d9d5b61dee751"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -414,6 +439,13 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "description": "The query parameters contain invalid values\n",
+                  "value": {
+                    "code": "invalid",
+                    "message": "invalid ID"
+                  }
                 }
               }
             }
@@ -442,13 +474,14 @@
           "DBRPs"
         ],
         "summary": "Add a database retention policy mapping",
+        "description": "\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
           }
         ],
         "requestBody": {
-          "description": "The database retention policy mapping to add",
+          "description": "The database retention policy mapping to add.",
           "required": true,
           "content": {
             "application/json": {
@@ -465,6 +498,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DBRP"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "id": "0a3cbb5dd526a000",
+                      "database": "example_database",
+                      "retention_policy": "autogen",
+                      "default": true,
+                      "orgID": "bea7ea952287f70d",
+                      "bucketID": "4d4d9d5b61dee751"
+                    }
+                  }
                 }
               }
             }
@@ -475,6 +520,13 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "description": "The query parameters contain invalid values\n",
+                  "value": {
+                    "code": "invalid",
+                    "message": "invalid ID"
+                  }
                 }
               }
             }
@@ -498,7 +550,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/dbrp/\" \\\n  --header 'Content-type: application/json' \\\n  --header \"Authorization: Token INFLUXDB_TOKEN\" \\\n  --data-binary @- << EOF\n    { \\\n      \"bucketID\": \"INFLUXDB_BUCKET_ID\", \\\n      \"orgID\": \"INFLUXDB_ORG_ID\", \\  \n      \"database\": \"database_name\", \\\n      \"default\": true, \\\n      \"retention_policy\": \"example_retention_policy_name\" \\\n    }\nEOF\n"
+          }
+        ]
       }
     },
     "/dbrps/{dbrpID}": {
@@ -508,6 +567,7 @@
           "DBRPs"
         ],
         "summary": "Retrieve a database retention policy mapping",
+        "description": "Retrieves a database retention policy (DBRP) mapping.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -515,7 +575,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "An organization ID.\nSpecifies the organization that owns the dbrp mapping.\n",
+            "description": "An organization ID.\nOnly returns the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -523,7 +583,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "An organization name.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization name.\nOnly returns the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -535,7 +595,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A DBRP ID.\nOnly returns DBRP mappings with the specified ID\n"
+            "description": "A DBRP mapping ID.\nOnly returns the specified DBRP mapping.\n"
           }
         ],
         "responses": {
@@ -545,16 +605,37 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DBRPGet"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "content": {
+                        "id": "0a3cbb5dd526a000",
+                        "database": "example_database_1",
+                        "retention_policy": "autogen",
+                        "default": true,
+                        "orgID": "bea7ea952287f70d",
+                        "bucketID": "4d4d9d5b61dee751"
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "if any of the IDs passed is invalid",
+            "description": "Bad Request. Query parameters contain invalid values.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "description": "The query parameters contain invalid values\n",
+                  "value": {
+                    "code": "invalid",
+                    "message": "invalid ID"
+                  }
                 }
               }
             }
@@ -604,7 +685,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "An organization ID.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization ID.\nOnly returns the specified DBRP mapping.\n",
             "schema": {
               "type": "string"
             }
@@ -612,7 +693,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "An organization name.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization name.\nOnly returns the specified DBRP mapping.\n",
             "schema": {
               "type": "string"
             }
@@ -624,7 +705,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A DBRP ID.\nOnly returns DBRP mappings with the specified ID\n"
+            "description": "A DBRP mapping ID.\nOnly returns the specified DBRP mapping.\n"
           }
         ],
         "responses": {
@@ -634,16 +715,37 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DBRPGet"
+                },
+                "examples": {
+                  "successResponse": {
+                    "value": {
+                      "content": {
+                        "id": "0a3cbb5dd526a000",
+                        "database": "example_database",
+                        "retention_policy": "example_retention_policy",
+                        "default": false,
+                        "orgID": "bea7ea952287f70d",
+                        "bucketID": "4d4d9d5b61dee751"
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "if any of the IDs passed is invalid",
+            "description": "Bad Request. Query parameters contain invalid values.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "description": "The query parameters contain invalid values\n",
+                  "value": {
+                    "code": "invalid",
+                    "message": "invalid ID"
+                  }
                 }
               }
             }
@@ -667,7 +769,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request PATCH \\\n   \"http://localhost:8086/api/v2/dbrp/DBRP_ID\" \\\n  --header 'Content-type: application/json' \\\n  --header \"Authorization: Token INFLUXDB_TOKEN\" \\\n  --data-binary @- << EOF\n    { \\\n      \"default\": true, \\\n      \"retention_policy\": \"example_retention_policy_name\" \\\n    }\nEOF\n"
+          }
+        ]
       },
       "delete": {
         "operationId": "DeleteDBRPID",
@@ -675,6 +784,7 @@
           "DBRPs"
         ],
         "summary": "Delete a database retention policy",
+        "description": "\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -682,7 +792,7 @@
           {
             "in": "query",
             "name": "orgID",
-            "description": "An organization ID.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization ID.\nOnly returns the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -690,7 +800,7 @@
           {
             "in": "query",
             "name": "org",
-            "description": "An organization name.\nSpecifies the organization that owns the DBRP mapping.\n",
+            "description": "An organization name.\nOnly returns the specified organization.\n",
             "schema": {
               "type": "string"
             }
@@ -702,7 +812,7 @@
               "type": "string"
             },
             "required": true,
-            "description": "A DBRP ID.\nOnly returns DBRP mappings with the specified ID\n"
+            "description": "A DBRP mapping ID.\nOnly returns the specified DBRP mapping.\n"
           }
         ],
         "responses": {
@@ -710,11 +820,18 @@
             "description": "Delete has been accepted"
           },
           "400": {
-            "description": "if any of the IDs passed is invalid",
+            "description": "Bad Request. Query parameters contain invalid values.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "description": "The query parameters contain invalid values\n",
+                  "value": {
+                    "code": "invalid",
+                    "message": "invalid ID"
+                  }
                 }
               }
             }
@@ -23207,24 +23324,24 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "The ID of the DBRP mapping.",
+            "description": "The resource ID that InfluxDB uses to uniquely identify the task.\n",
             "readOnly": true
           },
           "orgID": {
             "type": "string",
-            "description": "The ID of the organization."
+            "description": "An organization ID.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the mapping.\n"
           },
           "bucketID": {
             "type": "string",
-            "description": "The ID of the bucket used as the target for the translation."
+            "description": "A bucket ID.\nIdentifies the bucket used as the target for the translation.\n"
           },
           "database": {
             "type": "string",
-            "description": "InfluxDB v1 database"
+            "description": "A database name.\nIdentifies the InfluxDB v1 database.\n"
           },
           "retention_policy": {
             "type": "string",
-            "description": "InfluxDB v1 retention policy"
+            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy.\n"
           },
           "default": {
             "type": "boolean",
@@ -23271,25 +23388,25 @@
       "DBRPCreate": {
         "type": "object",
         "properties": {
-          "orgID": {
-            "type": "string",
-            "description": "The ID of the organization."
-          },
           "org": {
             "type": "string",
-            "description": "The name of the organization that owns this mapping."
+            "description": "An organization name.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the mapping.  orgID:\n"
+          },
+          "orgID": {
+            "type": "string",
+            "description": "An organization ID.\nIdentifies the [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) that owns the mapping.\n"
           },
           "bucketID": {
             "type": "string",
-            "description": "The ID of the bucket used as the target for the translation."
+            "description": "A bucket ID.\nIdentifies the bucket used as the target for the translation.\n"
           },
           "database": {
             "type": "string",
-            "description": "InfluxDB v1 database"
+            "description": "A database name.\nIdentifies the InfluxDB v1 database.\n"
           },
           "retention_policy": {
             "type": "string",
-            "description": "InfluxDB v1 retention policy"
+            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy.\n"
           },
           "default": {
             "type": "boolean",

@@ -5,6 +5,10 @@ get:
   summary: List database retention policy mappings
   description: |
     Lists all database retention policy (DBRP) mappings.
+    
+    #### Related guide
+    
+    - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
@@ -50,7 +54,7 @@ get:
     - in: query
       name: rp
       description: |
-        A retention policy.
+        A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).
         Specifies the retention policy to filter on.
       schema:
         type: string
@@ -61,12 +65,22 @@ get:
         application/json:
           schema:
             $ref: "../schemas/DBRPs.yml"
+          examples:
+            $ref: "../responses/example-responses/GetDBRPsSuccessResponse.yml"
     "400":
       description: Bad request. The request has one or more invalid parameters.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            description: |
+              The query parameters contain invalid values
+            value:
+              {
+                "code": "invalid",
+                "message": "invalid ID"
+              }
     "401":
       $ref: "../responses/AuthorizationError.yml"
     "500":
@@ -82,10 +96,16 @@ post:
   tags:
     - DBRPs
   summary: Add a database retention policy mapping
+  description: |
+    
+
+    #### Related guide
+
+    - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
-    description: The database retention policy mapping to add
+    description: The database retention policy mapping to add.
     required: true
     content:
       application/json:
@@ -98,12 +118,22 @@ post:
         application/json:
           schema:
             $ref: "../schemas/DBRP.yml"
+          examples:
+            $ref: "../responses/example-responses/PostDBRPSuccessResponse.yml"
     "400":
       description: Bad request. The mapping in the request has one or more invalid IDs.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            description: |
+              The query parameters contain invalid values
+            value:
+              {
+                "code": "invalid",
+                "message": "invalid ID"
+              }
     "401":
       $ref: "../responses/AuthorizationError.yml"
     "404":
@@ -116,3 +146,20 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source: |
+        curl --request POST \
+           "http://localhost:8086/api/v2/dbrp/" \
+          --header 'Content-type: application/json' \
+          --header "Authorization: Token INFLUXDB_TOKEN" \
+          --data-binary @- << EOF
+            { \
+              "bucketID": "INFLUXDB_BUCKET_ID", \
+              "orgID": "INFLUXDB_ORG_ID", \  
+              "database": "database_name", \
+              "default": true, \
+              "retention_policy": "example_retention_policy_name" \
+            }
+        EOF
