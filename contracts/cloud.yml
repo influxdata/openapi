@@ -65,6 +65,20 @@ tags:
       ### Related guides
 
       - [Manage buckets](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/)
+  - name: DBRPs
+    description: |
+      The InfluxDB 1.x data model includes [databases](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#database)
+      and [retention policies](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).
+      InfluxDB 2.x replaces databases and retention policies with buckets.
+      To support InfluxDB 1.x query and write patterns in InfluxDB 2.x, 
+      databases and retention policies are mapped to buckets using the 
+      database and retention policy (DBRP) mapping service. 
+      The DBRP mapping service uses the database and retention policy 
+      specified in 1.x compatibility API requests to route operations to a bucket.
+
+      ### Related guides
+
+      - [Database and retention policy mapping](https://docs.influxdata.com/influxdb/cloud/reference/api/influxdb-1x/dbrp/)
   - name: Invokable Scripts
     description: |
       Store, manage, and execute scripts in InfluxDB.
@@ -600,11 +614,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                description: |
-                  The query parameters contain invalid values
-                value:
-                  code: invalid
-                  message: invalid ID
+                invalidRequest:
+                  description: |
+                    The query parameters contain invalid values.
+                  value:
+                    code: invalid
+                    message: invalid ID
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '500':
@@ -621,7 +636,17 @@ paths:
         - DBRPs
       summary: Add a database retention policy mapping
       description: |
+        Creates a database retention policy (DBRP) mapping and returns the mapping.
 
+        Use this endpoint to add InfluxDB 1.x API compatibility to your
+        InfluxDB Cloud or InfluxDB OSS 2.x buckets. Your buckets must contain a
+        DBRP mapping in order to query and write using the InfluxDB 1.x API.
+
+        Note that _`retention_policy`_ is a required parameter in the request body.
+        The value of _`retention_policy`_ can be any arbitrary `string` name or
+        value, with the default value commonly set as `autogen`.
+        The value of _`retention_policy`_ isn't a [retention_policy](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#retention-policy-rp)
+        object.
 
         #### Related guide
 
@@ -658,11 +683,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                description: |
-                  The query parameters contain invalid values
-                value:
-                  code: invalid
-                  message: invalid ID
+                invalidRequest:
+                  description: |
+                    The query parameters contain invalid values.
+                  value:
+                    code: invalid
+                    message: invalid ID
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
@@ -686,7 +712,7 @@ paths:
               --data-binary @- << EOF
                 { \
                   "bucketID": "INFLUXDB_BUCKET_ID", \
-                  "orgID": "INFLUXDB_ORG_ID", \  
+                  "orgID": "INFLUXDB_ORG_ID", \
                   "database": "database_name", \
                   "default": true, \
                   "retention_policy": "example_retention_policy_name" \
@@ -699,7 +725,7 @@ paths:
         - DBRPs
       summary: Retrieve a database retention policy mapping
       description: |
-        Retrieves a database retention policy (DBRP) mapping.
+        Retrieves the specified retention policy (DBRP) mapping.
 
         #### Related guide
 
@@ -752,11 +778,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                description: |
-                  The query parameters contain invalid values
-                value:
-                  code: invalid
-                  message: invalid ID
+                invalidRequest:
+                  description: |
+                    The query parameters contain invalid values.
+                  value:
+                    code: invalid
+                    message: invalid ID
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
@@ -775,7 +802,14 @@ paths:
         - DBRPs
       summary: Update a database retention policy mapping
       requestBody:
-        description: Database retention policy update to apply
+        description: |
+          Updates the database retention policy (DBRP) mapping and returns the mapping.
+
+          Use this endpoint to update property (`retention_policy`) of a DBRP ma  pping.
+
+          #### Related guide
+
+          - [Database and retention policy mapping](https://docs.influxdata.com/influxdb/cloud/reference/api/influxdb-1x/dbrp/)
         required: true
         content:
           application/json:
@@ -829,11 +863,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                description: |
-                  The query parameters contain invalid values
-                value:
-                  code: invalid
-                  message: invalid ID
+                invalidRequest:
+                  description: |
+                    The query parameters contain invalid values.
+                  value:
+                    code: invalid
+                    message: invalid ID
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
@@ -866,7 +901,7 @@ paths:
         - DBRPs
       summary: Delete a database retention policy
       description: |
-
+        Deletes the specified database retention policy (DBRP) mapping.
 
         #### Related guide
 
@@ -905,11 +940,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               examples:
-                description: |
-                  The query parameters contain invalid values
-                value:
-                  code: invalid
-                  message: invalid ID
+                invalidRequest:
+                  description: |
+                    The query parameters contain invalid values.
+                  value:
+                    code: invalid
+                    message: invalid ID
         '401':
           $ref: '#/components/responses/AuthorizationError'
         '404':
@@ -16470,7 +16506,7 @@ components:
           type: string
           description: |
             A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.
-            Identifies the InfluxDB v1 retention policy.
+            Identifies the InfluxDB v1 retention policy mapping.
         default:
           type: boolean
           description: Mapping represents the default retention policy for the database specified.
@@ -16496,9 +16532,12 @@ components:
       properties:
         retention_policy:
           type: string
-          description: InfluxDB v1 retention policy
+          description: |
+            A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.
+            Identifies the InfluxDB v1 retention policy mapping.
         default:
           type: boolean
+          description: Mapping represents the default retention policy for the database specifi
     DBRPCreate:
       type: object
       properties:
@@ -16526,7 +16565,7 @@ components:
           type: string
           description: |
             A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.
-            Identifies the InfluxDB v1 retention policy.
+            Identifies the InfluxDB v1 retention policy mapping.
         default:
           type: boolean
           description: Mapping represents the default retention policy for the database specified.

@@ -24,6 +24,10 @@
       "description": "Store your data in InfluxDB [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).\nA bucket is a named location where time series data is stored. All buckets\nhave a [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period),\na duration of time that each data point persists. InfluxDB drops all\npoints with timestamps older than the bucket’s retention period.\nA bucket belongs to an organization.\n\n### Related guides\n\n- [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)\n"
     },
     {
+      "name": "DBRPs",
+      "description": "The InfluxDB 1.x data model includes [databases](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#database)\nand [retention policies](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).\nInfluxDB 2.x replaces databases and retention policies with buckets.\nTo support InfluxDB 1.x query and write patterns in InfluxDB 2.x, \ndatabases and retention policies are mapped to buckets using the \ndatabase and retention policy (DBRP) mapping service. \nThe DBRP mapping service uses the database and retention policy \nspecified in 1.x compatibility API requests to route operations to a bucket.\n\n### Related guides\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n"
+    },
+    {
       "name": "Debug",
       "description": "Generate profiling and trace reports.\n\nUse routes under `/debug/pprof` to analyze the Go runtime of InfluxDB.\nThese endpoints generate [Go runtime profiles](https://pkg.go.dev/runtime/pprof)\nand **trace** reports.\n**Profiles** are collections of stack traces that show call sequences\nleading to instances of a particular event, such as allocation.\n\nFor more information about **pprof profile** and **trace** reports,\nsee the following resources:\n\n- [Google pprof tool](https://github.com/google/pprof)\n- [Golang diagnostics](https://go.dev/doc/diagnostics)\n"
     },
@@ -441,10 +445,12 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "description": "The query parameters contain invalid values\n",
-                  "value": {
-                    "code": "invalid",
-                    "message": "invalid ID"
+                  "invalidRequest": {
+                    "description": "The query parameters contain invalid values.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid ID"
+                    }
                   }
                 }
               }
@@ -474,7 +480,7 @@
           "DBRPs"
         ],
         "summary": "Add a database retention policy mapping",
-        "description": "\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
+        "description": "Creates a database retention policy (DBRP) mapping and returns the mapping.\n\nUse this endpoint to add InfluxDB 1.x API compatibility to your\nInfluxDB Cloud or InfluxDB OSS 2.x buckets. Your buckets must contain a\nDBRP mapping in order to query and write using the InfluxDB 1.x API.\n\nNote that _`retention_policy`_ is a required parameter in the request body.\nThe value of _`retention_policy`_ can be any arbitrary `string` name or\nvalue, with the default value commonly set as `autogen`.\nThe value of _`retention_policy`_ isn't a [retention_policy]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-policy-rp)\nobject.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -522,10 +528,12 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "description": "The query parameters contain invalid values\n",
-                  "value": {
-                    "code": "invalid",
-                    "message": "invalid ID"
+                  "invalidRequest": {
+                    "description": "The query parameters contain invalid values.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid ID"
+                    }
                   }
                 }
               }
@@ -555,7 +563,7 @@
           {
             "lang": "Shell",
             "label": "cURL",
-            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/dbrp/\" \\\n  --header 'Content-type: application/json' \\\n  --header \"Authorization: Token INFLUXDB_TOKEN\" \\\n  --data-binary @- << EOF\n    { \\\n      \"bucketID\": \"INFLUXDB_BUCKET_ID\", \\\n      \"orgID\": \"INFLUXDB_ORG_ID\", \\  \n      \"database\": \"database_name\", \\\n      \"default\": true, \\\n      \"retention_policy\": \"example_retention_policy_name\" \\\n    }\nEOF\n"
+            "source": "curl --request POST \\\n   \"http://localhost:8086/api/v2/dbrp/\" \\\n  --header 'Content-type: application/json' \\\n  --header \"Authorization: Token INFLUXDB_TOKEN\" \\\n  --data-binary @- << EOF\n    { \\\n      \"bucketID\": \"INFLUXDB_BUCKET_ID\", \\\n      \"orgID\": \"INFLUXDB_ORG_ID\", \\\n      \"database\": \"database_name\", \\\n      \"default\": true, \\\n      \"retention_policy\": \"example_retention_policy_name\" \\\n    }\nEOF\n"
           }
         ]
       }
@@ -567,7 +575,7 @@
           "DBRPs"
         ],
         "summary": "Retrieve a database retention policy mapping",
-        "description": "Retrieves a database retention policy (DBRP) mapping.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
+        "description": "Retrieves the specified retention policy (DBRP) mapping.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -631,10 +639,12 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "description": "The query parameters contain invalid values\n",
-                  "value": {
-                    "code": "invalid",
-                    "message": "invalid ID"
+                  "invalidRequest": {
+                    "description": "The query parameters contain invalid values.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid ID"
+                    }
                   }
                 }
               }
@@ -668,7 +678,7 @@
         ],
         "summary": "Update a database retention policy mapping",
         "requestBody": {
-          "description": "Database retention policy update to apply",
+          "description": "Updates the database retention policy (DBRP) mapping and returns the mapping.\n\nUse this endpoint to update property (`retention_policy`) of a DBRP ma  pping.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
           "required": true,
           "content": {
             "application/json": {
@@ -741,10 +751,12 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "description": "The query parameters contain invalid values\n",
-                  "value": {
-                    "code": "invalid",
-                    "message": "invalid ID"
+                  "invalidRequest": {
+                    "description": "The query parameters contain invalid values.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid ID"
+                    }
                   }
                 }
               }
@@ -784,7 +796,7 @@
           "DBRPs"
         ],
         "summary": "Delete a database retention policy",
-        "description": "\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
+        "description": "Deletes the specified database retention policy (DBRP) mapping.\n\n#### Related guide\n\n- [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/TraceSpan"
@@ -827,10 +839,12 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "examples": {
-                  "description": "The query parameters contain invalid values\n",
-                  "value": {
-                    "code": "invalid",
-                    "message": "invalid ID"
+                  "invalidRequest": {
+                    "description": "The query parameters contain invalid values.\n",
+                    "value": {
+                      "code": "invalid",
+                      "message": "invalid ID"
+                    }
                   }
                 }
               }
@@ -23341,7 +23355,7 @@
           },
           "retention_policy": {
             "type": "string",
-            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy.\n"
+            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy mapping.\n"
           },
           "default": {
             "type": "boolean",
@@ -23378,10 +23392,11 @@
         "properties": {
           "retention_policy": {
             "type": "string",
-            "description": "InfluxDB v1 retention policy"
+            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy mapping.\n"
           },
           "default": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Mapping represents the default retention policy for the database specifi"
           }
         }
       },
@@ -23406,7 +23421,7 @@
           },
           "retention_policy": {
             "type": "string",
-            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy.\n"
+            "description": "A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp) name.\nIdentifies the InfluxDB v1 retention policy mapping.\n"
           },
           "default": {
             "type": "boolean",
