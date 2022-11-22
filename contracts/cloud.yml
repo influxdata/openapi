@@ -599,7 +599,7 @@ paths:
         - DBRPs
       summary: List database retention policy mappings
       description: |
-        Lists all database retention policy (DBRP) mappings.
+        Lists database retention policy (DBRP) mappings.
 
         #### Related guide
 
@@ -610,14 +610,14 @@ paths:
           name: orgID
           description: |
             An organization ID.
-            Only returns the specified organization.
+            Only returns DBRP mappings for the specified organization.
           schema:
             type: string
         - in: query
           name: org
           description: |
             An organization name.
-            Only returns the specified organization.
+            Only returns DBRP mappings for the specified organization.
           schema:
             type: string
         - in: query
@@ -631,7 +631,7 @@ paths:
           name: bucketID
           description: |
             A bucket ID.
-            Only returns DBRP mappings that belong to the bucket.
+            Only returns DBRP mappings that belong to the specified bucket.
           schema:
             type: string
         - in: query
@@ -643,19 +643,19 @@ paths:
           name: db
           description: |
             A database.
-            Only returns DBRP mappings that belong to the database.
+            Only returns DBRP mappings that belong to the 1.x database.
           schema:
             type: string
         - in: query
           name: rp
           description: |
             A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).
-            Specifies the retention policy to filter on.
+            Specifies the 1.x retention policy to filter on.
           schema:
             type: string
       responses:
         '200':
-          description: A list of database retention policy mappings.
+          description: Success. The response body contains a list of database retention policy mappings.
           content:
             application/json:
               schema:
@@ -710,11 +710,6 @@ paths:
         Use this endpoint to add InfluxDB 1.x API compatibility to your
         InfluxDB Cloud or InfluxDB OSS 2.x buckets. Your buckets must contain a
         DBRP mapping in order to query and write using the InfluxDB 1.x API.
-
-        Note that _`retention_policy`_ is a required parameter in the request body.
-        The value of _`retention_policy`_ can be any arbitrary `string` name or
-        value, with the default value commonly set as `autogen`.
-        The value of _`retention_policy`_ isn't a [retention_policy](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#retention-policy-rp)
         object.
 
         #### Related guide
@@ -723,7 +718,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       requestBody:
-        description: The database retention policy mapping to add.
+        description: |
+          The database retention policy mapping to add.
+
+          Note that _`retention_policy`_ is a required parameter in the request body.
+          The value of _`retention_policy`_ can be any arbitrary `string` name or
+          value, with the default value commonly set as `autogen`.
+          The value of _`retention_policy`_ isn't a [retention_policy](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#retention-policy-rp)
         required: true
         content:
           application/json:
@@ -731,7 +732,7 @@ paths:
               $ref: '#/components/schemas/DBRPCreate'
       responses:
         '201':
-          description: The created database retention policy mapping.
+          description: Created. The response body contains the database retention policy mapping.
           content:
             application/json:
               schema:
@@ -772,7 +773,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
-          label: cURL
+          label: 'cURL: create a database retention policy mapping'
           source: |
             curl --request POST \
                "http://localhost:8086/api/v2/dbrp/" \
@@ -805,14 +806,14 @@ paths:
           name: orgID
           description: |
             An organization ID.
-            Only returns the specified organization.
+            Specifies the organization that owns the DBRP mapping.
           schema:
             type: string
         - in: query
           name: org
           description: |
             An organization name.
-            Only returns the specified organization.
+            Specifies the organization that owns the DBRP mapping.
           schema:
             type: string
         - in: path
@@ -822,10 +823,10 @@ paths:
           required: true
           description: |
             A DBRP mapping ID.
-            Only returns the specified DBRP mapping.
+            Specifies the DBRP mapping.
       responses:
         '200':
-          description: The DBRP mapping.
+          description: Success. The response body contains the DBRP mapping.
           content:
             application/json:
               schema:
@@ -874,7 +875,7 @@ paths:
         description: |
           Updates the database retention policy (DBRP) mapping and returns the mapping.
 
-          Use this endpoint to update property (`retention_policy`) of a DBRP ma  pping.
+          Use this endpoint to modify the _retention policy_ (`retention_policy` property) of a DBRP mapping.
 
           #### Related guide
 
@@ -890,14 +891,14 @@ paths:
           name: orgID
           description: |
             An organization ID.
-            Only returns the specified DBRP mapping.
+            Specifies the organization that owns the DBRP mapping.
           schema:
             type: string
         - in: query
           name: org
           description: |
             An organization name.
-            Only returns the specified DBRP mapping.
+            Specifies the organization that owns the DBRP mapping.
           schema:
             type: string
         - in: path
@@ -907,7 +908,7 @@ paths:
           required: true
           description: |
             A DBRP mapping ID.
-            Only returns the specified DBRP mapping.
+            Specifies the DBRP mapping.
       responses:
         '200':
           description: An updated mapping
@@ -952,16 +953,16 @@ paths:
                 $ref: '#/components/schemas/Error'
       x-codeSamples:
         - lang: Shell
-          label: cURL
+          label: 'cURL: Update a DBRP mapping'
           source: |
             curl --request PATCH \
                "http://localhost:8086/api/v2/dbrp/DBRP_ID" \
               --header 'Content-type: application/json' \
-              --header "Authorization: Token INFLUXDB_TOKEN" \
+              --header "Authorization: Token INFLUX_API_TOKEN" \
               --data-binary @- << EOF
-                { \
-                  "default": true, \
-                  "retention_policy": "example_retention_policy_name" \
+                { 
+                  "default": true,
+                  "retention_policy": "example_retention_policy_name"
                 }
             EOF
     delete:
@@ -981,14 +982,14 @@ paths:
           name: orgID
           description: |
             An organization ID.
-            Only returns the specified organization.
+            Specifies the organization that owns the DBRP mapping.
           schema:
             type: string
         - in: query
           name: org
           description: |
             An organization name.
-            Only returns the specified organization.
+            Specifies the organization that owns the DBRP mapping.
           schema:
             type: string
         - in: path
@@ -1001,7 +1002,7 @@ paths:
             Only returns the specified DBRP mapping.
       responses:
         '204':
-          description: Delete has been accepted
+          description: Success. The delete is accepted.
         '400':
           description: Bad Request. Query parameters contain invalid values.
           content:
@@ -16682,7 +16683,7 @@ components:
         id:
           type: string
           description: |
-            The resource ID that InfluxDB uses to uniquely identify the task.
+            The resource ID that InfluxDB uses to uniquely identify the database retention policy (DBRP) mapping.
           readOnly: true
         orgID:
           type: string
@@ -16706,7 +16707,9 @@ components:
             Identifies the InfluxDB v1 retention policy mapping.
         default:
           type: boolean
-          description: Mapping represents the default retention policy for the database specified.
+          description: |
+            If set to `true`, this DBRP mapping is the default retention policy
+            for the database (specified by the `database` property's value).
         virtual:
           type: boolean
           description: 'Indicates an autogenerated, virtual mapping based on the bucket name. Currently only available in OSS.'
@@ -16734,7 +16737,10 @@ components:
             Identifies the InfluxDB v1 retention policy mapping.
         default:
           type: boolean
-          description: Mapping represents the default retention policy for the database specifi
+          description: |
+            Set to `true` to use this DBRP mapping as the default retention policy
+            for the database (specified by the `database` property's value).
+            To remove the default mapping, set to `false`.
     DBRPCreate:
       type: object
       properties:
@@ -16742,7 +16748,7 @@ components:
           type: string
           description: |
             An organization name.
-            Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the mapping.  orgID:
+            Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the mapping.
         orgID:
           type: string
           description: |
@@ -16765,7 +16771,9 @@ components:
             Identifies the InfluxDB v1 retention policy mapping.
         default:
           type: boolean
-          description: Mapping represents the default retention policy for the database specified.
+          description: |
+            Set to `true` to use this DBRP mapping as the default retention policy
+            for the database (specified by the `database` property's value).
       required:
         - bucketID
         - database
