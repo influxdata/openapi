@@ -25,7 +25,7 @@ paths:
         If authentication is successful, InfluxDB creates a new session for the user
         and then returns the session cookie in the `Set-Cookie` response header.
 
-        User sessions exist only in memory.
+        InfluxDB stores user sessions in memory only.
         They expire within ten minutes and during restarts of the InfluxDB instance.
 
         #### User sessions with authorizations
@@ -39,6 +39,7 @@ paths:
 
         - [Signout](#tag/Signout)
       tags:
+        - Security and access endpoints
         - Signin
       security:
         - BasicAuthentication: []
@@ -83,27 +84,107 @@ paths:
   /signout:
     post:
       operationId: PostSignout
-      summary: Expire the current UI session
+      summary: Expire a user session
       tags:
+        - Security and access endpoints
         - Signout
-      description: Expires the current UI session for the user.
+      description: |
+        Expires a user session specified by a session cookie.
+
+        Use this endpoint to expire a user session that was generated when the user
+        authenticated with the InfluxDB Developer Console (UI) or the `POST /api/v2/signin` endpoint.
+
+        For example, the `POST /api/v2/signout` endpoint represents the third step
+        in the following three-step process
+        to authenticate a user, retrieve the `user` resource, and then expire the session:
+
+        1. Send a request with the user's [Basic authentication credentials](#section/Authentication/BasicAuthentication)
+           to the `POST /api/v2/signin` endpoint to create a user session and
+           generate a session cookie.
+        2. Send a request to the `GET /api/v2/me` endpoint, passing the stored session cookie
+           from step 1 to retrieve user information.
+        3. Send a request to the `POST /api/v2/signout` endpoint, passing the stored session
+           cookie to expire the session.
+
+        _See the complete example in request samples._
+
+        InfluxDB stores user sessions in memory only.
+        If a user doesn't sign out, then the user session automatically expires within ten minutes or
+        during a restart of the InfluxDB instance.
+
+        To learn more about cookies in HTTP requests, see
+        [Mozilla Developer Network (MDN) Web Docs, HTTP cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies).
+
+        #### Related endpoints
+
+        - [Signin](#tag/Signin)
       parameters:
         - $ref: '#/components/parameters/TraceSpan'
       responses:
         '204':
-          description: Session successfully expired
+          description: Success. The session is expired.
         '401':
-          description: Unauthorized access
+          description: Unauthorized.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         default:
-          description: Unsuccessful session expiry
+          description: The session expiry is unsuccessful.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      x-codeSamples:
+        - lang: Shell
+          label: 'cURL: sign in a user, verify the user session, and then end the session'
+          source: |
+            # The following example shows how to use cURL and the InfluxDB API
+            # to do the following:
+            # 1. Sign in a user with a username and password.
+            # 2. Check that the user session exists for the user.
+            # 3. Sign out the user to expire the session.
+            # 4. Check that the session is no longer active.
+
+            # 1. Send a request to `POST /api/v2/signin` to sign in the user.
+            #    In your request, pass the following:
+            #
+            #      - `--user` option with basic authentication credentials.
+            #      - `-c` option with a file path where cURL will write cookies.
+
+                  curl --request POST \
+                    -c ./cookie-file.tmp \
+                    "$INFLUX_URL/api/v2/signin" \
+                    --user "${INFLUX_USER_NAME}:${INFLUX_USER_PASSWORD}"
+
+            # 2. To check that a user session exists for the user in step 1,
+            #    send a request to `GET /api/v2/me`.
+            #    In your request, pass the `-b` option with the session cookie file path from step 1.
+
+                  curl --request GET \
+                    -b ./cookie-file.tmp \
+                    "$INFLUX_URL/api/v2/me"
+
+            #    InfluxDB responds with the `user` resource.
+
+            # 3. Send a request to `POST /api/v2/signout` to expire the user session.
+            #    In your request, pass the `-b` option with the session cookie file path from step 1.
+
+                  curl --request POST \
+                    -b ./cookie-file.tmp \
+                    "$INFLUX_URL/api/v2/signout"
+
+            #     If the user session is successfully expired, InfluxDB responds with
+                  an HTTP `204` status code.
+
+            # 4. To check that the user session is expired, call `GET /api/v2/me` again,
+            #    passing the `-b` option with the cookie file path.
+
+                  curl --request GET \
+                    -b ./cookie-file.tmp \
+                    "$INFLUX_URL/api/v2/me"
+
+            #    If the user session is expired, InfluxDB responds with an HTTP `401` status code.
   /ping:
     get:
       operationId: GetPing

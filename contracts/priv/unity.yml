@@ -220,12 +220,8 @@ paths:
                     type: boolean
                     description: is the operation allowed?
                   availableUpgrade:
+                    $ref: '#/components/schemas/IdentityAccount/properties/availableUpgrade'
                     description: what upgrade option is available for this allowance?
-                    type: string
-                    enum:
-                      - contract
-                      - none
-                      - pay_as_you_go
                 required:
                   - allowed
                   - availableUpgrade
@@ -660,6 +656,37 @@ paths:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
   '/orgs/{orgId}':
+    delete:
+      operationId: DeleteOrgId
+      tags:
+        - Organization
+      summary: Deletes an organization
+      parameters:
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE ID of the organization to delete.
+      responses:
+        '200':
+          description: Organization successfully deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '403':
+          description: Forbidden
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Not Found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
     get:
       operationId: GetOrgsId
       tags:
@@ -794,6 +821,9 @@ paths:
                 $ref: '#/components/schemas/Invite'
         '401':
           description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '403':
+          description: Cannot create invite for user or org
           $ref: '#/components/responses/ServerError'
         '404':
           description: Session user not owner or Org not found
@@ -1371,8 +1401,45 @@ paths:
         '401':
           description: Unauthorized
           $ref: '#/components/responses/ServerError'
+        '403':
+          description: Cannot update limits for org
+          $ref: '#/components/responses/ServerError'
         '404':
           description: Org not found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/orgs/{orgId}/reactivate':
+    post:
+      operationId: PostReactivateOrgById
+      tags:
+        - Organization
+        - Operators
+      summary: Reactivate a suspended organization.
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE id of the organization to reactivate.
+      responses:
+        '200':
+          description: Organization successfully reactivated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '403':
+          description: Forbidden
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Not Found
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -2038,6 +2105,13 @@ components:
         accountCreatedAt:
           type: string
           description: an ISO8601 timestamp that indicates when the account was created
+        availableUpgrade:
+          description: the next available upgrade for the account
+          type: string
+          enum:
+            - contract
+            - none
+            - pay_as_you_go
         isUpgradeable:
           type: boolean
           description: whether or not the account can be upgraded to payg
@@ -2251,6 +2325,9 @@ components:
         provider:
           type: string
           description: provider of the org
+        state:
+          $ref: '#/components/schemas/Organization/properties/state'
+          description: the state of existence that the org is in
         date:
           type: string
           description: date org was created
@@ -2349,7 +2426,14 @@ components:
           description: provider of the org
         clusterHost:
           type: string
-          description: the url of the current cluster
+          description: URL of the current cluster
+        state:
+          description: Current state of the organization
+          type: string
+          enum:
+            - pending
+            - provisioned
+            - suspended
       required:
         - id
         - clusterHost
@@ -2396,6 +2480,9 @@ components:
           regionName:
             type: string
             description: the friendly name of the region where the organization is hosted
+          state:
+            $ref: '#/components/schemas/Organization/properties/state'
+            description: Current state of the organization
         required:
           - id
           - name
