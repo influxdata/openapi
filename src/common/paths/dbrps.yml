@@ -3,26 +3,40 @@ get:
   tags:
     - DBRPs
   summary: List database retention policy mappings
+  description: |
+    Lists database retention policy (DBRP) mappings.
+
+    #### Related guide
+
+    - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
       name: orgID
-      description: Specifies the organization ID to filter on
+      description: |
+        An organization ID.
+        Only returns DBRP mappings for the specified organization.
       schema:
         type: string
     - in: query
       name: org
-      description: Specifies the organization name to filter on
+      description: |
+        An organization name.
+        Only returns DBRP mappings for the specified organization.
       schema:
         type: string
     - in: query
       name: id
-      description: Specifies the mapping ID to filter on
+      description: |
+        A DBPR mapping ID.
+        Only returns the specified DBRP mapping.
       schema:
         type: string
     - in: query
       name: bucketID
-      description: Specifies the bucket ID to filter on
+      description: |
+        A bucket ID.
+        Only returns DBRP mappings that belong to the specified bucket.
       schema:
         type: string
     - in: query
@@ -32,27 +46,46 @@ get:
         type: boolean
     - in: query
       name: db
-      description: Specifies the database to filter on
+      description: |
+        A database.
+        Only returns DBRP mappings that belong to the 1.x database.
       schema:
         type: string
     - in: query
       name: rp
-      description: Specifies the retention policy to filter on
+      description: |
+        A [retention policy](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).
+        Specifies the 1.x retention policy to filter on.
       schema:
         type: string
   responses:
     "200":
-      description: Success. Returns a list of database retention policy mappings.
+      description: Success. The response body contains a list of database retention policy mappings.
       content:
         application/json:
           schema:
             $ref: "../schemas/DBRPs.yml"
+          examples:
+            $ref: "../responses/example-responses/GetDBRPsSuccessResponse.yml"
     "400":
       description: Bad request. The request has one or more invalid parameters.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            invalidRequest:
+              description: |
+                The query parameters contain invalid values.
+              value:
+                {
+                  "code": "invalid",
+                  "message": "invalid ID"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -64,10 +97,27 @@ post:
   tags:
     - DBRPs
   summary: Add a database retention policy mapping
+  description: |
+    Creates a database retention policy (DBRP) mapping and returns the mapping.
+
+    Use this endpoint to add InfluxDB 1.x API compatibility to your
+    InfluxDB Cloud or InfluxDB OSS 2.x buckets. Your buckets must contain a
+    DBRP mapping in order to query and write using the InfluxDB 1.x API.
+    object.
+
+    #### Related guide
+
+    - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
-    description: The database retention policy mapping to add
+    description: |
+      The database retention policy mapping to add.
+
+      Note that _`retention_policy`_ is a required parameter in the request body.
+      The value of _`retention_policy`_ can be any arbitrary `string` name or
+      value, with the default value commonly set as `autogen`.
+      The value of _`retention_policy`_ isn't a [retention_policy]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-policy-rp)
     required: true
     content:
       application/json:
@@ -75,20 +125,54 @@ post:
           $ref: "../schemas/DBRPCreate.yml"
   responses:
     "201":
-      description: Created. Returns the created database retention policy mapping.
+      description: Created. The response body contains the database retention policy mapping.
       content:
         application/json:
           schema:
             $ref: "../schemas/DBRP.yml"
+          examples:
+            $ref: "../responses/example-responses/PostDBRPSuccessResponse.yml"
     "400":
       description: Bad request. The mapping in the request has one or more invalid IDs.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            invalidRequest:
+              description: |
+                The query parameters contain invalid values.
+              value:
+                {
+                  "code": "invalid",
+                  "message": "invalid ID"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: create a database retention policy mapping"
+      source: |
+        curl --request POST \
+           "http://localhost:8086/api/v2/dbrp/" \
+          --header 'Content-type: application/json' \
+          --header "Authorization: Token INFLUXDB_TOKEN" \
+          --data-binary @- << EOF
+            { \
+              "bucketID": "INFLUXDB_BUCKET_ID", \
+              "orgID": "INFLUXDB_ORG_ID", \
+              "database": "database_name", \
+              "default": true, \
+              "retention_policy": "example_retention_policy_name" \
+            }
+        EOF

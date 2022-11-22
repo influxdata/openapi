@@ -3,16 +3,26 @@ get:
   tags:
     - DBRPs
   summary: Retrieve a database retention policy mapping
+  description: |
+    Retrieves the specified retention policy (DBRP) mapping.
+
+    #### Related guide
+
+    - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
       name: orgID
-      description: Specifies the organization ID of the mapping
+      description: |
+        An organization ID.
+        Specifies the organization that owns the DBRP mapping.
       schema:
         type: string
     - in: query
       name: org
-      description: Specifies the organization name of the mapping
+      description: |
+        An organization name.
+        Specifies the organization that owns the DBRP mapping.
       schema:
         type: string
     - in: path
@@ -20,20 +30,39 @@ get:
       schema:
         type: string
       required: true
-      description: The database retention policy mapping ID
+      description: |
+        A DBRP mapping ID.
+        Specifies the DBRP mapping.
   responses:
     "200":
-      description: The database retention policy requested
+      description: Success. The response body contains the DBRP mapping.
       content:
         application/json:
           schema:
             $ref: "../schemas/DBRPGet.yml"
+          examples:
+            $ref: "../responses/example-responses/GetDBRPsIDSuccessResponse.yml"
     "400":
-      description: if any of the IDs passed is invalid
+      description: Bad Request. Query parameters contain invalid values.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            invalidRequest:
+              description: |
+                The query parameters contain invalid values.
+              value:
+                {
+                  "code": "invalid",
+                  "message": "invalid ID"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
@@ -46,7 +75,14 @@ patch:
     - DBRPs
   summary: Update a database retention policy mapping
   requestBody:
-    description: Database retention policy update to apply
+    description: |
+      Updates the database retention policy (DBRP) mapping and returns the mapping.
+
+      Use this endpoint to modify the _retention policy_ (`retention_policy` property) of a DBRP mapping.
+
+      #### Related guide
+
+      - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
     required: true
     content:
       application/json:
@@ -56,12 +92,16 @@ patch:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
       name: orgID
-      description: Specifies the organization ID of the mapping
+      description: |
+        An organization ID.
+        Specifies the organization that owns the DBRP mapping.
       schema:
         type: string
     - in: query
       name: org
-      description: Specifies the organization name of the mapping
+      description: |
+        An organization name.
+        Specifies the organization that owns the DBRP mapping.
       schema:
         type: string
     - in: path
@@ -69,7 +109,9 @@ patch:
       schema:
         type: string
       required: true
-      description: The database retention policy mapping.
+      description: |
+        A DBRP mapping ID.
+        Specifies the DBRP mapping.
   responses:
     "200":
       description: An updated mapping
@@ -77,39 +119,74 @@ patch:
         application/json:
           schema:
             $ref: "../schemas/DBRPGet.yml"
-    "404":
-      description: The mapping was not found
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/Error.yml"
+          examples:
+            $ref: "../responses/example-responses/PatchDBRPIDSuccessResponse.yml"
     "400":
-      description: if any of the IDs passed is invalid
+      description: Bad Request. Query parameters contain invalid values.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            invalidRequest:
+              description: |
+                The query parameters contain invalid values.
+              value:
+                {
+                  "code": "invalid",
+                  "message": "invalid ID"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: Update a DBRP mapping"
+      source: |
+        curl --request PATCH \
+           "http://localhost:8086/api/v2/dbrp/DBRP_ID" \
+          --header 'Content-type: application/json' \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data-binary @- << EOF
+            {
+              "default": true,
+              "retention_policy": "example_retention_policy_name"
+            }
+        EOF
 delete:
   operationId: DeleteDBRPID
   tags:
     - DBRPs
   summary: Delete a database retention policy
+  description: |
+    Deletes the specified database retention policy (DBRP) mapping.
+
+    #### Related guide
+
+    - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
     - in: query
       name: orgID
-      description: Specifies the organization ID of the mapping
+      description: |
+        An organization ID.
+        Specifies the organization that owns the DBRP mapping.
       schema:
         type: string
     - in: query
       name: org
-      description: Specifies the organization name of the mapping
+      description: |
+        An organization name.
+        Specifies the organization that owns the DBRP mapping.
       schema:
         type: string
     - in: path
@@ -117,16 +194,33 @@ delete:
       schema:
         type: string
       required: true
-      description: The database retention policy mapping
+      description: |
+        A DBRP mapping ID.
+        Only returns the specified DBRP mapping.
   responses:
     "204":
-      description: Delete has been accepted
+      description: Success. The delete is accepted.
     "400":
-      description: if any of the IDs passed is invalid
+      description: Bad Request. Query parameters contain invalid values.
       content:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+          examples:
+            invalidRequest:
+              description: |
+                The query parameters contain invalid values.
+              value:
+                {
+                  "code": "invalid",
+                  "message": "invalid ID"
+                }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      $ref: "../responses/ResourceNotFoundError.yml"
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       content:
