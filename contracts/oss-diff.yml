@@ -1341,6 +1341,332 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/paths/~1config/get/responses/401'
+  /authorizations:
+    get:
+      operationId: GetAuthorizations
+      tags:
+        - Authorizations
+        - Security and access endpoints
+      summary: List authorizations
+      description: |
+        Lists authorizations.
+
+        To limit which authorizations are returned, pass query parameters in your request.
+        If no query parameters are passed, InfluxDB returns all authorizations.
+
+        #### InfluxDB OSS
+
+        - InfluxDB OSS returns
+          [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
+        - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+          InfluxDB OSS returns authorizations for all organizations in the instance.
+
+        #### Required permissions
+
+        - An _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_.
+
+        #### Related guides
+
+        - [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: query
+          name: userID
+          schema:
+            type: string
+          description: |
+            A user ID.
+            Only returns authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        - in: query
+          name: user
+          schema:
+            type: string
+          description: |
+            A user name.
+            Only returns authorizations scoped to the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        - in: query
+          name: orgID
+          schema:
+            type: string
+          description: 'An organization ID. Only returns authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).'
+        - in: query
+          name: org
+          schema:
+            type: string
+          description: |
+            An organization name.
+            Only returns authorizations that belong to the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+      responses:
+        '200':
+          description: Success. The response body contains a list of authorizations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  links:
+                    readOnly: true
+                    $ref: '#/paths/~1dashboards/get/responses/200/content/application~1json/schema/properties/links'
+                  authorizations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+        '400':
+          description: Invalid request
+          $ref: '#/paths/~1config/get/responses/401'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1config/get/responses/401'
+    post:
+      operationId: PostAuthorizations
+      tags:
+        - Authorizations
+      summary: Create an authorization
+      description: |
+        Creates an authorization and returns the authorization with the
+        generated API [token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token).
+
+        Use this endpoint to create an authorization, which generates an API token
+        with permissions to `read` or `write` to a specific resource or `type` of resource.
+        The response contains the new authorization with the generated API token.
+
+        #### Limitations
+
+        To follow best practices for secure API token generation and retrieval,
+        InfluxDB enforces access restrictions on API tokens.
+
+        - In InfluxDB OSS, API tokens are visible to the user who created the authorization and to any
+          user with an _[operator token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/#operator-token)_.
+        - You can't update an authorization's permissions.
+        - Even if an API token has `read-authorizations` permission, the
+          token can't be used to view its authorization details.
+        - A token stops working when the user who created the authorization is deleted.
+
+        We recommend creating a generic user to create and manage tokens for writing data.
+
+        #### Related guides
+
+        - [Create a token]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+      requestBody:
+        description: The authorization to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - orgID
+                - permissions
+              allOf:
+                - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
+                - type: object
+                  properties:
+                    orgID:
+                      type: string
+                      description: |
+                        An organization ID.
+                        Specifies the organization that owns the authorization.
+                    userID:
+                      type: string
+                      description: |
+                        A user ID.
+                        Specifies the user that the authorization is scoped to.
+
+                        When a user authenticates with username and password,
+                        InfluxDB generates a _user session_ with all the permissions
+                        specified by all the user's authorizations.
+                    permissions:
+                      type: array
+                      minItems: 1
+                      description: |
+                        A list of permissions for an authorization.
+                        In the list, provide at least one `permission` object.
+
+                        In a `permission`, the `resource.type` property grants access to all
+                        resources of the specified type.
+                        To grant access to only a specific resource, specify the
+                        `resource.id` property.
+                      items:
+                        required:
+                          - action
+                          - resource
+                        properties:
+                          action:
+                            type: string
+                            enum:
+                              - read
+                              - write
+                          resource:
+                            type: object
+                            required:
+                              - type
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                  - authorizations
+                                  - buckets
+                                  - dashboards
+                                  - orgs
+                                  - tasks
+                                  - telegrafs
+                                  - users
+                                  - variables
+                                  - secrets
+                                  - labels
+                                  - views
+                                  - documents
+                                  - notificationRules
+                                  - notificationEndpoints
+                                  - checks
+                                  - dbrp
+                                  - annotations
+                                  - sources
+                                  - scrapers
+                                  - notebooks
+                                  - remotes
+                                  - replications
+                                  - instance
+                                  - flows
+                                  - functions
+                                  - subscriptions
+                                description: |
+                                  A resource type.
+                                  Identifies the API resource's type (or _kind_).
+                              id:
+                                type: string
+                                description: |
+                                  A resource ID.
+                                  Identifies a specific resource.
+                              name:
+                                type: string
+                                description: |
+                                  The name of the resource.
+                                  _Note: not all resource types have a `name` property_.
+                              orgID:
+                                type: string
+                                description: |
+                                  An organization ID.
+                                  Identifies the organization that owns the resource.
+                              org:
+                                type: string
+                                description: |
+                                  An organization name.
+                                  The organization that owns the resource.
+            examples:
+              AuthorizationPostRequest:
+                $ref: '#/components/examples/AuthorizationPostRequest'
+              AuthorizationWithResourcePostRequest:
+                $ref: '#/components/examples/AuthorizationWithResourcePostRequest'
+              AuthorizationWithUserPostRequest:
+                $ref: '#/components/examples/AuthorizationWithUserPostRequest'
+      responses:
+        '201':
+          description: |
+            Success. The authorization is created. The response body contains the authorization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+        '400':
+          description: Invalid request
+          $ref: '#/paths/~1config/get/responses/401'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1config/get/responses/401'
+  '/authorizations/{authID}':
+    get:
+      operationId: GetAuthorizationsID
+      tags:
+        - Authorizations
+        - Security and access endpoints
+      summary: Retrieve an authorization
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: authID
+          schema:
+            type: string
+          required: true
+          description: The ID of the authorization to get.
+      responses:
+        '200':
+          description: Authorization details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1config/get/responses/401'
+    patch:
+      operationId: PatchAuthorizationsID
+      tags:
+        - Authorizations
+      summary: Update an authorization to be active or inactive
+      requestBody:
+        description: Authorization to update
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                status:
+                  description: 'Status of the token. If `inactive`, requests using the token will be rejected.'
+                  default: active
+                  type: string
+                  enum:
+                    - active
+                    - inactive
+                description:
+                  type: string
+                  description: A description of the token.
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: authID
+          schema:
+            type: string
+          required: true
+          description: The ID of the authorization to update.
+      responses:
+        '200':
+          description: The active or inactive authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse/properties/auth'
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1config/get/responses/401'
+    delete:
+      operationId: DeleteAuthorizationsID
+      tags:
+        - Authorizations
+      summary: Delete an authorization
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: path
+          name: authID
+          schema:
+            type: string
+          required: true
+          description: The ID of the authorization to delete.
+      responses:
+        '204':
+          description: Authorization deleted
+        default:
+          description: Unexpected error
+          $ref: '#/paths/~1config/get/responses/401'
   /variables:
     get:
       operationId: GetVariables
@@ -5431,7 +5757,7 @@ components:
                       #### InfluxDB OSS
 
                       - Default value depends on the
-                      [bucket retention period]({{% INFLUXDB_DOCS_URL %}}/reference/internals/shards/#shard-group-duration).
+                      [bucket retention period]({{% INFLUXDB_DOCS_URL %}}/v2.3/reference/internals/shards/#shard-group-duration).
                 required:
                   - everySeconds
             labels:
@@ -5444,17 +5770,7 @@ components:
             - orgID
             - permissions
           allOf:
-            - properties:
-                status:
-                  description: 'Status of the token. If `inactive`, InfluxDB rejects requests that use the token.'
-                  default: active
-                  type: string
-                  enum:
-                    - active
-                    - inactive
-                description:
-                  type: string
-                  description: A description of the token.
+            - $ref: '#/paths/~1authorizations~1%7BauthID%7D/patch/requestBody/content/application~1json/schema'
             - type: object
               properties:
                 createdAt:
@@ -5477,72 +5793,7 @@ components:
                     The list of permissions.
                     An authorization must have at least one permission.
                   items:
-                    required:
-                      - action
-                      - resource
-                    properties:
-                      action:
-                        type: string
-                        enum:
-                          - read
-                          - write
-                      resource:
-                        type: object
-                        required:
-                          - type
-                        properties:
-                          type:
-                            type: string
-                            enum:
-                              - authorizations
-                              - buckets
-                              - dashboards
-                              - orgs
-                              - tasks
-                              - telegrafs
-                              - users
-                              - variables
-                              - secrets
-                              - labels
-                              - views
-                              - documents
-                              - notificationRules
-                              - notificationEndpoints
-                              - checks
-                              - dbrp
-                              - annotations
-                              - sources
-                              - scrapers
-                              - notebooks
-                              - remotes
-                              - replications
-                              - instance
-                              - flows
-                              - functions
-                              - subscriptions
-                            description: |
-                              A resource type.
-                              Identifies the API resource's type (or _kind_).
-                          id:
-                            type: string
-                            description: |
-                              A resource ID.
-                              Identifies a specific resource.
-                          name:
-                            type: string
-                            description: |
-                              The name of the resource.
-                              _Note: not all resource types have a `name` property_.
-                          orgID:
-                            type: string
-                            description: |
-                              An organization ID.
-                              Identifies the organization that owns the resource.
-                          org:
-                            type: string
-                            description: |
-                              An organization name.
-                              The organization that owns the resource.
+                    $ref: '#/paths/~1authorizations/post/requestBody/content/application~1json/schema/allOf/1/properties/permissions/items'
                 id:
                   readOnly: true
                   type: string
@@ -6449,7 +6700,7 @@ components:
 
         ### Related endpoints
 
-        - [`/authorizations` endpoints](#tag/Authorizations-(API-tokens))
+        - [`/authorizations` endpoints](#tag/Authorizations)
 
         ### Related guides
 
