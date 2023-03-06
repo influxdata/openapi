@@ -1,41 +1,113 @@
   type: object
   properties:
     id:
-      $ref: ./TaskProperties.yml#/id
+      readOnly: true
+      type: string
     orgID:
-      $ref: ./TaskProperties.yml#/orgID
+      description: |
+        An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
+        Specifies the organization that owns the task.
+      type: string
     org:
-      $ref: ./TaskProperties.yml#/org
+      description: |
+        An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
+        Specifies the organization that owns the task.
+      type: string
     name:
-      $ref: ./TaskProperties.yml#/name
-    description:
-      $ref: ./TaskProperties.yml#/description
+      description: The name of the task.
+      type: string
     ownerID:
-      $ref: ./TaskProperties.yml#/ownerID
+      description: |
+        A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
+        Specifies the owner of the task.
+
+        To find a user ID, you can use the
+        [`GET /api/v2/users` endpoint](#operation/GetUsers) to
+        list users.
+      type: string
+    description:
+      description: A description of the task.
+      type: string
     status:
-      $ref: ./TaskProperties.yml#/status
+      $ref: "./TaskStatusType.yml"
     labels:
-      $ref: ./TaskProperties.yml#/labels
+      $ref: "./Labels.yml"
     authorizationID:
-      $ref: ./TaskProperties.yml#/authorizationID
+      description: |
+        An authorization ID.
+        Specifies the authorization used when the task communicates with the query engine.
+
+        To find an authorization ID, use the
+        [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
+        list authorizations.
+      type: string
     flux:
-      $ref: ./TaskProperties.yml#/flux
+      description: The Flux script that the task executes.
+      type: string
+      format: flux
     every:
-      $ref: ./TaskProperties.yml#/every
+      description: >-
+        The interval ([duration literal]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) at which the task runs.
+        `every` also determines when the task first runs, depending on the specified time.
+      type: string
+      format: duration
     cron:
-      $ref: ./TaskProperties.yml#/cron
+      description: >-
+        A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule on which the task runs.
+        InfluxDB uses the system time when evaluating Cron expressions.
+      type: string
     offset:
-      $ref: ./TaskProperties.yml#/offset
+      description: >-
+        A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals) to delay execution of the task after the scheduled time has elapsed.
+        `0` removes the offset.
+      type: string
+      format: duration
     latestCompleted:
-      $ref: ./TaskProperties.yml#/latestCompleted
+      description: >-
+        A timestamp ([RFC3339 date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp)) of the latest scheduled and completed run.
+      type: string
+      format: date-time
+      readOnly: true
     lastRunStatus:
-      $ref: ./TaskProperties.yml#/lastRunStatus
+      readOnly: true
+      type: string
+      enum:
+        - failed
+        - success
+        - canceled
     lastRunError:
-      $ref: ./TaskProperties.yml#/lastRunError
+      readOnly: true
+      type: string
     createdAt:
-      $ref: ./TaskProperties.yml#/createdAt
+      type: string
+      format: date-time
+      readOnly: true
     updatedAt:
-      $ref: ./TaskProperties.yml#/updatedAt
+      type: string
+      format: date-time
+      readOnly: true
     links:
-      $ref: ./TaskProperties.yml#/links
+      type: object
+      readOnly: true
+      example:
+        self: "/api/v2/tasks/1"
+        owners: "/api/v2/tasks/1/owners"
+        members: "/api/v2/tasks/1/members"
+        labels: "/api/v2/tasks/1/labels"
+        runs: "/api/v2/tasks/1/runs"
+        logs: "/api/v2/tasks/1/logs"
+      properties:
+        self:
+          $ref: "./Link.yml"
+        owners:
+          $ref: "./Link.yml"
+        members:
+          $ref: "./Link.yml"
+        runs:
+          $ref: "./Link.yml"
+        logs:
+          $ref: "./Link.yml"
+        labels:
+          $ref: "./Link.yml"
+
   required: [id, name, orgID, flux]

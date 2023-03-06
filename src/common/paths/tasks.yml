@@ -5,7 +5,7 @@ get:
     - Tasks
   summary: List tasks
   description: |
-    Lists [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
+    Retrieves a list of [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task).
 
     To limit which tasks are returned, pass query parameters in your request.
     If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
@@ -18,9 +18,8 @@ get:
     - in: query
       name: name
       description: |
-        A task name.
-        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
-        that have the specified name.
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) name.
+        Only returns tasks with the specified name.
         Different tasks may have the same name.
       schema:
         type: string
@@ -29,30 +28,29 @@ get:
       schema:
         type: string
       description: |
-        A task ID.
-        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) created after the specified task.
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) ID.
+        Only returns tasks created after the specified task.
     - in: query
       name: user
       schema:
         type: string
       description: |
-        A user ID.
-        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
-        owned by the specified [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user).
+        A [user]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#user) ID.
+        Only returns tasks owned by the specified user.
     - in: query
       name: org
       schema:
         type: string
       description: |
-        An organization name.
-        Only returns tasks owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+        An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) name.
+        Only returns tasks owned by the specified organization.
     - in: query
       name: orgID
       schema:
         type: string
       description: |
-        An organization ID.
-        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) owned by the specified [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+        An [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization) ID.
+        Only returns tasks owned by the specified organization.
     - in: query
       name: status
       schema:
@@ -61,8 +59,8 @@ get:
           - active
           - inactive
       description: |
-        A task status.
-        Only returns [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) that have the specified status.
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) status.
+        Only returns tasks that have the specified status (`active` or `inactive`).
     - in: query
       name: limit
       schema:
@@ -80,9 +78,9 @@ get:
     - in: query
       name: type
       description: |
-        A task type.
-        Specifies the level of detail for [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) in the response.
+        A [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) type (`basic` or `system`).
         Default is `system`.
+        Specifies the level of detail for tasks in the response.
         The default (`system`) response contains all the metadata properties for tasks.
         To reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).
       required: false
@@ -123,9 +121,7 @@ post:
     - Tasks
   summary: Create a task
   description: |
-    Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task) and returns the task.
-
-    Use this endpoint to create a scheduled task that runs a script.
+    Creates a [task]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)  and returns the task.
 
     #### Related guides
 
@@ -136,20 +132,12 @@ post:
   parameters:
     - $ref: "../parameters/TraceSpan.yml"
   requestBody:
-    description: |
-      In the request body, provide the task.
-
-      #### InfluxDB OSS
-
-      - Requires either the `org` parameter or the `orgID` parameter.
+    description: The task to create.
     required: true
     content:
       application/json:
         schema:
           $ref: "../schemas/TaskCreateRequest.yml"
-        examples:
-          TaskWithFlux:
-            $ref: "../requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
   responses:
     "201":
       description: Success. The response body contains a `tasks` list with the task.
@@ -171,18 +159,18 @@ post:
             $ref: "../schemas/Error.yml"
           examples:
             orgProvidedNotFound:
-              summary: The organization specified by org or orgID doesn't own the token passed in the header
+              summary: The org or orgID passed doesn't own the token passed in the header
               value:
                 {
-                  "code":"invalid",
-                  "message":"failed to decode request body: organization not found"
+                  "code": "invalid",
+                  "message": "failed to decode request body: organization not found",
                 }
             missingFluxError:
-              summary: The request body doesn't contain a Flux query
+              summary: Task in request body is missing Flux query
               value:
                 {
-                  "code":"invalid",
-                  "message": "failed to decode request: missing flux"
+                  "code": "invalid",
+                  "message": "failed to decode request: missing flux",
                 }
     "401":
       $ref: "../responses/AuthorizationError.yml"
@@ -194,3 +182,21 @@ post:
         application/json:
           schema:
             $ref: "../schemas/Error.yml"
+  x-codeSamples:
+    - lang: Shell
+      label: "cURL: create a task"
+      source: |
+        curl http://localhost:8086/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data-binary @- << EOF
+            {
+            "orgID": "INFLUX_ORG_ID",
+            "description": "IoT Center 30d environment average.",
+            "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                    from(bucket: \"iot_center\")\
+                      |> range(start: -30d)\
+                      |> filter(fn: (r) => r._measurement == \"environment\")\
+                      |> aggregateWindow(every: 1h, fn: mean)"
+            }
+        EOF

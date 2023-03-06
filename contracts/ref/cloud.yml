@@ -40,10 +40,10 @@ components:
         description: This task contains Flux that configures the task schedule and
           downsamples CPU data every hour.
         flux: "option task = {name: \"CPU Total 1 Hour New\", every: 1h}from(bucket:
-          \"telegraf\")|> range(start: -1h)|> filter(fn: (r) => (r._measurement ==
-          \"cpu\"))|> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))|> filter(fn:
-          (r) => (r.cpu == \"cpu-total\"))|> aggregateWindow(every: 1h, fn: max)|>
-          to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
+          \"telegraf\") |> range(start: -1h) |> filter(fn: (r) => (r._measurement
+          == \"cpu\")) |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\")) |>
+          filter(fn: (r) => (r.cpu == \"cpu-total\")) |> aggregateWindow(every: 1h,
+          fn: max) |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")"
         status: active
     TaskWithScriptRequest:
       description: |
@@ -387,8 +387,8 @@ components:
           type: string
         status:
           default: active
-          description: Status of the token. If `inactive`, InfluxDB rejects requests
-            that use the token.
+          description: Status of the token. If `inactive`, requests using the token
+            will be rejected.
           enum:
           - active
           - inactive
@@ -2407,23 +2407,22 @@ components:
       - $ref: '#/components/schemas/AuthorizationUpdateRequest'
       - properties:
           orgID:
-            description: The organization ID. Identifies the organization that the
-              authorization is scoped to.
+            description: The ID of the organization that the authorization is scoped
+              to.
             type: string
           permissions:
             description: |
-              The list of permissions that provide `read` and `write` access to organization resources.
+              A list of permissions that provide `read` and `write` access to organization resources.
               An authorization must contain at least one permission.
             items:
               $ref: '#/components/schemas/Permission'
             minItems: 1
             type: array
           token:
-            description: The name that you provide for the authorization.
+            description: A name that you provide for the authorization.
             type: string
           userID:
-            description: The user ID. Identifies the user that the authorization is
-              scoped to.
+            description: The ID of the user that the authorization is scoped to.
             type: string
         type: object
       required:
@@ -4062,7 +4061,7 @@ components:
             #### InfluxDB OSS
 
             - Default value depends on the
-            [bucket retention period](https://docs.influxdata.com/influxdb/cloud/reference/internals/shards/#shard-group-duration).
+            [bucket retention period](https://docs.influxdata.com/influxdb/cloud/v2.3/reference/internals/shards/#shard-group-duration).
           format: int64
           type: integer
         type:
@@ -4838,7 +4837,7 @@ components:
         authorizationID:
           description: |
             An authorization ID.
-            Identifies the authorization used when the task communicates with the query engine.
+            Specifies the authorization used when the task communicates with the query engine.
 
             To find an authorization ID, use the
             [`GET /api/v2/authorizations` endpoint](#operation/GetAuthorizations) to
@@ -4849,16 +4848,28 @@ components:
           readOnly: true
           type: string
         cron:
-          $ref: '#/components/schemas/TaskCron'
+          description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
+            that defines the schedule on which the task runs. InfluxDB uses the system
+            time when evaluating Cron expressions.
+          type: string
         description:
-          $ref: '#/components/schemas/TaskDescription'
+          description: A description of the task.
+          type: string
         every:
-          $ref: '#/components/schemas/TaskEvery'
+          description: The interval ([duration literal](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp))
+            at which the task runs. `every` also determines when the task first runs,
+            depending on the specified time.
+          format: duration
+          type: string
         flux:
-          $ref: '#/components/schemas/TaskFlux'
-        id:
           description: |
-            The resource ID that InfluxDB uses to uniquely identify the task.
+            The Flux script that the task executes.
+
+            #### Limitations
+              - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.
+          format: flux
+          type: string
+        id:
           readOnly: true
           type: string
         labels:
@@ -4903,26 +4914,58 @@ components:
           readOnly: true
           type: object
         name:
-          $ref: '#/components/schemas/TaskName'
+          description: The name of the task.
+          type: string
         offset:
-          $ref: '#/components/schemas/TaskOffset'
+          description: A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)
+            to delay execution of the task after the scheduled time has elapsed. `0`
+            removes the offset.
+          format: duration
+          type: string
         org:
-          $ref: '#/components/schemas/TaskOrg'
+          description: |
+            An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) name.
+            Specifies the organization that owns the task.
+          type: string
         orgID:
-          $ref: '#/components/schemas/TaskOrgID'
+          description: |
+            An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) ID.
+            Specifies the organization that owns the task.
+          type: string
         ownerID:
           description: |
-            A user ID.
-            Identifies the [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) that owns the task.
+            A [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) ID.
+            Specifies the owner of the task.
 
-            To find a user ID, use the
+            To find a user ID, you can use the
             [`GET /api/v2/users` endpoint](#operation/GetUsers) to
             list users.
           type: string
         scriptID:
-          $ref: '#/components/schemas/TaskScriptID'
+          description: |
+            A script ID.
+            Specifies the [invokable script](#tag/Invokable-Scripts) that the task executes.
+
+            #### Limitations
+
+            - If you use the `scriptID` property, you can't use the `flux` property.
+
+            #### Related guides
+
+            - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
+          type: string
         scriptParameters:
-          $ref: '#/components/schemas/TaskScriptParameters'
+          description: |
+            Key-value pairs for `params` in the script.
+            Defines the invocation parameter values passed to the script specified by `scriptID`.
+            When running the task, InfluxDB executes the script with the parameters
+            you provide.
+
+            #### Limitations
+
+            - To use `scriptParameters`, you must provide a `scriptID`.
+            - If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.
+          type: object
         status:
           $ref: '#/components/schemas/TaskStatusType'
         updatedAt:
@@ -4937,97 +4980,60 @@ components:
     TaskCreateRequest:
       properties:
         cron:
-          $ref: '#/components/schemas/TaskCron'
+          description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
+            that defines the schedule on which the task runs. InfluxDB bases cron
+            runs on the system time.
+          type: string
         description:
-          $ref: '#/components/schemas/TaskDescription'
+          description: The description of the task.
+          type: string
         every:
-          $ref: '#/components/schemas/TaskEvery'
+          description: |
+            The interval ([duration literal](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals))) at which the task runs.
+            `every` also determines when the task first runs, depending on the specified time.
+          type: string
         flux:
-          $ref: '#/components/schemas/TaskFlux'
+          description: |
+            The Flux script that the task runs.
+
+            #### Limitations
+
+            - If you use the `flux` property, you can't use the `scriptID` and `scriptParameters` properties.
+          type: string
         name:
-          $ref: '#/components/schemas/TaskName'
+          description: The name of the task
+          type: string
         offset:
-          $ref: '#/components/schemas/TaskOffset'
+          description: A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)
+            to delay execution of the task after the scheduled time has elapsed. `0`
+            removes the offset.
+          format: duration
+          type: string
         org:
-          $ref: '#/components/schemas/TaskOrg'
+          description: The name of the organization that owns the task.
+          type: string
         orgID:
-          $ref: '#/components/schemas/TaskOrgID'
+          description: The ID of the organization that owns the task.
+          type: string
         scriptID:
-          $ref: '#/components/schemas/TaskScriptID'
+          description: |
+            The ID of the script that the task runs.
+
+            #### Limitations
+
+            - If you use the `scriptID` property, you can't use the `flux` property.
+          type: string
         scriptParameters:
-          $ref: '#/components/schemas/TaskScriptParameters'
+          description: |
+            The parameter key-value pairs passed to the script (referenced by `scriptID`) during the task run.
+
+            #### Limitations
+
+            - `scriptParameters` requires `scriptID`.
+            - If you use the `scriptID` and `scriptParameters` properties, you can't use the `flux` property.
+          type: object
         status:
           $ref: '#/components/schemas/TaskStatusType'
-      type: object
-    TaskCron:
-      description: A [Cron expression](https://en.wikipedia.org/wiki/Cron#Overview)
-        that defines the schedule on which the task runs. InfluxDB uses the system
-        time when evaluating Cron expressions.
-      format: cron
-      type: string
-    TaskDescription:
-      description: A description of the task.
-      type: string
-    TaskEvery:
-      description: The interval ([duration literal](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp))
-        at which the task runs. `every` also determines when the task first runs,
-        depending on the specified time.
-      format: duration
-      type: string
-    TaskFlux:
-      description: |
-        Flux with [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-        and the script for the task to run.
-
-        #### Related guides
-
-        - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-      format: Flux
-      type: string
-    TaskName:
-      description: The name of the task.
-      type: string
-    TaskOffset:
-      description: A [duration](https://docs.influxdata.com/flux/v0.x/spec/lexical-elements/#duration-literals)
-        to delay execution of the task after the scheduled time has elapsed. `0` removes
-        the offset.
-      format: duration
-      type: string
-    TaskOrg:
-      description: |
-        An organization name.
-        Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the task.
-      type: string
-    TaskOrgID:
-      description: |
-        An organization ID.
-        Identifies the [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) that owns the task.
-      type: string
-    TaskScriptID:
-      description: |
-        A script ID.
-        Identifies the [invokable script](#tag/Invokable-Scripts) that the task runs.
-
-        #### Related guides
-
-        - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
-      type: string
-    TaskScriptParameters:
-      description: |
-        Key-value pairs for `params` in the script.
-        Defines the invocation parameter values passed to the [invokable script](#tag/Invokable-Scripts) specified
-        by the `scriptID` property.
-        When running the task, InfluxDB executes the script with the parameters
-        you provide.
-
-        #### Limitations
-
-        - To use the `scriptParameters` property, you must also set the `scriptID` property
-          for the task.
-
-        #### Related guides
-
-        - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script).
       type: object
     TaskStatusType:
       description: |
@@ -5039,21 +5045,29 @@ components:
     TaskUpdateRequest:
       properties:
         cron:
-          $ref: '#/components/schemas/TaskCron'
+          description: Update the 'cron' option in the flux script.
+          type: string
         description:
-          $ref: '#/components/schemas/TaskDescription'
+          description: Update the description of the task.
+          type: string
         every:
-          $ref: '#/components/schemas/TaskEvery'
+          description: Update the 'every' option in the flux script.
+          type: string
         flux:
-          $ref: '#/components/schemas/TaskFlux'
+          description: Update the Flux script that the task runs.
+          type: string
         name:
-          $ref: '#/components/schemas/TaskName'
+          description: Update the 'name' option in the flux script.
+          type: string
         offset:
-          $ref: '#/components/schemas/TaskOffset'
+          description: Update the 'offset' option in the flux script.
+          type: string
         scriptID:
-          $ref: '#/components/schemas/TaskScriptID'
+          description: Update the 'scriptID' of the task.
+          type: string
         scriptParameters:
-          $ref: '#/components/schemas/TaskScriptParameters'
+          description: Update the 'scriptParameters' of the task.
+          type: object
         status:
           $ref: '#/components/schemas/TaskStatusType'
       type: object
@@ -6772,7 +6786,7 @@ components:
 
         ### Related endpoints
 
-        - [`/authorizations` endpoints](#tag/Authorizations-(API-tokens))
+        - [`/authorizations` endpoints](#tag/Authorizations)
 
         ### Related guides
 
@@ -6818,7 +6832,7 @@ paths:
         Lists authorizations.
 
         To limit which authorizations are returned, pass query parameters in your request.
-        If no query parameters are passed, InfluxDB returns all authorizations.
+        If no query parameters are passed, InfluxDB returns all authorizations for the organization.
 
         #### InfluxDB Cloud
 
@@ -6828,11 +6842,7 @@ paths:
 
         #### Required permissions
 
-        To retrieve an authorization, the request must use an API token that has the
-        following permissions:
-
         - `read-authorizations`
-        - `read-user` for the user that the authorization is scoped to
 
         #### Related guides
 
@@ -6842,46 +6852,39 @@ paths:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
           A user ID.
-          Only returns authorizations scoped to the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+          Only returns authorizations scoped to the specified
+          [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: query
         name: userID
         schema:
           type: string
       - description: |
           A user name.
-          Only returns authorizations scoped to the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+          Only returns authorizations scoped to the specified
+          [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
         in: query
         name: user
         schema:
           type: string
-      - description: An organization ID. Only returns authorizations that belong to
-          the specified [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
+      - description: |
+          An organization ID.
+          Only returns authorizations that belong to the specified
+          [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
         in: query
         name: orgID
         schema:
           type: string
       - description: |
           An organization name.
-          Only returns authorizations that belong to the specified [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
+          Only returns authorizations that belong to the specified
+          [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
         in: query
         name: org
         schema:
           type: string
       - description: |
           An API [token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token) value.
-          Specifies an authorization by its `token` property value
-          and returns the authorization.
-
-          #### InfluxDB OSS
-
-          - Doesn't support this parameter. InfluxDB OSS ignores the `token=` parameter,
-            applies other parameters, and then returns the result.
-
-          #### Limitations
-
-          - The parameter is non-repeatable. If you specify more than one,
-            only the first one is used. If a resource with the specified
-            property value doesn't exist, then the response body contains an empty list.
+          Returns the authorization for the specified token.
         in: query
         name: token
         schema:
@@ -6892,19 +6895,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorizations'
-          description: |
-            Success. The response body contains a list of authorizations.
-
-            If the response body is missing authorizations that you expect, check that the API
-            token used in the request has `read-user` permission for the users (`userID` property value)
-            in those authorizations.
-
-            #### InfluxDB OSS
-
-            - **Warning**: The response body contains authorizations with their
-              [API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token) values in clear text.
-            - If the request uses an  _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
-              InfluxDB OSS returns authorizations for all organizations in the instance.
+          description: Success. The response body contains a list of authorizations.
         "400":
           $ref: '#/components/responses/GeneralServerError'
           description: Invalid request
@@ -6917,8 +6908,7 @@ paths:
           description: Unexpected error
       summary: List authorizations
       tags:
-      - Authorizations (API tokens)
-      - Security and access endpoints
+      - Authorizations
     post:
       description: |
         Creates an authorization and returns the authorization with the
@@ -6926,24 +6916,20 @@ paths:
 
         Use this endpoint to create an authorization, which generates an API token
         with permissions to `read` or `write` to a specific resource or `type` of resource.
-        The API token is the authorization's `token` property value.
+
+        #### Limitations
 
         To follow best practices for secure API token generation and retrieval,
-        InfluxDB enforces access restrictions on API tokens.
+        InfluxDB Cloud enforces access restrictions on API tokens.
 
-          - InfluxDB allows access to the API token value immediately after the authorization is created.
-          - You can’t change access (read/write) permissions for an API token after it’s created.
-          - Tokens stop working when the user who created the token is deleted.
+        - InfluxDB only allows access to the API token value immediately after the authorization is created.
+        - You can't update an authorization's permissions.
+        - A token stops working when the user who created the authorization is deleted.
 
         We recommend the following for managing your tokens:
 
-          - Create a generic user to create and manage tokens for writing data.
-          - Store your tokens in a secure password vault for future access.
-
-        #### Required permissions
-
-        - `write-authorizations`
-        - `write-user` for the user that the authorization is scoped to
+        - Create a generic user to create and manage tokens for writing data.
+        - Store your tokens in a secure password vault for future access.
 
         #### Related guides
 
@@ -6972,8 +6958,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Authorization'
           description: |
-            Success. The authorization is created. The response body contains the
-            authorization.
+            Success. The authorization is created. The response body contains the authorization.
         "400":
           $ref: '#/components/responses/GeneralServerError'
           description: Invalid request
@@ -6986,21 +6971,13 @@ paths:
           description: Unexpected error
       summary: Create an authorization
       tags:
-      - Authorizations (API tokens)
-      - Security and access endpoints
+      - Authorizations
   /api/v2/authorizations/{authID}:
     delete:
-      description: |
-        Deletes an authorization.
-
-        Use the endpoint to delete an API token.
-
-        If you want to disable an API token instead of delete it,
-        [update the authorization's status to `inactive`](#operation/PatchAuthorizationsID).
       operationId: DeleteAuthorizationsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: An authorization ID. Specifies the authorization to delete.
+      - description: The identifier of the authorization to delete.
         in: path
         name: authID
         required: true
@@ -7008,70 +6985,18 @@ paths:
           type: string
       responses:
         "204":
-          description: Success. The authorization is deleted.
-        "400":
-          content:
-            application/json:
-              examples:
-                notFound:
-                  summary: |
-                    The specified resource ID is invalid.
-                  value:
-                    code: invalid
-                    message: id must have a length of 16 bytes
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: |
-            Bad request.
-        "401":
-          $ref: '#/components/responses/AuthorizationError'
-        "404":
-          content:
-            application/json:
-              examples:
-                notFound:
-                  summary: |
-                    The requested authorization doesn't exist.
-                  value:
-                    code: not found
-                    message: authorization not found
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: |
-            Not found.
-        "500":
-          $ref: '#/components/responses/InternalServerError'
+          description: Authorization deleted
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
       summary: Delete an authorization
       tags:
-      - Authorizations (API tokens)
-      - Security and access endpoints
+      - Authorizations
     get:
-      description: |
-        Retrieves an authorization.
-
-        Use this endpoint to retrieve information about an API token, including
-        the token's permissions and the user that the token is scoped to.
-
-        #### InfluxDB OSS
-
-        - InfluxDB OSS returns
-          [API token](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#token) values in authorizations.
-        - If the request uses an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
-          InfluxDB OSS returns authorizations for all organizations in the instance.
-
-        #### Related guides
-
-        - [View tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/)
-      externalDocs:
-        description: View tokens
-        url: https://docs.influxdata.com/influxdb/cloud/security/tokens/view-tokens/
       operationId: GetAuthorizationsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: An authorization ID. Specifies the authorization to retrieve.
+      - description: The identifier of the authorization to get.
         in: path
         name: authID
         required: true
@@ -7083,56 +7008,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: Success. The response body contains the authorization.
-        "400":
-          content:
-            application/json:
-              examples:
-                notFound:
-                  summary: |
-                    The specified resource ID is invalid.
-                  value:
-                    code: invalid
-                    message: id must have a length of 16 bytes
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: |
-            Bad request.
-        "401":
-          $ref: '#/components/responses/AuthorizationError'
-        "404":
-          content:
-            application/json:
-              examples:
-                notFound:
-                  summary: |
-                    The requested authorization doesn't exist.
-                  value:
-                    code: not found
-                    message: authorization not found
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: |
-            Not found.
-        "500":
-          $ref: '#/components/responses/InternalServerError'
+          description: Authorization details
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
       summary: Retrieve an authorization
       tags:
-      - Authorizations (API tokens)
-      - Security and access endpoints
+      - Authorizations
     patch:
-      description: |
-        Updates an authorization.
-
-        Use this endpoint to set an API token's status to be _active_ or _inactive_.
-        InfluxDB rejects requests that use inactive API tokens.
+      description: Update an authorization's status to `active` or `inactive`.
       operationId: PatchAuthorizationsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: An authorization ID. Specifies the authorization to update.
+      - description: The identifier of the authorization to update.
         in: path
         name: authID
         required: true
@@ -7143,8 +7031,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthorizationUpdateRequest'
-        description: In the request body, provide the authorization properties to
-          update.
+        description: The updated Authorization object.
         required: true
       responses:
         "200":
@@ -7152,14 +7039,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Authorization'
-          description: Success. The response body contains the updated authorization.
+          description: The updated authorization.
         default:
           $ref: '#/components/responses/GeneralServerError'
           description: Unexpected error
-      summary: Update an API token to be active or inactive
+      summary: Update authorization status
       tags:
-      - Authorizations (API tokens)
-      - Security and access endpoints
+      - Authorizations
   /api/v2/buckets:
     get:
       description: |
@@ -8163,7 +8049,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -8179,7 +8065,7 @@ paths:
 
         #### Related endpoints
 
-        - [Authorizations](#tag/Authorizations-(API-tokens))
+        - [Authorizations](#tag/Authorizations)
 
         #### Related guides
 
@@ -8244,7 +8130,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -8259,7 +8145,7 @@ paths:
 
         #### Related endpoints
 
-        - [Authorizations](#tag/Authorizations-(API-tokens))
+        - [Authorizations](#tag/Authorizations)
 
         #### Related guides
 
@@ -8345,7 +8231,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -8361,7 +8247,7 @@ paths:
 
         #### Related endpoints
 
-        - [Authorizations](#tag/Authorizations-(API-tokens))
+        - [Authorizations](#tag/Authorizations)
 
         #### Related guides
 
@@ -10509,7 +10395,7 @@ paths:
 
         1. Use [token authentication](#section/Authentication/TokenAuthentication) or a [user session](#tag/Signin) with this endpoint to retrieve
            feature flags and their values.
-        2. Follow the instructions to [enable, disable, or override values for feature flags](https://docs.influxdata.com/influxdb/cloud/reference/config-options/#feature-flags).
+        2. Follow the instructions to [enable, disable, or override values for feature flags](https://docs.influxdata.com/influxdb/cloud/influxdb/v2.4/reference/config-options/#feature-flags).
         3. **Optional**: To confirm that your change is applied, do one of the following:
 
            - Send a request to this endpoint to retrieve the current feature flag values.
@@ -10518,7 +10404,7 @@ paths:
 
         #### Related guides
 
-        - [InfluxDB configuration options](https://docs.influxdata.com/influxdb/cloud/reference/config-options/)
+        - [InfluxDB configuration options](https://docs.influxdata.com/influxdb/cloud/influxdb/v2.4/reference/config-options/)
       operationId: GetFlags
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -11820,7 +11706,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -11918,7 +11804,7 @@ paths:
 
         #### InfluxDB Cloud
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -12017,7 +11903,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -12078,7 +11964,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Required permissions
 
@@ -12140,7 +12026,7 @@ paths:
         #### InfluxDB Cloud
 
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Required permissions
 
@@ -12150,7 +12036,7 @@ paths:
 
         #### Related endpoints
 
-        - [Authorizations](#tag/Authorizations-(API-tokens))
+        - [Authorizations](#tag/Authorizations)
       operationId: PostOrgsIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -12224,7 +12110,7 @@ paths:
 
         #### InfluxDB Cloud
         - Doesn't use `owner` and `member` roles.
-          Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+          Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
         #### Limitations
 
@@ -12239,7 +12125,7 @@ paths:
         remove an owner from.
 
         #### Related endpoints
-        - [Authorizations](#tag/Authorizations-(API-tokens))
+        - [Authorizations](#tag/Authorizations)
       operationId: DeleteOrgsIDOwnersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
@@ -15271,56 +15157,52 @@ paths:
   /api/v2/tasks:
     get:
       description: |
-        Lists [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Retrieves a list of [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
 
         To limit which tasks are returned, pass query parameters in your request.
         If no query parameters are passed, InfluxDB returns all tasks up to the default `limit`.
-
-        #### Related guide
-
-        - [Process data with InfluxDB tasks](https://docs.influxdata.com/influxdb/cloud/process-data/)
       operationId: GetTasks
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          A task name.
-          Only returns [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) with the specified name.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) name.
+          Only returns tasks with the specified name.
           Different tasks may have the same name.
         in: query
         name: name
         schema:
           type: string
       - description: |
-          A task ID.
-          Only returns [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) created after the specified task.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) ID.
+          Only returns tasks created after the specified task.
         in: query
         name: after
         schema:
           type: string
       - description: |
-          A user ID.
-          Only returns [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) owned by the specified [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user).
+          A [user](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#user) ID.
+          Only returns tasks owned by the specified user.
         in: query
         name: user
         schema:
           type: string
       - description: |
-          An organization name.
-          Only returns [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) owned by the specified [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
+          An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) name.
+          Only returns tasks owned by the specified organization.
         in: query
         name: org
         schema:
           type: string
       - description: |
-          An organization ID.
-          Only returns tasks owned by the specified [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization).
+          An [organization](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#organization) ID.
+          Only returns tasks owned by the specified organization.
         in: query
         name: orgID
         schema:
           type: string
       - description: |
-          A task status.
-          Only returns [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) that have the specified status.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) status.
+          Only returns tasks that have the specified status (`active` or `inactive`).
         in: query
         name: status
         schema:
@@ -15358,11 +15240,8 @@ paths:
           minimum: 0
           type: integer
       - description: |
-          The sort field.
-          Specifies the task property used to sort records in the list.
-          Default is `name`.
-
-          The parameter has one supported value: `name`.
+          The sort field. Only `name` is supported.
+          Specifies the field used to sort records in the list.
         in: query
         name: sortBy
         required: false
@@ -15371,13 +15250,11 @@ paths:
           - name
           type: string
       - description: |
-          A task type.
-          Specifies the level of detail for [tasks](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) in the response.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) type (`basic` or `system`).
           Default is `system`.
-
+          Specifies the level of detail for tasks in the response.
           The default (`system`) response contains all the metadata properties for tasks.
-          To reduce the response size, set the `type` parameter to `basic` (`type=basic`)
-          to omit some task properties (`flux`, `createdAt`, `updatedAt`).
+          To reduce the response size, pass `basic` to omit some task properties (`flux`, `createdAt`, `updatedAt`).
         in: query
         name: type
         required: false
@@ -15388,8 +15265,8 @@ paths:
           - system
           type: string
       - description: |
-          A script ID.
-          Only returns tasks that use the specified [invokable script](#tag/Invokable-Scripts).
+          A [script](#tag/Invokable-Scripts) ID.
+          Only returns tasks that use the specified invokable script.
         in: query
         name: scriptID
         schema:
@@ -15474,7 +15351,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
-      summary: List tasks
+      summary: List all tasks
       tags:
       - Data I/O endpoints
       - Tasks
@@ -15489,7 +15366,52 @@ paths:
       description: |
         Creates a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) and returns the task.
 
-        Use this endpoint to create a scheduled task that runs a script.
+        Use this endpoint to create a scheduled task that runs a Flux script.
+
+        #### InfluxDB Cloud
+
+        - You can use either `flux` or `scriptID` to provide the task script.
+
+          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+            ```json
+            {
+              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+              from(bucket: \"telegraf\")
+                |> range(start: -1h)
+                |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                |> aggregateWindow(every: 1h, fn: max)
+                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+              "status": "active",
+              "description": "This task downsamples CPU data every hour"
+            }
+            ```
+
+          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
+            for the task to run.
+            To pass task options when using `scriptID`, pass the options as
+            properties in the request body--for example:
+
+            ```json
+            {
+              "name": "CPU Total 1 Hour New",
+              "description": "This task downsamples CPU data every hour",
+              "every": "1h",
+              "scriptID": "SCRIPT_ID",
+              "scriptParameters":
+                {
+                  "rangeStart": "-1h",
+                  "bucket": "telegraf",
+                  "filterField": "cpu-total"
+                }
+              }
+            ```
+
+        #### Limitations:
+
+        - You can't use `flux` and `scriptID` for the same task.
 
         #### Related guides
 
@@ -15503,35 +15425,9 @@ paths:
       requestBody:
         content:
           application/json:
-            examples:
-              TaskWithFlux:
-                $ref: '#/components/examples/TaskWithFluxRequest'
-              TaskWithScriptID:
-                $ref: '#/components/examples/TaskWithScriptRequest'
             schema:
               $ref: '#/components/schemas/TaskCreateRequest'
-        description: |
-          In the request body, provide the task.
-
-          Set one of the following properties to provide the script that the task runs:
-            - `flux`
-            - `scriptID`
-
-          If you set the `scriptID` property, you can set the following properties to configure the task:
-            - `cron`
-            - `every`
-            - `offset`
-            - `scriptParameters`
-
-          If you set the `flux` property, you must provide the `task` configuration option
-          in the Flux script.
-
-          See [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-          for detail and examples.
-
-          #### Limitations:
-
-          - You can't use `flux` and `scriptID` in the same task.
+        description: The task to create
         required: true
       responses:
         "201":
@@ -15540,7 +15436,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
           description: Success. The response body contains a `tasks` list with the
-            task.
+            new task.
         "400":
           content:
             application/json:
@@ -15565,10 +15461,8 @@ paths:
 
             #### InfluxDB Cloud
 
-            - Returns this error if the task doesn't contain the `flux` property
-              or the `scriptID` property.
-            - Returns this error if the task contains `flux` _and_ `scriptID`
-              properties.
+            - Returns this error if the task doesn't contain one of _`flux`_ or _`scriptID`_.
+            - Returns this error if the task contains _`flux`_ _and_ _`scriptID`_.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "500":
@@ -15583,22 +15477,58 @@ paths:
       tags:
       - Data I/O endpoints
       - Tasks
+      x-codeSamples:
+      - label: 'cURL: create a Flux script task'
+        lang: Shell
+        source: |
+          curl INFLUX_URL/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data-binary @- << EOF
+            {
+              "orgID": "INFLUX_ORG_ID",
+              "description": "IoT Center 30d environment average.",
+              "flux": "option task = {name: \"iot-center-task-1\", every: 30m}\
+                      from(bucket: \"iot_center\")\
+                        |> range(start: -30d)\
+                        |> filter(fn: (r) => r._measurement == \"environment\")\
+                        |> aggregateWindow(every: 1h, fn: mean)"
+            }
+          EOF
+      - label: 'cURL: create a Flux script reference task'
+        lang: Shell
+        source: |
+          curl INFLUX_URL/api/v2/tasks \
+          --header "Content-type: application/json" \
+          --header "Authorization: Token INFLUX_API_TOKEN" \
+          --data-binary @- << EOF
+            {
+              "orgID": "INFLUX_ORG_ID",
+              "description": "IoT Center 30d environment average.",
+              "scriptID": "085138a111448000",
+              "scriptParameters":
+                {
+                  "rangeStart": "-30d",
+                  "bucket": "air_sensor",
+                  "filterField": "temperature",
+                  "groupColumn": "_time"
+                }
+            }
+          EOF
   /api/v2/tasks/{taskID}:
     delete:
       description: |
-        Deletes the specified [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
-        and all associated records (task runs, logs, and labels).
+        Deletes a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) and associated records.
+
+        Use this endpoint to delete a task and all associated records (task runs, logs, and labels).
         Once the task is deleted, InfluxDB cancels all scheduled runs of the task.
 
-        To disable a task instead of delete it, use
-        [`PATCH /api/v2/tasks/TASK_ID`](#operation/PatchTasksID) to set the task's `status`
-        property to `inactive`.
+        If you want to disable a task instead of delete it, [update the task status to `inactive`](#operation/PatchTasksID).
       operationId: DeleteTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to delete.
+      - description: A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
+          ID. Specifies the task to delete.
         in: path
         name: taskID
         required: true
@@ -15623,13 +15553,13 @@ paths:
       - Tasks
     get:
       description: |
-        Retrieves the specified [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Retrieves a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
       operationId: GetTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to retrieve.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) ID.
+          Specifies the task to retrieve.
         in: path
         name: taskID
         required: true
@@ -15658,25 +15588,66 @@ paths:
       - Tasks
     patch:
       description: |
-        Updates the specified [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task),
+        Updates a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task),
         and then cancels all scheduled runs of the task.
 
         Use this endpoint to set, modify, or clear task properties--for example: `cron`, `name`, `flux`, `status`.
         Once InfluxDB applies the update, it cancels all previously scheduled runs of the task.
 
+        To update a task, pass an object that contains the updated key-value pairs.
         To activate or inactivate a task, set the `status` property.
-        The `status` property set to `inactive` cancels scheduled runs and prevents manual runs of the task.
+        _`"status": "inactive"`_ cancels scheduled runs and prevents manual runs of the task.
 
-        #### Related guides
+        #### InfluxDB Cloud
 
-        - [Update a task](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/update-task/)
-        - [Task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
+        - Use either `flux` or `scriptID` to provide the task script.
+
+          - `flux`: a string of "raw" Flux that contains task options and the script--for example:
+
+            ```json
+            {
+              "flux": "option task = {name: \"CPU Total 1 Hour New\", every: 1h}\
+              from(bucket: \"telegraf\")
+                |> range(start: -1h)
+                |> filter(fn: (r) => (r._measurement == \"cpu\"))
+                |> filter(fn: (r) =>\n\t\t(r._field == \"usage_system\"))
+                |> filter(fn: (r) => (r.cpu == \"cpu-total\"))
+                |> aggregateWindow(every: 1h, fn: max)
+                |> to(bucket: \"cpu_usage_user_total_1h\", org: \"INFLUX_ORG\")",
+              "status": "active",
+              "description": "This task downsamples CPU data every hour"
+            }
+            ```
+
+          - `scriptID`: the ID of an [invokable script](#tag/Invokable-Scripts)
+            for the task to run.
+            To pass task options when using `scriptID`, pass the options as
+            properties in the request body--for example:
+
+            ```json
+            {
+              "name": "CPU Total 1 Hour New",
+              "description": "This task downsamples CPU data every hour",
+              "every": "1h",
+              "scriptID": "SCRIPT_ID",
+              "scriptParameters":
+                {
+                  "rangeStart": "-1h",
+                  "bucket": "telegraf",
+                  "filterField": "cpu-total"
+                }
+              }
+            ```
+
+        #### Limitations:
+
+        - You can't use `flux` and `scriptID` for the same task.
       operationId: PatchTasksID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to update.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) ID.
+          Specifies the task to update.
         in: path
         name: taskID
         required: true
@@ -15685,35 +15656,9 @@ paths:
       requestBody:
         content:
           application/json:
-            examples:
-              TaskWithFlux:
-                $ref: '#/components/examples/TaskWithFluxRequest'
-              TaskWithScriptID:
-                $ref: '#/components/examples/TaskWithScriptRequest'
             schema:
               $ref: '#/components/schemas/TaskUpdateRequest'
-        description: |
-          In the request body, provide the task properties to update.
-          To provide the script that the task runs,
-          set either the `flux` property or the `scriptID` property.
-
-          If you set `scriptID`, you can set the following properties to configure the task:
-            - `cron`
-            - `every`
-            - `offset`
-            - `scriptParameters`
-
-          If you set the `flux` property, provide the `task` configuration option
-          in the Flux script.
-
-          See [task configuration options](https://docs.influxdata.com/influxdb/cloud/process-data/task-options/)
-          for detail and examples.
-
-          #### Limitations:
-
-          - You can't set `flux` and `scriptID` properties for the same task--for
-            example, if you set the `scriptID` property, then InfluxDB sets the `flux` property
-            to an empty string (`""`).
+        description: An task update to apply.
         required: true
       responses:
         "200":
@@ -15738,18 +15683,13 @@ paths:
   /api/v2/tasks/{taskID}/labels:
     get:
       description: |
-        Lists all labels for a task.
+        Retrieves a list of all labels for a task.
 
-        Use this endpoint to list labels applied to a task.
-        Labels are a way to add metadata to InfluxDB resources.
-        You can use labels for grouping and filtering resources in the
-        InfluxDB UI, `influx` CLI, and InfluxDB API.
+        Labels may be used for grouping and filtering tasks.
       operationId: GetTasksIDLabels
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the task to retrieve labels for.
+      - description: The ID of the task to retrieve labels for.
         in: path
         name: taskID
         required: true
@@ -15778,18 +15718,13 @@ paths:
       - Tasks
     post:
       description: |
-        Adds a label to a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Adds a label to a task.
 
-        Use this endpoint to add a label to a task.
-        Labels are a way to add metadata to InfluxDB resources.
-        You can use labels for grouping and filtering resources in the
-        InfluxDB UI, `influx` CLI, and InfluxDB API.
+        Use this endpoint to add a label that you can use to filter tasks in the InfluxDB UI.
       operationId: PostTasksIDLabels
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to label.
+      - description: The ID of the task to label.
         in: path
         name: taskID
         required: true
@@ -15800,8 +15735,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LabelMapping'
-        description: |
-          In the request body, provide an object that specifies the label.
+        description: An object that contains a _`labelID`_ to add to the task.
         required: true
       responses:
         "201":
@@ -15809,7 +15743,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LabelResponse'
-          description: Success. The response body contains the label.
+          description: Success. The response body contains a list of all labels for
+            the task.
         "400":
           $ref: '#/components/responses/BadRequestError'
         "401":
@@ -15826,21 +15761,17 @@ paths:
   /api/v2/tasks/{taskID}/labels/{labelID}:
     delete:
       description: |
-        Deletes a label from a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Deletes a label from a task.
       operationId: DeleteTasksIDLabelsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to delete the label from.
+      - description: The ID of the task to delete the label from.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: |
-          A label ID.
-          Specifies the label to delete.
+      - description: The ID of the label to delete.
         in: path
         name: labelID
         required: true
@@ -15865,18 +15796,17 @@ paths:
   /api/v2/tasks/{taskID}/logs:
     get:
       description: |
-        Lists all log events for a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Retrieves a list of all logs for a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
 
-        When a task runs, InfluxDB creates a `run` record in the task’s history.
-        Logs associated with each run provide relevant log messages, timestamps, and the exit status of the `run` attempt.
+        When an InfluxDB task runs, a “run” record is created in the task’s history.
+        Logs associated with each run provide relevant log messages, timestamps, and the exit status of the run attempt.
 
         Use this endpoint to retrieve only the log events for a task,
         without additional task metadata.
       operationId: GetTasksIDLogs
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: A task ID. Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
-          to retrieve logs for.
+      - description: The task ID.
         in: path
         name: taskID
         required: true
@@ -15888,7 +15818,7 @@ paths:
             application/json:
               examples:
                 taskFailure:
-                  summary: Events for a failed task run
+                  summary: Events for a failed task run.
                   value:
                     events:
                     - message: 'Started task from script: "option task = {name: \"test
@@ -15905,7 +15835,7 @@ paths:
                       runID: 09a946fc3167d000
                       time: "2022-07-13T08:24:37.115323Z"
                 taskSuccess:
-                  summary: Events for a successful task run
+                  summary: Events for a successful task run.
                   value:
                     events:
                     - message: 'Started task from script: "option task = {name: \"task1\",
@@ -15920,8 +15850,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Logs'
           description: |
-            Success.
-            The response body contains an `events` list with logs for the task.
+            Success. The response body contains an `events` list with logs for the task.
             Each log event `message` contains detail about the event.
             If a task run fails, InfluxDB logs an event with the reason for the failure.
         "400":
@@ -15934,7 +15863,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
-      summary: List logs for a task
+      summary: Retrieve all logs for a task
       tags:
       - Tasks
   /api/v2/tasks/{taskID}/members:
@@ -15942,15 +15871,11 @@ paths:
       deprecated: true
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
-        Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
-
-        Lists all users that have the `member` role for the specified [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
       operationId: GetTasksIDMembers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to retrieve members for.
+      - description: The task ID.
         in: path
         name: taskID
         required: true
@@ -15965,8 +15890,6 @@ paths:
           description: |
             Success. The response body contains a list of `users` that have
             the `member` role for a task.
-
-            If the task has no members, the response contains an empty `users` array.
         default:
           content:
             application/json:
@@ -15980,16 +15903,13 @@ paths:
       deprecated: true
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
-        Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Adds a specified user to members of the specified [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) and then returns
-        the member.
+        Adds a user to members of a task and returns the member.
       operationId: PostTasksIDMembers
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) ID.
-          Specifies the task for the member.
+      - description: The task ID.
         in: path
         name: taskID
         required: true
@@ -16000,8 +15920,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
-        description: |
-          In the request body, provide an object that specifies the user.
+        description: A user to add as a member of the task.
         required: true
       responses:
         "201":
@@ -16009,10 +15928,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceMember'
-          description: |
-            Created. The task `member` role is assigned to the user.
-            The response body contains the resource member with
-            role and user detail.
+          description: Created. The user is added to task members.
         default:
           content:
             application/json:
@@ -16027,20 +15943,17 @@ paths:
       deprecated: true
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
-        Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
-
-        Removes a member from a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
       operationId: DeleteTasksIDMembersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: A user ID. Specifies the member to remove.
+      - description: The ID of the member to remove.
         in: path
         name: userID
         required: true
         schema:
           type: string
-      - description: A task ID. Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
-          to remove the member from.
+      - description: The task ID.
         in: path
         name: taskID
         required: true
@@ -16048,7 +15961,7 @@ paths:
           type: string
       responses:
         "204":
-          description: Success. The member is removed.
+          description: Member removed
         default:
           content:
             application/json:
@@ -16063,13 +15976,13 @@ paths:
       deprecated: true
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
-        Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Lists all users that have the `owner` role for the specified task.
+        Retrieves all users that have owner permission for a task.
       operationId: GetTasksIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: A task ID. Specifies the task to retrieve owners for.
+      - description: The ID of the task to retrieve owners for.
         in: path
         name: taskID
         required: true
@@ -16115,19 +16028,16 @@ paths:
       deprecated: true
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
-        Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
 
-        Adds a specified user to owners of the specified task and then returns the
-        owner.
+        Assigns a task `owner` role to a user.
 
         Use this endpoint to create a _resource owner_ for the task.
         A _resource owner_ is a user with `role: owner` for a specific resource.
       operationId: PostTasksIDOwners
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) for the owner.
+      - description: The task ID.
         in: path
         name: taskID
         required: true
@@ -16138,8 +16048,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddResourceMemberRequestBody'
-        description: |
-          In the request body, provide an object that specifies the user.
+        description: A user to add as an owner of the task.
         required: true
       responses:
         "201":
@@ -16192,21 +16101,17 @@ paths:
       deprecated: true
       description: |
         **Deprecated**: Tasks don't use `owner` and `member` roles.
-        Use [`/api/v2/authorizations`](#tag/Authorizations-(API-tokens)) to assign user permissions.
-
-        Removes an owner from a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Use [`/api/v2/authorizations`](#tag/Authorizations) to assign user permissions.
       operationId: DeleteTasksIDOwnersID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: A user ID. Specifies the owner to remove from the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+      - description: The ID of the owner to remove.
         in: path
         name: userID
         required: true
         schema:
           type: string
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to remove the owner from.
+      - description: The task ID.
         in: path
         name: taskID
         required: true
@@ -16214,7 +16119,7 @@ paths:
           type: string
       responses:
         "204":
-          description: Success. The owner is removed.
+          description: Owner removed
         default:
           content:
             application/json:
@@ -16227,25 +16132,22 @@ paths:
   /api/v2/tasks/{taskID}/runs:
     get:
       description: |
-        Lists runs for the specified [task](https://docs.influxdata.com/influxdb/cloud/process-data/).
+        Retrieves a list of runs for a [task](https://docs.influxdata.com/influxdb/cloud/process-data/).
 
         To limit which task runs are returned, pass query parameters in your request.
-        If you don't pass query parameters, InfluxDB returns all runs for the task
-        up to the default `limit`.
+        If no query parameters are passed, InfluxDB returns all task runs up to the default `limit`.
       operationId: GetTasksIDRuns
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to
-          to list runs for.
+          The ID of the task to get runs for.
+          Only returns runs for this task.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: A task run ID. Only returns runs created after the specified
-          run.
+      - description: A task run ID. Only returns runs created after this run.
         in: query
         name: after
         schema:
@@ -16261,7 +16163,7 @@ paths:
           type: integer
       - description: |
           A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp)).
-          Only returns runs scheduled after the specified time.
+          Only returns runs scheduled after this time.
         in: query
         name: afterTime
         schema:
@@ -16269,7 +16171,7 @@ paths:
           type: string
       - description: |
           A timestamp ([RFC3339 date/time format](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#rfc3339-timestamp)).
-          Only returns runs scheduled before the specified time.
+          Only returns runs scheduled before this time.
         in: query
         name: beforeTime
         schema:
@@ -16301,18 +16203,10 @@ paths:
 
         To _retry_ a previous run (and avoid creating a new run),
         use the [`POST /api/v2/tasks/{taskID}/runs/{runID}/retry` endpoint](#operation/PostTasksIDRunsIDRetry).
-
-        #### Limitations
-
-        - Queuing a task run requires that the task's `status` property be set to `active`.
       operationId: PostTasksIDRuns
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to
-          to run.
-        in: path
+      - in: path
         name: taskID
         required: true
         schema:
@@ -16329,18 +16223,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Run'
           description: Success. The run is scheduled to start.
-        "400":
-          content:
-            application/json:
-              examples:
-                inactiveTask:
-                  summary: Can't run an inactive task
-                  value:
-                    code: invalid
-                    message: 'failed to force run: inactive task'
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Bad request.
         "401":
           $ref: '#/components/responses/AuthorizationError'
         "500":
@@ -16356,7 +16238,7 @@ paths:
       description: |
         Cancels a running [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
 
-        Use this endpoint to cancel a running task.
+        Use this endpoint with InfluxDB OSS to cancel a running task.
 
         #### InfluxDB Cloud
 
@@ -16364,18 +16246,13 @@ paths:
       operationId: DeleteTasksIDRunsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) to
-          to cancel.
+      - description: The ID of the task to cancel.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: |
-          A task run ID.
-          Specifies the task run to cancel.
+      - description: The ID of the task run to cancel.
         in: path
         name: runID
         required: true
@@ -16420,22 +16297,19 @@ paths:
       - Tasks
     get:
       description: |
-        Retrieves the specified run for the specified [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
+        Retrieves a specific run for a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task).
 
         Use this endpoint to retrieve detail and logs for a specific task run.
       operationId: GetTasksIDRunsID
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
-          that the task run belongs to.
+      - description: The ID of the task to retrieve runs for.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: A task run ID. Specifies the run to retrieve.
+      - description: The ID of the run to retrieve.
         in: path
         name: runID
         required: true
@@ -16490,21 +16364,20 @@ paths:
   /api/v2/tasks/{taskID}/runs/{runID}/logs:
     get:
       description: |
-        Lists all logs for a task run.
+        Retrieves all logs for a task run.
         A log is a list of run events with `runID`, `time`, and `message` properties.
 
-        Use this endpoint to help analyze [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) performance and troubleshoot failed task runs.
+        Use this endpoint to help analyze task performance and troubleshoot failed task runs.
       operationId: GetTasksIDRunsIDLogs
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
-      - description: A task ID. Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)
-          that the run belongs to.
+      - description: The ID of the task to get logs for.
         in: path
         name: taskID
         required: true
         schema:
           type: string
-      - description: A run ID. Specifies the task run to list logs for.
+      - description: The ID of the run to get logs for.
         in: path
         name: runID
         required: true
@@ -16561,34 +16434,34 @@ paths:
           $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/GeneralServerError'
-      summary: List logs for a run
+      summary: Retrieve all logs for a run
       tags:
       - Tasks
   /api/v2/tasks/{taskID}/runs/{runID}/retry:
     post:
       description: |
-        Queues a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) run to
-        retry and then returns the scheduled run.
+        Queues a [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)  run to
+        retry and returns the scheduled run.
 
         To manually start a _new_ task run, use the
         [`POST /api/v2/tasks/{taskID}/runs` endpoint](#operation/PostTasksIDRuns).
 
         #### Limitations
 
-        - Queuing a task run requires that the task's `status` property be set to `active`.
+        - The task must be _active_ (`status: "active"`).
       operationId: PostTasksIDRunsIDRetry
       parameters:
       - $ref: '#/components/parameters/TraceSpan'
       - description: |
-          A task ID.
-          Specifies the [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) that the task run belongs to.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task)  ID.
+          Specifies the task to retry.
         in: path
         name: taskID
         required: true
         schema:
           type: string
       - description: |
-          A task run ID.
+          A [task](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#task) run ID.
           Specifies the task run to retry.
 
           To find a task run ID, use the
@@ -18991,12 +18864,24 @@ tags:
     permissions for organization resources and provides an API token for authentication.
     An authorization belongs to an organization and only contains permissions for that organization.
 
+    In InfluxDB Cloud, an authorization with `read-authorizations` permission
+    can be used to view other authorizations.
+
+    #### Limitations
+
+    To follow best practices for secure API token generation and retrieval,
+    InfluxDB enforces access restrictions on API tokens.
+
+    - InfluxDB allows access to the API token value immediately after the authorization is created.
+    - You can’t change access (read/write) permissions for an API token after it’s created.
+    - Tokens stop working when the user who created the token is deleted.
+
     We recommend the following for managing your tokens:
 
     - Create a generic user to create and manage tokens for writing data.
     - Store your tokens in a secure password vault for future access.
 
-    ### User sessions with authorizations
+    #### User sessions with authorizations
 
     Optionally, when creating an authorization, you can scope it to a specific user.
     If the user signs in with username and password, creating a _user session_,
@@ -19014,7 +18899,7 @@ tags:
     - [Authorize API requests](https://docs.influxdata.com/influxdb/cloud/api-guide/api_intro/#authentication)
     - [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)
     - [Assign a token to a specific user](https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/)
-  name: Authorizations (API tokens)
+  name: Authorizations
 - description: |
     Store your data in InfluxDB [buckets](https://docs.influxdata.com/influxdb/cloud/reference/glossary/#bucket).
     A bucket is a named location where time series data is stored. All buckets
@@ -19058,7 +18943,7 @@ tags:
     Use the `/api/v2/scripts` endpoints to create and manage scripts.
     See related guides to learn how to define parameters and execute scripts.
 
-    ### Related guides
+    #### Related guides
 
     - [Invoke custom scripts](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/) from API requests.
     - [Create a task that references a script](https://docs.influxdata.com/influxdb/cloud/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
@@ -19087,7 +18972,7 @@ tags:
 
     <span id="tasks-schemaref-task" />
 
-    ### Properties
+    #### Properties
 
     A `task` object contains information about an InfluxDB task resource.
 
@@ -19095,7 +18980,7 @@ tags:
 
     <SchemaDefinition schemaRef="#/components/schemas/Task" />
 
-    ### Related guides
+    #### Related guides
 
     - [Get started with tasks](https://docs.influxdata.com/influxdb/cloud/process-data/get-started/)
     - [Common data processing tasks](https://docs.influxdata.com/influxdb/cloud/process-data/common-tasks/)
@@ -19118,7 +19003,7 @@ tags:
 
     Use the `/api/v2/stacks` endpoints to manage installed template resources.
 
-    ### Related guides
+    #### Related guides
 
     - [InfluxDB stacks](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/stacks/)
     - [InfluxDB templates](https://docs.influxdata.com/influxdb/cloud/influxdb-templates/)
@@ -19133,14 +19018,14 @@ tags:
     `GET /api/v2/users` and `GET /api/v2/users/USER_ID` API endpoints to
     view specific members.
 
-    ### User sessions with authorizations
+    #### User sessions with authorizations
 
     Optionally, you can scope an authorization (and its API token) to a user.
     If a user signs in with username and password, creating a _user session_,
     the session carries the permissions granted by all the user's authorizations.
     To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
 
-    ### Related guides
+    #### Related guides
 
     - [Manage users](https://docs.influxdata.com/influxdb/cloud/organizations/users/)
   name: Users
@@ -19215,7 +19100,7 @@ tags:
       | `offset`                 | integer               | The number of records to skip (before `limit`, after other parameters are applied). |
       | `after`                  | string (resource ID)  | Only returns resources created after the specified resource. |
 
-      ### Limitations
+      #### Limitations
 
       - For specific endpoint parameters and examples, see the endpoint definition.
       - If you specify an `offset` parameter value greater than the total number of records,
