@@ -1,9 +1,28 @@
 get:
   operationId: GetAuthorizationsID
   tags:
-    - Authorizations
+    - Authorizations (API tokens)
     - Security and access endpoints
   summary: Retrieve an authorization
+  description: |
+    Retrieves an authorization.
+
+    Use this endpoint to retrieve information about an API token, including
+    the token's permissions and the user that the token is scoped to.
+
+    #### InfluxDB OSS
+
+    - InfluxDB OSS returns
+      [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token) values in authorizations.
+    - If the request uses an _[operator token](https://docs.influxdata.com/influxdb/latest/security/tokens/#operator-token)_,
+      InfluxDB OSS returns authorizations for all organizations in the instance.
+
+    #### Related guides
+
+    - [View tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/)
+  externalDocs:
+    url: "{{% INFLUXDB_DOCS_URL %}}/security/tokens/view-tokens/"
+    description: View tokens
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -11,24 +30,64 @@ get:
       schema:
         type: string
       required: true
-      description: The ID of the authorization to get.
+      description: An authorization ID. Specifies the authorization to retrieve.
   responses:
     "200":
-      description: Authorization details
+      description: Success. The response body contains the authorization.
       content:
         application/json:
           schema:
             $ref: "../../common/schemas/Authorization.yml"
+    "400":
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The specified resource ID is invalid.
+              value: {
+                "code": "invalid",
+                "message": "id must have a length of 16 bytes"
+              }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      description: |
+        Not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested authorization doesn't exist.
+              value: {
+                "code": "not found",
+                "message": "authorization not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
 patch:
   operationId: PatchAuthorizationsID
   tags:
-    - Authorizations
-  summary: Update an authorization to be active or inactive
+    - Authorizations (API tokens)
+    - Security and access endpoints
+  summary: Update an API token to be active or inactive
+  description: |
+    Updates an authorization.
+
+    Use this endpoint to set an API token's status to be _active_ or _inactive_.
+    InfluxDB rejects requests that use inactive API tokens.
   requestBody:
-    description: Authorization to update
+    description: In the request body, provide the authorization properties to update.
     required: true
     content:
       application/json:
@@ -41,10 +100,10 @@ patch:
       schema:
         type: string
       required: true
-      description: The ID of the authorization to update.
+      description: An authorization ID. Specifies the authorization to update.
   responses:
     "200":
-      description: The active or inactive authorization
+      description: Success. The response body contains the updated authorization.
       content:
         application/json:
           schema:
@@ -55,8 +114,16 @@ patch:
 delete:
   operationId: DeleteAuthorizationsID
   tags:
-    - Authorizations
+    - Authorizations (API tokens)
+    - Security and access endpoints
   summary: Delete an authorization
+  description: |
+    Deletes an authorization.
+
+    Use the endpoint to delete an API token.
+
+    If you want to disable an API token instead of delete it,
+    [update the authorization's status to `inactive`](#operation/PatchAuthorizationsID).
   parameters:
     - $ref: "../../common/parameters/TraceSpan.yml"
     - in: path
@@ -64,10 +131,44 @@ delete:
       schema:
         type: string
       required: true
-      description: The ID of the authorization to delete.
+      description: An authorization ID. Specifies the authorization to delete.
   responses:
     "204":
-      description: Authorization deleted
+      description: Success. The authorization is deleted.
+    "400":
+      description: |
+        Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The specified resource ID is invalid.
+              value: {
+                "code": "invalid",
+                "message": "id must have a length of 16 bytes"
+              }
+    "401":
+      $ref: "../responses/AuthorizationError.yml"
+    "404":
+      description: |
+        Not found.
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yml"
+          examples:
+            notFound:
+              summary: |
+                The requested authorization doesn't exist.
+              value: {
+                "code": "not found",
+                "message": "authorization not found"
+              }
+    "500":
+      $ref: "../responses/InternalServerError.yml"
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
