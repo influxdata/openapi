@@ -1,0 +1,1164 @@
+openapi: '3.0.0'
+info:
+  title: InfluxDB Cloud API Service
+  version: 2.0.1
+  description: |
+    The InfluxDB v2 API provides a programmatic interface for all interactions with InfluxDB. Access the InfluxDB API using the `/api/v2/` endpoint.
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  - url: /api/v2
+tags:
+  - name: Authorizations (API tokens)
+    description: |
+      Create and manage authorizations (API tokens).
+
+      An _authorization_ contains a list of `read` and `write`
+      permissions for organization resources and provides an API token for authentication.
+      An authorization belongs to an organization and only contains permissions for that organization.
+
+      We recommend the following for managing your tokens:
+
+      - Create a generic user to create and manage tokens for writing data.
+      - Store your tokens in a secure password vault for future access.
+
+      ### User sessions with authorizations
+
+      Optionally, when creating an authorization, you can scope it to a specific user.
+      If the user signs in with username and password, creating a _user session_,
+      the session carries the permissions granted by all the user's authorizations.
+      For more information, see [how to assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/).
+      To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
+
+      ### Related endpoints
+
+      - [Signin](#tag/Signin)
+      - [Signout](#tag/Signout)
+
+      ### Related guides
+
+      - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)
+      - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)
+      - [Assign a token to a specific user]({{% INFLUXDB_DOCS_URL %}}/security/tokens/create-token/)
+  - name: Buckets
+    description: |
+      Store your data in InfluxDB [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
+      A bucket is a named location where time series data is stored. All buckets
+      have a [retention period]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#retention-period),
+      a duration of time that each data point persists. InfluxDB drops all
+      points with timestamps older than the bucket’s retention period.
+      A bucket belongs to an organization.
+
+      ### Related guides
+
+      - [Manage buckets]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/)
+  - name: DBRPs
+    description: |
+      The InfluxDB 1.x data model includes [databases](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#database)
+      and [retention policies](https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/#retention-policy-rp).
+      InfluxDB 2.x replaces databases and retention policies with buckets.
+      To support InfluxDB 1.x query and write patterns in InfluxDB 2.x,
+      databases and retention policies are mapped to buckets using the
+      database and retention policy (DBRP) mapping service.
+      The DBRP mapping service uses the database and retention policy
+      specified in 1.x compatibility API requests to route operations to a bucket.
+
+      ### Related guides
+
+      - [Database and retention policy mapping]({{% INFLUXDB_DOCS_URL %}}/reference/api/influxdb-1x/dbrp/)
+  - name: Invokable Scripts
+    description: |
+      Store, manage, and execute scripts in InfluxDB.
+      A script stores your custom Flux script and provides an invokable
+      endpoint that accepts runtime parameters.
+      In a script, you can specify custom runtime parameters
+      (`params`)--for example, `params.myparameter`.
+      Once you create a script, InfluxDB generates an
+      [`/api/v2/scripts/SCRIPT_ID/invoke` endpoint](#operation/PostScriptsIDInvoke)
+      for your organization.
+      You can run the script from API requests and tasks, defining parameter
+      values for each run.
+      When the script runs, InfluxDB replaces `params` references in the
+      script with the runtime parameter values you define.
+
+      Use the `/api/v2/scripts` endpoints to create and manage scripts.
+      See related guides to learn how to define parameters and execute scripts.
+
+      ### Related guides
+
+      - [Invoke custom scripts]({{% INFLUXDB_DOCS_URL %}}/api-guide/api-invokable-scripts/) from API requests.
+      - [Create a task that references a script]({{% INFLUXDB_DOCS_URL %}}/process-data/manage-tasks/create-task/#create-a-task-that-references-a-script)
+  - name: Delete
+    description: |
+      Delete data from an InfluxDB bucket.
+  - name: Organizations
+    description: |
+      Manage your [organization]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#organization).
+      An organization is a workspace for a group of users. Organizations can be
+      used to separate different environments, projects, teams or users within
+      InfluxDB.
+
+      Use the `/api/v2/orgs` endpoints to view and manage organizations.
+  - name: Query
+    description: |
+      Retrieve data, analyze queries, and get query suggestions.
+  - name: Tasks
+    description: |
+      Process and analyze your data with [tasks]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#task)
+      in the InfluxDB task engine.
+      Use the `/api/v2/tasks` endpoints to schedule and manage tasks, retry task runs, and retrieve run logs.
+
+      To configure a task, provide the script and the schedule to run the task.
+      For examples, see how to create a task with the [`POST /api/v2/tasks` endpoint](#operation/PostTasks).
+
+      <span id="tasks-schemaref-task" />
+
+      ### Properties
+
+      A `task` object contains information about an InfluxDB task resource.
+
+      The following table defines the properties that appear in this object:
+
+      <SchemaDefinition schemaRef="#/components/schemas/Task" />
+
+      ### Related guides
+
+      - [Get started with tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/get-started/)
+      - [Common data processing tasks]({{% INFLUXDB_DOCS_URL %}}/process-data/common-tasks/)
+      - [Create a script](https://docs.influxdata.com/influxdb/cloud/api-guide/api-invokable-scripts/#create-an-invokable-script)
+  - name: Templates
+    description: |
+      Export and apply InfluxDB **templates**.
+      Manage **stacks** of templated InfluxDB resources.
+
+      InfluxDB templates are prepackaged configurations for resources.
+      Use InfluxDB templates to configure a fresh instance of InfluxDB,
+      back up your dashboard configuration, or share your configuration.
+
+      Use the `/api/v2/templates` endpoints to export templates and apply templates.
+
+      **InfluxDB stacks** are stateful InfluxDB templates that let you
+      add, update, and remove installed template resources over time, avoid duplicating
+      resources when applying the same or similar templates more than once, and
+      apply changes to distributed instances of InfluxDB OSS or InfluxDB Cloud.
+
+      Use the `/api/v2/stacks` endpoints to manage installed template resources.
+
+      ### Related guides
+
+      - [InfluxDB stacks]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/stacks/)
+      - [InfluxDB templates]({{% INFLUXDB_DOCS_URL %}}/influxdb-templates/)
+  - name: Users
+    description: |
+      Retrieve specific users.
+
+      InfluxDB Cloud lets you invite and collaborate with multiple users in your organization.
+      To invite and remove users from your organization, use the InfluxDB Cloud user interface (UI);
+      you can't use the InfluxDB API to manage users in InfluxDB Cloud.
+      Once a user is added to your organization, you can use the
+      `GET /api/v2/users` and `GET /api/v2/users/USER_ID` API endpoints to
+      view specific members.
+
+      ### User sessions with authorizations
+
+      Optionally, you can scope an authorization (and its API token) to a user.
+      If a user signs in with username and password, creating a _user session_,
+      the session carries the permissions granted by all the user's authorizations.
+      To create a user session, use the [`POST /api/v2/signin` endpoint](#operation/PostSignin).
+
+      ### Related guides
+
+      - [Manage users]({{% INFLUXDB_DOCS_URL %}}/organizations/users/)
+  - name: Write
+    description: |
+      Write time series data to [buckets]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#bucket).
+
+  # Define x-traitTags below to describe general API features (auth, pagination, headers).
+  - name: Authentication
+    description: |
+      Use one of the following schemes to authenticate to the InfluxDB API:
+
+      - [Token authentication](#section/Authentication/TokenAuthentication)
+      - [Basic authentication](#section/Authentication/BasicAuthentication)
+      - [Querystring authentication](#section/Authentication/QuerystringAuthentication)
+      <!-- ReDoc-Inject: <security-definitions> -->
+    x-traitTag: true
+  - name: Quick start
+    x-traitTag: true
+    description: |
+      See the [**API Quick Start**]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/)
+      to get up and running authenticating with tokens, writing to buckets, and querying data.
+
+      [**InfluxDB API client libraries**]({{% INFLUXDB_DOCS_URL %}}/api-guide/client-libraries/)
+      are available for popular languages and ready to import into your application.
+  - name: Supported operations
+    x-traitTag: true
+    description: |
+      The following table shows the most common operations that the InfluxDB `/api/v2` API supports.
+      Some resources may support other operations that perform functions more specific to those resources.
+      For example, you can use the `PATCH /api/v2/scripts` endpoint to update properties of a script
+      resource.
+
+      | Operation |                                                                        |
+      |:----------|:-----------------------------------------------------------------------|
+      | Write     | Writes (`POST`) data to a bucket.                                      |
+      | Run       | Executes (`POST`) a query or script and returns the result.            |
+      | List      |	Retrieves (`GET`) a list of zero or more resources.                    |
+      | Create    |	Creates (`POST`) a new resource and returns the resource.              |
+      | Update    |	Modifies (`PUT`) an existing resource to reflect data in your request. |
+      | Delete    |	Removes (`DELETE`) a specific resource.                                |
+  - name: Headers
+    x-traitTag: true
+    description: |
+      InfluxDB `/api/v2` API endpoints use standard HTTP request and response headers.
+      The following table shows common headers used by many InfluxDB API endpoints.
+      Some endpoints may use other headers that perform functions more specific to those endpoints--for example,
+      the `POST /api/v2/write` endpoint accepts the `Content-Encoding` header to indicate the compression applied to line protocol in the request body.
+
+      | Header                   | Value type            | Description                                |
+      |:------------------------ |:--------------------- |:-------------------------------------------|
+      | `Accept`                 | string                | The content type that the client can understand. |
+      | `Authorization`          | string                | The authorization scheme and credential. |
+      | `Content-Length`         | integer               | The size of the entity-body, in bytes, sent to the database. |
+      | `Content-Type`           | string                | The format of the data in the request body. |
+  - name: Common parameters
+    x-traitTag: true
+    description: |
+      To specify resources, some InfluxDB API endpoints require parameters or
+      properties in the request--for example,
+      writing to a `bucket` resource in an `org` (_organization_ resource).
+
+      ### Common parameters
+
+      | Query parameter          | Value type            | Description                                |
+      |:------------------------ |:--------------------- |:-------------------------------------------|
+      | `bucket`                 | string                | The bucket name or ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |
+      | `bucketID`               | string                | The bucket ID ([find your bucket]({{% INFLUXDB_DOCS_URL %}}/organizations/buckets/view-buckets/). |
+      | `org`                    | string                | The organization name or ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
+      | `orgID`                  | 16-byte string        | The organization ID ([find your organization]({{% INFLUXDB_DOCS_URL %}}/organizations/view-orgs/). |
+  - name: Pagination
+    x-traitTag: true
+    description: |
+      Some InfluxDB API [list operations](#tag/SupportedOperations) may support the following query parameters for paginating results:
+
+        | Query parameter          | Value type            | Description                                |
+        |:------------------------ |:--------------------- |:-------------------------------------------|
+        | `limit`                  | integer               | The maximum number of records to return (after other parameters are applied). |
+        | `offset`                 | integer               | The number of records to skip (before `limit`, after other parameters are applied). |
+        | `after`                  | string (resource ID)  | Only returns resources created after the specified resource. |
+
+        ### Limitations
+
+        - For specific endpoint parameters and examples, see the endpoint definition.
+        - If you specify an `offset` parameter value greater than the total number of records,
+          then InfluxDB returns an empty list in the response
+          (given `offset` skips the specified number of records).
+
+          The following example passes `offset=50` to skip the first 50 results,
+          but the user only has 10 buckets:
+
+          ```sh
+          curl --request GET "INFLUX_URL/api/v2/buckets?limit=1&offset=50" \
+              --header "Authorization: Token INFLUX_API_TOKEN"
+          ```
+
+          The response contains the following:
+
+          ```json
+          {
+            "links": {
+                "prev": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=49\u0026orgID=ORG_ID",
+                "self": "/api/v2/buckets?descending=false\u0026limit=1\u0026offset=50\u0026orgID=ORG_ID"
+            },
+            "buckets": []
+          }
+          ```
+  - name: Response codes
+    x-traitTag: true
+    description: |
+      InfluxDB `/api/v2` API endpoints use standard HTTP status codes for success and failure responses.
+      The response body may include additional details.
+      For details about a specific operation's response,
+      see **Responses** and **Response Samples** for that operation.
+
+      API operations may return the following HTTP status codes:
+
+      | &nbsp;Code&nbsp; | Status                   | Description      |
+      |:-----------:|:------------------------ |:--------------------- |
+      | `200`       | Success                  |                       |
+      | `204`       | No content               | For a `POST` request, `204` indicates that InfluxDB accepted the request and request data is valid. Asynchronous operations, such as `write`, might not have completed yet. |
+      | `400`       | Bad request              | InfluxDB can't parse the request due to an incorrect parameter or bad syntax. For _writes_, the error may indicate one of the following problems: <ul><li>Line protocol is malformed. The response body contains the first malformed line in the data and indicates what was expected. For partial writes, the number of points written and the number of points rejected are also included. For more information, check the `rejected_points` measurement in your [_monitoring bucket](/influxdb/cloud/reference/internals/system-buckets/#_monitoring-system-bucket).</li><li>`Authorization` header is missing or malformed or the API token doesn't have permission for the operation.</li></ul> |
+      | `401`       | Unauthorized             | May indicate one of the following: <ul><li>`Authorization: Token` header is missing or malformed</li><li>API token value is missing from the header</li><li>API token doesn't have permission. For more information about token types and permissions, see [Manage API tokens](https://docs.influxdata.com/influxdb/cloud/security/tokens/)</li></ul> |
+      | `404`       | Not found                | Requested resource was not found. `message` in the response body provides details about the requested resource. |
+      | `405`       | Method not allowed       | The API path doesn't support the HTTP method used in the request--for example, you send a `POST` request to an endpoint that only allows `GET`. |
+      | `413`       | Request entity too large | Request payload exceeds the size limit. |
+      | `422`       | Unprocessable entity     | Request data is invalid. `code` and `message` in the response body provide details about the problem. |
+      | `429`       | Too many requests        | API token is temporarily over the request quota. The `Retry-After` header describes when to try the request again. |
+      | `500`       | Internal server error    |                       |
+      | `503`       | Service unavailable      | Server is temporarily unavailable to process the request. The `Retry-After` header describes when to try the request again. |
+x-tagGroups:
+  - name: Overview
+    tags:
+      - Quick start
+      - Authentication
+      - Supported operations
+      - Headers
+      - Pagination
+      - Response codes
+  - name: Popular endpoints
+    tags:
+      - Data I/O endpoints
+      - Security and access endpoints
+      - System information endpoints
+  - name: All endpoints
+    tags: []
+paths:
+  /signin:
+    $ref: "./common/paths/signin.yml"
+  /signout:
+    $ref: "./common/paths/signout.yml"
+  /ping:
+    $ref: "./common/paths/ping.yml"
+  /:
+    $ref: "./common/paths/0slash.yml"
+  /dbrps:
+    $ref: "./common/paths/dbrps.yml"
+  "/dbrps/{dbrpID}":
+    $ref: "./common/paths/dbrps_dbrpID.yml"
+  /telegraf/plugins:
+    $ref: "./common/paths/telegraf_plugins.yml"
+  /telegrafs:
+    $ref: "./common/paths/telegrafs.yml"
+  "/telegrafs/{telegrafID}":
+    $ref: "./common/paths/telegrafs_telegrafID.yml"
+  "/telegrafs/{telegrafID}/labels":
+    $ref: "./common/paths/telegrafs_telegrafID_labels.yml"
+  "/telegrafs/{telegrafID}/labels/{labelID}":
+    $ref: "./common/paths/telegrafs_telegrafID_labels_labelID.yml"
+  "/telegrafs/{telegrafID}/members":
+    $ref: "./common/paths/telegrafs_telegrafID_members.yml"
+  "/telegrafs/{telegrafID}/members/{userID}":
+    $ref: "./common/paths/telegrafs_telegrafID_members_userID.yml"
+  "/telegrafs/{telegrafID}/owners":
+    $ref: "./common/paths/telegrafs_telegrafID_owners.yml"
+  "/telegrafs/{telegrafID}/owners/{userID}":
+    $ref: "./common/paths/telegrafs_telegrafID_owners_userID.yml"
+  "/variables/{variableID}/labels":
+    $ref: "./common/paths/variables_variableID_labels.yml"
+  "/variables/{variableID}/labels/{labelID}":
+    $ref: "./common/paths/variables_variableID_labels_labelID.yml"
+  /write:
+    $ref: "./common/paths/write.yml"
+  /delete:
+    $ref: "./common/paths/delete.yml"
+  /labels:
+    $ref: "./common/paths/labels.yml"
+  /labels/{labelID}:
+    $ref: "./common/paths/labels_labelID.yml"
+  "/dashboards/{dashboardID}":
+    $ref: "./common/paths/dashboards_dashboardID.yml"
+  "/dashboards/{dashboardID}/cells":
+    $ref: "./common/paths/dashboards_dashboardID_cells.yml"
+  "/dashboards/{dashboardID}/cells/{cellID}":
+    $ref: "./common/paths/dashboards_dashboardID_cells_cellID.yml"
+  "/dashboards/{dashboardID}/cells/{cellID}/view":
+    $ref: "./common/paths/dashboards_dashboardID_cells_cellID_view.yml"
+  "/dashboards/{dashboardID}/labels":
+    $ref: "./common/paths/dashboards_dashboardID_labels.yml"
+  "/dashboards/{dashboardID}/labels/{labelID}":
+    $ref: "./common/paths/dashboards_dashboardID_labels_labelID.yml"
+  "/dashboards/{dashboardID}/members":
+    $ref: "./common/paths/dashboards_dashboardID_members.yml"
+  "/dashboards/{dashboardID}/members/{userID}":
+    $ref: "./common/paths/dashboards_dashboardID_members_userID.yml"
+  "/dashboards/{dashboardID}/owners":
+    $ref: "./common/paths/dashboards_dashboardID_owners.yml"
+  "/dashboards/{dashboardID}/owners/{userID}":
+    $ref: "./common/paths/dashboards_dashboardID_owners_userID.yml"
+  /query/ast:
+    $ref: "./common/paths/query_ast.yml"
+  /query/suggestions:
+    $ref: "./common/paths/query_suggestions.yml"
+  "/query/suggestions/{name}":
+    $ref: "./common/paths/query_suggestions_name.yml"
+  /query/analyze:
+    $ref: "./common/paths/query_analyze.yml"
+  /query:
+    $ref: "./common/paths/query.yml"
+  /buckets:
+    $ref: "./common/paths/buckets.yml"
+  "/buckets/{bucketID}":
+    $ref: "./common/paths/buckets_bucketID.yml"
+  "/buckets/{bucketID}/labels":
+    $ref: "./common/paths/buckets_bucketID_labels.yml"
+  "/buckets/{bucketID}/labels/{labelID}":
+    $ref: "./common/paths/buckets_bucketID_labels_labelID.yml"
+  "/buckets/{bucketID}/members":
+    $ref: "./common/paths/buckets_bucketID_members.yml"
+  "/buckets/{bucketID}/members/{userID}":
+    $ref: "./common/paths/buckets_bucketID_members_userID.yml"
+  "/buckets/{bucketID}/owners":
+    $ref: "./common/paths/buckets_bucketID_owners.yml"
+  "/buckets/{bucketID}/owners/{userID}":
+    $ref: "./common/paths/buckets_bucketID_owners_userID.yml"
+  /orgs:
+    $ref: "./common/paths/orgs.yml"
+  "/orgs/{orgID}":
+    $ref: "./common/paths/orgs_orgID.yml"
+  "/orgs/{orgID}/secrets":
+    $ref: "./common/paths/orgs_orgID_secrets.yml"
+  "/orgs/{orgID}/members":
+    $ref: "./common/paths/orgs_orgID_members.yml"
+  "/orgs/{orgID}/members/{userID}":
+    $ref: "./common/paths/orgs_orgID_members_userID.yml"
+  "/orgs/{orgID}/owners":
+    $ref: "./common/paths/orgs_orgID_owners.yml"
+  "/orgs/{orgID}/owners/{userID}":
+    $ref: "./common/paths/orgs_orgID_owners_userID.yml"
+  /orgs/{orgID}/secrets/delete:
+    $ref: './common/paths/orgs_orgID_secrets_delete.yml'
+  /orgs/{orgID}/secrets/{secretID}:
+    $ref: './common/paths/orgs_orgID_secrets_secretID.yml'
+  /resources:
+    $ref: "./common/paths/resources.yml"
+  /stacks:
+    $ref: "./common/paths/stacks.yml"
+  /stacks/{stack_id}:
+    $ref: "./common/paths/stacks_stack_id.yml"
+  /stacks/{stack_id}/uninstall:
+    $ref: "./common/paths/stacks_stack_id_uninstall.yml"
+  /templates/apply:
+    $ref: "./common/paths/templates_apply.yml"
+  /templates/export:
+    $ref: "./common/paths/templates_export.yml"
+  "/tasks/{taskID}/runs":
+    $ref: "./common/paths/tasks_taskID_runs.yml"
+  "/tasks/{taskID}/runs/{runID}":
+    $ref: "./common/paths/tasks_taskID_runs_runID.yml"
+  "/tasks/{taskID}/runs/{runID}/retry":
+    $ref: "./common/paths/tasks_taskID_runs_runID_retry.yml"
+  "/tasks/{taskID}/logs":
+    $ref: "./common/paths/tasks_taskID_logs.yml"
+  "/tasks/{taskID}/runs/{runID}/logs":
+    $ref: "./common/paths/tasks_taskID_runs_runID_logs.yml"
+  "/tasks/{taskID}/labels":
+    $ref: "./common/paths/tasks_taskID_labels.yml"
+  "/tasks/{taskID}/labels/{labelID}":
+    $ref: "./common/paths/tasks_taskID_labels_labelID.yml"
+  /flags:
+    $ref: "./common/paths/flags.yml"
+  /me:
+    $ref: "./common/paths/me.yml"
+  /me/password:
+    $ref: "./common/paths/me_password.yml"
+  "/tasks/{taskID}/members":
+    $ref: "./common/paths/tasks_taskID_members.yml"
+  "/tasks/{taskID}/members/{userID}":
+    $ref: "./common/paths/tasks_taskID_members_userID.yml"
+  "/tasks/{taskID}/owners":
+    $ref: "./common/paths/tasks_taskID_owners.yml"
+  "/tasks/{taskID}/owners/{userID}":
+    $ref: "./common/paths/tasks_taskID_owners_userID.yml"
+  "/users/{userID}/password":
+    $ref: "./common/paths/users_userID_password.yml"
+  /checks:
+    $ref: "./common/paths/checks.yml"
+  "/checks/{checkID}":
+    $ref: "./common/paths/checks_checkID.yml"
+  "/checks/{checkID}/labels":
+    $ref: "./common/paths/checks_checkID_labels.yml"
+  "/checks/{checkID}/labels/{labelID}":
+    $ref: "./common/paths/checks_checkID_labels_labelID.yml"
+  /notificationRules:
+    $ref: "./common/paths/notificationRules.yml"
+  "/checks/{checkID}/query":
+    $ref: "./common/paths/checks_checkID_query.yml"
+  "/notificationRules/{ruleID}":
+    $ref: "./common/paths/notificationRules_ruleID.yml"
+  "/notificationRules/{ruleID}/labels":
+    $ref: "./common/paths/notificationRules_ruleID_labels.yml"
+  "/notificationRules/{ruleID}/labels/{labelID}":
+    $ref: "./common/paths/notificationRules_ruleID_labels_labelID.yml"
+  "/notificationRules/{ruleID}/query":
+    $ref: "./common/paths/notificationRules_ruleID_query.yml"
+  /notificationEndpoints:
+    $ref: "./common/paths/notificationEndpoints.yml"
+  "/notificationEndpoints/{endpointID}":
+    $ref: "./common/paths/notificationEndpoints_endpointID.yml"
+  "/notificationEndpoints/{endpointID}/labels":
+    $ref: "./common/paths/notificationEndpoints_endpointID_labels.yml"
+  "/notificationEndpoints/{endpointID}/labels/{labelID}":
+    $ref: "./common/paths/notificationEndpoints_endpointID_labels_labelID.yml"
+  /authorizations:
+    $ref: "./common/paths/authorizations.yml"
+  /authorizations/{authID}:
+    $ref: "./common/paths/authorizations_authID.yml"
+  /users:
+    $ref: './cloud/paths/users.yml'
+  '/users/{userID}':
+    $ref: './cloud/paths/users_userID.yml'
+  /setup:
+    $ref: './cloud/paths/setup.yml'
+  /setup/user:
+    $ref: './cloud/paths/setup_user.yml'
+  /variables:
+    $ref: './cloud/paths/variables.yml'
+  '/variables/{variableID}':
+    $ref: './cloud/paths/variables_variableID.yml'
+  /buckets/{bucketID}/schema/measurements:
+    $ref: './cloud/paths/measurements.yml'
+  /buckets/{bucketID}/schema/measurements/{measurementID}:
+    $ref: './cloud/paths/measurements_measurementID.yml'
+  /orgs/{orgID}/limits:
+    $ref: './cloud/paths/orgs_orgID_limits_get.yml'
+  /orgs/{orgID}/usage:
+    $ref: './cloud/paths/orgs_orgID_usage.yml'
+  /dashboards:
+    $ref: './cloud/paths/dashboards.yml'
+  /tasks:
+    $ref: './cloud/paths/tasks.yml'
+  "/tasks/{taskID}":
+    $ref: "./cloud/paths/tasks_taskID.yml"
+components:
+  parameters:
+    TraceSpan:
+      $ref: "./common/parameters/TraceSpan.yml"
+    Offset:
+      $ref: "./common/parameters/Offset.yml"
+    Limit:
+      $ref: "./common/parameters/Limit.yml"
+    Descending:
+      $ref: "./common/parameters/Descending.yml"
+    SortBy:
+      $ref: "./common/parameters/SortBy.yml"
+    After:
+      $ref: "./common/parameters/After.yml"
+  schemas:
+    LanguageRequest:
+      $ref: "./common/schemas/LanguageRequest.yml"
+    Query:
+      $ref: "./common/schemas/Query.yml"
+    Package:
+      $ref: "./common/schemas/Package.yml"
+    File:
+      $ref: "./common/schemas/File.yml"
+    PackageClause:
+      $ref: "./common/schemas/PackageClause.yml"
+    ImportDeclaration:
+      $ref: "./common/schemas/ImportDeclaration.yml"
+    DeletePredicateRequest:
+      $ref: "./common/schemas/DeletePredicateRequest.yml"
+    Node:
+      $ref: "./common/schemas/Node.yml"
+    NodeType:
+      $ref: "./common/schemas/NodeType.yml"
+    Block:
+      $ref: "./common/schemas/Block.yml"
+    Statement:
+      $ref: "./common/schemas/Statement.yml"
+    BadStatement:
+      $ref: "./common/schemas/BadStatement.yml"
+    VariableAssignment:
+      $ref: "./common/schemas/VariableAssignment.yml"
+    MemberAssignment:
+      $ref: "./common/schemas/MemberAssignment.yml"
+    ExpressionStatement:
+      $ref: "./common/schemas/ExpressionStatement.yml"
+    ReturnStatement:
+      $ref: "./common/schemas/ReturnStatement.yml"
+    OptionStatement:
+      $ref: "./common/schemas/OptionStatement.yml"
+    BuiltinStatement:
+      $ref: "./common/schemas/BuiltinStatement.yml"
+    TestStatement:
+      $ref: "./common/schemas/TestStatement.yml"
+    Expression:
+      $ref: "./common/schemas/Expression.yml"
+    ArrayExpression:
+      $ref: "./common/schemas/ArrayExpression.yml"
+    DictExpression:
+      $ref: "./common/schemas/DictExpression.yml"
+    DictItem:
+      $ref: "./common/schemas/DictItem.yml"
+    FunctionExpression:
+      $ref: "./common/schemas/FunctionExpression.yml"
+    BinaryExpression:
+      $ref: "./common/schemas/BinaryExpression.yml"
+    CallExpression:
+      $ref: "./common/schemas/CallExpression.yml"
+    ConditionalExpression:
+      $ref: "./common/schemas/ConditionalExpression.yml"
+    LogicalExpression:
+      $ref: "./common/schemas/LogicalExpression.yml"
+    MemberExpression:
+      $ref: "./common/schemas/MemberExpression.yml"
+    IndexExpression:
+      $ref: "./common/schemas/IndexExpression.yml"
+    ObjectExpression:
+      $ref: "./common/schemas/ObjectExpression.yml"
+    ParenExpression:
+      $ref: "./common/schemas/ParenExpression.yml"
+    PipeExpression:
+      $ref: "./common/schemas/PipeExpression.yml"
+    UnaryExpression:
+      $ref: "./common/schemas/UnaryExpression.yml"
+    BooleanLiteral:
+      $ref: "./common/schemas/BooleanLiteral.yml"
+    DateTimeLiteral:
+      $ref: "./common/schemas/DateTimeLiteral.yml"
+    DurationLiteral:
+      $ref: "./common/schemas/DurationLiteral.yml"
+    FloatLiteral:
+      $ref: "./common/schemas/FloatLiteral.yml"
+    IntegerLiteral:
+      $ref: "./common/schemas/IntegerLiteral.yml"
+    PipeLiteral:
+      $ref: "./common/schemas/PipeLiteral.yml"
+    RegexpLiteral:
+      $ref: "./common/schemas/RegexpLiteral.yml"
+    StringLiteral:
+      $ref: "./common/schemas/StringLiteral.yml"
+    UnsignedIntegerLiteral:
+      $ref: "./common/schemas/UnsignedIntegerLiteral.yml"
+    Duration:
+      $ref: "./common/schemas/Duration.yml"
+    Property:
+      $ref: "./common/schemas/Property.yml"
+    PropertyKey:
+      $ref: "./common/schemas/PropertyKey.yml"
+    Identifier:
+      $ref: "./common/schemas/Identifier.yml"
+    Dialect:
+      $ref: "./common/schemas/Dialect.yml"
+    Authorization:
+      $ref: "./common/schemas/Authorization.yml"
+    Authorizations:
+      $ref: "./common/schemas/Authorizations.yml"
+    AuthorizationPostRequest:
+      $ref: './common/schemas/AuthorizationPostRequest.yml'
+    AuthorizationUpdateRequest:
+      $ref: "./common/schemas/AuthorizationUpdateRequest.yml"
+    PostBucketRequest:
+      $ref: "./common/schemas/PostBucketRequest.yml"
+    Bucket:
+      $ref: "./common/schemas/Bucket.yml"
+    Buckets:
+      $ref: "./common/schemas/Buckets.yml"
+    RetentionRules:
+      $ref: "./common/schemas/RetentionRules.yml"
+    PatchBucketRequest:
+      $ref: "./common/schemas/PatchBucketRequest.yml"
+    PatchRetentionRules:
+      $ref: "./common/schemas/PatchRetentionRules.yml"
+    PatchRetentionRule:
+      $ref: "./common/schemas/PatchRetentionRule.yml"
+    RetentionRule:
+      $ref: "./common/schemas/RetentionRule.yml"
+    Link:
+      $ref: "./common/schemas/Link.yml"
+    Links:
+      $ref: "./common/schemas/Links.yml"
+    Logs:
+      $ref: "./common/schemas/Logs.yml"
+    LogEvent:
+      $ref: "./common/schemas/LogEvent.yml"
+    Organization:
+      $ref: "./common/schemas/Organization.yml"
+    Organizations:
+      $ref: "./common/schemas/Organizations.yml"
+    PostOrganizationRequest:
+      $ref: "./common/schemas/PostOrganizationRequest.yml"
+    PatchOrganizationRequest:
+      $ref: "./common/schemas/PatchOrganizationRequest.yml"
+    TemplateApply:
+      $ref: "./common/schemas/TemplateApply.yml"
+    TemplateKind:
+      $ref: "./common/schemas/TemplateKind.yml"
+    TemplateExportByID:
+      $ref: "./common/schemas/TemplateExportByID.yml"
+    TemplateExportByName:
+      $ref: "./common/schemas/TemplateExportByName.yml"
+    Template:
+      $ref: "./common/schemas/Template.yml"
+    TemplateEnvReferences:
+      $ref: "./common/schemas/TemplateEnvReferences.yml"
+    TemplateSummary:
+      $ref: "./common/schemas/TemplateSummary.yml"
+    TemplateSummaryLabel:
+      $ref: "./common/schemas/TemplateSummaryLabel.yml"
+    TemplateChart:
+      $ref: "./common/schemas/TemplateChart.yml"
+    Stack:
+      $ref: "./common/schemas/Stack.yml"
+    Runs:
+      $ref: "./common/schemas/Runs.yml"
+    Run:
+      $ref: "./common/schemas/Run.yml"
+    RunManually:
+      $ref: "./common/schemas/RunManually.yml"
+    TaskStatusType:
+      $ref: "./common/schemas/TaskStatusType.yml"
+    UserResponse:
+      $ref: "./common/schemas/UserResponse.yml"
+    Flags:
+      $ref: "./common/schemas/Flags.yml"
+    Resource:
+      $ref: './common/schemas/Resource.yml'
+    ResourceMember:
+      $ref: "./common/schemas/ResourceMember.yml"
+    ResourceMembers:
+      $ref: "./common/schemas/ResourceMembers.yml"
+    ResourceOwner:
+      $ref: "./common/schemas/ResourceOwner.yml"
+    ResourceOwners:
+      $ref: "./common/schemas/ResourceOwners.yml"
+    FluxSuggestions:
+      $ref: "./common/schemas/FluxSuggestions.yml"
+    FluxSuggestion:
+      $ref: "./common/schemas/FluxSuggestion.yml"
+    Routes:
+      $ref: "./common/schemas/Routes.yml"
+    Error:
+      $ref: "./common/schemas/Error.yml"
+    LineProtocolError:
+      $ref: "./common/schemas/LineProtocolError.yml"
+    LineProtocolLengthError:
+      $ref: "./common/schemas/LineProtocolLengthError.yml"
+    Field:
+      $ref: "./common/schemas/Field.yml"
+    BuilderConfig:
+      $ref: "./common/schemas/BuilderConfig.yml"
+    BuilderTagsType:
+      $ref: "./common/schemas/BuilderTagsType.yml"
+    BuilderAggregateFunctionType:
+      $ref: "./common/schemas/BuilderAggregateFunctionType.yml"
+    BuilderFunctionsType:
+      $ref: "./common/schemas/BuilderFunctionsType.yml"
+    DashboardQuery:
+      $ref: "./common/schemas/DashboardQuery.yml"
+    QueryEditMode:
+      $ref: "./common/schemas/QueryEditMode.yml"
+    Axis:
+      $ref: "./common/schemas/Axis.yml"
+    AxisScale:
+      $ref: "./common/schemas/AxisScale.yml"
+    DashboardColor:
+      $ref: "./common/schemas/DashboardColor.yml"
+    RenamableField:
+      $ref: "./common/schemas/RenamableField.yml"
+    XYViewProperties:
+      $ref: "./common/schemas/XYViewProperties.yml"
+    XYGeom:
+      $ref: "./common/schemas/XYGeom.yml"
+    BandViewProperties:
+      $ref: "./common/schemas/BandViewProperties.yml"
+    LinePlusSingleStatProperties:
+      $ref: "./common/schemas/LinePlusSingleStatProperties.yml"
+    MosaicViewProperties:
+      $ref: "./common/schemas/MosaicViewProperties.yml"
+    ScatterViewProperties:
+      $ref: "./common/schemas/ScatterViewProperties.yml"
+    HeatmapViewProperties:
+      $ref: "./common/schemas/HeatmapViewProperties.yml"
+    SingleStatViewProperties:
+      $ref: "./common/schemas/SingleStatViewProperties.yml"
+    HistogramViewProperties:
+      $ref: "./common/schemas/HistogramViewProperties.yml"
+    GaugeViewProperties:
+      $ref: "./common/schemas/GaugeViewProperties.yml"
+    TableViewProperties:
+      $ref: "./common/schemas/TableViewProperties.yml"
+    SimpleTableViewProperties:
+      $ref: "./common/schemas/SimpleTableViewProperties.yml"
+    MarkdownViewProperties:
+      $ref: "./common/schemas/MarkdownViewProperties.yml"
+    CheckViewProperties:
+      $ref: "./common/schemas/CheckViewProperties.yml"
+    GeoViewLayer:
+      $ref: "./common/schemas/GeoViewLayer.yml"
+    GeoViewLayerProperties:
+      $ref: "./common/schemas/GeoViewLayerProperties.yml"
+    GeoCircleViewLayer:
+      $ref: "./common/schemas/GeoCircleViewLayer.yml"
+    GeoPointMapViewLayer:
+      $ref: "./common/schemas/GeoPointMapViewLayer.yml"
+    GeoTrackMapViewLayer:
+      $ref: "./common/schemas/GeoTrackMapViewLayer.yml"
+    GeoHeatMapViewLayer:
+      $ref: "./common/schemas/GeoHeatMapViewLayer.yml"
+    GeoViewProperties:
+      $ref: "./common/schemas/GeoViewProperties.yml"
+    LatLonColumns:
+      $ref: "./common/schemas/LatLonColumns.yml"
+    LatLonColumn:
+      $ref: "./common/schemas/LatLonColumn.yml"
+    Axes:
+      $ref: "./common/schemas/Axes.yml"
+    StaticLegend:
+      $ref: "./common/schemas/StaticLegend.yml"
+    DecimalPlaces:
+      $ref: "./common/schemas/DecimalPlaces.yml"
+    ConstantVariableProperties:
+      $ref: "./common/schemas/ConstantVariableProperties.yml"
+    MapVariableProperties:
+      $ref: "./common/schemas/MapVariableProperties.yml"
+    QueryVariableProperties:
+      $ref: "./common/schemas/QueryVariableProperties.yml"
+    VariableProperties:
+      $ref: "./common/schemas/VariableProperties.yml"
+    ViewProperties:
+      $ref: "./common/schemas/ViewProperties.yml"
+    View:
+      $ref: "./common/schemas/View.yml"
+    Views:
+      $ref: "./common/schemas/Views.yml"
+    CellUpdate:
+      $ref: "./common/schemas/CellUpdate.yml"
+    CreateCell:
+      $ref: "./common/schemas/CreateCell.yml"
+    AnalyzeQueryResponse:
+      $ref: "./common/schemas/AnalyzeQueryResponse.yml"
+    CellWithViewProperties:
+      $ref: "./common/schemas/CellWithViewProperties.yml"
+    Cell:
+      $ref: "./common/schemas/Cell.yml"
+    CellsWithViewProperties:
+      $ref: "./common/schemas/CellsWithViewProperties.yml"
+    Cells:
+      $ref: "./common/schemas/Cells.yml"
+    Secrets:
+      $ref: "./common/schemas/Secrets.yml"
+    SecretKeys:
+      $ref: "./common/schemas/SecretKeys.yml"
+    SecretKeysResponse:
+      $ref: "./common/schemas/SecretKeysResponse.yml"
+    CreateDashboardRequest:
+      $ref: "./common/schemas/CreateDashboardRequest.yml"
+    DashboardWithViewProperties:
+      $ref: "./common/schemas/DashboardWithViewProperties.yml"
+    Dashboard:
+      $ref: "./common/schemas/Dashboard.yml"
+    Dashboards:
+      $ref: "./common/schemas/Dashboards.yml"
+    TelegrafRequest:
+      $ref: "./common/schemas/TelegrafRequest.yml"
+    TelegrafPluginRequest:
+      $ref: "./common/schemas/TelegrafPluginRequest.yml"
+    Telegraf:
+      $ref: "./common/schemas/Telegraf.yml"
+    Telegrafs:
+      $ref: "./common/schemas/Telegrafs.yml"
+    TelegrafPlugin:
+      $ref: "./common/schemas/TelegrafPlugin.yml"
+    TelegrafPlugins:
+      $ref: "./common/schemas/TelegrafPlugins.yml"
+    IsOnboarding:
+      $ref: "./common/schemas/IsOnboarding.yml"
+    PasswordResetBody:
+      $ref: "./common/schemas/PasswordResetBody.yml"
+    AddResourceMemberRequestBody:
+      $ref: "./common/schemas/AddResourceMemberRequestBody.yml"
+    Ready:
+      $ref: "./common/schemas/Ready.yml"
+    HealthCheck:
+      $ref: "./common/schemas/HealthCheck.yml"
+    Labels:
+      $ref: "./common/schemas/Labels.yml"
+    Label:
+      $ref: "./common/schemas/Label.yml"
+    LabelCreateRequest:
+      $ref: "./common/schemas/LabelCreateRequest.yml"
+    LabelUpdate:
+      $ref: "./common/schemas/LabelUpdate.yml"
+    LabelMapping:
+      $ref: "./common/schemas/LabelMapping.yml"
+    LabelsResponse:
+      $ref: "./common/schemas/LabelsResponse.yml"
+    LabelResponse:
+      $ref: "./common/schemas/LabelResponse.yml"
+    ASTResponse:
+      $ref: "./common/schemas/ASTResponse.yml"
+    WritePrecision:
+      $ref: "./common/schemas/WritePrecision.yml"
+    FluxResponse:
+      $ref: "./common/schemas/FluxResponse.yml"
+    CheckPatch:
+      $ref: "./common/schemas/CheckPatch.yml"
+    CheckDiscriminator:
+      $ref: "./common/schemas/CheckDiscriminator.yml"
+    Check:
+      $ref: "./common/schemas/Check.yml"
+    PostCheck:
+      $ref: "./common/schemas/PostCheck.yml"
+    Checks:
+      $ref: "./common/schemas/Checks.yml"
+    CheckBase:
+      $ref: "./common/schemas/CheckBase.yml"
+    ThresholdCheck:
+      $ref: "./common/schemas/ThresholdCheck.yml"
+    Threshold:
+      $ref: "./common/schemas/Threshold.yml"
+    DeadmanCheck:
+      $ref: "./common/schemas/DeadmanCheck.yml"
+    CustomCheck:
+      $ref: "./common/schemas/CustomCheck.yml"
+    ThresholdBase:
+      $ref: "./common/schemas/ThresholdBase.yml"
+    GreaterThreshold:
+      $ref: "./common/schemas/GreaterThreshold.yml"
+    LesserThreshold:
+      $ref: "./common/schemas/LesserThreshold.yml"
+    RangeThreshold:
+      $ref: "./common/schemas/RangeThreshold.yml"
+    CheckStatusLevel:
+      $ref: "./common/schemas/CheckStatusLevel.yml"
+    RuleStatusLevel:
+      $ref: "./common/schemas/RuleStatusLevel.yml"
+    NotificationRuleUpdate:
+      $ref: "./common/schemas/NotificationRuleUpdate.yml"
+    NotificationRuleDiscriminator:
+      $ref: "./common/schemas/NotificationRuleDiscriminator.yml"
+    NotificationRule:
+      $ref: "./common/schemas/NotificationRule.yml"
+    PostNotificationRule:
+      $ref: "./common/schemas/PostNotificationRule.yml"
+    NotificationRules:
+      $ref: "./common/schemas/NotificationRules.yml"
+    NotificationRuleBase:
+      $ref: "./common/schemas/NotificationRuleBase.yml"
+    TagRule:
+      $ref: "./common/schemas/TagRule.yml"
+    StatusRule:
+      $ref: "./common/schemas/StatusRule.yml"
+    HTTPNotificationRuleBase:
+      $ref: "./common/schemas/HTTPNotificationRuleBase.yml"
+    HTTPNotificationRule:
+      $ref: "./common/schemas/HTTPNotificationRule.yml"
+    SlackNotificationRuleBase:
+      $ref: "./common/schemas/SlackNotificationRuleBase.yml"
+    SlackNotificationRule:
+      $ref: "./common/schemas/SlackNotificationRule.yml"
+    SMTPNotificationRule:
+      $ref: "./common/schemas/SMTPNotificationRule.yml"
+    SMTPNotificationRuleBase:
+      $ref: "./common/schemas/SMTPNotificationRuleBase.yml"
+    PagerDutyNotificationRule:
+      $ref: "./common/schemas/PagerDutyNotificationRule.yml"
+    PagerDutyNotificationRuleBase:
+      $ref: "./common/schemas/PagerDutyNotificationRuleBase.yml"
+    TelegramNotificationRule:
+      $ref: "./common/schemas/TelegramNotificationRule.yml"
+    TelegramNotificationRuleBase:
+      $ref: "./common/schemas/TelegramNotificationRuleBase.yml"
+    NotificationEndpointUpdate:
+      $ref: "./common/schemas/NotificationEndpointUpdate.yml"
+    NotificationEndpointDiscriminator:
+      $ref: "./common/schemas/NotificationEndpointDiscriminator.yml"
+    NotificationEndpoint:
+      $ref: "./common/schemas/NotificationEndpoint.yml"
+    PostNotificationEndpoint:
+      $ref: "./common/schemas/PostNotificationEndpoint.yml"
+    NotificationEndpoints:
+      $ref: "./common/schemas/NotificationEndpoints.yml"
+    NotificationEndpointBase:
+      $ref: "./common/schemas/NotificationEndpointBase.yml"
+    SlackNotificationEndpoint:
+      $ref: "./common/schemas/SlackNotificationEndpoint.yml"
+    PagerDutyNotificationEndpoint:
+      $ref: "./common/schemas/PagerDutyNotificationEndpoint.yml"
+    HTTPNotificationEndpoint:
+      $ref: "./common/schemas/HTTPNotificationEndpoint.yml"
+    TelegramNotificationEndpoint:
+      $ref: "./common/schemas/TelegramNotificationEndpoint.yml"
+    NotificationEndpointType:
+      $ref: "./common/schemas/NotificationEndpointType.yml"
+    DBRP:
+      $ref: "./common/schemas/DBRP.yml"
+    DBRPs:
+      $ref: "./common/schemas/DBRPs.yml"
+    DBRPUpdate:
+      $ref: "./common/schemas/DBRPUpdate.yml"
+    DBRPCreate:
+      $ref: "./common/schemas/DBRPCreate.yml"
+    DBRPGet:
+      $ref: "./common/schemas/DBRPGet.yml"
+    SchemaType:
+      $ref: "./common/schemas/SchemaType.yml"
+    ColorMapping:
+      $ref: "./common/schemas/ColorMapping.yml"
+    Permission:
+      $ref: './common/schemas/Permission.yml'
+    User:
+      $ref: './cloud/schemas/User.yml'
+    Users:
+      $ref: './cloud/schemas/Users.yml'
+    OnboardingRequest:
+      $ref: './cloud/schemas/OnboardingRequest.yml'
+    OnboardingResponse:
+      $ref: './cloud/schemas/OnboardingResponse.yml'
+    Limit:
+      $ref: './cloud/schemas/Limit.yml'
+    Variable:
+      $ref: './cloud/schemas/Variable.yml'
+    Variables:
+      $ref: './cloud/schemas/Variables.yml'
+    ColumnDataType:
+      $ref: './cloud/schemas/ColumnDataType.yml'
+    ColumnSemanticType:
+      $ref: './cloud/schemas/ColumnSemanticType.yml'
+    MeasurementSchema:
+      $ref: './cloud/schemas/MeasurementSchema.yml'
+    MeasurementSchemaColumn:
+      $ref: './cloud/schemas/MeasurementSchemaColumn.yml'
+    MeasurementSchemaCreateRequest:
+      $ref: './cloud/schemas/MeasurementSchemaCreateRequest.yml'
+    MeasurementSchemaList:
+      $ref: './cloud/schemas/MeasurementSchemaList.yml'
+    MeasurementSchemaUpdateRequest:
+      $ref: './cloud/schemas/MeasurementSchemaUpdateRequest.yml'
+    Tasks:
+      $ref: "./cloud/schemas/Tasks.yml"
+    Task:
+      $ref: "./cloud/schemas/Task.yml"
+    TaskCreateRequest:
+      $ref: "./cloud/schemas/TaskCreateRequest.yml"
+    TaskUpdateRequest:
+      $ref: "./cloud/schemas/TaskUpdateRequest.yml"
+  responses:
+    AuthorizationError:
+      $ref: "./common/responses/AuthorizationError.yml"
+    BadRequestError:
+      $ref: "./common/responses/BadRequestError.yml"
+    GeneralServerError:
+      $ref: "./common/responses/ServerError.yml"
+    InternalServerError:
+      $ref: "./common/responses/InternalServerError.yml"
+    ResourceNotFoundError:
+      $ref: "./common/responses/ResourceNotFoundError.yml"
+  examples:
+    AuthorizationPostRequest:
+      $ref: "./common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationPostRequest"
+    AuthorizationWithResourcePostRequest:
+      $ref: "./common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithResourcePostRequest"
+    AuthorizationWithUserPostRequest:
+      $ref: "./common/requestBody/examples/AuthorizationRequestExamples.yml#/AuthorizationWithUserPostRequest"
+    TaskWithFluxRequest:
+      $ref: "./common/requestBody/examples/TaskRequestExamples.yml#/TaskWithFluxRequest"
+    TaskWithScriptRequest:
+      $ref: "./common/requestBody/examples/TaskRequestExamples.yml#/TaskWithScriptRequest"
+  securitySchemes:
+    TokenAuthentication:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: |
+        Use the [Token authentication](#section/Authentication/TokenAuthentication)
+        scheme to authenticate to the InfluxDB API.
+
+        In your API requests, send an `Authorization` header.
+        For the header value, provide the word `Token` followed by a space and an InfluxDB API token.
+        The word `Token` is case-sensitive.
+
+        ### Syntax
+
+        `Authorization: Token INFLUX_API_TOKEN`
+
+        ### Example
+
+        #### Use Token authentication with cURL
+
+        The following example shows how to use cURL to send an API request that uses Token authentication:
+
+        ```sh
+        curl --request GET "INFLUX_URL/api/v2/buckets" \
+             --header "Authorization: Token INFLUX_API_TOKEN"
+        ```
+
+        Replace the following:
+
+          - *`INFLUX_URL`*: your InfluxDB Cloud URL
+          - *`INFLUX_API_TOKEN`*: your [InfluxDB API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+
+        ### Related endpoints
+
+        - [`/authorizations` endpoints](#tag/Authorizations-(API-tokens))
+
+        ### Related guides
+
+        - [Authorize API requests]({{% INFLUXDB_DOCS_URL %}}/api-guide/api_intro/#authentication)
+        - [Manage API tokens]({{% INFLUXDB_DOCS_URL %}}/security/tokens/)
+    BasicAuthentication:
+      type: http
+      scheme: basic
+      description: |
+        ### Basic authentication scheme
+
+        Use the HTTP Basic authentication scheme for InfluxDB `/api/v2` API operations that support it:
+
+        ### Syntax
+
+        `Authorization: Basic BASE64_ENCODED_CREDENTIALS`
+
+        To construct the `BASE64_ENCODED_CREDENTIALS`, combine the username and
+        the password with a colon (`USERNAME:PASSWORD`), and then encode the
+        resulting string in [base64](https://developer.mozilla.org/en-US/docs/Glossary/Base64).
+        Many HTTP clients encode the credentials for you before sending the
+        request.
+
+        _**Warning**: Base64-encoding can easily be reversed to obtain the original
+        username and password. It is used to keep the data intact and does not provide
+        security. You should always use HTTPS when authenticating or sending a request with
+        sensitive information._
+
+        ### Examples
+
+        In the examples, replace the following:
+
+        - **`EMAIL_ADDRESS`**: InfluxDB Cloud username (the email address the user signed up with)
+        - **`PASSWORD`**: InfluxDB Cloud [API token]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#token)
+        - **`INFLUX_URL`**: your InfluxDB Cloud URL
+
+        #### Encode credentials with cURL
+
+        The following example shows how to use cURL to send an API request that uses Basic authentication.
+        With the `--user` option, cURL encodes the credentials and passes them
+        in the `Authorization: Basic` header.
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --user "EMAIL_ADDRESS":"PASSWORD"
+        ```
+
+        #### Encode credentials with Flux
+
+        The Flux [`http.basicAuth()` function](https://docs.influxdata.com/flux/v0.x/stdlib/http/basicauth/) returns a Base64-encoded
+        basic authentication header using a specified username and password combination.
+
+        #### Encode credentials with JavaScript
+
+        The following example shows how to use the JavaScript `btoa()` function
+        to create a Base64-encoded string:
+
+        ```js
+        btoa('EMAIL_ADDRESS:PASSWORD')
+        ```
+
+        The output is the following:
+
+        ```js
+        'VVNFUk5BTUU6UEFTU1dPUkQ='
+        ```
+
+        Once you have the Base64-encoded credentials, you can pass them in the
+        `Authorization` header--for example:
+
+        ```sh
+        curl --get "INFLUX_URL/api/v2/signin"
+            --header "Authorization: Basic VVNFUk5BTUU6UEFTU1dPUkQ="
+        ```
+
+        To learn more about HTTP authentication, see
+        [Mozilla Developer Network (MDN) Web Docs, HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)._
+security:
+  - TokenAuthentication: []

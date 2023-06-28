@@ -1242,6 +1242,47 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  '/operator/accounts/{fromAccountId}/migrate/{toAccountId}':
+    patch:
+      operationId: MigrateOrgsByAccountById
+      tags:
+        - Accounts
+      summary: Migrates an account's organizations to another account
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: fromAccountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to migrate organizations from
+        - in: path
+          name: toAccountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to migrate organizations to
+      responses:
+        '200':
+          description: Account organizations moved to
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorAccount'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   '/operator/accounts/{accountId}/reactivate':
     patch:
       operationId: ReactivateAccountById
@@ -1489,6 +1530,51 @@ paths:
           $ref: '#/components/responses/ServerError'
         '404':
           description: Not Found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/orgs/{orgId}/migrate/{toAccountId}':
+    patch:
+      operationId: MigrateOrgById
+      tags:
+        - Organization
+        - Operators
+      summary: Migrates an organization to a different account.
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE id of the organization to reactivate.
+        - in: path
+          name: toAccountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to migrate organization into
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Organization successfully migrated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Not Found
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
