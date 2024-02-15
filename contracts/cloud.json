@@ -5017,7 +5017,40 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Query"
+                "description": "Query InfluxDB with the Flux language",
+                "type": "object",
+                "required": [
+                  "query"
+                ],
+                "properties": {
+                  "extern": {
+                    "$ref": "#/components/schemas/File"
+                  },
+                  "query": {
+                    "description": "The query script to execute.",
+                    "type": "string"
+                  },
+                  "type": {
+                    "description": "The type of query. Must be \"flux\".",
+                    "type": "string",
+                    "enum": [
+                      "flux"
+                    ]
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Key-value pairs passed as parameters during query execution.\n\nTo use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:\n\n```json\n  query: \"from(bucket: params.mybucket)\\\n              |> range(start: params.rangeStart) |> limit(n:1)\"\n```\n\nand pass _`params`_ with the key-value pairs--for example:\n\n```json\n  params: {\n    \"mybucket\": \"environment\",\n    \"rangeStart\": \"-30d\"\n  }\n```\n\nDuring query execution, InfluxDB passes _`params`_ to your script and substitutes the values.\n\n#### Limitations\n\n- If you use _`params`_, you can't use _`extern`_.\n"
+                  },
+                  "dialect": {
+                    "$ref": "#/components/schemas/Dialect"
+                  },
+                  "now": {
+                    "description": "Specifies the time that should be reported as `now` in the query.\nDefault is the server `now` time.\n",
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
               }
             }
           }
@@ -5127,163 +5160,6 @@
             "source": "curl -v --request POST \\\n  \"http://localhost:8086/api/v2/query/analyze\" \\\n  --header \"Authorization: Token INFLUX_API_TOKEN\" \\\n  --header 'Content-type: application/json' \\\n  --header 'Accept: application/json' \\\n  --data-binary @- << EOF\n  { \"query\": \"from(bucket: \\\"iot_center\\\")\\\n              |> range(start: -90d)\\\n              |> filter(fn: (r) => r._measurement == \\\"environment\\\")\",\n    \"type\": \"flux\"\n  }\nEOF\n"
           }
         ]
-      }
-    },
-    "/query": {
-      "post": {
-        "operationId": "PostQuery",
-        "tags": [
-          "Data I/O endpoints",
-          "Query"
-        ],
-        "summary": "Query data",
-        "description": "Retrieves data from buckets.\n\nUse this endpoint to send a Flux query request and retrieve data from a bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`read` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/)\n- [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)\n",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/TraceSpan"
-          },
-          {
-            "in": "header",
-            "name": "Accept-Encoding",
-            "description": "The content encoding (usually a compression algorithm) that the client can understand.",
-            "schema": {
-              "type": "string",
-              "description": "The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.",
-              "default": "identity",
-              "enum": [
-                "gzip",
-                "identity"
-              ]
-            }
-          },
-          {
-            "in": "header",
-            "name": "Content-Type",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "application/json",
-                "application/vnd.flux"
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "org",
-            "description": "An organization name or ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Queries the bucket in the specified organization.\n",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "orgID",
-            "description": "An organization ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Queries the bucket in the specified organization.\n",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "x-codeSamples": [
-          {
-            "lang": "Shell",
-            "label": "cURL",
-            "source": "curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \\\n--header 'Content-Type: application/vnd.flux' \\\n--header 'Accept: application/csv \\\n--header 'Authorization: Token INFLUX_API_TOKEN' \\\n--data 'from(bucket: \"example-bucket\")\n          |> range(start: -5m)\n          |> filter(fn: (r) => r._measurement == \"example-measurement\")'\n"
-          }
-        ],
-        "requestBody": {
-          "description": "Flux query or specification to execute",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Query"
-              }
-            },
-            "application/vnd.flux": {
-              "schema": {
-                "type": "string"
-              },
-              "example": "from(bucket: \"example-bucket\")\n    |> range(start: -5m)\n    |> filter(fn: (r) => r._measurement == \"example-measurement\")\n"
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success. The response body contains query results.",
-            "headers": {
-              "Content-Encoding": {
-                "description": "Lists encodings (usually compression algorithms) that have been applied to the response payload.",
-                "schema": {
-                  "type": "string",
-                  "description": "The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.\n",
-                  "default": "identity",
-                  "enum": [
-                    "gzip",
-                    "identity"
-                  ]
-                }
-              },
-              "Trace-Id": {
-                "description": "The trace ID, if generated, of the request.",
-                "schema": {
-                  "type": "string",
-                  "description": "Trace ID of a request."
-                }
-              }
-            },
-            "content": {
-              "application/csv": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "result,table,_start,_stop,_time,region,host,_value\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62\n"
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "orgNotFound": {
-                    "summary": "Organization not found",
-                    "value": {
-                      "code": "invalid",
-                      "message": "failed to decode request body: organization not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/AuthorizationError"
-          },
-          "404": {
-            "$ref": "#/components/responses/ResourceNotFoundError"
-          },
-          "429": {
-            "description": "#### InfluxDB Cloud:\n  - returns this error if a **read** or **write** request exceeds your\n    plan's [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum\n    [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits)\n  - returns `Retry-After` header that describes when to try the write again.\n\n#### InfluxDB OSS:\n  - doesn't return this error.\n",
-            "headers": {
-              "Retry-After": {
-                "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "default": {
-            "$ref": "#/components/responses/GeneralServerError"
-          }
-        }
       }
     },
     "/buckets": {
@@ -13041,6 +12917,163 @@
         }
       }
     },
+    "/query": {
+      "post": {
+        "operationId": "PostQuery",
+        "tags": [
+          "Data I/O endpoints",
+          "Query"
+        ],
+        "summary": "Query data",
+        "description": "Retrieves data from buckets.\n\nUse this endpoint to send a Flux query request and retrieve data from a bucket.\n\n#### Rate limits (with InfluxDB Cloud)\n\n`read` rate limits apply.\nFor more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).\n\n#### Related guides\n\n- [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/)\n- [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TraceSpan"
+          },
+          {
+            "in": "header",
+            "name": "Accept-Encoding",
+            "description": "The content encoding (usually a compression algorithm) that the client can understand.",
+            "schema": {
+              "type": "string",
+              "description": "The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.",
+              "default": "identity",
+              "enum": [
+                "gzip",
+                "identity"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "Content-Type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "application/json",
+                "application/vnd.flux"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "org",
+            "description": "An organization name or ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Queries the bucket in the specified organization.\n",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orgID",
+            "description": "An organization ID.\n\n#### InfluxDB Cloud\n\n- Doesn't use the `org` parameter or `orgID` parameter.\n- Queries the bucket in the organization associated with the authorization (API token).\n\n#### InfluxDB OSS\n\n- Requires either the `org` parameter or `orgID` parameter.\n- Queries the bucket in the specified organization.\n",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "x-codeSamples": [
+          {
+            "lang": "Shell",
+            "label": "cURL",
+            "source": "curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \\\n--header 'Content-Type: application/vnd.flux' \\\n--header 'Accept: application/csv \\\n--header 'Authorization: Token INFLUX_API_TOKEN' \\\n--data 'from(bucket: \"example-bucket\")\n          |> range(start: -5m)\n          |> filter(fn: (r) => r._measurement == \"example-measurement\")'\n"
+          }
+        ],
+        "requestBody": {
+          "description": "Flux query or specification to execute",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Query"
+              }
+            },
+            "application/vnd.flux": {
+              "schema": {
+                "type": "string"
+              },
+              "example": "from(bucket: \"example-bucket\")\n    |> range(start: -5m)\n    |> filter(fn: (r) => r._measurement == \"example-measurement\")\n"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success. The response body contains query results.",
+            "headers": {
+              "Content-Encoding": {
+                "description": "Lists encodings (usually compression algorithms) that have been applied to the response payload.",
+                "schema": {
+                  "type": "string",
+                  "description": "The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.\n",
+                  "default": "identity",
+                  "enum": [
+                    "gzip",
+                    "identity"
+                  ]
+                }
+              },
+              "Trace-Id": {
+                "description": "The trace ID, if generated, of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Trace ID of a request."
+                }
+              }
+            },
+            "content": {
+              "application/csv": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "result,table,_start,_stop,_time,region,host,_value\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25\nmean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62\n"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.\nThe response body contains detail about the error.\n\n#### InfluxDB OSS\n\n- Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "orgNotFound": {
+                    "summary": "Organization not found",
+                    "value": {
+                      "code": "invalid",
+                      "message": "failed to decode request body: organization not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthorizationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/ResourceNotFoundError"
+          },
+          "429": {
+            "description": "#### InfluxDB Cloud:\n  - returns this error if a **read** or **write** request exceeds your\n    plan's [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas)\n    or if a **delete** request exceeds the maximum\n    [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits)\n  - returns `Retry-After` header that describes when to try the write again.\n\n#### InfluxDB OSS:\n  - doesn't return this error.\n",
+            "headers": {
+              "Retry-After": {
+                "description": "Non-negative decimal integer indicating seconds to wait before retrying the request.",
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "default": {
+            "$ref": "#/components/responses/GeneralServerError"
+          }
+        }
+      }
+    },
     "/tasks": {
       "get": {
         "operationId": "GetTasks",
@@ -13596,42 +13629,6 @@
           "query": {
             "description": "The Flux query script to be analyzed.\n",
             "type": "string"
-          }
-        }
-      },
-      "Query": {
-        "description": "Query InfluxDB with the Flux language",
-        "type": "object",
-        "required": [
-          "query"
-        ],
-        "properties": {
-          "extern": {
-            "$ref": "#/components/schemas/File"
-          },
-          "query": {
-            "description": "The query script to execute.",
-            "type": "string"
-          },
-          "type": {
-            "description": "The type of query. Must be \"flux\".",
-            "type": "string",
-            "enum": [
-              "flux"
-            ]
-          },
-          "params": {
-            "type": "object",
-            "additionalProperties": true,
-            "description": "Key-value pairs passed as parameters during query execution.\n\nTo use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:\n\n```json\n  query: \"from(bucket: params.mybucket)\\\n              |> range(start: params.rangeStart) |> limit(n:1)\"\n```\n\nand pass _`params`_ with the key-value pairs--for example:\n\n```json\n  params: {\n    \"mybucket\": \"environment\",\n    \"rangeStart\": \"-30d\"\n  }\n```\n\nDuring query execution, InfluxDB passes _`params`_ to your script and substitutes the values.\n\n#### Limitations\n\n- If you use _`params`_, you can't use _`extern`_.\n"
-          },
-          "dialect": {
-            "$ref": "#/components/schemas/Dialect"
-          },
-          "now": {
-            "description": "Specifies the time that should be reported as `now` in the query.\nDefault is the server `now` time.\n",
-            "type": "string",
-            "format": "date-time"
           }
         }
       },
@@ -21819,6 +21816,42 @@
             "items": {
               "$ref": "#/components/schemas/MeasurementSchemaColumn"
             }
+          }
+        }
+      },
+      "Query": {
+        "description": "Query InfluxDB with the Flux language",
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "extern": {
+            "$ref": "#/components/schemas/File"
+          },
+          "query": {
+            "description": "The query script to execute.",
+            "type": "string"
+          },
+          "type": {
+            "description": "The type of query. Must be \"flux\".",
+            "type": "string",
+            "enum": [
+              "flux"
+            ]
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Key-value pairs passed as parameters during query execution.\n\nTo use parameters in your query, pass a _`query`_ with `params` references (in dot notation)--for example:\n\n```json\n  query: \"from(bucket: params.mybucket)\\\n              |> range(start: params.rangeStart) |> limit(n:1)\"\n```\n\nand pass _`params`_ with the key-value pairs--for example:\n\n```json\n  params: {\n    \"mybucket\": \"environment\",\n    \"rangeStart\": \"-30d\"\n  }\n```\n\nDuring query execution, InfluxDB passes _`params`_ to your script and substitutes the values.\n\n#### Limitations\n\n- If you use _`params`_, you can't use _`extern`_.\n"
+          },
+          "dialect": {
+            "$ref": "#/components/schemas/Dialect"
+          },
+          "now": {
+            "description": "Specifies the time that should be reported as `now` in the query.\nDefault is the server `now` time.\n",
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
