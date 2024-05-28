@@ -1243,7 +1243,7 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '404':
-          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+          $ref: '#/paths/~1query/post/responses/404'
         '500':
           $ref: '#/paths/~1users/get/responses/500'
         default:
@@ -2606,6 +2606,201 @@ paths:
             application/json:
               schema:
                 $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+        default:
+          $ref: '#/paths/~1config/get/responses/401'
+  /query:
+    post:
+      operationId: PostQuery
+      tags:
+        - Data I/O endpoints
+        - Query
+      summary: Query data
+      description: |
+        Retrieves data from buckets.
+
+        Use this endpoint to send a Flux query request and retrieve data from a bucket.
+
+        #### Rate limits (with InfluxDB Cloud)
+
+        `read` rate limits apply.
+        For more information, see [limits and adjustable quotas](https://docs.influxdata.com/influxdb/cloud/account-management/limits/).
+
+        #### Related guides
+
+        - [Query with the InfluxDB API]({{% INFLUXDB_DOCS_URL %}}/query-data/execute-queries/influx-api/)
+        - [Get started with Flux](https://docs.influxdata.com/flux/v0.x/get-started/)
+      parameters:
+        - $ref: '#/paths/~1ready/get/parameters/0'
+        - in: header
+          name: Accept-Encoding
+          description: The content encoding (usually a compression algorithm) that the client can understand.
+          schema:
+            type: string
+            description: 'The content coding.  Use `gzip` for compressed data or `identity` for unmodified, uncompressed data.'
+            default: identity
+            enum:
+              - gzip
+              - identity
+        - in: header
+          name: Content-Type
+          schema:
+            type: string
+            enum:
+              - application/json
+              - application/vnd.flux
+        - in: query
+          name: org
+          description: |
+            An organization name or ID.
+
+            #### InfluxDB Cloud
+
+            - Doesn't use the `org` parameter or `orgID` parameter.
+            - Queries the bucket in the organization associated with the authorization (API token).
+
+            #### InfluxDB OSS
+
+            - Requires either the `org` parameter or `orgID` parameter.
+            - Queries the bucket in the specified organization.
+          schema:
+            type: string
+        - in: query
+          name: orgID
+          description: |
+            An organization ID.
+
+            #### InfluxDB Cloud
+
+            - Doesn't use the `org` parameter or `orgID` parameter.
+            - Queries the bucket in the organization associated with the authorization (API token).
+
+            #### InfluxDB OSS
+
+            - Requires either the `org` parameter or `orgID` parameter.
+            - Queries the bucket in the specified organization.
+          schema:
+            type: string
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |
+            curl --request POST 'INFLUX_URL/api/v2/query?org=INFLUX_ORG' \
+            --header 'Content-Type: application/vnd.flux' \
+            --header 'Accept: application/csv \
+            --header 'Authorization: Token INFLUX_API_TOKEN' \
+            --data 'from(bucket: "example-bucket")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r._measurement == "example-measurement")'
+      requestBody:
+        description: Flux query or specification to execute
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+          application/vnd.flux:
+            schema:
+              type: string
+            example: |
+              from(bucket: "example-bucket")
+                  |> range(start: -5m)
+                  |> filter(fn: (r) => r._measurement == "example-measurement")
+      responses:
+        '200':
+          description: Success. The response body contains query results.
+          headers:
+            Content-Encoding:
+              description: Lists encodings (usually compression algorithms) that have been applied to the response payload.
+              schema:
+                type: string
+                description: |
+                  The content coding: `gzip` for compressed data or `identity` for unmodified, uncompressed data.
+                default: identity
+                enum:
+                  - gzip
+                  - identity
+            Trace-Id:
+              description: 'The trace ID, if generated, of the request.'
+              schema:
+                type: string
+                description: Trace ID of a request.
+          content:
+            application/csv:
+              schema:
+                type: string
+              example: |
+                result,table,_start,_stop,_time,region,host,_value
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:00Z,east,A,15.43
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:20Z,east,B,59.25
+                mean,0,2018-05-08T20:50:00Z,2018-05-08T20:51:00Z,2018-05-08T20:50:40Z,east,C,52.62
+        '400':
+          description: |
+            Bad request.
+            The response body contains detail about the error.
+
+            #### InfluxDB OSS
+
+            - Returns this error if the `org` parameter or `orgID` parameter doesn't match an organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+              examples:
+                orgNotFound:
+                  summary: Organization not found
+                  value:
+                    code: invalid
+                    message: 'failed to decode request body: organization not found'
+        '401':
+          $ref: '#/paths/~1tasks/get/responses/401'
+        '404':
+          description: |
+            Not found.
+            A requested resource was not found.
+            The response body contains the requested resource type and the name value
+            (if you passed it)--for example:
+
+            - `"organization name \"my-org\" not found"`
+            - `"organization not found"`: indicates you passed an ID that did not match
+               an organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
+              examples:
+                org-not-found:
+                  summary: Organization name not found
+                  value:
+                    code: not found
+                    message: organization name "my-org" not found
+                bucket-not-found:
+                  summary: Bucket name not found
+                  value:
+                    code: not found
+                    message: bucket "air_sensor" not found
+                orgID-not-found:
+                  summary: Organization ID not found
+                  value:
+                    code: not found
+                    message: organization not found
+        '429':
+          description: |
+            #### InfluxDB Cloud:
+              - returns this error if a **read** or **write** request exceeds your
+                plan's [adjustable service quotas]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#adjustable-service-quotas)
+                or if a **delete** request exceeds the maximum
+                [global limit]({{% INFLUXDB_DOCS_URL %}}/account-management/limits/#global-limits)
+              - returns `Retry-After` header that describes when to try the write again.
+
+            #### InfluxDB OSS:
+              - doesn't return this error.
+          headers:
+            Retry-After:
+              description: Non-negative decimal integer indicating seconds to wait before retrying the request.
+              schema:
+                type: integer
+                format: int32
+        '500':
+          $ref: '#/paths/~1users/get/responses/500'
         default:
           $ref: '#/paths/~1config/get/responses/401'
   /remotes:
@@ -5054,35 +5249,7 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '404':
-          description: |
-            Not found.
-            A requested resource was not found.
-            The response body contains the requested resource type and the name value
-            (if you passed it)--for example:
-
-            - `"organization name \"my-org\" not found"`
-            - `"organization not found"`: indicates you passed an ID that did not match
-               an organization.
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1users/get/responses/401/content/application~1json/schema'
-              examples:
-                org-not-found:
-                  summary: Organization name not found
-                  value:
-                    code: not found
-                    message: organization name "my-org" not found
-                bucket-not-found:
-                  summary: Bucket name not found
-                  value:
-                    code: not found
-                    message: bucket "air_sensor" not found
-                orgID-not-found:
-                  summary: Organization ID not found
-                  value:
-                    code: not found
-                    message: organization not found
+          $ref: '#/paths/~1query/post/responses/404'
         '500':
           $ref: '#/paths/~1users/get/responses/500'
         default:
@@ -5128,7 +5295,7 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '404':
-          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+          $ref: '#/paths/~1query/post/responses/404'
         '500':
           $ref: '#/paths/~1users/get/responses/500'
         default:
@@ -5161,7 +5328,7 @@ paths:
         '401':
           $ref: '#/paths/~1tasks/get/responses/401'
         '404':
-          $ref: '#/paths/~1tasks~1%7BtaskID%7D/get/responses/404'
+          $ref: '#/paths/~1query/post/responses/404'
         '500':
           $ref: '#/paths/~1users/get/responses/500'
         default:
@@ -5882,6 +6049,425 @@ components:
         - bucketName
         - defaultRetentionPolicy
         - retentionPolicies
+    Query:
+      description: Query InfluxDB with the Flux language
+      type: object
+      required:
+        - query
+      properties:
+        extern:
+          description: Represents a source from a single file
+          type: object
+          properties:
+            type:
+              description: Type of AST node
+              type: string
+            name:
+              description: The name of the file.
+              type: string
+            package:
+              description: Defines a package identifier
+              type: object
+              properties:
+                type:
+                  $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                name:
+                  description: A valid Flux identifier
+                  type: object
+                  properties:
+                    type:
+                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                    name:
+                      type: string
+            imports:
+              description: A list of package imports
+              type: array
+              items:
+                description: Declares a package import
+                type: object
+                properties:
+                  type:
+                    $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                  as:
+                    $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/package/properties/name'
+                  path:
+                    description: Expressions begin and end with double quote marks
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      value:
+                        type: string
+            body:
+              description: List of Flux statements
+              type: array
+              items:
+                oneOf:
+                  - description: A placeholder for statements for which no correct statement nodes can be created
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      text:
+                        description: Raw source text
+                        type: string
+                  - description: Represents the declaration of a variable
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      id:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/package/properties/name'
+                      init:
+                        oneOf:
+                          - description: Used to create and directly specify the elements of an array object
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              elements:
+                                description: Elements of the array
+                                type: array
+                                items:
+                                  $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Used to create and directly specify the elements of a dictionary
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              elements:
+                                description: Elements of the dictionary
+                                type: array
+                                items:
+                                  description: A key-value pair in a dictionary.
+                                  type: object
+                                  properties:
+                                    type:
+                                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                                    key:
+                                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                                    val:
+                                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Function expression
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              params:
+                                description: Function parameters
+                                type: array
+                                items:
+                                  description: The value associated with a key
+                                  type: object
+                                  properties:
+                                    type:
+                                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                                    key:
+                                      oneOf:
+                                        - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/package/properties/name'
+                                        - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/imports/items/properties/path'
+                                    value:
+                                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              body:
+                                oneOf:
+                                  - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                                  - description: A set of statements
+                                    type: object
+                                    properties:
+                                      type:
+                                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                                      body:
+                                        description: Block body
+                                        type: array
+                                        items:
+                                          $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items'
+                          - description: uses binary operators to act on two operands in an expression
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              operator:
+                                type: string
+                              left:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              right:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Represents a function call
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              callee:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              arguments:
+                                description: Function arguments
+                                type: array
+                                items:
+                                  $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: 'Selects one of two expressions, `Alternate` or `Consequent`, depending on a third boolean expression, `Test`'
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              test:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              alternate:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              consequent:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Represents the rule conditions that collectively evaluate to either true or false
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              operator:
+                                type: string
+                              left:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              right:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Represents accessing a property of an object
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              object:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              property:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init/oneOf/0/properties/elements/items/oneOf/1/properties/elements/items/properties/key/oneOf/2/properties/params/items/properties/key'
+                          - description: Represents indexing into an array
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              array:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              index:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Allows the declaration of an anonymous object within a declaration
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              properties:
+                                description: Object properties
+                                type: array
+                                items:
+                                  $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init/oneOf/0/properties/elements/items/oneOf/1/properties/elements/items/properties/key/oneOf/2/properties/params/items'
+                          - description: Represents an expression wrapped in parenthesis
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              expression:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Call expression with pipe argument
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              argument:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                              call:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init/oneOf/4'
+                          - description: Uses operators to act on a single operand in an expression
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              operator:
+                                type: string
+                              argument:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                          - description: Represents boolean values
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              value:
+                                type: boolean
+                          - description: 'Represents an instant in time with nanosecond precision in [RFC3339Nano date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339nano-timestamp).'
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              value:
+                                type: string
+                                format: date-time
+                          - description: Represents the elapsed time between two instants as an int64 nanosecond count with syntax of golang's time.Duration
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              values:
+                                description: Duration values
+                                type: array
+                                items:
+                                  description: A pair consisting of length of time and the unit of time measured. It is the atomic unit from which all duration literals are composed.
+                                  type: object
+                                  properties:
+                                    type:
+                                      $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                                    magnitude:
+                                      type: integer
+                                    unit:
+                                      type: string
+                          - description: Represents floating point numbers according to the double representations defined by the IEEE-754-1985
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              value:
+                                type: number
+                          - description: Represents integer numbers
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              value:
+                                type: string
+                          - description: 'Represents a specialized literal value, indicating the left hand value of a pipe expression'
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                          - description: Expressions begin and end with `/` and are regular expressions with syntax accepted by RE2
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              value:
+                                type: string
+                          - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/imports/items/properties/path'
+                          - description: Represents integer numbers
+                            type: object
+                            properties:
+                              type:
+                                $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                              value:
+                                type: string
+                          - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/package/properties/name'
+                  - description: Object property assignment
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      member:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init/oneOf/7'
+                      init:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                  - description: May consist of an expression that doesn't return a value and is executed solely for its side-effects
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      expression:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                  - description: Defines an expression to return
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      argument:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1/properties/init'
+                  - description: A single variable declaration
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      assignment:
+                        oneOf:
+                          - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1'
+                          - $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/2'
+                  - description: Declares a builtin identifier and its type
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      id:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/package/properties/name'
+                  - description: Declares a Flux test case
+                    type: object
+                    properties:
+                      type:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/type'
+                      assignment:
+                        $ref: '#/paths/~1query/post/requestBody/content/application~1json/schema/properties/extern/properties/body/items/oneOf/1'
+        query:
+          description: The query script to execute.
+          type: string
+        type:
+          description: The type of query. Must be "flux".
+          type: string
+          enum:
+            - flux
+        dialect:
+          description: |
+            Options for tabular data output.
+            Default output is [annotated CSV]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/annotated-csv/#csv-response-format) with headers.
+
+            For more information about tabular data **dialect**,
+            see [W3 metadata vocabulary for tabular data](https://www.w3.org/TR/2015/REC-tabular-metadata-20151217/#dialect-descriptions).
+          type: object
+          properties:
+            header:
+              description: 'If true, the results contain a header row.'
+              type: boolean
+              default: true
+            delimiter:
+              description: 'The separator used between cells. Default is a comma (`,`).'
+              type: string
+              default: ','
+              maxLength: 1
+              minLength: 1
+            annotations:
+              description: |
+                Annotation rows to include in the results.
+                An _annotation_ is metadata associated with an object (column) in the data model.
+
+                #### Related guides
+
+                - See [Annotated CSV annotations]({{% INFLUXDB_DOCS_URL %}}/reference/syntax/annotated-csv/#annotations) for examples and more information.
+
+                For more information about **annotations** in tabular data,
+                see [W3 metadata vocabulary for tabular data](https://www.w3.org/TR/2015/REC-tabular-data-model-20151217/#columns).
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+                enum:
+                  - group
+                  - datatype
+                  - default
+            commentPrefix:
+              description: The character prefixed to comment strings. Default is a number sign (`#`).
+              type: string
+              default: '#'
+              maxLength: 1
+              minLength: 0
+            dateTimeFormat:
+              description: |
+                The format for timestamps in results.
+                Default is [`RFC3339` date/time format]({{% INFLUXDB_DOCS_URL %}}/reference/glossary/#rfc3339-timestamp).
+                To include nanoseconds in timestamps, use `RFC3339Nano`.
+
+                #### Example formatted date/time values
+
+                | Format      | Value                       |
+                |:------------|:----------------------------|
+                | `RFC3339`    | `"2006-01-02T15:04:05Z07:00"` |
+                | `RFC3339Nano` | `"2006-01-02T15:04:05.999999999Z07:00"` |
+              type: string
+              default: RFC3339
+              enum:
+                - RFC3339
+                - RFC3339Nano
+        now:
+          description: |
+            Specifies the time that should be reported as `now` in the query.
+            Default is the server `now` time.
+          type: string
+          format: date-time
     RetentionPolicyManifests:
       type: array
       items:
