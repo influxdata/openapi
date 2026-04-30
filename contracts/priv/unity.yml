@@ -1242,6 +1242,82 @@ paths:
         default:
           description: Unexpected error
           $ref: '#/components/responses/ServerError'
+  '/operator/accounts/{fromAccountId}/migrate/{toAccountId}':
+    patch:
+      operationId: MigrateOrgsByAccountById
+      tags:
+        - Accounts
+      summary: Migrates an account's organizations to another account
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: fromAccountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to migrate organizations from
+        - in: path
+          name: toAccountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to migrate organizations to
+      responses:
+        '200':
+          description: Account organizations moved to
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorAccount'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/accounts/{accountId}/reactivate':
+    patch:
+      operationId: ReactivateAccountById
+      tags:
+        - Accounts
+      summary: Reactivate a cancelled account
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: accountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to reactivate
+      responses:
+        '200':
+          description: Account reactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorAccount'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
   /operator/providers:
     get:
       operationId: GetProvidersInfo
@@ -1454,6 +1530,51 @@ paths:
           $ref: '#/components/responses/ServerError'
         '404':
           description: Not Found
+          $ref: '#/components/responses/ServerError'
+        default:
+          description: Unexpected error
+          $ref: '#/components/responses/ServerError'
+  '/operator/orgs/{orgId}/migrate/{toAccountId}':
+    patch:
+      operationId: MigrateOrgById
+      tags:
+        - Organization
+        - Operators
+      summary: Migrates an organization to a different account.
+      parameters:
+        - $ref: '#/components/parameters/TraceSpan'
+        - in: path
+          name: orgId
+          schema:
+            type: string
+          required: true
+          description: The IDPE id of the organization to migrate.
+        - in: path
+          name: toAccountId
+          schema:
+            type: string
+          required: true
+          description: The ID of the account to migrate organization into
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Organization successfully migrated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          $ref: '#/components/responses/ServerError'
+        '404':
+          description: Not Found
+          $ref: '#/components/responses/ServerError'
+        '422':
+          description: Missing or invalid information
           $ref: '#/components/responses/ServerError'
         default:
           description: Unexpected error
@@ -1692,9 +1813,15 @@ components:
         zuoraAccountId:
           type: string
           description: Zuora ID associated with the account
+        cancellable:
+          type: boolean
+          description: flag whether the account can be canceled or not
         deletable:
           type: boolean
           description: flag whether the account can be deleted or not
+        reactivatable:
+          type: boolean
+          description: flag whether the account can be reactivated or not
         balance:
           type: number
           description: 'remaining balance on the account, nil if none'
@@ -1707,6 +1834,9 @@ components:
         marketplaceSubscription:
           $ref: '#/components/schemas/MarketplaceSubscription'
           description: 'which marketplace, nil if none'
+        cancelledAt:
+          type: string
+          description: the date an account was cancelled on
       required:
         - id
         - name
@@ -1782,6 +1912,8 @@ components:
           $ref: '#/components/schemas/StackLimits'
         timeout:
           $ref: '#/components/schemas/TimeoutLimits'
+        ioxQuery:
+          $ref: '#/components/schemas/OrgLimits/properties/ioxQuery'
       required:
         - orgID
         - rate
@@ -1916,7 +2048,35 @@ components:
       description: The timerange options for usage information
       enum:
         - 24h
+        - 1d
+        - 2d
+        - 3d
+        - 4d
+        - 5d
+        - 6d
         - 7d
+        - 8d
+        - 9d
+        - 10d
+        - 11d
+        - 12d
+        - 13d
+        - 14d
+        - 15d
+        - 16d
+        - 17d
+        - 18d
+        - 19d
+        - 20d
+        - 21d
+        - 22d
+        - 23d
+        - 24d
+        - 25d
+        - 26d
+        - 27d
+        - 28d
+        - 29d
         - 30d
       default: 24h
     VectorName:
@@ -2356,6 +2516,9 @@ components:
           enum:
             - tsm
             - iox
+        deleteOn:
+          type: string
+          description: the date a suspended org will be deleted on
         date:
           type: string
           description: date org was created
@@ -2574,6 +2737,16 @@ components:
           $ref: '#/components/schemas/StackLimits'
         timeout:
           $ref: '#/components/schemas/TimeoutLimits'
+        ioxQuery:
+          description: IOx query limits
+          type: object
+          properties:
+            partitions:
+              description: Number of partitions allowed in a single query.
+              $ref: '#/components/schemas/Limit'
+            parquetFiles:
+              description: Number of parquet files allowed in a single query.
+              $ref: '#/components/schemas/Limit'
       required:
         - orgID
         - rate

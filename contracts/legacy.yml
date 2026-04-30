@@ -112,6 +112,15 @@ paths:
                 enum:
                   - gzip
                   - identity
+            Transfer-Encoding:
+              description: |
+                `chunked` if the response is chunked.
+              schema:
+                type: string
+                description: The transfer encoding.
+                default: chunked
+                enum:
+                  - chunked
             Trace-Id:
               description: 'The trace ID, if generated, of the request.'
               schema:
@@ -127,6 +136,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InfluxqlJsonResponse'
+              examples:
+                influxql-chunk_size_2:
+                  value: |
+                    {"results":[{"statement_id":0,"series":[{"name":"mymeas","columns":["time","myfield","mytag"],"values":[["2016-05-19T18:37:55Z",90,"1"],["2016-05-19T18:37:56Z",90,"1"]],"partial":true}],"partial":true}]}
+                    {"results":[{"statement_id":0,"series":[{"name":"mymeas","columns":["time","myfield","mytag"],"values":[["2016-05-19T18:37:57Z",90,"1"],["2016-05-19T18:37:58Z",90,"1"]]}]}]}
             application/x-msgpack:
               schema:
                 type: string
@@ -536,40 +550,75 @@ components:
               items:
                 $ref: '#/components/schemas/Permission'
     InfluxqlJsonResponse:
-      description: JSON Response to InfluxQL Query
+      description: |
+        The JSON response for an InfluxQL query.
+
+        A response contains the collection of results for a query.
+        `results` is an array of resultset objects.
+
+        If the response is chunked, the `transfer-encoding` response header is set to `chunked` and each resultset object is sent in a separate JSON object.
       type: object
       properties:
         results:
           type: array
+          oneOf:
+            - required:
+                - statement_id
+                - error
+            - required:
+                - statement_id
+                - series
           items:
             type: object
+            description: |
+              A resultset object that contains the `statement_id` and the `series` array.
+
+              Except for `statement_id`, all properties are optional and omitted if empty. If a property is not present, it is assumed to be `null`.
             properties:
               statement_id:
                 type: integer
+                description: |
+                  An integer that represents the statement's position in the query. If statement results are buffered in memory, `statement_id` is used to combine statement results.
               error:
                 type: string
               series:
                 type: array
+                description: |
+                  An array of series objects--the results of the query. A series of rows shares the same group key returned from the execution of a statement.
+
+                  If a property is not present, it is assumed to be `null`.
                 items:
                   type: object
                   properties:
                     name:
                       type: string
+                      description: The name of the series
                     tags:
                       type: object
+                      description: |
+                        A map of tag key-value pairs. If a tag key is not present, it is assumed to be `null`.
                       additionalProperties:
                         type: string
                     partial:
                       type: boolean
+                      description: |
+                        True if the series is not complete--the response data is chunked; otherwise, false or omitted.
                     columns:
                       type: array
+                      description: An array of column names
                       items:
                         type: string
                     values:
                       type: array
+                      description: |
+                        An array of rows, where each row is an array of values.
                       items:
                         type: array
                         items: {}
+              partial:
+                type: boolean
+                description: |
+                  True if the resultset is not complete--the response data is chunked; otherwise, false or omitted.
     InfluxqlCsvResponse:
       description: CSV Response to InfluxQL Query
       type: string
