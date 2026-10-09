@@ -19726,7 +19726,8 @@
           "status": {
             "type": "string",
             "enum": [
-              "ready"
+              "ready",
+              "starting"
             ]
           },
           "started": {
@@ -19737,6 +19738,17 @@
           "up": {
             "type": "string",
             "example": "14m45.911966424s"
+          },
+          "uptime": {
+            "description": "Time since `started`, in float seconds.",
+            "$ref": "#/components/schemas/HealthCheckMeasure"
+          },
+          "checks": {
+            "description": "Ready gates that haven't passed.\nOmitted when `status` is `ready`.\n",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthCheck"
+            }
           }
         }
       },
@@ -19751,7 +19763,8 @@
             "type": "string"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Status detail. For a failing check, may contain the raw error text.\n"
           },
           "checks": {
             "type": "array",
@@ -19767,11 +19780,38 @@
             ]
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "Build version. Returned only at the top level."
           },
           "commit": {
-            "type": "string"
+            "type": "string",
+            "description": "Build commit. Returned only at the top level."
           }
+        },
+        "additionalProperties": {
+          "description": "Measure groups reported by a check, such as `progress` or `failures`.\nEach key other than `name`, `status`, `message`, and `checks` whose value\nis an object is a measure group.\n",
+          "$ref": "#/components/schemas/HealthCheckMeasure"
+        }
+      },
+      "HealthCheckMeasure": {
+        "description": "A measure group: one or more numeric values that share a unit.\nDurations are float seconds with `unit: seconds`.\n",
+        "type": "object",
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "type": "string",
+            "example": "shards"
+          }
+        },
+        "additionalProperties": {
+          "type": "number"
+        },
+        "example": {
+          "completed": 94,
+          "total": 200,
+          "unit": "shards"
         }
       },
       "Labels": {

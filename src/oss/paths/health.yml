@@ -4,7 +4,14 @@ get:
     - Health
     - System information endpoints
   summary: Retrieve the health of the instance
-  description: Returns the health of the instance.
+  description: |
+    Returns the health of the instance.
+
+    `--health-auth-mode` and `--hardening-enabled` reduce the response body
+    for callers without operator permissions.
+    Those callers don't receive check messages, measure groups, `version`,
+    or `commit`.
+    The status code never changes.
   servers:
     - url: ''
   parameters:
@@ -18,8 +25,22 @@ get:
         application/json:
           schema:
             $ref: "../../common/schemas/HealthCheck.yml"
+          example:
+            name: influxdb
+            status: pass
+            message: healthy
+            checks:
+              - name: shards
+                status: pass
+                failures:
+                  count: 0
+                  unit: shards
+            version: v2.10.0
+            commit: "310ee146d9"
     "503":
-      description: The instance is unhealthy.
+      description: |
+        The instance is unhealthy.
+        `message` contains the message of the first failing check.
       content:
         application/json:
           schema:
