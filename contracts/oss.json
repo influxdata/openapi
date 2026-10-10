@@ -12473,7 +12473,7 @@
           "System information endpoints"
         ],
         "summary": "Retrieve the health of the instance",
-        "description": "Returns the health of the instance.",
+        "description": "Returns the health of the instance.\n\n`--health-auth-mode` and `--hardening-enabled` reduce the response body\nfor callers without operator permissions.\nThose callers don't receive check messages, measure groups, `version`,\nor `commit`.\nThe status code never changes.\n",
         "servers": [
           {
             "url": ""
@@ -12491,12 +12491,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HealthCheck"
+                },
+                "example": {
+                  "name": "influxdb",
+                  "status": "pass",
+                  "message": "healthy",
+                  "checks": [
+                    {
+                      "name": "shards",
+                      "status": "pass",
+                      "failures": {
+                        "count": 0,
+                        "unit": "shards"
+                      }
+                    }
+                  ],
+                  "version": "v2.10.0",
+                  "commit": "310ee146d9"
                 }
               }
             }
           },
           "503": {
-            "description": "The instance is unhealthy.",
+            "description": "The instance is unhealthy.\n`message` contains the message of the first failing check.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -12568,6 +12585,7 @@
           "System information endpoints"
         ],
         "summary": "Get the readiness of an instance at startup",
+        "description": "Returns the readiness of the instance.\n\n`--health-auth-mode` and `--hardening-enabled` can withhold `checks`\nfrom callers without operator permissions.\nThey never change the status code.\n",
         "servers": [
           {
             "url": ""
@@ -12585,6 +12603,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Ready"
+                },
+                "example": {
+                  "status": "ready",
+                  "started": "2026-05-26T15:42:30.123456789Z",
+                  "up": "1m32.4s",
+                  "uptime": {
+                    "value": 92.4,
+                    "unit": "seconds"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The instance is starting or shutting down.\n`checks` contains only the ready gates that haven't passed.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ready"
+                },
+                "example": {
+                  "status": "starting",
+                  "started": "2026-05-26T15:42:30.123456789Z",
+                  "up": "1.2s",
+                  "uptime": {
+                    "value": 1.2,
+                    "unit": "seconds"
+                  },
+                  "checks": [
+                    {
+                      "name": "shards",
+                      "status": "fail",
+                      "message": "loading shards 47.0% (94 / 200)",
+                      "progress": {
+                        "completed": 94,
+                        "total": 200,
+                        "unit": "shards"
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -17717,37 +17775,43 @@
             },
             "value": {
               "description": "Value provided to fulfill reference",
-              "nullable": true,
               "oneOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
-                  "type": "integer"
+                  "type": "integer",
+                  "nullable": true
                 },
                 {
-                  "type": "number"
+                  "type": "number",
+                  "nullable": true
                 },
                 {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "nullable": true
                 }
               ]
             },
             "defaultValue": {
               "description": "Default value that will be provided for the reference when no value is provided",
-              "nullable": true,
               "oneOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
-                  "type": "integer"
+                  "type": "integer",
+                  "nullable": true
                 },
                 {
-                  "type": "number"
+                  "type": "number",
+                  "nullable": true
                 },
                 {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "nullable": true
                 }
               ]
             }
@@ -22129,7 +22193,8 @@
           "status": {
             "type": "string",
             "enum": [
-              "ready"
+              "ready",
+              "starting"
             ]
           },
           "started": {
@@ -22140,10 +22205,26 @@
           "up": {
             "type": "string",
             "example": "14m45.911966424s"
+          },
+          "uptime": {
+            "description": "Time since `started`, in float seconds.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HealthCheckMeasure"
+              }
+            ]
+          },
+          "checks": {
+            "description": "Ready gates that haven't passed.\nOmitted when `status` is `ready`.\n",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthCheck"
+            }
           }
         }
       },
       "HealthCheck": {
+        "description": "A health check.\nA check can also report measure groups, such as `progress` or `failures`.\nEach key other than `name`, `status`, `message`, and `checks` whose value\nis an object is a measure group.\n",
         "type": "object",
         "required": [
           "name",
@@ -22154,7 +22235,8 @@
             "type": "string"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Status detail. For a failing check, may contain the raw error text.\n"
           },
           "checks": {
             "type": "array",
@@ -22170,11 +22252,37 @@
             ]
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "Build version. Returned only at the top level."
           },
           "commit": {
-            "type": "string"
+            "type": "string",
+            "description": "Build commit. Returned only at the top level."
           }
+        },
+        "additionalProperties": {
+          "$ref": "#/components/schemas/HealthCheckMeasure"
+        }
+      },
+      "HealthCheckMeasure": {
+        "description": "A measure group: one or more numeric values that share a unit.\nDurations are float seconds with `unit: seconds`.\n",
+        "type": "object",
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "type": "string",
+            "example": "shards"
+          }
+        },
+        "additionalProperties": {
+          "type": "number"
+        },
+        "example": {
+          "completed": 94,
+          "total": 200,
+          "unit": "shards"
         }
       },
       "Labels": {

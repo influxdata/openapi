@@ -12768,20 +12768,26 @@ components:
             description: Key identified as environment reference and is the key identified in the template
           value:
             description: Value provided to fulfill reference
-            nullable: true
             oneOf:
               - type: string
+                nullable: true
               - type: integer
+                nullable: true
               - type: number
+                nullable: true
               - type: boolean
+                nullable: true
           defaultValue:
             description: Default value that will be provided for the reference when no value is provided
-            nullable: true
             oneOf:
               - type: string
+                nullable: true
               - type: integer
+                nullable: true
               - type: number
+                nullable: true
               - type: boolean
+                nullable: true
         required:
           - resourceField
           - envRefKey
@@ -15794,6 +15800,7 @@ components:
           type: string
           enum:
             - ready
+            - starting
         started:
           type: string
           format: date-time
@@ -15801,7 +15808,23 @@ components:
         up:
           type: string
           example: 14m45.911966424s
+        uptime:
+          description: 'Time since `started`, in float seconds.'
+          allOf:
+            - $ref: '#/components/schemas/HealthCheckMeasure'
+        checks:
+          description: |
+            Ready gates that haven't passed.
+            Omitted when `status` is `ready`.
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthCheck'
     HealthCheck:
+      description: |
+        A health check.
+        A check can also report measure groups, such as `progress` or `failures`.
+        Each key other than `name`, `status`, `message`, and `checks` whose value
+        is an object is a measure group.
       type: object
       required:
         - name
@@ -15811,6 +15834,8 @@ components:
           type: string
         message:
           type: string
+          description: |
+            Status detail. For a failing check, may contain the raw error text.
         checks:
           type: array
           items:
@@ -15822,8 +15847,29 @@ components:
             - fail
         version:
           type: string
+          description: Build version. Returned only at the top level.
         commit:
           type: string
+          description: Build commit. Returned only at the top level.
+      additionalProperties:
+        $ref: '#/components/schemas/HealthCheckMeasure'
+    HealthCheckMeasure:
+      description: |
+        A measure group: one or more numeric values that share a unit.
+        Durations are float seconds with `unit: seconds`.
+      type: object
+      required:
+        - unit
+      properties:
+        unit:
+          type: string
+          example: shards
+      additionalProperties:
+        type: number
+      example:
+        completed: 94
+        total: 200
+        unit: shards
     Labels:
       type: array
       items:
