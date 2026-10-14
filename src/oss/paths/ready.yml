@@ -4,6 +4,12 @@ get:
     - Ready
     - System information endpoints
   summary: Get the readiness of an instance at startup
+  description: |
+    Returns the readiness of the instance.
+
+    `--health-auth-mode` and `--hardening-enabled` can withhold `checks`
+    from callers without operator permissions.
+    They never change the status code.
   servers:
     - url: ''
   parameters:
@@ -15,6 +21,36 @@ get:
         application/json:
           schema:
             $ref: "../../common/schemas/Ready.yml"
+          example:
+            status: ready
+            started: "2026-05-26T15:42:30.123456789Z"
+            up: "1m32.4s"
+            uptime:
+              value: 92.4
+              unit: seconds
+    "503":
+      description: |
+        The instance is starting or shutting down.
+        `checks` contains only the ready gates that haven't passed.
+      content:
+        application/json:
+          schema:
+            $ref: "../../common/schemas/Ready.yml"
+          example:
+            status: starting
+            started: "2026-05-26T15:42:30.123456789Z"
+            up: "1.2s"
+            uptime:
+              value: 1.2
+              unit: seconds
+            checks:
+              - name: shards
+                status: fail
+                message: "loading shards 47.0% (94 / 200)"
+                progress:
+                  completed: 94
+                  total: 200
+                  unit: shards
     default:
       description: Unexpected error
       $ref: '../../common/responses/ServerError.yml'
